@@ -1,0 +1,116 @@
+---
+import Layout from '../layouts/Layout.astro';
+import NovelCard from '../components/NovelCard.astro';
+import { getLibrary } from '../lib/content';
+const novels = await getLibrary(),
+  genres = [...new Set(novels.flatMap((n) => n.genres))].sort(),
+  tags = [...new Set(novels.flatMap((n) => n.tags))].sort();
+---
+
+<Layout
+  title="Каталог новелл"
+  description="Поиск веб-новелл на русском: жанры, теги, статусы перевода и новые главы."
+>
+  <main id="main" class="page-shell">
+    <div class="page-heading">
+      <h1>Каталог</h1>
+      <p>Найдите историю под своё настроение.</p>
+    </div>
+    <form id="catalog-filters" class="filter-panel" role="search">
+      <div class="filter-grid">
+        <label class="search-label">
+          Название
+          <input
+            type="search"
+            name="search"
+            placeholder="Русское или оригинальное название"
+            autocomplete="off"
+          />
+        </label>
+        <label>
+          Жанр
+          <select name="genre">
+            <option value="">Все жанры</option>
+            {genres.map((g) => (
+              <option>{g}</option>
+            ))}
+          </select>
+        </label>
+        <label>
+          Статус перевода
+          <select name="status">
+            <option value="">Все статусы</option>
+            {['Переводится', 'Завершён', 'Приостановлен'].map((s) => (
+              <option>{s}</option>
+            ))}
+          </select>
+        </label>
+        <label>
+          Статус оригинала
+          <select name="originalStatus">
+            <option value="">Все статусы</option>
+            {['Продолжается', 'Завершён', 'Приостановлен'].map((s) => (
+              <option>{s}</option>
+            ))}
+          </select>
+        </label>
+        <label>
+          Сортировка
+          <select name="sort">
+            <option value="updated">Сначала обновлённые</option>
+            <option value="title">По названию: А–Я</option>
+            <option value="chapters">По числу глав: больше сначала</option>
+          </select>
+        </label>
+      </div>
+      <details class="tag-filters">
+        <summary>Включить и исключить теги</summary>
+        <div class="tag-columns">
+          <fieldset>
+            <legend>Обязательные теги — все выбранные</legend>
+            {tags.map((t) => (
+              <label class="check-label">
+                <input type="checkbox" name="include" value={t} />
+                {t}
+              </label>
+            ))}
+          </fieldset>
+          <fieldset>
+            <legend>Исключить любой из выбранных</legend>
+            {tags.map((t) => (
+              <label class="check-label">
+                <input type="checkbox" name="exclude" value={t} />
+                {t}
+              </label>
+            ))}
+          </fieldset>
+        </div>
+      </details>
+      <button type="reset" class="text-button">
+        Сбросить фильтры
+      </button>
+    </form>
+    <div class="results-heading">
+      <p id="result-count" role="status" aria-live="polite">
+        Новелл: {novels.length}
+      </p>
+    </div>
+    <p id="catalog-empty" class="empty-state" hidden>
+      Ничего не найдено. Попробуйте убрать часть фильтров.
+    </p>
+    <div id="catalog-results" class="novel-grid">
+      {novels.map((n) => (
+        <NovelCard novel={n} />
+      ))}
+    </div>
+    <noscript>
+      <p class="notice">
+        Поиск и фильтры работают с JavaScript. Все новеллы и главы доступны по ссылкам ниже.
+      </p>
+    </noscript>
+  </main>
+  <script>
+    import { initCatalog } from '../scripts/catalog';
+    initCatalog();
+  </script>
+</Layout>

@@ -1,0 +1,14 @@
+---
+import { site } from '../config/site';
+---
+
+<a class="brand" href="/" aria-label={`${site.name} — ${site.tagline}`} title={site.latinName}>
+  <span class="brand-emblem" aria-hidden="true">
+    <img class="brand-logo-light" src={site.logo.light} alt="" width="34" height="34" />
+    <img class="brand-logo-dark" src={site.logo.dark} alt="" width="34" height="34" />
+  </span>
+  <span class="brand-wordmark">
+    <span class="brand-title">{site.name}</span>
+    <span class="brand-subtitle">{site.tagline}</span>
+  </span>
+</a>

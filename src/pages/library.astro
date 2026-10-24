@@ -1,0 +1,46 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { shelves } from '../config/site';
+---
+
+<Layout title="Моя библиотека" noindex>
+  <main id="main" class="page-shell">
+    <div class="page-heading">
+      <h1>Библиотека</h1>
+      <p>Ваши истории и прогресс чтения на этом устройстве.</p>
+    </div>
+    <div class="shelf-tabs" role="group" aria-label="Полки">
+      {Object.entries(shelves).map(([value, label], i) => (
+        <button
+          class="shelf-tab"
+          type="button"
+          data-shelf-tab={value}
+          aria-pressed={i === 0 ? 'true' : 'false'}
+        >
+          {label}
+          <span data-shelf-count={value}>0</span>
+        </button>
+      ))}
+    </div>
+    <p id="library-count" role="status" aria-live="polite"></p>
+    <div id="library-list" class="library-list"></div>
+    <p id="library-empty" class="empty-state">
+      На этой полке пока пусто.
+      <br />
+      <a href="/catalog/">Выбрать новеллу в каталоге →</a>
+    </p>
+    <p class="fine storage-explanation">
+      Библиотека хранится в этом браузере. Очистка данных сайта удалит полки и прогресс. В другом
+      браузере библиотека будет отдельной.
+    </p>
+    <noscript>
+      <p class="notice">
+        Для локальной библиотеки нужен JavaScript. Каталог и чтение доступны без него.
+      </p>
+    </noscript>
+  </main>
+  <script>
+    import { initLibrary } from '../scripts/library';
+    void initLibrary();
+  </script>
+</Layout>

@@ -1,0 +1,82 @@
+---
+import Layout from '../layouts/Layout.astro';
+import NovelCard from '../components/NovelCard.astro';
+import ContinueReading from '../components/ContinueReading.astro';
+import { getLibrary, dateLabel, chapterUrl } from '../lib/content';
+const novels = await getLibrary();
+const updates = novels
+  .flatMap((n) =>
+    n.chapters.map((c) => ({
+      novel: n.title,
+      title: c.data.title,
+      number: c.data.number,
+      date: c.data.publishedAt,
+      url: chapterUrl(n.slug, c.data.slug),
+    })),
+  )
+  .sort((a, b) => b.date.localeCompare(a.date))
+  .slice(0, 5);
+---
+
+<Layout title="Читать веб-новеллы на русском">
+  <main id="main" class="page-shell">
+    <section class="home-intro">
+      <div>
+        <h1>
+          Истории, к которым
+          <br class="desktop-break" /> хочется вернуться
+        </h1>
+        <p>
+          Веб-новеллы на русском для тихого вечера.
+          <br />
+          Выберите историю и читайте в своём ритме.
+        </p>
+        <a class="button" href="/catalog/">
+          Найти свою историю <span aria-hidden="true">→</span>
+        </a>
+      </div>
+      <div class="intro-art" aria-hidden="true">
+        <div class="book-shape book-one"></div>
+        <div class="book-shape book-two"></div>
+        <div class="book-shape book-three"></div>
+        <span class="art-line"></span>
+      </div>
+    </section>
+    <ContinueReading />
+    <section class="section" aria-labelledby="updates-title">
+      <div class="section-heading">
+        <h2 id="updates-title">Последние обновления</h2>
+        <span class="fine">Новые главы</span>
+      </div>
+      <div class="updates-list">
+        {updates.map((u) => (
+          <a class="update-row" href={u.url}>
+            <div>
+              <strong>{u.novel}</strong>
+              <span>
+                Глава {u.number}. {u.title}
+              </span>
+            </div>
+            <time datetime={u.date}>{dateLabel(u.date)}</time>
+            <span aria-hidden="true">↗</span>
+          </a>
+        ))}
+      </div>
+    </section>
+    <section class="section" aria-labelledby="all-title">
+      <div class="section-heading">
+        <h2 id="all-title">Все новеллы</h2>
+        <a href="/catalog/">В каталог →</a>
+      </div>
+      <div class="novel-grid">
+        {novels.map((n) => (
+          <NovelCard novel={n} />
+        ))}
+      </div>
+    </section>
+  </main>
+  <script>
+    import { initPersonal } from '../scripts/personal';
+    void initPersonal();
+  </script>
+</Layout>

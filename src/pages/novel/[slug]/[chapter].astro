@@ -1,0 +1,222 @@
+---
+import { render } from 'astro:content';
+import Layout from '../../../layouts/Layout.astro';
+import { getLibrary, chapterUrl } from '../../../lib/content';
+export async function getStaticPaths() {
+  return (await getLibrary()).flatMap((n) =>
+    n.chapters.map((c, i) => ({
+      params: { slug: n.slug, chapter: c.data.slug },
+      props: { novel: n, chapter: c, index: i },
+    })),
+  );
+}
+const { novel: n, chapter: c, index } = Astro.props;
+const { Content } = await render(c);
+const prev = n.chapters[index - 1],
+  next = n.chapters[index + 1];
+---
+
+<Layout
+  title={`${n.title} — глава ${c.data.number}: ${c.data.title}`}
+  description={c.data.description}
+  reader
+>
+  <header class="reader-header reader-chrome">
+    <a href={n.url} class="reader-back" aria-label="К странице новеллы">
+      ←
+    </a>
+    <a href={n.url} class="reader-novel-title">
+      {n.title}
+    </a>
+    <button type="button" class="icon-button" data-open="toc" aria-label="Открыть оглавление">
+      ☰
+    </button>
+  </header>
+  <div class="reading-progress">
+    <progress
+      id="reading-progress"
+      value="0"
+      max="100"
+      aria-label="Прогресс чтения главы"
+    ></progress>
+  </div>
+  <main
+    id="main"
+    class="reader-main"
+    data-reader
+    data-novel={n.slug}
+    data-chapter={c.data.slug}
+    data-number={c.data.number}
+  >
+    <div class="reader-heading">
+      <a href={n.url}>{n.title}</a>
+      <p class="fine">
+        Глава {c.data.number} из {n.chapterCount}
+      </p>
+      <h1>{c.data.title}</h1>
+    </div>
+    <article
+      id="chapter-text"
+      class="chapter-text"
+      aria-label={`Глава ${c.data.number}. ${c.data.title}`}
+    >
+      <Content />
+    </article>
+    <nav class="chapter-end-nav" aria-label="Переход между главами">
+      {prev ? (
+        <a class="button secondary" href={chapterUrl(n.slug, prev.data.slug)}>
+          ← Предыдущая
+        </a>
+      ) : (
+        <a class="button secondary" href={n.url}>
+          К новелле
+        </a>
+      )}
+      {next ? (
+        <a class="button" href={chapterUrl(n.slug, next.data.slug)}>
+          Следующая →
+        </a>
+      ) : (
+        <a class="button" href={n.url}>
+          К оглавлению →
+        </a>
+      )}
+    </nav>
+    {!next && <p class="end-note">Вы прочитали все опубликованные главы.</p>}
+  </main>
+  <nav class="reader-toolbar reader-chrome" aria-label="Панель чтения">
+    <button type="button" data-open="toc">
+      <span aria-hidden="true">☰</span> Оглавление
+    </button>
+    <button type="button" data-open="settings">
+      <span aria-hidden="true">Аа</span> Настройки
+    </button>
+    <span id="progress-label" class="fine">
+      0%
+    </span>
+    <div class="toolbar-arrows">
+      {prev ? (
+        <a href={chapterUrl(n.slug, prev.data.slug)} aria-label="Предыдущая глава">
+          ←
+        </a>
+      ) : (
+        <span aria-hidden="true" class="disabled">
+          ←
+        </span>
+      )}
+      {next ? (
+        <a href={chapterUrl(n.slug, next.data.slug)} aria-label="Следующая глава">
+          →
+        </a>
+      ) : (
+        <span aria-hidden="true" class="disabled">
+          →
+        </span>
+      )}
+    </div>
+  </nav>
+  <button
+    id="show-reader-controls"
+    class="show-controls"
+    type="button"
+    aria-label="Показать панель чтения"
+    hidden
+  >
+    Аа
+  </button>
+  <dialog id="reader-settings" class="reader-dialog" aria-labelledby="settings-title">
+    <div class="dialog-heading">
+      <h2 id="settings-title">Настройки чтения</h2>
+      <button type="button" class="icon-button" data-close aria-label="Закрыть настройки">
+        ×
+      </button>
+    </div>
+    <form id="settings-form">
+      <fieldset>
+        <legend>Шрифт</legend>
+        <div class="font-choices">
+          <label>
+            <input type="radio" name="font" value="serif" checked />
+            <span class="font-serif">Аа</span>Книжный
+          </label>
+          <label>
+            <input type="radio" name="font" value="sans" />
+            <span class="font-sans">Аа</span>Современный
+          </label>
+          <label>
+            <input type="radio" name="font" value="system" />
+            <span>Аа</span>Системный
+          </label>
+        </div>
+      </fieldset>
+      <label>
+        Размер текста <output data-output="size">20 px</output>
+        <input name="size" type="range" min="16" max="32" step="1" value="20" />
+      </label>
+      <label>
+        Межстрочный интервал <output data-output="lineHeight">1,85</output>
+        <input name="lineHeight" type="range" min="1.4" max="2.4" step="0.05" value="1.85" />
+      </label>
+      <label>
+        Ширина колонки <output data-output="width">720 px</output>
+        <input name="width" type="range" min="480" max="960" step="40" value="720" />
+        <small>На телефоне ширина ограничена экраном.</small>
+      </label>
+      <fieldset>
+        <legend>Тема</legend>
+        <div class="theme-choices">
+          <label>
+            <input type="radio" name="theme" value="system" checked />
+            <span class="theme-sample system-sample">Аа</span>Как в системе
+          </label>
+          <label>
+            <input type="radio" name="theme" value="light" />
+            <span class="theme-sample light-sample">Аа</span>Светлая
+          </label>
+          <label>
+            <input type="radio" name="theme" value="dark" />
+            <span class="theme-sample dark-sample">Аа</span>Тёмная
+          </label>
+          <label>
+            <input type="radio" name="theme" value="sepia" />
+            <span class="theme-sample sepia-sample">Аа</span>Сепия
+          </label>
+        </div>
+      </fieldset>
+      <button type="button" id="reset-settings" class="text-button">
+        Вернуть исходные настройки
+      </button>
+      <p class="fine">Изменения сохраняются автоматически.</p>
+    </form>
+  </dialog>
+  <dialog id="reader-toc" class="reader-dialog" aria-labelledby="toc-title">
+    <div class="dialog-heading">
+      <h2 id="toc-title">Оглавление</h2>
+      <button type="button" class="icon-button" data-close aria-label="Закрыть оглавление">
+        ×
+      </button>
+    </div>
+    <p>{n.title}</p>
+    <ol class="chapter-list">
+      {n.chapters.map((ch) => (
+        <li>
+          <a
+            href={chapterUrl(n.slug, ch.data.slug)}
+            aria-current={ch.data.slug === c.data.slug ? 'page' : undefined}
+          >
+            Глава {ch.data.number}. {ch.data.title}
+          </a>
+        </li>
+      ))}
+    </ol>
+  </dialog>
+  <noscript>
+    <p class="notice">
+      Сохранение позиции и настройки требуют JavaScript. Текст главы и переходы доступны.
+    </p>
+  </noscript>
+  <script>
+    import { initReader } from '../../../scripts/reader';
+    void initReader();
+  </script>
+</Layout>

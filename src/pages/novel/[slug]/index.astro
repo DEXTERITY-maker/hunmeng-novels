@@ -1,0 +1,96 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import LibraryControl from '../../../components/LibraryControl.astro';
+import { getLibrary, dateLabel, chapterCount, chapterUrl } from '../../../lib/content';
+export async function getStaticPaths() {
+  return (await getLibrary()).map((n) => ({ params: { slug: n.slug }, props: { novel: n } }));
+}
+const { novel: n } = Astro.props;
+---
+
+<Layout title={`${n.title} — читать онлайн`} description={n.description}>
+  <main id="main" class="page-shell">
+    <a class="back-link" href="/catalog/">
+      ← Каталог
+    </a>
+    <article class="novel-detail" data-novel-detail={n.slug}>
+      <img
+        class="detail-cover"
+        src={n.cover}
+        alt={`Обложка: ${n.title}`}
+        width="260"
+        height="380"
+        fetchpriority="high"
+      />
+      <div class="detail-copy">
+        <p class="genre-line">{n.genres.join(' · ')}</p>
+        <h1>{n.title}</h1>
+        <p class="original-title">{n.originalTitle}</p>
+        <p class="author">{n.author}</p>
+        <p class="detail-description">{n.description}</p>
+        <dl class="novel-facts">
+          <div>
+            <dt>Оригинал</dt>
+            <dd>{n.originalStatus}</dd>
+          </div>
+          <div>
+            <dt>Перевод</dt>
+            <dd>{n.translationStatus}</dd>
+          </div>
+          <div>
+            <dt>Объём</dt>
+            <dd>{chapterCount(n.chapterCount)}</dd>
+          </div>
+          <div>
+            <dt>Обновлено</dt>
+            <dd>
+              <time datetime={n.updatedAt}>{dateLabel(n.updatedAt)}</time>
+            </dd>
+          </div>
+        </dl>
+        <div class="tag-list">
+          {n.tags.map((t) => (
+            <span>{t}</span>
+          ))}
+        </div>
+        <div class="detail-actions">
+          <a class="button" href={n.firstUrl} data-continue={n.slug}>
+            Начать читать
+          </a>
+          <LibraryControl slug={n.slug} />
+        </div>
+        <p class="fine">
+          {n.demo
+            ? 'Демонстрационная новелла. Текст и автор вымышлены; ссылка на оригинал — пример.'
+            : 'Перевод нейросетью с разрешения автора.'}{' '}
+          <a href={n.originalUrl} target="_blank" rel="noopener noreferrer">
+            {n.demo ? 'Пример ссылки на оригинал ↗' : 'Оригинал ↗'}
+          </a>
+        </p>
+      </div>
+    </article>
+    <section class="section contents-section" aria-labelledby="contents-title">
+      <div class="section-heading">
+        <h2 id="contents-title">Оглавление</h2>
+        <span class="fine">{chapterCount(n.chapterCount)}</span>
+      </div>
+      <ol class="chapter-list">
+        {n.chapters.map((c) => (
+          <li>
+            <a href={chapterUrl(n.slug, c.data.slug)} data-chapter-slug={c.data.slug}>
+              <span>
+                <span class="chapter-number">{String(c.data.number).padStart(2, '0')}</span>
+                {c.data.title}
+              </span>
+              <time datetime={c.data.publishedAt}>{dateLabel(c.data.publishedAt)}</time>
+            </a>
+          </li>
+        ))}
+      </ol>
+    </section>
+  </main>
+  <script>
+    import { initPersonal } from '../../../scripts/personal';
+    void initPersonal();
+  </script>
+</Layout>

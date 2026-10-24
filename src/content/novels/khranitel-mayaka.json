@@ -1,0 +1,15 @@
+{
+  "slug": "khranitel-mayaka",
+  "title": "Хранитель тихого маяка",
+  "originalTitle": "The Keeper of the Quiet Lighthouse",
+  "author": "Алексей Ветров (демо)",
+  "originalUrl": "https://example.org/original/lighthouse",
+  "cover": "/images/khranitel-mayaka.svg",
+  "description": "На далёком побережье, где туман становится домом, молодой хранитель находит письма, которые море возвращает спустя десятилетия. История о тихой смелости, памяти и свете, который мы оставляем друг для друга.",
+  "genres": ["Фэнтези", "Приключения"],
+  "tags": ["Море", "Тайны", "Неспешная история"],
+  "originalStatus": "Завершён",
+  "translationStatus": "Переводится",
+  "updatedAt": "2026-10-24",
+  "demo": true
+}
