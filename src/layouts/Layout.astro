@@ -21,6 +21,7 @@ const {
   ogImage, ogImageWidth, ogImageHeight, ogImageAlt, structuredData,
 } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site || site.url);
+const administrative = Astro.url.pathname.startsWith('/admin/');
 const socialImage = new URL(ogImage ?? '/images/og-default.png', Astro.site || site.url);
 const socialWidth = ogImage ? ogImageWidth : 1200;
 const socialHeight = ogImage ? ogImageHeight : 630;
@@ -38,12 +39,18 @@ const tokens = `:root{--bg:${c.background};--surface:${c.surface};--ink:${c.text
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>{title} — {site.name} {site.tagline}</title>
     <meta name="description" content={description} />
-    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <meta name="referrer" content={administrative ? 'no-referrer' : 'strict-origin-when-cross-origin'} />
     <meta
       http-equiv="Content-Security-Policy"
       content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://*.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'"
     />
     <script is:inline set:html={settingsBootstrap} />
+    {administrative && (
+      <script is:inline>
+        // Editorial login never consumes OAuth tokens or user-controlled redirect URLs.
+        if (location.search || location.hash) history.replaceState(null, '', location.pathname);
+      </script>
+    )}
     <meta name="theme-color" content="#1C3455" />
     {noindex && <meta name="robots" content="noindex,follow" />}
     <link rel="canonical" href={canonical} />

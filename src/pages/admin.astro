@@ -9,6 +9,11 @@ import Layout from '../layouts/Layout.astro';
       <p>Оригиналы, подтверждение прав, словари, проверка качества и очередь публикаций.</p>
     </header>
     <p id="admin-status" role="status" class="notice">Проверяем редакторский доступ…</p>
+    <div class="admin-auth-actions">
+      <a id="admin-login-link" class="button" href="/admin/login/">Войти в редакцию</a>
+      <button id="admin-signout" class="button secondary" type="button" hidden>Выйти из редакции</button>
+    </div>
+    <noscript><p class="notice">Для входа и работы редакции включите JavaScript.</p></noscript>
     <div id="admin-workspace" hidden>
       <div class="admin-grid">
         <section class="admin-card" id="admin-sources-section">

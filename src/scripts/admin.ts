@@ -1,4 +1,4 @@
-import { backendConfigured, getStaffRole, rest, type ApiRecord } from '../lib/backend';
+import { backendConfigured, BackendError, getStaffRole, rest, signOut, type ApiRecord, type StaffRole } from '../lib/backend';
 
 type Source = {
   id: string; slug: string; original_title: string; rights_status: string;
@@ -20,15 +20,45 @@ const value = (form: HTMLFormElement, name: string) =>
 export async function initAdmin() {
   const message = document.getElementById('admin-status')!;
   const workspace = document.getElementById('admin-workspace')!;
+  const loginLink = document.getElementById('admin-login-link')!;
+  const logout = document.querySelector<HTMLButtonElement>('#admin-signout')!;
+  const lock = (text: string) => {
+    workspace.hidden = true;
+    // Remove loaded editorial data and unsaved text from the DOM after session loss.
+    workspace.querySelectorAll('form').forEach(form => form.reset());
+    for (const id of ['admin-source-list', 'admin-term-list', 'admin-job-list'])
+      document.getElementById(id)?.replaceChildren();
+    loginLink.hidden = false;
+    message.textContent = text;
+  };
+  window.addEventListener('hunmeng:session-ended', () => {
+    logout.hidden = true;
+    lock('Сессия завершена. Войдите в редакцию снова.');
+  });
+  logout.addEventListener('click', async () => {
+    logout.disabled = true;
+    const revoked = await signOut();
+    lock(revoked ? 'Вы вышли из редакции.' :
+      'Вы вышли в этой вкладке. Сервер не подтвердил завершение сессии: повторите вход и выход, когда соединение восстановится.');
+    logout.hidden = true;
+    logout.disabled = false;
+  });
   if (!backendConfigured) {
-    message.textContent = 'Backend ещё не подключён. Панель доступна после настройки Supabase.';
+    message.textContent = 'Сервер авторизации не настроен. Обратитесь к владельцу проекта.';
     return;
   }
-  const role = await getStaffRole().catch(() => null);
+  let role: StaffRole | null;
+  try { role = await getStaffRole(); }
+  catch (error) {
+    message.textContent = error instanceof BackendError ? error.message : 'Не удалось проверить доступ. Повторите попытку.';
+    return;
+  }
   if (!role) {
     message.textContent = 'Доступ запрещён. Войдите в аккаунт редактора или администратора.';
     return;
   }
+  loginLink.hidden = true;
+  logout.hidden = false;
   workspace.hidden = false;
   message.textContent = role === 'admin' ? 'Администратор: полный редакторский доступ.' :
     'Редактор: доступны черновики и словарь, права и утверждение публикаций — только админу.';
@@ -47,8 +77,27 @@ export async function initAdmin() {
   let terms: Term[] = [];
   let jobs: Job[] = [];
 
-  const notify = (error: unknown) =>
-    message.textContent = error instanceof Error ? error.message : 'Сервер отклонил запрос';
+  const notify = (error: unknown) => {
+    const text = error instanceof BackendError ? error.message : 'Сервер отклонил запрос. Повторите попытку.';
+    if (error instanceof BackendError && (error.status === 401 || error.status === 403)) lock(text);
+    else message.textContent = text;
+  };
+  // Revalidate on returning to the tab and once a minute. RLS still checks every request.
+  let checking = false;
+  const checkAccess = async () => {
+    if (checking || workspace.hidden || document.hidden) return;
+    checking = true;
+    try {
+      if (await getStaffRole() !== role) {
+        lock('Редакторский доступ изменился. Войдите в редакцию снова.');
+        await signOut();
+      }
+    } catch (error) { lock('Не удалось подтвердить доступ. Войдите в редакцию снова.'); }
+    finally { checking = false; }
+  };
+  window.addEventListener('focus', () => void checkAccess());
+  document.addEventListener('visibilitychange', () => void checkAccess());
+  window.setInterval(() => void checkAccess(), 60000);
   function sourceOptions() {
     for (const form of [rightsForm, termForm, jobForm]) {
       const select = form.elements.namedItem('source_id') as HTMLSelectElement;
@@ -69,6 +118,7 @@ export async function initAdmin() {
       'select=id,source_id,original_term,translated_term&order=original_term.asc');
     jobs = await rest<Job[]>('novel_translation_jobs','GET',
       'select=id,source_id,chapter_number,chapter_title,chapter_slug,status,qa_notes,original_text,translated_text,chapter_description&order=updated_at.desc&limit=100');
+    if (workspace.hidden) return;
     sourceOptions();
     sourcesDiv.replaceChildren();
     const ul = el('ul');
