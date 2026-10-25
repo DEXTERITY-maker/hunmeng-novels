@@ -2155,3 +2155,305 @@ html[data-theme='dark'] .brand-logo-dark {
     gap: 12px;
   }
 }
+
+/* Каталог, статистика произведений и большие оглавления. */
+.catalog-heading {
+  padding-bottom: 20px;
+}
+.catalog-heading .home-section-kicker {
+  margin-bottom: 7px;
+}
+.catalog-layout {
+  display: grid;
+  grid-template-columns: minmax(260px, 295px) minmax(0, 1fr);
+  gap: 23px;
+  align-items: start;
+}
+.catalog-filter-panel {
+  padding: 19px;
+  position: sticky;
+  top: 18px;
+}
+.catalog-filter-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+.catalog-filter-header h2 {
+  font-family: 'Manrope Variable', sans-serif;
+  font-size: 1rem;
+  font-weight: 750;
+}
+.catalog-filter-header .text-button {
+  padding: 3px 0;
+  font-size: 0.78rem;
+}
+.catalog-controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+}
+.catalog-controls input[type='number'] {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  padding: 11px 12px;
+  min-height: 46px;
+  background: var(--surface);
+  color: var(--ink);
+}
+.catalog-controls label {
+  font-size: 0.81rem;
+}
+.catalog-filter-panel .tag-columns {
+  grid-template-columns: 1fr;
+  gap: 15px;
+}
+.catalog-filter-panel .tag-filters {
+  margin-top: 17px;
+  padding-top: 13px;
+}
+.catalog-filter-panel .tag-filters summary {
+  font-weight: 650;
+}
+.catalog-results-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  margin-top: 4px;
+}
+.catalog-results-heading .fine {
+  text-align: right;
+  max-width: 250px;
+}
+.catalog-main {
+  min-width: 0;
+}
+.catalog-main .novel-grid,
+.catalog-page > .novel-grid {
+  gap: 12px;
+}
+.catalog-novel-card {
+  grid-template-columns: 90px minmax(0, 1fr);
+  gap: 17px;
+  padding: 14px;
+}
+.catalog-novel-card .cover-link img {
+  width: 90px;
+  height: 132px;
+}
+.catalog-novel-card .novel-copy h2 {
+  font-size: 1.16rem;
+  margin: 3px 0;
+}
+.catalog-novel-card .original-title {
+  margin: 3px 0;
+  font-size: 0.76rem;
+}
+.catalog-novel-card .card-description {
+  margin: 6px 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: 0.8rem;
+}
+.catalog-card-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px 14px;
+  color: var(--accent);
+  font-size: 0.76rem;
+  font-weight: 600;
+  margin: 8px 0;
+}
+.catalog-novel-card .fine {
+  font-size: 0.73rem;
+}
+.catalog-novel-card .text-link {
+  font-size: 0.79rem;
+  margin-top: 5px;
+}
+.catalog-pagination,
+.chapter-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 22px 0;
+}
+.catalog-pagination a,
+.catalog-pagination span,
+.chapter-pagination a,
+.chapter-pagination span {
+  display: inline-flex;
+  min-width: 44px;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  padding: 9px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 0.84rem;
+}
+.catalog-pagination a:hover,
+.catalog-pagination a.current,
+.chapter-pagination a:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.catalog-pagination a.current {
+  background: var(--soft);
+  font-weight: 800;
+}
+.catalog-inline-link {
+  color: var(--accent);
+  text-decoration: underline;
+}
+.work-categories {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+  margin: 10px 0 3px;
+}
+.work-categories a {
+  color: var(--accent);
+  background: var(--soft);
+  border-radius: 7px;
+  padding: 5px 10px;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+.detail-copy .tag-list a {
+  background: var(--soft);
+  border-radius: 4px;
+  padding: 4px 9px;
+  font-size: 0.78rem;
+  color: var(--accent);
+}
+.personal-rating {
+  padding: 14px 0 9px;
+  margin-top: 20px;
+  border-top: 1px solid var(--line);
+}
+.personal-rating-title {
+  font-size: 0.9rem;
+  font-weight: 750;
+}
+.personal-rating-stars {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 7px 0;
+}
+.personal-rating-stars button {
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--surface);
+  color: var(--muted);
+  width: 45px;
+  height: 45px;
+  font-size: 1.35rem;
+}
+.personal-rating-stars button.selected,
+.personal-rating-stars button:hover {
+  color: var(--accent);
+  background: var(--soft);
+  border-color: var(--accent);
+}
+.personal-rating .fine {
+  margin-top: 6px;
+}
+.chapter-pages-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-top: 18px;
+}
+.reader-toc-all {
+  display: inline-flex;
+  color: var(--accent);
+  padding: 13px 0;
+  font-weight: 700;
+  font-size: 0.86rem;
+  text-decoration: underline;
+}
+.chapter-pages .page-heading {
+  padding-top: 5px;
+}
+.chapter-pages .page-heading h1 {
+  font-size: clamp(1.8rem, 3vw, 2.5rem);
+}
+@media (max-width: 900px) {
+  .catalog-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .catalog-filter-panel {
+    position: static;
+  }
+  .catalog-controls {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .catalog-filter-panel .search-label {
+    grid-column: 1 / -1;
+  }
+  .catalog-filter-panel .tag-columns {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 590px) {
+  .catalog-filter-panel {
+    padding: 15px;
+  }
+  .catalog-controls {
+    gap: 11px;
+  }
+  .catalog-controls label,
+  .catalog-filter-panel .tag-filters summary,
+  .catalog-results-heading,
+  .catalog-novel-card .fine,
+  .catalog-novel-card .original-title,
+  .catalog-card-stats,
+  .catalog-novel-card .text-link {
+    font-size: 0.825rem;
+  }
+  .catalog-filter-panel .tag-columns {
+    grid-template-columns: 1fr;
+  }
+  .catalog-results-heading {
+    flex-wrap: wrap;
+  }
+  .catalog-results-heading .fine {
+    text-align: left;
+  }
+  .catalog-novel-card {
+    grid-template-columns: 82px minmax(0, 1fr);
+    gap: 12px;
+    padding: 12px;
+  }
+  .catalog-novel-card .cover-link img {
+    width: 82px;
+    height: 121px;
+  }
+  .catalog-novel-card .novel-copy h2 {
+    font-size: 1.02rem;
+  }
+  .catalog-novel-card .card-description {
+    font-size: 0.82rem;
+    line-height: 1.55;
+  }
+  .detail-copy .tag-list a {
+    font-size: 0.82rem;
+  }
+  .chapter-pages-footer .button {
+    width: 100%;
+  }
+}
