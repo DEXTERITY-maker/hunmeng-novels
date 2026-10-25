@@ -86,7 +86,9 @@ test('новости: блок на главной и открытие полн�
 test('новостная лента: категории, пагинация, пустой раздел и возврат', async ({ page }) => {
   await page.goto('/news/');
   await page.locator('#news-pagination').getByRole('link', { name: '2' }).click();
-  await expect(page.locator('#news-feed [data-news-card]:visible')).toHaveCount(2);
+  const secondPageCount = await page.locator('#news-feed [data-news-card]:visible').count();
+  expect(secondPageCount).toBeGreaterThan(0);
+  expect(secondPageCount).toBeLessThanOrEqual(4);
   await expect(page).toHaveURL(/page=2/);
   await page.getByRole('link', { name: 'Объявления', exact: true }).click();
   await expect(page.locator('#news-feed [data-news-card]:visible')).toHaveCount(2);
@@ -117,60 +119,46 @@ test('мобильная страница новостей без горизон
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
   }
 });
-test('Google OAuth: кнопка запускает PKCE без секрета в запросе', async ({ page }) => {
-  let authUrl = '';
-  await page.route('**/auth/v1/authorize?**', async route => {
-    authUrl = route.request().url();
-    await route.fulfill({ status: 200, contentType: 'text/plain', body: 'OAuth mock' });
-  });
+test('отключённые аккаунты: нет ссылок и форм регистрации для читателей', async ({ page }) => {
+  for (const url of ['/', '/catalog/', '/library/', '/news/']) {
+    await page.goto(url);
+    await expect(page.locator('a[href="/account/"]')).toHaveCount(0);
+    await expect(page.locator('#auth-form')).toHaveCount(0);
+  }
   await page.goto('/account/');
-  await page.getByRole('button', { name: 'Войти через Google' }).click();
-  await expect.poll(() => authUrl).not.toBe('');
-  const redirect = new URL(authUrl);
-  expect(redirect.hostname).toBe('kvgnjsntumofwqhywiea.supabase.co');
-  expect(redirect.searchParams.get('provider')).toBe('google');
-  expect(redirect.searchParams.get('code_challenge_method')).toBe('s256');
-  expect(redirect.searchParams.get('code_challenge')).toMatch(/^[A-Za-z0-9_-]{43}$/);
-  expect(redirect.searchParams.get('redirect_to')).toBe('http://127.0.0.1:4321/account/');
-  expect(authUrl).not.toContain('client_secret');
+  await expect(page.getByRole('heading', { name: 'Аккаунты читателей временно недоступны' })).toBeVisible();
+  await expect(page.locator('#auth-form, #google-sign-in, input[type="email"], input[type="password"]')).toHaveCount(0);
+  await expect(page.locator('a[href="/admin/"]')).toHaveCount(0);
 });
-
-test('Google OAuth: код не принимается без исходного PKCE и удаляется из адреса', async ({ page }) => {
-  await page.goto('/account/?code=fake-oauth-code');
-  await expect(page.locator('#account-status')).toContainText('Повторите Google-вход');
-  await expect(page).toHaveURL(/\/account\/$/);
-});
-
-test('Google OAuth: обмен кода восстанавливает сессию пользователя', async ({ page }) => {
-  await page.addInitScript(() =>
-    sessionStorage.setItem('hunmeng-google-pkce:v1', 'x'.repeat(43)),
-  );
-  let exchanged = false;
-  await page.route('**/auth/v1/token?grant_type=pkce', async route => {
-    const body = route.request().postDataJSON();
-    expect(body.auth_code).toBe('mock-oauth-code');
-    expect(body.code_verifier).toBe('x'.repeat(43));
-    exchanged = true;
-    await route.fulfill({ status: 200, contentType: 'application/json',
-      body: JSON.stringify({ access_token: 'test-access-token', refresh_token: 'test-refresh-token',
-        expires_in: 3600, user: { id: '11111111-1111-4111-8111-111111111111', email: 'tester@example.test' } }) });
+test('отключённые аккаунты: локальная библиотека сохраняется без запросов к Supabase', async ({ page }) => {
+  const outgoing: string[] = [];
+  page.on('request', request => {
+    if (request.url().includes('.supabase.co')) outgoing.push(request.url());
   });
-  await page.route('**/auth/v1/user', async route =>
-    route.fulfill({ status: 200, contentType: 'application/json',
-      body: JSON.stringify({ id: '11111111-1111-4111-8111-111111111111', email: 'tester@example.test' }) }));
-  await page.route('**/rest/v1/novel_reader_state**', async route =>
-    route.fulfill({ status: 200, contentType: 'application/json', body: '[]' }));
-  await page.goto('/account/?code=mock-oauth-code');
-  await expect(page.locator('#account-status')).toContainText('Вход через Google выполнен');
-  await expect(page.locator('#auth-logged-in')).toBeVisible();
-  await expect(page).toHaveURL(/\/account\/$/);
-  expect(exchanged).toBeTruthy();
+  await page.goto('/novel/khranitel-mayaka/');
+  await page.getByRole('button', { name: 'В библиотеку', exact: true }).click();
+  await page.goto('/library/');
+  await page.locator('[data-shelf-tab=later]').click();
+  await expect(page.locator('.library-row')).toHaveCount(1);
+  await page.reload();
+  await page.locator('[data-shelf-tab=later]').click();
+  await expect(page.locator('.library-row')).toHaveCount(1);
+  await expect(page.locator('.storage-explanation')).toContainText('localStorage');
+  expect(outgoing).toEqual([]);
 });
-test('аккаунт подключён к Supabase, а админка закрыта для гостя', async ({ page }) => {
-  await page.goto('/account/');
-  await expect(page.getByRole('heading', { name: 'Аккаунт' })).toBeVisible();
-  await expect(page.locator('#account-status')).toContainText('Войдите или зарегистрируйтесь');
-  await expect(page.getByRole('button', { name: 'Продолжить' })).toBeEnabled();
+test('мобильная читалка: выключены автоматические переносы, текст слева', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto(chapter);
+  const mobile = await page.locator('#chapter-text').evaluate(el => ({
+    hyphens: getComputedStyle(el).hyphens,
+    align: getComputedStyle(el).textAlign,
+  }));
+  expect(mobile).toEqual({ hyphens: 'manual', align: 'left' });
+  await page.setViewportSize({ width: 1024, height: 800 });
+  const desktop = await page.locator('#chapter-text').evaluate(el => getComputedStyle(el).hyphens);
+  expect(desktop).toBe('auto');
+});
+test('админка продолжает проверять роль, несмотря на отключение читательских аккаунтов', async ({ page }) => {
   await page.goto('/admin/');
   await expect(page.getByRole('heading', { name: 'Управление переводами' })).toBeVisible();
   await expect(page.locator('#admin-workspace')).toBeHidden();

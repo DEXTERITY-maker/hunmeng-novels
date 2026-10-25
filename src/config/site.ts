@@ -5,6 +5,8 @@ export const site = {
   description: 'Хунмэнг — новеллы на русском. Истории для неспешного чтения.',
   // Основной адрес сайта; используется при сборке, если SITE_URL не задан.
   url: 'https://hunmeng.net',
+  // Reader accounts are disabled until data localization and availability are addressed.
+  features: { accounts: false },
   // Локальные версии логотипа для светлой/сепии и тёмной темы.
   logo: {
     light: '/images/logo-light.png',

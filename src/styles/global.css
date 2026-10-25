@@ -1274,6 +1274,11 @@ html[data-reader-font='system'] .chapter-text {
   .reader-main {
     padding: 100px 22px 130px;
   }
+  .chapter-text {
+    text-align: left;
+    hyphens: manual;
+    -webkit-hyphens: manual;
+  }
   .reader-heading {
     margin-bottom: 30px;
   }
