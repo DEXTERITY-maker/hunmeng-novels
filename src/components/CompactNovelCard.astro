@@ -11,8 +11,12 @@ const { novel: n } = Astro.props;
     <span class="home-book-cover">
       <img src={n.cover} alt="" width="260" height="380" loading="lazy" decoding="async" />
     </span>
+    <span class="home-book-copy">
     <span class="home-book-genre">{n.genres[0]}</span>
     <h3 class="home-book-title">{n.title}</h3>
+    <span class="home-book-description">{n.description}</span>
     <span class="home-book-meta">{chapterCount(n.chapterCount)} · {n.translationStatus}</span>
+    <span class="home-book-read">Читать <span aria-hidden="true">→</span></span>
+    </span>
   </a>
 </article>

@@ -9,7 +9,7 @@ const session=()=>({access_token:[Buffer.from('{"alg":"HS256","typ":"JWT"}').toS
   refresh_token:'fixture-reader-refresh',expires_in:3600,expires_at:Math.floor(Date.now()/1000)+3600,token_type:'bearer',user});
 async function mockAuth(page: Page) {
   const state={requests:[] as string[],signupBody:{} as Record<string,unknown>,signupRedirect:'',signupCalls:0,
-    passwordCalls:0,codeCalls:0,errorCode:'',logoutOffline:false};
+    passwordCalls:0,codeCalls:0,errorCode:'',logoutOffline:false,profileUser:structuredClone(user),profileCalls:0,profileBody:{} as Record<string,unknown>,profileError:0,verifyError:0,sessionExpired:false};
   await page.route('https://*.supabase.co/**',async route=>{
     const address=new URL(route.request().url());state.requests.push(address.pathname);
     const json=(body:unknown,status=200)=>route.fulfill({status,contentType:'application/json',
@@ -26,7 +26,16 @@ async function mockAuth(page: Page) {
       if(state.errorCode)return json({code:state.errorCode,msg:'Private upstream diagnostic'},400);
       return json(session());
     }
-    if(address.pathname.endsWith('/user'))return json(user);
+    if(address.pathname.endsWith('/user')) {
+      if(state.verifyError && route.request().method()==='GET')return json({code:'unexpected_failure',msg:'Private upstream diagnostic'},state.verifyError);
+      if(state.sessionExpired)return json({code:'session_not_found',msg:'Private upstream diagnostic'},401);
+      if(route.request().method()==='PUT') {
+        state.profileCalls++;state.profileBody=route.request().postDataJSON();
+        if(state.profileError)return json({code:'unexpected_failure',msg:'Private upstream diagnostic'},state.profileError);
+        state.profileUser.user_metadata=state.profileBody.data as typeof user.user_metadata;
+      }
+      return json(state.profileUser);
+    }
     if(address.pathname.endsWith('/logout'))return state.logoutOffline?route.abort('failed'):json({});
     return json({message:'No editorial access'},403);
   });
@@ -123,4 +132,65 @@ test('запрещённое хранилище не отправляет дан
  await expect(page.locator('#account-status')).toContainText('разрешите сохранение данных');
  await expect(page.getByLabel('Email',{exact:true})).toBeDisabled();
  expect(state.requests).toEqual([]);
+});
+
+async function loginFixture(page:Page) { await open(page);await fill(page);await page.locator('#reader-auth-submit').click();await expect(page.locator('#auth-logged-in')).toBeVisible(); }
+test('профиль: никнейм, описание и аватар сохраняются между посещениями только в Auth metadata',async({page})=>{
+ const state=await mockAuth(page);await loginFixture(page);
+ await expect(page.getByRole('heading',{name:'Мой профиль',exact:true})).toBeVisible();
+ await page.getByLabel('Никнейм',{exact:true}).fill('Тихий_читатель');
+ await page.getByLabel('О себе',{exact:true}).fill('Люблю истории о море.');
+ await page.getByRole('radio',{name:'Синий',exact:true}).check();
+ await page.getByRole('button',{name:'Сохранить профиль',exact:true}).click();
+ await expect(page.locator('#profile-status')).toHaveText('Профиль сохранён.');
+ expect(state.profileBody).toEqual({data:{nickname:'Тихий_читатель',bio:'Люблю истории о море.',avatar_color:'navy'},code_challenge:null,code_challenge_method:null});
+ await expect(page.locator('#profile-avatar')).toHaveAttribute('data-avatar','navy');
+ await page.goto('/');await expect(page.locator('[data-account-link]')).toHaveText('Профиль');
+ await page.goto('/account/');await expect(page.getByLabel('Никнейм',{exact:true})).toHaveValue('Тихий_читатель');
+ await expect(page.getByLabel('О себе',{exact:true})).toHaveValue('Люблю истории о море.');
+ expect(state.profileCalls).toBe(1);expect(state.requests.every(p=>p.startsWith('/auth/v1/'))).toBe(true);
+});
+test('некорректный никнейм и ошибки сети не дают ложного сохранения',async({page})=>{
+ const state=await mockAuth(page);await loginFixture(page);
+ await page.getByLabel('Никнейм',{exact:true}).fill('<script>');await page.getByRole('button',{name:'Сохранить профиль',exact:true}).click();
+ await expect(page.locator('#profile-status')).toContainText('Проверьте никнейм');expect(state.profileCalls).toBe(0);
+ await page.getByLabel('Никнейм',{exact:true}).fill('Моряк');state.profileError=500;
+ await page.getByRole('button',{name:'Сохранить профиль',exact:true}).click();
+ await expect(page.locator('#profile-status')).not.toHaveText('Сохраняем профиль…');
+ await expect(page.locator('#profile-status')).not.toHaveText('Профиль сохранён.');
+ await expect(page.locator('body')).not.toContainText('Private upstream');
+ await expect(page.getByRole('button',{name:'Сохранить профиль',exact:true})).toBeEnabled();
+ state.profileError=0;await page.getByRole('button',{name:'Сохранить профиль',exact:true}).click();await expect(page.locator('#profile-status')).toHaveText('Профиль сохранён.');
+});
+test('истёкшая сессия закрывает профиль и не отправляет изменения',async({page})=>{
+ const state=await mockAuth(page);await loginFixture(page);state.sessionExpired=true;
+ await page.getByLabel('Никнейм',{exact:true}).fill('Моряк');await page.getByRole('button',{name:'Сохранить профиль',exact:true}).click();
+ await expect(page.locator('#auth-logged-in')).toBeHidden();await expect(page.locator('#account-status')).toContainText('Сессия завершена');expect(state.profileCalls).toBe(0);
+});
+test('настройки чтения: сохранение, обновление страницы и сброс без отправки на сервер',async({page})=>{
+ const state=await mockAuth(page);await loginFixture(page);
+ await page.getByLabel('Тема оформления',{exact:true}).selectOption('sepia');
+ await page.getByLabel('Шрифт читалки',{exact:true}).selectOption('sans');
+ await page.locator('#preferences-form [name=size]').fill('24');
+ await page.locator('#preferences-form [name=lineHeight]').fill('2');
+ await page.locator('#preferences-form [name=width]').fill('800');
+ await page.getByRole('button',{name:'Сохранить настройки',exact:true}).click();
+ await expect(page.locator('html')).toHaveAttribute('data-theme','sepia');
+ await page.reload();await expect(page.locator('#auth-logged-in')).toBeVisible();
+ await expect(page.locator('#preferences-form [name=size]')).toHaveValue('24');
+ await page.goto('/novel/sad-zimy/glava-1/');
+ await expect(page.locator('#chapter-text')).toHaveCSS('font-size','24px');await expect(page.locator('html')).toHaveAttribute('data-reader-font','sans');
+ await page.goto('/account/');await expect(page.locator('#auth-logged-in')).toBeVisible();
+ await page.getByRole('button',{name:'По умолчанию',exact:true}).click();
+ await expect(page.locator('#preferences-form [name=size]')).toHaveValue('20');
+ await expect(page.locator('#preferences-form [name=theme]')).toHaveValue('system');
+ expect(state.profileCalls).toBe(0);expect(state.requests.every(p=>p.startsWith('/auth/v1/'))).toBe(true);
+});
+
+test('недоступный сервер проверки сессии не выдаётся за выход из аккаунта',async({page})=>{
+ const state=await mockAuth(page);await loginFixture(page);state.verifyError=503;
+ await page.getByLabel('Никнейм',{exact:true}).fill('Моряк');await page.getByRole('button',{name:'Сохранить профиль',exact:true}).click();
+ await expect(page.locator('#profile-status')).toContainText('Не удалось проверить сессию');
+ await expect(page.locator('#auth-logged-in')).toBeVisible();expect(state.profileCalls).toBe(0);
+ state.verifyError=0;await page.getByRole('button',{name:'Сохранить профиль',exact:true}).click();await expect(page.locator('#profile-status')).toHaveText('Профиль сохранён.');
 });

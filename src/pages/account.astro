@@ -1,13 +1,13 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { site } from '../config/site';
+import ReaderPreferences from '../components/ReaderPreferences.astro';
 ---
 <Layout title="Вход и регистрация" noindex description="Войдите в Хунмэнг или создайте аккаунт читателя по email и паролю.">
   <main id="main" class="page-shell account-page reader-account-page">
     <header class="page-heading">
-      <p class="home-section-kicker">ХУНМЭНГ · ВАШ АККАУНТ</p>
-      <h1>Вход и регистрация</h1>
-      <p>Читать новеллы можно и без аккаунта.</p>
+      <h1 id="account-title">Вход и регистрация</h1>
+      <p id="account-subtitle">Читать новеллы можно и без аккаунта.</p>
     </header>
     {site.features.accounts ? (
       <>
@@ -34,15 +34,35 @@ import { site } from '../config/site';
           </form>
           <p class="fine">Для аккаунта используется ваш email. Подробнее — в <a href="/rules/">правилах и информации о данных</a>.</p>
         </section>
-        <section id="auth-logged-in" class="account-card" hidden aria-label="Ваш аккаунт">
-          <h2>Вы вошли в Хунмэнг</h2>
-          <p id="account-email"></p>
-          <p>Библиотека и место остановки сохраняются на этом устройстве. Синхронизация пока выключена.</p>
-          <div class="account-actions">
-            <a href="/library/" class="button">Открыть библиотеку</a>
-            <button type="button" id="account-signout" class="button secondary">Выйти из аккаунта</button>
+        <div id="auth-logged-in" class="profile-layout" hidden>
+          <aside class="profile-sidebar" aria-label="Разделы профиля">
+            <div class="profile-identity"><span id="profile-avatar" class="profile-avatar" data-avatar="sage" aria-hidden="true">Ч</span><strong id="profile-name">Читатель</strong></div>
+            <nav aria-label="Настройки профиля"><a href="#profile-details">Профиль <span aria-hidden="true">↗</span></a><a href="#profile-reading">Чтение <span aria-hidden="true">↗</span></a><a href="#profile-account">Аккаунт <span aria-hidden="true">↗</span></a></nav>
+            <a class="profile-library-link" href="/library/">Моя библиотека <span aria-hidden="true">→</span></a>
+          </aside>
+          <div class="profile-content">
+            <section id="profile-details" class="profile-panel" aria-labelledby="profile-title">
+              <h2 id="profile-title">Профиль</h2><p class="profile-intro">Ваше имя и несколько слов о себе.</p>
+              <form id="profile-form">
+                <fieldset id="profile-fields" disabled>
+                  <label>Никнейм<input name="nickname" aria-label="Никнейм" autocomplete="nickname" minlength="3" maxlength="24" required aria-describedby="nickname-help" /><small id="nickname-help">От 3 до 24 символов: буквы, цифры, пробел, дефис и подчёркивание. Никнейм не обязан быть уникальным.</small></label>
+                  <label>О себе<textarea name="bio" aria-label="О себе" maxlength="160" rows="3" placeholder="Несколько слов о вас" aria-describedby="bio-help"></textarea><small id="bio-help">До 160 символов. Не указывайте личные контакты.</small></label>
+                  <fieldset class="avatar-palette"><legend>Цвет аватара</legend>{[['sage','Зелёный'],['navy','Синий'],['gold','Золотой'],['plum','Сливовый']].map(([value,label])=><label class="avatar-choice" data-avatar={value}><input type="radio" name="avatar_color" value={value} aria-label={label} checked={value === 'sage'} /><span aria-hidden="true"></span></label>)}</fieldset>
+                  <button type="submit" class="button">Сохранить профиль</button>
+                </fieldset>
+                <p id="profile-status" class="fine" role="status" aria-live="polite"></p>
+              </form>
+            </section>
+            <p class="profile-local-note">Библиотека и прогресс остаются на этом устройстве. Никнейм и описание сохраняются в аккаунте.</p>
+            <ReaderPreferences />
+            <section id="profile-account" class="profile-panel" aria-labelledby="profile-account-title">
+              <h2 id="profile-account-title">Аккаунт</h2>
+              <p class="profile-intro">Вы вошли в Хунмэнг</p><p id="account-email"></p><p id="account-confirmed" class="fine"></p>
+              <p class="fine">Библиотека и место остановки сохраняются на этом устройстве. Синхронизация пока выключена.</p>
+              <div class="account-actions"><a href="/library/" class="button secondary">Открыть библиотеку</a><button type="button" id="account-signout" class="button secondary">Выйти из аккаунта</button></div>
+            </section>
           </div>
-        </section>
+        </div>
         <noscript><p class="notice">Для регистрации и входа включите JavaScript. Новеллы можно читать без входа.</p></noscript>
       </>
     ) : (
