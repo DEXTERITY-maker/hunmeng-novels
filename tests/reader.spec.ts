@@ -12,7 +12,8 @@ test('главная: четыре раздела, обложки и поиск 
   await expect(page.locator('#recommended-novels .home-recommendation-card')).toHaveCount(2);
   await page.getByRole('searchbox', { name: 'Поиск новелл' }).fill('winter');
   await page.getByRole('button', { name: 'Найти' }).click();
-  await expect(page).toHaveURL(/\\/catalog\\/\\?search=winter/);
+  await expect(page).toHaveURL(/search=winter/);
+  expect(new URL(page.url()).pathname).toBe('/catalog/');
   await expect(page.locator('#result-count')).toHaveText('Найдено новелл: 1');
   await expect(page.locator('[data-novel]:visible')).toHaveCount(1);
   await expect(page.locator('[data-novel]:visible h2')).toContainText('Сад');
