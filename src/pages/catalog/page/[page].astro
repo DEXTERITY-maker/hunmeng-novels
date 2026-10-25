@@ -1,0 +1,35 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import NovelCard from '../../../components/NovelCard.astro';
+import { getLibrary } from '../../../lib/content';
+const PAGE_SIZE = 24;
+export async function getStaticPaths() {
+  const novels = await getLibrary();
+  const pages = Math.ceil(novels.length / PAGE_SIZE);
+  return Array.from({ length: Math.max(0, pages - 1) }, (_, index) => {
+    const page = index + 2;
+    return {
+      params: { page: String(page) },
+      props: { novels: novels.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE), page, pages },
+    };
+  });
+}
+const { novels, page, pages } = Astro.props;
+---
+
+<Layout title={`Каталог — страница ${page}`} description="Произведения Хунмэнг с возможностью перехода между страницами без JavaScript.">
+  <main id="main" class="page-shell catalog-page">
+    <div class="page-heading">
+      <h1>Каталог — страница {page}</h1>
+      <p>Все произведения. <a class="catalog-inline-link" href="/catalog/">Расширенный поиск и фильтры</a>.</p>
+    </div>
+    <div class="novel-grid">
+      {novels.map((novel) => <NovelCard novel={novel} />)}
+    </div>
+    <nav class="catalog-pagination" aria-label="Страницы каталога">
+      <a href={page === 2 ? '/catalog/' : `/catalog/page/${page - 1}/`}>← Назад</a>
+      <span>Страница {page} из {pages}</span>
+      {page < pages && <a href={`/catalog/page/${page + 1}/`}>Вперёд →</a>}
+    </nav>
+  </main>
+</Layout>
