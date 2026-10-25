@@ -19,5 +19,8 @@
   "translationStatus": "Завершён",
   "updatedAt": "2026-10-23",
   "demo": true,
-  "addedAt": "2026-10-24"
+  "addedAt": "2026-10-24",
+  "categories": [
+    "Повседневность"
+  ]
 }

@@ -19,5 +19,8 @@
   "translationStatus": "Переводится",
   "updatedAt": "2026-10-24",
   "demo": true,
-  "addedAt": "2026-10-24"
+  "addedAt": "2026-10-24",
+  "categories": [
+    "Приключения"
+  ]
 }
