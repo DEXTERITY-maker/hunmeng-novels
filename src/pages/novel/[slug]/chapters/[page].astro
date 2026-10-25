@@ -1,0 +1,50 @@
+---
+import Layout from '../../../../layouts/Layout.astro';
+import { getLibrary, chapterUrl, chapterCount, dateLabel } from '../../../../lib/content';
+import { CHAPTERS_PER_PAGE, chapterPageCount, chapterListUrl } from '../../../../lib/pagination';
+
+export async function getStaticPaths() {
+  const novels = await getLibrary();
+  return novels.flatMap((novel) => {
+    const pages = chapterPageCount(novel.chapterCount);
+    return Array.from({ length: pages }, (_, i) => ({
+      params: { slug: novel.slug, page: String(i + 1) },
+      props: { novel, page: i + 1, pages },
+    }));
+  });
+}
+const { novel: n, page, pages } = Astro.props;
+const chapters = n.chapters.slice((page - 1) * CHAPTERS_PER_PAGE, page * CHAPTERS_PER_PAGE);
+---
+
+<Layout title={`Оглавление ${n.title} — страница ${page}`} description={`Главы произведения «${n.title}», страница ${page} из ${pages}.`}>
+  <main id="main" class="page-shell chapter-pages">
+    <a class="back-link" href={n.url}>← К новелле</a>
+    <div class="page-heading">
+      <p class="home-section-kicker">Полное оглавление</p>
+      <h1>{n.title}</h1>
+      <p>{chapterCount(n.chapterCount)} · Страница {page} из {pages}</p>
+    </div>
+    <nav class="chapter-pagination" aria-label="Страницы оглавления">
+      {page > 1 && <a href={chapterListUrl(n.slug, page - 1)}>← Предыдущие 100</a>}
+      <span>Главы {chapters[0].data.number}–{chapters.at(-1)!.data.number}</span>
+      {page < pages && <a href={chapterListUrl(n.slug, page + 1)}>Следующие 100 →</a>}
+    </nav>
+    <ol class="chapter-list">
+      {chapters.map((chapter) => (
+        <li>
+          <a href={chapterUrl(n.slug, chapter.data.slug)}>
+            <span><span class="chapter-number">{String(chapter.data.number).padStart(2, '0')}</span>{chapter.data.title}</span>
+            <time datetime={chapter.data.publishedAt}>{dateLabel(chapter.data.publishedAt)}</time>
+          </a>
+        </li>
+      ))}
+    </ol>
+    <nav class="chapter-pagination" aria-label="Переход по оглавлению">
+      <a href={n.url}>К описанию</a>
+      {page > 1 && <a href={chapterListUrl(n.slug, page - 1)}>← Назад</a>}
+      <span>{page} / {pages}</span>
+      {page < pages && <a href={chapterListUrl(n.slug, page + 1)}>Вперёд →</a>}
+    </nav>
+  </main>
+</Layout>
