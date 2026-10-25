@@ -31,7 +31,7 @@ function card(n: CatalogIndexNovel) {
   const title = make('a', n.title);
   title.href = n.url;
   h2.append(title);
-  body.append(h2, make('p', n.originalTitle + ' · ' + n.author, 'original-title'));
+  body.append(h2, make('p', n.originalTitle === n.title ? n.author : n.originalTitle + ' · ' + n.author, 'original-title'));
   body.append(make('p', n.description, 'card-description'));
   const stats = make('p', undefined, 'catalog-card-stats');
   if (n.rating) stats.append(make('span', '★ ' + n.rating.average.toFixed(1) + ' / 5 · ' + n.rating.count + ' ratings'));

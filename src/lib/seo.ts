@@ -1,6 +1,9 @@
 import type { Novel } from './content';
 
+// The generic placeholder cover has no social PNG: link previews fall back to the site's default image.
+export const placeholderCover = '/images/novel-placeholder.svg';
 export function socialCover(cover: string) {
+  if (cover === placeholderCover) return '/images/og-default.png';
   return cover.endsWith('.svg') ? cover.slice(0, -4) + '-og.png' : cover;
 }
 function abs(path: string, base: URL | string) {

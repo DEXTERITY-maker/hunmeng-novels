@@ -1,7 +1,7 @@
 import { defineCollection } from 'astro:content';
 import { z } from 'astro/zod';
 import { glob } from 'astro/loaders';
-// Browser tests build the site with the demo stories from tests/demo (npm run build:demo).
+// Browser tests build the site with the demo stories and news from tests/demo (npm run build:demo).
 // The production build reads only real content from src/content.
 const libraryRoot = process.env.HUNMENG_DEMO_CONTENT === '1' ? './tests/demo/content' : './src/content';
 const slug = z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);
@@ -21,7 +21,9 @@ const novels = defineCollection({
     author: z.string().min(1),
     authorUrl: z.url().refine((s) => new URL(s).protocol === 'https:', 'HTTPS only').optional(),
     supportUrl: z.url().refine((s) => new URL(s).protocol === 'https:', 'HTTPS only').optional(),
-    originalUrl: z.url(),
+    // Required for translations; an original Hunmeng story ("original": true) has no outside source.
+    originalUrl: z.url().optional(),
+    original: z.boolean().default(false),
     cover: z.string().regex(/^\/images\/[^?#]+\.(svg|webp|png|jpg)$/),
     description: z.string().min(20),
     genres: z.array(z.string()).min(1),
@@ -65,7 +67,7 @@ const glossaries = defineCollection({
   }),
 });
 const news = defineCollection({
-  loader: glob({ base: './src/content/news', pattern: '*.md' }),
+  loader: glob({ base: `${libraryRoot}/news`, pattern: '*.md' }),
   schema: z.object({
     title: z.string().min(8),
     excerpt: z.string().min(25).max(240),

@@ -3,7 +3,7 @@ import Layout from '../../../layouts/Layout.astro';
 import LibraryControl from '../../../components/LibraryControl.astro';
 import { getLibrary, dateLabel, chapterCount, chapterUrl } from '../../../lib/content';
 import { chapterListUrl } from '../../../lib/pagination';
-import { novelStructuredData, socialCover } from '../../../lib/seo';
+import { novelStructuredData, placeholderCover, socialCover } from '../../../lib/seo';
 import { site } from '../../../config/site';
 export async function getStaticPaths() {
   return (await getLibrary()).map((n) => ({ params: { slug: n.slug }, props: { novel: n } }));
@@ -21,15 +21,16 @@ const glossaryGroups = glossaryKinds.map(({ type, title }) => ({
 })).filter(({ entries }) => entries.length > 0);
 const structuredData = novelStructuredData(n, Astro.site || site.url);
 const coverIsSvg = n.cover.endsWith('.svg');
+const usesPlaceholder = n.cover === placeholderCover;
 ---
 
 <Layout
   title={`${n.title} — read online`}
   description={n.description}
-  ogImage={socialCover(n.cover)}
+  ogImage={usesPlaceholder ? undefined : socialCover(n.cover)}
   ogImageWidth={coverIsSvg ? 520 : undefined}
   ogImageHeight={coverIsSvg ? 760 : undefined}
-  ogImageAlt={`Novel cover “${n.title}”`}
+  ogImageAlt={usesPlaceholder ? undefined : `Novel cover “${n.title}”`}
   structuredData={structuredData}
 >
   <main id="main" class="page-shell">
@@ -53,18 +54,27 @@ const coverIsSvg = n.cover.endsWith('.svg');
           ))}
         </div>
         <h1>{n.title}</h1>
-        <p class="original-title">{n.originalTitle}</p>
+        {n.originalTitle !== n.title && <p class="original-title">{n.originalTitle}</p>}
         <p class="author">{n.author}</p>
         <p class="detail-description">{n.description}</p>
         <dl class="novel-facts">
-          <div>
-            <dt>Original</dt>
-            <dd>{n.originalStatus}</dd>
-          </div>
-          <div>
-            <dt>Translation</dt>
-            <dd>{n.translationStatus}</dd>
-          </div>
+          {n.original ? (
+            <div>
+              <dt>Status</dt>
+              <dd>{n.originalStatus}</dd>
+            </div>
+          ) : (
+            <>
+              <div>
+                <dt>Original</dt>
+                <dd>{n.originalStatus}</dd>
+              </div>
+              <div>
+                <dt>Translation</dt>
+                <dd>{n.translationStatus}</dd>
+              </div>
+            </>
+          )}
           <div>
             <dt>Length</dt>
             <dd>{chapterCount(n.chapterCount)}</dd>
@@ -126,7 +136,11 @@ const coverIsSvg = n.cover.endsWith('.svg');
           )}
         </div>
       )}
-      {!n.demo && <p class="fine author-permission">Published with the author's permission.</p>}
+      {n.original ? (
+        <p class="fine author-permission">An original story written for Hunmeng.</p>
+      ) : (
+        !n.demo && <p class="fine author-permission">Published with the author's permission.</p>
+      )}
     </section>
     {glossaryGroups.length > 0 && (
       <section class="section glossary-section" aria-labelledby="glossary-title">
