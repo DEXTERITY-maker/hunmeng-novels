@@ -10,5 +10,6 @@ export default defineConfig({
   integrations: [
     sitemap({ filter: (page) => !['/404/', '/library/', '/account/'].includes(new URL(page).pathname) && !new URL(page).pathname.startsWith('/admin/') }),
   ],
-  vite: { build: { sourcemap: false } },
+  // Keep even small font subsets as local files: CSP deliberately disallows data: fonts.
+  vite: { build: { sourcemap: false, assetsInlineLimit: 0 } },
 });

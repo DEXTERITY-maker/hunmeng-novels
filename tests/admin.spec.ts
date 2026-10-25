@@ -122,6 +122,7 @@ test('401 и 403 API закрывают редакторские данные', 
   const state=await mockBackend(page);
   await seededSession(page);
   await expect(page.locator('#admin-workspace')).toBeVisible();
+  await expect(page.locator('#admin-job-list')).toContainText('Очередь пока пуста.');
   state.dataStatus=401;
   await page.getByRole('button',{name:'Обновить очередь'}).click();
   await expect(page.locator('#admin-workspace')).toBeHidden();

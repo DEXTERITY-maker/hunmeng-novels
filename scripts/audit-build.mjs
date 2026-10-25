@@ -1,5 +1,6 @@
 import { readdir, readFile, stat } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
+import { publicSecretKinds } from './public-secrets.mjs';
 const base = resolve('dist');
 async function walk(dir) {
   return (
@@ -15,6 +16,7 @@ const failures = [];
 for (const file of files) {
   if (!/\.(html|css|js)$/.test(file)) continue;
   const text = await readFile(file, 'utf8');
+  for (const kind of publicSecretKinds(text)) failures.push(`Запрещён ${kind} в ${file}`);
   if (file.endsWith('.html')) {
     for (const match of text.matchAll(/<(script|img|iframe|source|link)\b[^>]*>/gi)) {
       const tag = match[0];
