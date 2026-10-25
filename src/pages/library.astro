@@ -7,7 +7,7 @@ import { shelves } from '../config/site';
   <main id="main" class="page-shell">
     <div class="page-heading">
       <h1>Библиотека</h1>
-      <p>Ваши истории и прогресс чтения на этом устройстве.</p>
+      <p>Ваши истории и прогресс чтения. <a href="/account/">Войдите для синхронизации</a>.</p>
     </div>
     <div class="shelf-tabs" role="group" aria-label="Полки">
       {Object.entries(shelves).map(([value, label], i) => (
@@ -30,8 +30,8 @@ import { shelves } from '../config/site';
       <a href="/catalog/">Выбрать новеллу в каталоге →</a>
     </p>
     <p class="fine storage-explanation">
-      Библиотека хранится в этом браузере. Очистка данных сайта удалит полки и прогресс. В другом
-      браузере библиотека будет отдельной.
+      Без входа библиотека хранится в этом браузере. После подключения Supabase и входа данные могут
+      синхронизироваться между устройствами. <a href="/account/">Настройки аккаунта →</a>
     </p>
     <noscript>
       <p class="notice">

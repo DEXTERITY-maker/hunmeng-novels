@@ -2815,3 +2815,26 @@ html[data-theme='dark'] .brand-logo-dark {
     padding: 17px 14px;
   }
 }
+
+
+/* Аккаунт и редакторская часть не зависят от UI-библиотек. */
+.account-page,.admin-page{padding-bottom:90px}
+.account-card,.admin-card{border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:24px}
+.account-card{max-width:520px}
+.account-card label,.admin-card label{margin:13px 0;font-size:.88rem}
+.account-card input,.admin-card input:not([type=checkbox]),.admin-card textarea,.admin-card select{
+  width:100%;padding:12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);min-height:46px
+}
+.account-actions,.admin-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:15px}
+.account-help,.admin-help{max-width:780px;margin-top:20px}
+.admin-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.admin-wide{grid-column:1/-1}
+.admin-card h2{font-size:1.35rem;margin-bottom:16px}
+.admin-card h3{font-size:1rem;margin:20px 0 10px}
+.admin-row{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+.admin-card .admin-check{display:flex;flex-direction:row;align-items:center;gap:10px}
+.admin-job-row{border-bottom:1px solid var(--line);padding:15px 0}
+.admin-job-row strong{display:block;margin-bottom:8px}
+.admin-card ul{padding-left:20px;color:var(--muted);font-size:.86rem}
+.admin-card textarea{resize:vertical;min-height:70px}
+@media(max-width:760px){.admin-grid,.admin-row{grid-template-columns:1fr}.account-card,.admin-card{padding:15px}}
