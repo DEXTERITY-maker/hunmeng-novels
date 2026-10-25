@@ -117,6 +117,16 @@ test('мобильная страница новостей без горизон
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
   }
 });
+test('аккаунт и редакторская панель безопасно отключены до настройки сервера', async ({ page }) => {
+  await page.goto('/account/');
+  await expect(page.getByRole('heading', { name: 'Аккаунт' })).toBeVisible();
+  await expect(page.locator('#account-status')).toContainText('Сервер ещё не подключён');
+  await expect(page.getByRole('button', { name: 'Продолжить' })).toBeDisabled();
+  await page.goto('/admin/');
+  await expect(page.getByRole('heading', { name: 'Управление переводами' })).toBeVisible();
+  await expect(page.locator('#admin-workspace')).toBeHidden();
+  await expect(page.locator('#admin-status')).toContainText('Backend ещё не подключён');
+});
 test('статические страницы, SEO и отсутствие внешних запросов', async ({ page }) => {
   const errors: string[] = [],
     external: string[] = [];
@@ -131,6 +141,8 @@ test('статические страницы, SEO и отсутствие вн�
     '/updates/',
     '/news/',
     '/news/news-launch/',
+    '/account/',
+    '/admin/',
     '/library/',
     '/novel/khranitel-mayaka/',
     chapter,

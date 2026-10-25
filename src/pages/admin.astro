@@ -1,0 +1,127 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+<Layout title="Редакторская панель" noindex description="Управление оригиналами, терминами, переводами и проверкой прав.">
+  <main id="main" class="page-shell admin-page">
+    <header class="page-heading">
+      <p class="home-section-kicker">РЕДАКЦИЯ ХУНМЭНГ</p>
+      <h1>Управление переводами</h1>
+      <p>Оригиналы, подтверждение прав, словари, проверка качества и очередь публикаций.</p>
+    </header>
+    <p id="admin-status" role="status" class="notice">Проверяем редакторский доступ…</p>
+    <div id="admin-workspace" hidden>
+      <div class="admin-grid">
+        <section class="admin-card" id="admin-sources-section">
+          <h2>1. Оригиналы и разрешения</h2>
+          <form id="source-form">
+            <label>Slug (латиницей)
+              <input name="slug" required pattern="[a-z0-9]+(-[a-z0-9]+)*" placeholder="my-novel" />
+            </label>
+            <label>Название оригинала
+              <input name="original_title" required maxlength="250" />
+            </label>
+            <label>Название на русском
+              <input name="title_ru" required maxlength="250" />
+            </label>
+            <label>Описание на русском (от 20 символов)
+              <textarea name="description_ru" rows="4" required minlength="20"></textarea>
+            </label>
+            <label>Автор
+              <input name="author_name" maxlength="150" />
+            </label>
+            <label>Жанры через запятую
+              <input name="genres" value="Фэнтези" required />
+            </label>
+            <label>Теги через запятую
+              <input name="tags" placeholder="Приключения, Культивация" />
+            </label>
+            <label>Статус оригинала
+              <select name="original_status">
+                <option>Продолжается</option><option>Завершён</option><option>Приостановлен</option>
+              </select>
+            </label>
+            <label>Статус перевода
+              <select name="translation_status">
+                <option>Переводится</option><option>Завершён</option><option>Приостановлен</option>
+              </select>
+            </label>
+            <label>Ссылка на оригинал (HTTPS)
+              <input name="original_url" type="url" required placeholder="https://..." />
+            </label>
+            <button class="button" type="submit">Создать источник</button>
+          </form>
+          <p class="fine">Права проверяются отдельно. Добавление ссылки не означает разрешение на перевод.</p>
+          <div id="admin-source-list"></div>
+          <form id="rights-form">
+            <h3>Подтвердить или отозвать права (только админ)</h3>
+            <label>Оригинал <select name="source_id" required></select></label>
+            <label>Статус
+              <select name="rights_status">
+                <option value="pending">Ожидает подтверждения</option>
+                <option value="verified">Разрешение проверено</option>
+                <option value="expired">Истекло</option>
+                <option value="revoked">Отозвано</option>
+              </select>
+            </label>
+            <label>Документ / ссылка на разрешение / подробности правообладателя
+              <textarea name="rights_evidence" rows="3" placeholder="Минимум 20 символов для подтверждения"></textarea>
+            </label>
+            <label>Действительно до (при необходимости)
+              <input name="rights_valid_until" type="date" />
+            </label>
+            <label class="admin-check"><input type="checkbox" name="permission_translate" />Разрешён перевод</label>
+            <label class="admin-check"><input type="checkbox" name="permission_publish" />Разрешена публикация</label>
+            <button class="button secondary" type="submit">Сохранить права</button>
+          </form>
+        </section>
+        <section class="admin-card">
+          <h2>2. Словарь терминов</h2>
+          <form id="term-form">
+            <label>Оригинал <select name="source_id" required></select></label>
+            <label>Термин оригинала <input name="original_term" required maxlength="200" /></label>
+            <label>Закреплённый перевод <input name="translated_term" required maxlength="200" /></label>
+            <label>Тип термина
+              <select name="term_type">
+                <option>предмет</option><option>персонаж</option><option>место</option><option>техника</option>
+              </select>
+            </label>
+            <label>Примечание <input name="note" maxlength="300" /></label>
+            <button class="button" type="submit">Добавить термин</button>
+          </form>
+          <div id="admin-term-list"></div>
+        </section>
+        <section class="admin-card admin-wide">
+          <h2>3. Подготовить перевод главы</h2>
+          <form id="job-form">
+            <div class="admin-row">
+              <label>Оригинал <select name="source_id" required></select></label>
+              <label>Номер главы <input name="chapter_number" type="number" min="1" required /></label>
+            </div>
+            <div class="admin-row">
+              <label>Slug главы <input name="chapter_slug" required placeholder="glava-1" pattern="[a-z0-9]+(-[a-z0-9]+)*" /></label>
+              <label>Название главы <input name="chapter_title" required maxlength="200" /></label>
+            </div>
+            <label>Краткое описание (10–200 знаков)
+              <textarea name="chapter_description" rows="2" minlength="10" maxlength="200" required></textarea>
+            </label>
+            <label>Текст оригинала <textarea name="original_text" rows="8" required></textarea></label>
+            <label>Черновик перевода (Markdown) <textarea name="translated_text" rows="12" required></textarea></label>
+            <button class="button" type="submit">Сохранить черновик</button>
+          </form>
+          <p class="fine">Никакой автоматической публикации черновиков. Машинный перевод из n8n или другого сервиса должен пройти вычитку редактором.</p>
+        </section>
+        <section class="admin-card admin-wide">
+          <h2>4. Проверка и очередь публикации</h2>
+          <p>Для одобрения нужны документально подтверждённые права, текст оригинала, перевод, описание, словарь и заметки человеческой проверки.</p>
+          <button id="admin-refresh" class="button secondary" type="button">Обновить очередь</button>
+          <div id="admin-job-list"></div>
+        </section>
+      </div>
+    </div>
+    <p class="fine admin-help">Редакторские роли выдаются администратором базы данных. Код панели не даёт полномочий: каждое действие дополнительно проверяется политиками RLS PostgreSQL и серверными ограничениями.</p>
+  </main>
+  <script>
+    import { initAdmin } from '../scripts/admin';
+    void initAdmin();
+  </script>
+</Layout>

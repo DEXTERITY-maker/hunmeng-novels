@@ -24,6 +24,7 @@ export interface ReaderState {
 export interface ReaderRepository {
   getState(): Promise<ReaderState>;
   getSettings(): Promise<Settings>;
+  restoreState(state: ReaderState): Promise<void>;
   setSettings(settings: Settings): Promise<void>;
   setShelf(slug: string, shelf: Shelf | null): Promise<void>;
   saveProgress(slug: string, progress: Progress): Promise<void>;
@@ -159,6 +160,7 @@ export const repository: ReaderRepository = {
   async getSettings() {
     return read().settings;
   },
+  async restoreState(state) { write(sanitizeState(state)); },
   async setSettings(settings) {
     const state = read();
     state.settings = settings;
