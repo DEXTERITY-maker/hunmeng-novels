@@ -1,5 +1,22 @@
 import { test, expect, serveStatic } from './fixtures';
 const chapter = '/novel/khranitel-mayaka/glava-1/';
+test('главная: четыре раздела, обложки и поиск из главной в каталог', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.getByRole('heading', { name: 'Новые новеллы' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Последние главы' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Популярное' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Рекомендации' })).toBeVisible();
+  await expect(page.locator('#new-novels .home-book-card')).toHaveCount(2);
+  await expect(page.locator('#latest-chapters .home-chapter-link')).toHaveCount(7);
+  await expect(page.locator('#popular-novels .home-popular-empty')).toBeVisible();
+  await expect(page.locator('#recommended-novels .home-recommendation-card')).toHaveCount(2);
+  await page.getByRole('searchbox', { name: 'Поиск новелл' }).fill('winter');
+  await page.getByRole('button', { name: 'Найти' }).click();
+  await expect(page).toHaveURL(/\\/catalog\\/\\?search=winter/);
+  await expect(page.locator('#result-count')).toHaveText('Найдено новелл: 1');
+  await expect(page.locator('[data-novel]:visible')).toHaveCount(1);
+  await expect(page.locator('[data-novel]:visible h2')).toContainText('Сад');
+});
 test('статические страницы, SEO и отсутствие внешних запросов', async ({ page }) => {
   const errors: string[] = [],
     external: string[] = [];

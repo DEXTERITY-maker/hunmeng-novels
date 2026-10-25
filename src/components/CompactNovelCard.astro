@@ -1,0 +1,18 @@
+---
+import { chapterCount, type Novel } from '../lib/content';
+interface Props {
+  novel: Novel;
+}
+const { novel: n } = Astro.props;
+---
+
+<article class="home-book-card">
+  <a class="home-book-link" href={n.url} aria-label={'Открыть новеллу «' + n.title + '»'}>
+    <span class="home-book-cover">
+      <img src={n.cover} alt="" width="260" height="380" loading="lazy" decoding="async" />
+    </span>
+    <span class="home-book-genre">{n.genres[0]}</span>
+    <h3 class="home-book-title">{n.title}</h3>
+    <span class="home-book-meta">{chapterCount(n.chapterCount)} · {n.translationStatus}</span>
+  </a>
+</article>
