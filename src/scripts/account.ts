@@ -25,6 +25,7 @@ export async function initAccount() {
     try {
       if ((form.elements.namedItem('mode') as HTMLSelectElement).value === 'signup') {
         const result = await signUp(email.value.trim(), password.value);
+        await refresh();
         status.textContent = result.access_token
           ? 'Аккаунт создан и вход выполнен.'
           : 'Проверьте письмо для подтверждения регистрации.';

@@ -24,6 +24,10 @@ jobs:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: node scripts/publish-approved.mjs stage
+      - name: Validate generated content before push
+        run: |
+          npm ci
+          npm run build
       - name: Push content
         id: push
         run: |
