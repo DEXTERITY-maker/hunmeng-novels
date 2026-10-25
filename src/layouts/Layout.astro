@@ -59,6 +59,7 @@ const tokens = `:root{--bg:${c.background};--surface:${c.surface};--ink:${c.text
               ['/', 'Главная'],
               ['/catalog/', 'Каталог'],
               ['/library/', 'Библиотека'],
+              ['/news/', 'Новости'],
             ].map(([url, label]) => (
               <a href={url} aria-current={Astro.url.pathname === url ? 'page' : undefined}>
                 {label}
@@ -74,6 +75,7 @@ const tokens = `:root{--bg:${c.background};--surface:${c.surface};--ink:${c.text
         <Brand />
         <p>Истории для неспешного чтения.</p>
         <nav aria-label="Информация">
+          <a href="/news/">Новости</a>
           <a href="/about/">О проекте</a>
           <a href="/rules/">Правила</a>
           <a href="/contacts/">Контакты</a>

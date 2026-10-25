@@ -4,8 +4,11 @@ import CompactNovelCard from '../components/CompactNovelCard.astro';
 import ContinueReading from '../components/ContinueReading.astro';
 import { getLibrary, dateLabel, chapterCount } from '../lib/content';
 import { getLatestChapters } from '../lib/updates';
+import NewsCard from '../components/NewsCard.astro';
+import { getNews } from '../lib/news';
 
 const novels = await getLibrary();
+const latestNews = (await getNews()).slice(0, 3);
 const newNovels = novels
   .filter((n) => !!n.addedAt)
   .sort((a, b) => b.addedAt!.localeCompare(a.addedAt!) || b.updatedAt.localeCompare(a.updatedAt))
@@ -123,6 +126,19 @@ const viewsLabel = new Intl.NumberFormat('ru-RU');
       <a class="home-updates-button" href="/updates/">
         Все обновления <span aria-hidden="true">→</span>
       </a>
+    </section>
+
+    <section id="latest-news" class="section home-section latest-news-section" aria-labelledby="latest-news-title">
+      <div class="section-heading home-section-heading">
+        <div>
+          <p class="home-section-kicker">Что нового в проекте</p>
+          <h2 id="latest-news-title">Последние новости</h2>
+        </div>
+        <a href="/news/">Просмотреть все <span aria-hidden="true">→</span></a>
+      </div>
+      <div class="home-news-list">
+        {latestNews.map((post) => <NewsCard post={post} compact />)}
+      </div>
     </section>
 
     <section id="popular-novels" class="section home-section" aria-labelledby="popular-title">

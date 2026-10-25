@@ -59,4 +59,14 @@ const glossaries = defineCollection({
     ),
   }),
 });
-export const collections = { novels, chapters, glossaries };
+const news = defineCollection({
+  loader: glob({ base: './src/content/news', pattern: '*.md' }),
+  schema: z.object({
+    title: z.string().min(8),
+    excerpt: z.string().min(25).max(240),
+    category: z.enum(['changelog', 'announcements', 'giveaways']),
+    publishedAt: date,
+    order: z.number().int().nonnegative().default(0),
+  }),
+});
+export const collections = { novels, chapters, glossaries, news };
