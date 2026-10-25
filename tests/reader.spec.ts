@@ -130,6 +130,58 @@ test('каталог: оригинальное название, исключе�
     'sad-zimy',
   );
 });
+test('расширенный каталог: категории, автор, количество глав, теги и рейтинг', async ({ page }) => {
+  await page.goto('/catalog/');
+  await expect(page.locator('#result-count')).toHaveText('Найдено новелл: 2');
+  await page.locator('select[name=category]').selectOption('Повседневность');
+  await expect(page.locator('[data-novel]:visible')).toHaveCount(1);
+  await expect(page.locator('[data-novel]:visible').first()).toHaveAttribute('data-novel', 'sad-zimy');
+  await page.getByRole('button', { name: 'Сбросить фильтры' }).click();
+  await page.getByPlaceholder('Русское или оригинальное название').fill('Алексей');
+  await expect(page.locator('[data-novel]:visible')).toHaveCount(1);
+  await expect(page.locator('[data-novel]:visible').first()).toHaveAttribute('data-novel', 'khranitel-mayaka');
+  await page.getByRole('button', { name: 'Сбросить фильтры' }).click();
+  await page.locator('[name=minChapters]').fill('4');
+  await expect(page.locator('[data-novel]:visible')).toHaveCount(1);
+  await page.getByRole('button', { name: 'Сбросить фильтры' }).click();
+  await page.locator('select[name=minRating]').selectOption('4');
+  await expect(page.locator('#catalog-empty')).toBeVisible();
+  await page.getByRole('button', { name: 'Сбросить фильтры' }).click();
+  await page.locator('select[name=sort]').selectOption('views');
+  await expect(page.locator('[data-novel]:visible')).toHaveCount(2);
+  await expect(page.locator('.catalog-card-stats').first()).toContainText('Нет оценок');
+  await expect(page.locator('.catalog-card-stats').first()).toContainText('Нет данных о просмотрах');
+});
+test('ссылки категории и тегов открывают каталог с предустановленными фильтрами', async ({ page }) => {
+  await page.goto('/novel/sad-zimy/');
+  await page.getByRole('link', { name: 'Повседневность' }).first().click();
+  await expect(page).toHaveURL(/category=/);
+  await expect(page.locator('select[name=category]')).toHaveValue('Повседневность');
+  await expect(page.locator('[data-novel]:visible')).toHaveCount(1);
+  await page.goto('/catalog/?include=%D0%9C%D0%BE%D1%80%D0%B5');
+  await expect(page.locator('input[name=include][value="Море"]')).toBeChecked();
+  await expect(page.locator('[data-novel]:visible')).toHaveCount(1);
+});
+test('страница новеллы: статистика без фиктивных чисел и личная оценка', async ({ page }) => {
+  await page.goto('/novel/khranitel-mayaka/');
+  await expect(page.getByText('Пока нет оценок')).toBeVisible();
+  await expect(page.getByText('Нет данных', { exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Оценить на 4 из 5' }).click();
+  await expect(page.getByText('Ваша оценка: 4 из 5.', { exact: false })).toBeVisible();
+  await page.reload();
+  await expect(page.getByRole('button', { name: 'Оценить на 4 из 5' })).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByText('Пока нет оценок')).toBeVisible();
+});
+test('оглавление произведения разбито на страницы, диалог не выводит весь список', async ({ page }) => {
+  await page.goto('/novel/khranitel-mayaka/');
+  await page.getByRole('link', { name: 'Полное оглавление' }).click();
+  expect(new URL(page.url()).pathname).toBe('/novel/khranitel-mayaka/chapters/1/');
+  await expect(page.locator('.chapter-pages .chapter-list li')).toHaveCount(3);
+  await page.locator('.chapter-pages .chapter-list a').first().click();
+  await expect(page.locator('#chapter-text')).toBeVisible();
+  await page.getByRole('button', { name: 'Открыть оглавление' }).click();
+  await expect(page.getByRole('link', { name: /Полное оглавление \(3 глав\)/ })).toBeVisible();
+});
 test('полки сохраняются и изменяются', async ({ page }) => {
   await page.goto('/novel/khranitel-mayaka/');
   await page.getByRole('button', { name: 'В библиотеку', exact: true }).click();
