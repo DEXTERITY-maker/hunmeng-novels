@@ -1,3 +1,4 @@
+import { makePublicationNews } from './publication-news.mjs';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 const endpoint=(process.env.SUPABASE_URL||'').replace(/\/+$/,'');
@@ -24,6 +25,7 @@ const safeText=s=>!/<\/?[a-z][^>]*>/i.test(s)&&!/\]\(\s*(javascript|data):/i.tes
 async function stage(){
   const jobs=await api('novel_translation_jobs','?status=eq.approved&order=approved_at.asc&limit=40&select=*');
   const queued=[];
+  await fs.mkdir('src/content/news',{recursive:true});
   for(const j of jobs){
     const source=(await api('novel_sources','?id=eq.'+encodeURIComponent(j.source_id)))[0];
     if(!rightsOK(source)||!slug(source.slug)||!slug(j.chapter_slug)||
@@ -40,7 +42,8 @@ async function stage(){
       console.log('SKIP glossary mismatch: '+j.id);continue;
     }
     const novelFile='src/content/novels/'+source.slug+'.json';
-    if(!(await exists(novelFile))){
+    const isNewNovel = !(await exists(novelFile));
+    if(isNewNovel){
       if(String(source.title_ru||'').trim().length<2||String(source.description_ru||'').trim().length<20)
         {console.log('SKIP missing novel metadata: '+j.id);continue;}
       const cover=source.cover_path||'/images/novel-placeholder.svg';
@@ -66,6 +69,22 @@ async function stage(){
       'title: '+JSON.stringify(j.chapter_title),'publishedAt: '+JSON.stringify(today()),
       'description: '+JSON.stringify(j.chapter_description),'---','',j.translated_text.trim(),''];
     await fs.writeFile(file,lines.join('\n'));
+    const novelMetadata = JSON.parse(await fs.readFile(novelFile, 'utf8'));
+    const publicationDate = today();
+    const notes = [
+      ...(isNewNovel ? [makePublicationNews({
+        kind: 'novel', novelSlug: source.slug, novelTitle: novelMetadata.title, date: publicationDate,
+      })] : []),
+      makePublicationNews({
+        kind: 'chapter', novelSlug: source.slug, novelTitle: novelMetadata.title,
+        chapterSlug: j.chapter_slug, chapterNumber: j.chapter_number,
+        chapterTitle: j.chapter_title, date: publicationDate,
+      }),
+    ];
+    for (const note of notes) {
+      const newsPath = path.join('src/content/news', note.name);
+      if (!(await exists(newsPath))) await fs.writeFile(newsPath, note.content, 'utf8');
+    }
     queued.push(j.id);
   }
   await fs.writeFile(manifest,JSON.stringify(queued));

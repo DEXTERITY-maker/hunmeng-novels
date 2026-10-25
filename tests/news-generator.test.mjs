@@ -1,39 +1,54 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { affectedAreas, makeNote } from '../scripts/generate-update-news.mjs';
+import fs from 'node:fs/promises';
+import { makePublicationNews } from '../scripts/publication-news.mjs';
 
-const sha = 'abcd1234'.repeat(5);
-const when = '2026-10-25T14:03:00Z';
+const date = '2026-10-25';
+const novel = {kind: 'novel', novelSlug: 'legenda-hunmeng',
+  novelTitle: 'Легенда Хунмэнг', date};
+const chapter = {...novel, kind: 'chapter', chapterSlug: 'glava-1',
+  chapterNumber: 1, chapterTitle: 'Начало путешествия'};
 
-test('a genuine commit creates a dated update with its GitHub link', () => {
-  const r = makeNote({sha,files:['src/pages/account.astro','src/lib/backend.ts'],
-    subject:'Добавить вход через Google',timestamp:when});
-  assert.equal(r?.name,'update-abcd1234abcd.md');
-  assert.match(r.content,/publishedAt: "2026-10-25"/);
-  assert.match(r.content,/аккаунты и авторизация читателей/);
-  assert.match(r.content,/github.com\/DEXTERITY-maker\/hunmeng-novels\/commit\/abcd1234/);
-  assert.match(r.content,/а не завершение развёртывания/);
+test('authorized novel gets a single publication announcement without GitHub links', () => {
+  const note = makePublicationNews(novel);
+  assert.equal(note.name, 'publication-novel-legenda-hunmeng.md');
+  assert.match(note.content, /title: "Новая новелла: Легенда Хунмэнг"/);
+  assert.match(note.content, /publishedAt: "2026-10-25"/);
+  assert.match(note.content, /category: announcements/);
+  assert.match(note.content, /\/novel\/legenda-hunmeng\//);
+  assert.doesNotMatch(note.content, /GitHub|github\.com|коммит|OAuth/);
 });
 
-test('news-only, docs and CI changes do not create duplicate announcements', () => {
-  for (const files of [['src/content/news/manual.md'],['README.md'],['.github/workflows/check.yml']])
-    assert.equal(makeNote({sha,files,subject:'Обновление документов',timestamp:when}),null);
+test('new authorized chapter generates a stable link and no technical release note', () => {
+  const note = makePublicationNews(chapter);
+  assert.equal(note.name, 'publication-chapter-legenda-hunmeng--glava-1.md');
+  assert.match(note.content, /Новая глава: Легенда Хунмэнг — 1/);
+  assert.match(note.content, /\/novel\/legenda-hunmeng\/glava-1\//);
+  assert.deepEqual(makePublicationNews(chapter), note);
 });
 
-test('unsafe subject markup is sanitized and content claims only known areas', () => {
-  const r = makeNote({sha,files:['src/pages/catalog.astro','src/content/chapters/a/1.md'],
-    subject:'<script>alert(1)</script> **update**',timestamp:when});
-  assert.ok(r);
-  assert.doesNotMatch(r.content,/<script>/);
-  assert.match(r.content,/каталог произведений/);
-  assert.match(r.content,/новые произведения и главы/);
+test('malformed slugs, fake dates and invalid chapter numbers are rejected', () => {
+  assert.throws(() => makePublicationNews({...novel,novelSlug:'../wrong'}));
+  assert.throws(() => makePublicationNews({...novel,date:'2026-02-31'}));
+  assert.throws(() => makePublicationNews({...chapter,chapterSlug:'../../bad'}));
+  assert.throws(() => makePublicationNews({...chapter,chapterNumber:0}));
+  assert.throws(() => makePublicationNews({...chapter,kind:'commit'}));
 });
 
-test('invalid SHA is rejected and versions are not invented', () => {
-  assert.throws(() => makeNote({sha:'bad',files:['src/pages/index.astro'],
-    subject:'Обновление',timestamp:when}),/SHA/);
-  const r=makeNote({sha,files:['src/pages/index.astro'],
-    subject:'Изменения главной',timestamp:when});
-  assert.doesNotMatch(r.content,/Версия \d/);
-  assert.deepEqual(affectedAreas(['src/pages/account.astro']),['аккаунты и авторизация читателей']);
+test('markup in the source title cannot inject HTML or new Markdown links', () => {
+  const note = makePublicationNews({...chapter,
+    novelTitle: '<script>bad</script> [visit](https://bad.test)',
+    chapterTitle: '*Markdown* <img>'});
+  assert.doesNotMatch(note.content, /<script>|<img>|(\[visit\])|(https:\/\/bad\.test)/);
+});
+
+test('one welcome announcement remains; old commit-based job is removed', async () => {
+  const paths = await fs.readdir('src/content/news');
+  assert.ok(paths.includes('hongmeng-opens.md'));
+  assert.equal(paths.filter(p => /^(update-|release-)/.test(p)).length,0);
+  await assert.rejects(fs.access('.github/workflows/auto-news.yml'),{code:'ENOENT'});
+  await assert.rejects(fs.access('scripts/generate-update-news.mjs'),{code:'ENOENT'});
+  const wf = await fs.readFile('.github/workflows/publish-approved.yml','utf8');
+  assert.match(wf,/git add src\/content\/novels src\/content\/glossaries src\/content\/chapters src\/content\/news/);
+  assert.doesNotMatch(wf,/gh workflow run auto-news/);
 });

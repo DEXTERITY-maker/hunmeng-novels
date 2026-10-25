@@ -5,7 +5,6 @@ on:
     - cron: "25 */6 * * *"
 permissions:
   contents: write
-  actions: write
 concurrency:
   group: hunmeng-publish
   cancel-in-progress: false
@@ -34,7 +33,7 @@ jobs:
         run: |
           git config user.name "Hunmeng Publisher"
           git config user.email "actions@users.noreply.github.com"
-          git add src/content/novels src/content/glossaries src/content/chapters
+          git add src/content/novels src/content/glossaries src/content/chapters src/content/news
           if ! git diff --cached --quiet; then
             git commit -m "Публикация проверенных переводов"
             git push origin HEAD:main
@@ -47,8 +46,3 @@ jobs:
           GITHUB_SHA_PUBLISHED: ${{ steps.push.outputs.sha }}
         run: node scripts/publish-approved.mjs finalize
 
-      - name: Record approved chapter publication in project news
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh workflow run auto-news.yml --ref main || echo "News dispatch unavailable; publication remains valid."

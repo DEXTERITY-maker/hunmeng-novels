@@ -54,7 +54,7 @@ const viewsLabel = new Intl.NumberFormat('ru-RU');
         <nav class="home-quick-links" aria-label="Разделы главной">
           <a href="#new-novels">Новые новеллы</a>
           <a href="#latest-chapters">Последние главы</a>
-          <a href="#popular-novels">Популярное</a>
+          {popular.length > 0 && <a href="#popular-novels">Популярное</a>}
           <a href="#recommended-novels">Рекомендации</a>
         </nav>
       </div>
@@ -141,6 +141,7 @@ const viewsLabel = new Intl.NumberFormat('ru-RU');
       </div>
     </section>
 
+    {popular.length > 0 && (
     <section id="popular-novels" class="section home-section" aria-labelledby="popular-title">
       <div class="section-heading home-section-heading">
         <div>
@@ -149,33 +150,23 @@ const viewsLabel = new Intl.NumberFormat('ru-RU');
         </div>
         <a href="/catalog/">Посмотреть каталог <span aria-hidden="true">→</span></a>
       </div>
-      {popular.length ? (
-        <ol class="home-popular-list">
-          {popular.map((n, i) => (
-            <li>
-              <span class="home-rank">{String(i + 1).padStart(2, '0')}</span>
-              <a href={n.url} class="home-popular-book">
-                <img src={n.cover} alt="" width="52" height="76" loading="lazy" decoding="async" />
-                <span>
-                  <strong>{n.title}</strong>
-                  <small>{chapterCount(n.chapterCount)} · {n.genres[0]}</small>
-                </span>
-              </a>
-              <span class="home-views">{viewsLabel.format(n.views ?? 0)} просмотров</span>
-            </li>
-          ))}
-        </ol>
-      ) : (
-        <div class="home-popular-empty">
-          <span class="home-popular-mark" aria-hidden="true">☆</span>
-          <div>
-            <h3>Рейтинг пока формируется</h3>
-            <p>Когда появятся реальные данные о просмотрах, здесь будут самые читаемые новеллы. Пока можно найти историю в каталоге.</p>
-          </div>
-          <a class="button secondary" href="/catalog/">В каталог</a>
-        </div>
-      )}
+      <ol class="home-popular-list">
+        {popular.map((n, i) => (
+          <li>
+            <span class="home-rank">{String(i + 1).padStart(2, '0')}</span>
+            <a href={n.url} class="home-popular-book">
+              <img src={n.cover} alt="" width="52" height="76" loading="lazy" decoding="async" />
+              <span>
+                <strong>{n.title}</strong>
+                <small>{chapterCount(n.chapterCount)} · {n.genres[0]}</small>
+              </span>
+            </a>
+            <span class="home-views">{viewsLabel.format(n.views ?? 0)} просмотров</span>
+          </li>
+        ))}
+      </ol>
     </section>
+    )}
 
     <section id="recommended-novels" class="section home-section" aria-labelledby="recommended-title">
       <div class="section-heading home-section-heading">
