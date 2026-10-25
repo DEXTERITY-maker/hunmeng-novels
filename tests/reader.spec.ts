@@ -343,7 +343,7 @@ test('оглавление произведения разбито на стра
   await page.locator('.chapter-pages .chapter-list a').first().click();
   await expect(page.locator('#chapter-text')).toBeVisible();
   await page.getByRole('button', { name: 'Открыть оглавление' }).click();
-  await expect(page.getByRole('link', { name: /Полное оглавление \(3 глав\)/ })).toBeVisible();
+  await expect(page.getByRole('link', { name: /Полное оглавление \(3 главы\)/ })).toBeVisible();
 });
 test('полки сохраняются и изменяются', async ({ page }) => {
   await page.goto('/novel/khranitel-mayaka/');
@@ -520,4 +520,35 @@ test('чтение работает без JavaScript', async ({ browser }) => {
   await page.locator('.chapter-end-nav').getByRole('link', { name: 'Следующая' }).click();
   await expect(page).toHaveURL(/glava-2/);
   await context.close();
+});
+
+test('склонение после клиентского поиска и в полном оглавлении', async ({ page }) => {
+  await page.goto('/catalog/?search=winter');
+  await expect(page.locator('.catalog-card-stats').first()).toBeVisible();
+  await expect(page.locator('#catalog-results .fine')).toContainText('4 главы');
+  await expect(page.locator('#catalog-results')).not.toContainText('4 глав ·');
+  await page.goto('/novel/sad-zimy/');
+  await expect(page.locator('.chapter-pages-footer')).toContainText('4 главы');
+  await page.goto('/novel/sad-zimy/glava-1/');
+  await page.getByRole('button', { name:'Открыть оглавление', exact:true }).click();
+  await expect(page.locator('.reader-toc-all')).toHaveText('Полное оглавление (4 главы) →');
+});
+test('контакты без выдуманных каналов и технических заглушек', async ({page}) => {
+  for (const route of ['/contacts/','/rights/']) {
+    await page.goto(route);
+    await expect(page.locator('main')).not.toContainText('Страница-заготовка');
+    await expect(page.locator('main a[href^="mailto:"], main a[href^="https://t.me/"]')).toHaveCount(0);
+    await expect(page.locator('main')).toContainText('пока не опубликован');
+  }
+});
+test('метка версии и исключение всей редакции из sitemap', async ({page}) => {
+  const version = await page.goto('/version.json');
+  const data = JSON.parse(await version!.text());
+  expect(data.version).toBe('0.2.2');
+  expect(data.commit === null || /^[0-9a-f]{40}$/.test(data.commit)).toBe(true);
+  const sitemap = (await (await page.goto('/sitemap-0.xml'))!.text());
+  expect(sitemap).not.toContain('/admin/');
+  expect(sitemap).not.toContain('/account/');
+  const robots = (await (await page.goto('/robots.txt'))!.text());
+  expect(robots).toContain('Disallow: /admin/');
 });

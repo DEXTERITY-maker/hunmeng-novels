@@ -1,0 +1,31 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+<Layout title="Вход в редакцию" noindex description="Вход администратора и редактора Хунмэнг.">
+  <main id="main" class="page-shell admin-login-page">
+    <a class="back-link" href="/">← На главную</a>
+    <header class="page-heading">
+      <p class="home-section-kicker">РЕДАКЦИЯ ХУНМЭНГ</p>
+      <h1>Вход в редакцию</h1>
+      <p>Для администраторов и редакторов с выданным доступом.</p>
+    </header>
+    <p id="admin-login-status" class="notice" role="status" aria-live="polite">Проверяем сессию…</p>
+    <form id="admin-login-form" class="account-card" method="post" action="/admin/login/">
+      <fieldset id="admin-login-fields" disabled>
+        <label>Email
+          <input name="email" type="email" autocomplete="username" required maxlength="254" />
+        </label>
+        <label>Пароль
+          <input name="password" type="password" autocomplete="current-password" required />
+        </label>
+        <button class="button" type="submit">Войти в редакцию</button>
+      </fieldset>
+    </form>
+    <p class="fine">Регистрации сотрудников на сайте нет. Доступ предоставляет владелец проекта.</p>
+    <noscript><p class="notice">Для безопасного входа включите JavaScript. Чтение новелл доступно без входа.</p></noscript>
+  </main>
+  <script>
+    import { initAdminLogin } from '../../scripts/admin-login';
+    void initAdminLogin();
+  </script>
+</Layout>

@@ -1,7 +1,7 @@
 ---
 import { render } from 'astro:content';
 import Layout from '../../../layouts/Layout.astro';
-import { getLibrary, chapterUrl } from '../../../lib/content';
+import { getLibrary, chapterUrl, chapterCount } from '../../../lib/content';
 import { CHAPTERS_PER_PAGE, chapterListUrl } from '../../../lib/pagination';
 import { chapterReportUrl, chapterStructuredData, socialCover } from '../../../lib/seo';
 import { site } from '../../../config/site';
@@ -229,7 +229,7 @@ const coverIsSvg = n.cover.endsWith('.svg');
         </li>
       ))}
     </ol>
-    <a class="reader-toc-all" href={chapterListUrl(n.slug, tocPage)}>Полное оглавление ({n.chapterCount} глав) →</a>
+    <a class="reader-toc-all" href={chapterListUrl(n.slug, tocPage)}>Полное оглавление ({chapterCount(n.chapterCount)}) →</a>
   </dialog>
   <noscript>
     <p class="notice">

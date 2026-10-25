@@ -2872,3 +2872,15 @@ html[data-theme='dark'] .brand-logo-dark {
 .chapter-report{display:flex;justify-content:center;margin:24px 0 12px}
 .chapter-report-link{font-size:.9rem}
 @media(max-width:650px){.glossary-groups{grid-template-columns:minmax(0,1fr);gap:12px}.glossary-group{padding:15px}.author-outbound-links{align-items:stretch}.author-outbound-links a,.chapter-report-link{width:100%}}
+
+/* Вход редакции: те же локальные шрифты и доступные размеры, что на сайте. */
+.admin-login-page { max-width: 620px; }
+.admin-login-page .account-card { max-width: none; }
+#admin-login-fields { display: grid; gap: 20px; border: 0; padding: 0; margin: 0; min-width: 0; }
+#admin-login-fields input { width: 100%; min-height: 44px; }
+#admin-login-fields button { min-height: 44px; }
+#admin-login-fields:disabled { opacity: .65; }
+.admin-auth-actions { display: flex; flex-wrap: wrap; gap: 12px; margin: 0 0 24px; }
+.admin-auth-actions > [hidden] { display: none; }
+.contact-channels { display: grid; gap: 14px; padding-left: 22px; overflow-wrap: anywhere; }
+@media (max-width: 480px) { .admin-auth-actions > .button { width: 100%; } }
