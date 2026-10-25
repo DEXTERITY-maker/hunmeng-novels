@@ -8,6 +8,10 @@ export interface ClientNovel {
   slug: string;
   title: string;
   originalTitle: string;
+  author?: string;
+  categories?: string[];
+  views?: number | null;
+  rating?: { average: number; count: number } | null;
   cover: string;
   description: string;
   genres: string[];
@@ -36,4 +40,31 @@ export function element<K extends keyof HTMLElementTagNameMap>(
   if (text) el.textContent = text;
   if (className) el.className = className;
   return el;
+}
+
+export interface CatalogIndexNovel {
+  slug: string;
+  title: string;
+  originalTitle: string;
+  author: string;
+  cover: string;
+  description: string;
+  genres: string[];
+  categories: string[];
+  tags: string[];
+  originalStatus: string;
+  translationStatus: string;
+  updatedAt: string;
+  addedAt?: string;
+  chapterCount: number;
+  url: string;
+  views: number | null;
+  rating: { average: number; count: number } | null;
+}
+let indexData: Promise<CatalogIndexNovel[]> | undefined;
+export function getCatalogIndex() {
+  return (indexData ??= fetch('/catalog-index.json').then((response) => {
+    if (!response.ok) throw new Error('Не удалось загрузить поисковый индекс');
+    return response.json() as Promise<CatalogIndexNovel[]>;
+  }));
 }

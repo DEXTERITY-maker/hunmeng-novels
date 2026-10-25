@@ -2,10 +2,12 @@
 import Layout from '../../../layouts/Layout.astro';
 import LibraryControl from '../../../components/LibraryControl.astro';
 import { getLibrary, dateLabel, chapterCount, chapterUrl } from '../../../lib/content';
+import { chapterListUrl } from '../../../lib/pagination';
 export async function getStaticPaths() {
   return (await getLibrary()).map((n) => ({ params: { slug: n.slug }, props: { novel: n } }));
 }
 const { novel: n } = Astro.props;
+const firstChapters = n.chapters.slice(0, 30);
 ---
 
 <Layout title={`${n.title} — читать онлайн`} description={n.description}>
@@ -24,6 +26,11 @@ const { novel: n } = Astro.props;
       />
       <div class="detail-copy">
         <p class="genre-line">{n.genres.join(' · ')}</p>
+        <div class="work-categories" aria-label="Категории">
+          {n.categories.map((category) => (
+            <a href={`/catalog/?category=${encodeURIComponent(category)}`}>{category}</a>
+          ))}
+        </div>
         <h1>{n.title}</h1>
         <p class="original-title">{n.originalTitle}</p>
         <p class="author">{n.author}</p>
@@ -42,6 +49,14 @@ const { novel: n } = Astro.props;
             <dd>{chapterCount(n.chapterCount)}</dd>
           </div>
           <div>
+            <dt>Рейтинг читателей</dt>
+            <dd>{n.rating ? `★ ${n.rating.average.toFixed(1)} / 5 · ${n.rating.count} оценок` : 'Пока нет оценок'}</dd>
+          </div>
+          <div>
+            <dt>Просмотры</dt>
+            <dd>{typeof n.views === 'number' ? new Intl.NumberFormat('ru-RU').format(n.views) : 'Нет данных'}</dd>
+          </div>
+          <div>
             <dt>Обновлено</dt>
             <dd>
               <time datetime={n.updatedAt}>{dateLabel(n.updatedAt)}</time>
@@ -50,8 +65,17 @@ const { novel: n } = Astro.props;
         </dl>
         <div class="tag-list">
           {n.tags.map((t) => (
-            <span>{t}</span>
+            <a href={`/catalog/?include=${encodeURIComponent(t)}`}>{t}</a>
           ))}
+        </div>
+        <div class="personal-rating" data-rating-novel={n.slug}>
+          <p class="personal-rating-title">Ваша оценка</p>
+          <div class="personal-rating-stars" role="group" aria-label="Поставить личную оценку">
+            {[1, 2, 3, 4, 5].map((star) => (
+              <button type="button" data-star={star} aria-label={`Оценить на ${star} из 5`} aria-pressed="false">★</button>
+            ))}
+          </div>
+          <p class="fine" data-rating-status aria-live="polite">Оценка сохраняется только на вашем устройстве и не влияет на общий рейтинг.</p>
         </div>
         <div class="detail-actions">
           <a class="button" href={n.firstUrl} data-continue={n.slug}>
@@ -75,7 +99,7 @@ const { novel: n } = Astro.props;
         <span class="fine">{chapterCount(n.chapterCount)}</span>
       </div>
       <ol class="chapter-list">
-        {n.chapters.map((c) => (
+        {firstChapters.map((c) => (
           <li>
             <a href={chapterUrl(n.slug, c.data.slug)} data-chapter-slug={c.data.slug}>
               <span>
@@ -87,10 +111,16 @@ const { novel: n } = Astro.props;
           </li>
         ))}
       </ol>
+      <div class="chapter-pages-footer">
+        <p class="fine">{n.chapterCount > firstChapters.length ? `Показаны первые ${firstChapters.length} глав из ${n.chapterCount}.` : `Все ${n.chapterCount} глав доступны по ссылкам выше.`}</p>
+        <a class="button secondary" href={chapterListUrl(n.slug, 1)}>Полное оглавление →</a>
+      </div>
     </section>
   </main>
   <script>
     import { initPersonal } from '../../../scripts/personal';
     void initPersonal();
+    import { initPersonalRatings } from '../../../scripts/rating';
+    initPersonalRatings();
   </script>
 </Layout>

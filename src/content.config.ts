@@ -21,6 +21,8 @@ const novels = defineCollection({
     description: z.string().min(20),
     genres: z.array(z.string()).min(1),
     tags: z.array(z.string()),
+    categories: z.array(z.string().min(1)).default([]),
+    rating: z.object({ average: z.number().min(1).max(5), count: z.number().int().positive() }).optional(),
     originalStatus: z.enum(['Продолжается', 'Завершён', 'Приостановлен']),
     translationStatus: z.enum(['Переводится', 'Завершён', 'Приостановлен']),
     updatedAt: date,

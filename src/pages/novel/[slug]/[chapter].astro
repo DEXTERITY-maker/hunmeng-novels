@@ -2,6 +2,7 @@
 import { render } from 'astro:content';
 import Layout from '../../../layouts/Layout.astro';
 import { getLibrary, chapterUrl } from '../../../lib/content';
+import { CHAPTERS_PER_PAGE, chapterListUrl } from '../../../lib/pagination';
 export async function getStaticPaths() {
   return (await getLibrary()).flatMap((n) =>
     n.chapters.map((c, i) => ({
@@ -14,6 +15,8 @@ const { novel: n, chapter: c, index } = Astro.props;
 const { Content } = await render(c);
 const prev = n.chapters[index - 1],
   next = n.chapters[index + 1];
+const nearby = n.chapters.slice(Math.max(0, index - 10), Math.min(n.chapterCount, index + 11));
+const tocPage = Math.floor(index / CHAPTERS_PER_PAGE) + 1;
 ---
 
 <Layout
@@ -198,7 +201,7 @@ const prev = n.chapters[index - 1],
     </div>
     <p>{n.title}</p>
     <ol class="chapter-list">
-      {n.chapters.map((ch) => (
+      {nearby.map((ch) => (
         <li>
           <a
             href={chapterUrl(n.slug, ch.data.slug)}
@@ -209,6 +212,7 @@ const prev = n.chapters[index - 1],
         </li>
       ))}
     </ol>
+    <a class="reader-toc-all" href={chapterListUrl(n.slug, tocPage)}>Полное оглавление ({n.chapterCount} глав) →</a>
   </dialog>
   <noscript>
     <p class="notice">
