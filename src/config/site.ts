@@ -4,7 +4,10 @@ export const site = {
   latinName: 'Hunmeng Novels',
   description: 'Хунмэнг — новеллы на русском. Истории для неспешного чтения.',
   // Основной адрес сайта; используется при сборке, если SITE_URL не задан.
-  url: 'https://hunmeng.net',
+  url: 'https://dexterity-maker-hunmeng-novels-364c.twc1.net',
+  // Пустая строка: кнопки сообщения об ошибке в главах не показываются.
+  // Позже можно указать https://t.me/YourBot?start=report_{novel}_{chapter}
+  reportUrl: '',
   // Reader accounts are disabled until data localization and availability are addressed.
   features: { accounts: false },
   // Локальные версии логотипа для светлой/сепии и тёмной темы.

@@ -257,15 +257,83 @@ test('ссылки категории и тегов открывают ката�
   await expect(page.locator('input[name=include][value="Море"]')).toBeChecked();
   await expect(page.locator('[data-novel]:visible')).toHaveCount(1);
 });
+
+test('социальные карточки: OG и Twitter, дефолтный PNG 1200x630', async ({ page }) => {
+  for (const url of ['/', '/catalog/', '/news/', '/about/', '/library/']) {
+    await page.goto(url);
+    const image = await page.locator('meta[property="og:image"]').getAttribute('content');
+    expect(image).toMatch(/^https:\/\/.*\/images\/og-default\.png$/);
+    await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute('content', 'summary_large_image');
+    await expect(page.locator('meta[name="twitter:image"]')).toHaveAttribute('content', image!);
+    await expect(page.locator('meta[property="og:image:width"]')).toHaveAttribute('content', '1200');
+    await expect(page.locator('meta[property="og:image:height"]')).toHaveAttribute('content', '630');
+  }
+  const image = await page.request.get('/images/og-default.png');
+  expect(image.ok()).toBeTruthy();
+  const bytes = await image.body();
+  expect(bytes.toString('ascii', 1, 4)).toBe('PNG');
+  expect(bytes.readUInt32BE(16)).toBe(1200);
+  expect(bytes.readUInt32BE(20)).toBe(630);
+});
+test('OG обложка романа и глав — одна PNG с корректными размерами', async ({ page }) => {
+  for (const url of ['/novel/khranitel-mayaka/', chapter, '/novel/khranitel-mayaka/glava-2/']) {
+    await page.goto(url);
+    const image = await page.locator('meta[property="og:image"]').getAttribute('content');
+    expect(image).toMatch(/\/images\/khranitel-mayaka-og\.png$/);
+    await expect(page.locator('meta[name="twitter:image"]')).toHaveAttribute('content', image!);
+    await expect(page.locator('meta[property="og:image:width"]')).toHaveAttribute('content', '520');
+    await expect(page.locator('meta[property="og:image:height"]')).toHaveAttribute('content', '760');
+  }
+  const image = await page.request.get('/images/khranitel-mayaka-og.png');
+  expect(image.ok()).toBeTruthy();
+  const bytes = await image.body();
+  expect(bytes.readUInt32BE(16)).toBe(520);
+  expect(bytes.readUInt32BE(20)).toBe(760);
+});
+test('JSON-LD Book, Chapter и BreadcrumbList', async ({ page }) => {
+  await page.goto('/novel/khranitel-mayaka/');
+  const book = JSON.parse((await page.locator('script[type="application/ld+json"]').textContent())!);
+  const entity = book['@graph'].find((value: { '@type': string }) => value['@type'] === 'Book');
+  const crumbs = book['@graph'].find((value: { '@type': string }) => value['@type'] === 'BreadcrumbList');
+  expect(entity.name).toBe('Хранитель тихого маяка');
+  expect(entity.image).toMatch(/khranitel-mayaka-og\.png$/);
+  expect(crumbs.itemListElement.map((item: { name: string }) => item.name)).toEqual(['Главная', 'Каталог', 'Хранитель тихого маяка']);
+  await page.goto(chapter);
+  const chapterData = JSON.parse((await page.locator('script[type="application/ld+json"]').textContent())!);
+  const chapterEntity = chapterData['@graph'].find((value: { '@type': string }) => value['@type'] === 'Chapter');
+  const trail = chapterData['@graph'].find((value: { '@type': string }) => value['@type'] === 'BreadcrumbList');
+  expect(chapterEntity.position).toBe(1);
+  expect(chapterEntity.isPartOf['@id']).toMatch(/\/novel\/khranitel-mayaka\/#book$/);
+  expect(trail.itemListElement.map((item: { position: number }) => item.position)).toEqual([1, 2, 3, 4]);
+  expect(trail.itemListElement[3].item).toMatch(/\/novel\/khranitel-mayaka\/glava-1\/$/);
+});
+test('глоссарий по типам, сведения об авторе и отсутствие ложной лицензии у demo', async ({ page }) => {
+  await page.goto('/novel/khranitel-mayaka/');
+  await expect(page.getByRole('heading', { name: 'Глоссарий' })).toBeVisible();
+  await expect(page.locator('.glossary-group')).toHaveCount(4);
+  await expect(page.locator('.glossary-group h3')).toHaveText(['Персонажи', 'Места', 'Техники', 'Предметы']);
+  await expect(page.locator('.glossary-section')).toContainText('Возвращающий свет');
+  await expect(page.locator('.glossary-section')).toContainText('Returning Light');
+  await expect(page.getByRole('heading', { name: 'Об авторе' })).toBeVisible();
+  await expect(page.locator('.author-section')).toContainText('Алексей Ветров');
+  await expect(page.locator('.author-outbound-links')).toHaveCount(0);
+  await expect(page.locator('.author-section')).not.toContainText('Перевод публикуется с разрешения автора');
+});
+test('пустой reportUrl не выводит кнопку в конце главы', async ({ page }) => {
+  await page.goto(chapter);
+  await expect(page.getByRole('link', { name: /Сообщить об ошибке/ })).toHaveCount(0);
+  await expect(page.locator('.chapter-report')).toHaveCount(0);
+});
+
 test('страница новеллы: статистика без фиктивных чисел и личная оценка', async ({ page }) => {
   await page.goto('/novel/khranitel-mayaka/');
-  await expect(page.getByText('Пока нет оценок')).toBeVisible();
-  await expect(page.getByText('Нет данных', { exact: true })).toBeVisible();
+  await expect(page.locator('.novel-facts')).not.toContainText('Рейтинг читателей');
+  await expect(page.locator('.novel-facts')).not.toContainText('Просмотры');
   await page.getByRole('button', { name: 'Оценить на 4 из 5' }).click();
   await expect(page.getByText('Ваша оценка: 4 из 5.', { exact: false })).toBeVisible();
   await page.reload();
   await expect(page.getByRole('button', { name: 'Оценить на 4 из 5' })).toHaveAttribute('aria-pressed', 'true');
-  await expect(page.getByText('Пока нет оценок')).toBeVisible();
+  await expect(page.locator('.novel-facts')).not.toContainText('Рейтинг читателей');
 });
 test('оглавление произведения разбито на страницы, диалог не выводит весь список', async ({ page }) => {
   await page.goto('/novel/khranitel-mayaka/');

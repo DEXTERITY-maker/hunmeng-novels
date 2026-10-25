@@ -3,14 +3,35 @@ import Layout from '../../../layouts/Layout.astro';
 import LibraryControl from '../../../components/LibraryControl.astro';
 import { getLibrary, dateLabel, chapterCount, chapterUrl } from '../../../lib/content';
 import { chapterListUrl } from '../../../lib/pagination';
+import { novelStructuredData, socialCover } from '../../../lib/seo';
+import { site } from '../../../config/site';
 export async function getStaticPaths() {
   return (await getLibrary()).map((n) => ({ params: { slug: n.slug }, props: { novel: n } }));
 }
 const { novel: n } = Astro.props;
 const firstChapters = n.chapters.slice(0, 30);
+const glossaryKinds = [
+  { type: 'персонаж', title: 'Персонажи' },
+  { type: 'место', title: 'Места' },
+  { type: 'техника', title: 'Техники' },
+  { type: 'предмет', title: 'Предметы' },
+] as const;
+const glossaryGroups = glossaryKinds.map(({ type, title }) => ({
+  title, entries: n.glossary.filter((term) => term.type === type),
+})).filter(({ entries }) => entries.length > 0);
+const structuredData = novelStructuredData(n, Astro.site || site.url);
+const coverIsSvg = n.cover.endsWith('.svg');
 ---
 
-<Layout title={`${n.title} — читать онлайн`} description={n.description}>
+<Layout
+  title={`${n.title} — читать онлайн`}
+  description={n.description}
+  ogImage={socialCover(n.cover)}
+  ogImageWidth={coverIsSvg ? 520 : undefined}
+  ogImageHeight={coverIsSvg ? 760 : undefined}
+  ogImageAlt={`Обложка новеллы «${n.title}»`}
+  structuredData={structuredData}
+>
   <main id="main" class="page-shell">
     <a class="back-link" href="/catalog/">
       ← Каталог
@@ -48,14 +69,18 @@ const firstChapters = n.chapters.slice(0, 30);
             <dt>Объём</dt>
             <dd>{chapterCount(n.chapterCount)}</dd>
           </div>
-          <div>
-            <dt>Рейтинг читателей</dt>
-            <dd>{n.rating ? `★ ${n.rating.average.toFixed(1)} / 5 · ${n.rating.count} оценок` : 'Пока нет оценок'}</dd>
-          </div>
-          <div>
-            <dt>Просмотры</dt>
-            <dd>{typeof n.views === 'number' ? new Intl.NumberFormat('ru-RU').format(n.views) : 'Нет данных'}</dd>
-          </div>
+          {n.rating && (
+            <div>
+              <dt>Рейтинг читателей</dt>
+              <dd>★ {n.rating.average.toFixed(1)} / 5 · {n.rating.count} оценок</dd>
+            </div>
+          )}
+          {typeof n.views === 'number' && (
+            <div>
+              <dt>Просмотры</dt>
+              <dd>{new Intl.NumberFormat('ru-RU').format(n.views)}</dd>
+            </div>
+          )}
           <div>
             <dt>Обновлено</dt>
             <dd>
@@ -83,16 +108,46 @@ const firstChapters = n.chapters.slice(0, 30);
           </a>
           <LibraryControl slug={n.slug} />
         </div>
-        <p class="fine">
-          {n.demo
-            ? 'Демонстрационная новелла. Текст и автор вымышлены; ссылка на оригинал — пример.'
-            : 'Перевод нейросетью с разрешения автора.'}{' '}
-          <a href={n.originalUrl} target="_blank" rel="noopener noreferrer">
-            {n.demo ? 'Пример ссылки на оригинал ↗' : 'Оригинал ↗'}
-          </a>
-        </p>
+        {n.demo && (
+          <p class="fine">Демонстрационная новелла. Текст и автор вымышлены.</p>
+        )}
       </div>
     </article>
+    <section class="section author-section" aria-labelledby="author-title">
+      <div class="section-heading"><h2 id="author-title">Об авторе</h2></div>
+      <p class="author-info-name">{n.author}</p>
+      {(n.authorUrl || n.supportUrl) && (
+        <div class="author-outbound-links">
+          {n.authorUrl && (
+            <a href={n.authorUrl} target="_blank" rel="noopener noreferrer">Оригинал у автора ↗</a>
+          )}
+          {n.supportUrl && (
+            <a href={n.supportUrl} target="_blank" rel="noopener noreferrer">Поддержать автора ↗</a>
+          )}
+        </div>
+      )}
+      {!n.demo && <p class="fine author-permission">Перевод публикуется с разрешения автора.</p>}
+    </section>
+    {glossaryGroups.length > 0 && (
+      <section class="section glossary-section" aria-labelledby="glossary-title">
+        <div class="section-heading"><h2 id="glossary-title">Глоссарий</h2></div>
+        <div class="glossary-groups">
+          {glossaryGroups.map((group) => (
+            <div class="glossary-group">
+              <h3>{group.title}</h3>
+              <dl class="glossary-entries">
+                {group.entries.map((term) => (
+                  <div class="glossary-entry">
+                    <dt>{term.translation}</dt>
+                    <dd>{term.original}</dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+          ))}
+        </div>
+      </section>
+    )}
     <section class="section contents-section" aria-labelledby="contents-title">
       <div class="section-heading">
         <h2 id="contents-title">Оглавление</h2>

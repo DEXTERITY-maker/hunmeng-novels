@@ -2851,3 +2851,24 @@ html[data-theme='dark'] .brand-logo-dark {
 .account-google-button { display:inline-flex; align-items:center; justify-content:center; gap:10px; min-height:49px; width:100% }
 .google-icon { font-family:Arial,sans-serif; font-weight:800; font-size:1.25rem; color:#4285f4 }
 .account-google-hint { margin-top:10px; font-size:.82rem }
+
+
+/* v0.2.1 — атрибуция, группированный глоссарий, ссылка сообщения об ошибке */
+.author-section,.glossary-section{margin-top:28px}
+.author-section .section-heading,.glossary-section .section-heading{margin-bottom:14px}
+.author-info-name{font-size:1rem;font-weight:700;margin:0 0 12px}
+.author-outbound-links{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 10px}
+.author-outbound-links a,.chapter-report-link{display:inline-flex;align-items:center;justify-content:center;padding:9px 15px;border:1px solid var(--line);border-radius:8px;color:var(--accent);font-size:.87rem;min-height:44px;font-weight:650;background:var(--surface);text-decoration:none}
+.author-outbound-links a:hover,.chapter-report-link:hover{border-color:var(--accent);background:var(--soft)}
+.author-permission{margin-top:8px}
+.glossary-groups{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.glossary-group{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:18px;min-width:0}
+.glossary-group h3{font-size:1.05rem;margin:0 0 12px}
+.glossary-entries{margin:0}
+.glossary-entry{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line);overflow-wrap:anywhere}
+.glossary-entry:last-child{border-bottom:0}
+.glossary-entry dt{font-weight:650}
+.glossary-entry dd{margin:0;font-size:.83rem;color:var(--muted)}
+.chapter-report{display:flex;justify-content:center;margin:24px 0 12px}
+.chapter-report-link{font-size:.9rem}
+@media(max-width:650px){.glossary-groups{grid-template-columns:minmax(0,1fr);gap:12px}.glossary-group{padding:15px}.author-outbound-links{align-items:stretch}.author-outbound-links a,.chapter-report-link{width:100%}}
