@@ -3,6 +3,8 @@ import { site } from '../config/site';
 import Brand from '../components/Brand.astro';
 import { settingsBootstrap } from '../lib/storage';
 import '../styles/global.css';
+import '../styles/design.css';
+import '@fontsource-variable/lora/wght.css';
 import '@fontsource-variable/manrope/wght.css';
 import '@fontsource-variable/noto-serif/wght.css';
 interface Props {
@@ -107,7 +109,7 @@ const tokens = `:root{--bg:${c.background};--surface:${c.surface};--ink:${c.text
               ['/news/', 'Новости'],
               ...(site.features.accounts ? [['/account/', 'Войти']] : []),
             ].map(([url, label]) => (
-              <a href={url} aria-current={Astro.url.pathname === url ? 'page' : undefined}>
+              <a href={url} data-account-link={url === "/account/" || undefined} aria-current={Astro.url.pathname === url ? 'page' : undefined}>
                 {label}
               </a>
             ))}
@@ -143,6 +145,9 @@ const tokens = `:root{--bg:${c.background};--surface:${c.surface};--ink:${c.text
       void apply();
       onStorageChange(() => void apply());
       import { site } from '../config/site';
+      if (site.features.accounts) {
+        void import('../scripts/account-nav').then(({ initAccountNav }) => initAccountNav());
+      }
       if (site.features.accounts && site.features.readerSync) {
         void import('../lib/sync').then(({ startReaderSync }) => startReaderSync());
       }

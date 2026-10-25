@@ -33,11 +33,9 @@ function card(n: CatalogIndexNovel) {
   body.append(h2, make('p', n.originalTitle + ' · ' + n.author, 'original-title'));
   body.append(make('p', n.description, 'card-description'));
   const stats = make('p', undefined, 'catalog-card-stats');
-  stats.append(
-    make('span', '★ ' + (n.rating ? n.rating.average.toFixed(1) + ' / 5 · ' + n.rating.count + ' оценок' : 'Нет оценок')),
-    make('span', '◉ ' + (n.views === null ? 'Нет данных о просмотрах' : numberLabel(n.views) + ' просмотров')),
-  );
-  body.append(stats);
+  if (n.rating) stats.append(make('span', '★ ' + n.rating.average.toFixed(1) + ' / 5 · ' + n.rating.count + ' оценок'));
+  if (n.views !== null) stats.append(make('span', '◉ ' + numberLabel(n.views) + ' просмотров'));
+  if (stats.childElementCount) body.append(stats);
   const meta = make('p', undefined, 'fine');
   meta.append(document.createTextNode(chapterCount(n.chapterCount) + ' · ' + n.translationStatus + ' · '));
   const time = make('time', new Intl.DateTimeFormat('ru-RU', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(n.updatedAt)));

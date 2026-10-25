@@ -15,10 +15,10 @@ const { novel: n } = Astro.props;
     <h2><a href={n.url}>{n.title}</a></h2>
     <p class="original-title">{n.originalTitle} · {n.author}</p>
     <p class="card-description">{n.description}</p>
-    <p class="catalog-card-stats">
-      <span>★ {n.rating ? `${n.rating.average.toFixed(1)} / 5 · ${n.rating.count} оценок` : 'Нет оценок'}</span>
-      <span>◉ {typeof n.views === 'number' ? `${new Intl.NumberFormat('ru-RU').format(n.views)} просмотров` : 'Нет данных о просмотрах'}</span>
-    </p>
+    {(n.rating || typeof n.views === 'number') && <p class="catalog-card-stats">
+      {n.rating && <span>★ {n.rating.average.toFixed(1)} / 5 · {n.rating.count} оценок</span>}
+      {typeof n.views === 'number' && <span>◉ {new Intl.NumberFormat('ru-RU').format(n.views)} просмотров</span>}
+    </p>}
     <p class="fine">
       {chapterCount(n.chapterCount)} · {n.translationStatus} ·{' '}
       <time datetime={n.updatedAt}>{dateLabel(n.updatedAt)}</time>

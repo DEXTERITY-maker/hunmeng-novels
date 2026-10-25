@@ -243,8 +243,8 @@ test('расширенный каталог: категории, автор, к�
   await page.getByRole('button', { name: 'Сбросить фильтры' }).click();
   await page.locator('select[name=sort]').selectOption('views');
   await expect(page.locator('[data-novel]:visible')).toHaveCount(2);
-  await expect(page.locator('.catalog-card-stats').first()).toContainText('Нет оценок');
-  await expect(page.locator('.catalog-card-stats').first()).toContainText('Нет данных о просмотрах');
+  await expect(page.locator('.catalog-card-stats')).toHaveCount(0);
+  await expect(page.locator('#catalog-results')).not.toContainText('Нет данных о просмотрах');
 });
 test('ссылки категории и тегов открывают каталог с предустановленными фильтрами', async ({ page }) => {
   await page.goto('/novel/sad-zimy/');
@@ -523,7 +523,7 @@ test('чтение работает без JavaScript', async ({ browser }) => {
 
 test('склонение после клиентского поиска и в полном оглавлении', async ({ page }) => {
   await page.goto('/catalog/?search=winter');
-  await expect(page.locator('.catalog-card-stats').first()).toBeVisible();
+  await expect(page.locator('#catalog-results .novel-card')).toHaveCount(1);
   await expect(page.locator('#catalog-results .fine')).toContainText('4 главы');
   await expect(page.locator('#catalog-results')).not.toContainText('4 глав ·');
   await page.goto('/novel/sad-zimy/');
@@ -543,7 +543,7 @@ test('контакты без выдуманных каналов и техни�
 test('метка версии и исключение всей редакции из sitemap', async ({page}) => {
   const version = await page.goto('/version.json');
   const data = JSON.parse(await version!.text());
-  expect(data.version).toBe('0.2.3');
+  expect(data.version).toBe('0.3.0');
   expect(data.commit === null || /^[0-9a-f]{40}$/.test(data.commit)).toBe(true);
   const sitemap = (await (await page.goto('/sitemap-0.xml'))!.text());
   expect(sitemap).not.toContain('/admin/');

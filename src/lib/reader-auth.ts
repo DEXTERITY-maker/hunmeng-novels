@@ -1,6 +1,7 @@
 import { createClient, type AuthError } from '@supabase/supabase-js';
 
-export const READER_AUTH_KEY = 'hunmeng-novels:reader-auth:v1';
+import { READER_AUTH_KEY } from './auth-constants';
+export { READER_AUTH_KEY } from './auth-constants';
 const url = (import.meta.env.PUBLIC_SUPABASE_URL as string | undefined)?.replace(/\/+$/, '') ?? '';
 const key = (import.meta.env.PUBLIC_SUPABASE_PUBLISHABLE_KEY as string | undefined) ?? '';
 export const readerAuthConfigured = /^https:\/\/[a-z0-9.-]+\.supabase\.co$/.test(url) && key.startsWith('sb_publishable_');
