@@ -10,6 +10,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   publish:
+    if: ${{ vars.HUNMENG_PUBLISH_ENABLED == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
