@@ -8,6 +8,8 @@ export const site = {
   // Пустая строка: кнопки сообщения об ошибке в главах не показываются.
   // Позже укажите https://t.me/YourBot: для главы используется start=e_{novel}_{number}.
   reportUrl: '',
+  // Реальные каналы добавляет владелец. Пустые строки не создают ссылок.
+  contacts: { email: '', telegram: '', rightsEmail: '' },
   // Reader accounts are disabled until data localization and availability are addressed.
   features: { accounts: false },
   // Локальные версии логотипа для светлой/сепии и тёмной темы.

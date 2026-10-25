@@ -1,4 +1,5 @@
 import { getCatalogIndex, type CatalogIndexNovel } from '../lib/client-data';
+import { chapterCount } from '../lib/format';
 
 const PAGE_SIZES = [24, 48];
 const fold = (s: string) => s.normalize('NFKC').toLocaleLowerCase('ru').replaceAll('ё', 'е').trim();
@@ -38,7 +39,7 @@ function card(n: CatalogIndexNovel) {
   );
   body.append(stats);
   const meta = make('p', undefined, 'fine');
-  meta.append(document.createTextNode(n.chapterCount + ' глав · ' + n.translationStatus + ' · '));
+  meta.append(document.createTextNode(chapterCount(n.chapterCount) + ' · ' + n.translationStatus + ' · '));
   const time = make('time', new Intl.DateTimeFormat('ru-RU', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(n.updatedAt)));
   time.dateTime = n.updatedAt;
   meta.append(time);

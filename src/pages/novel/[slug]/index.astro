@@ -167,7 +167,7 @@ const coverIsSvg = n.cover.endsWith('.svg');
         ))}
       </ol>
       <div class="chapter-pages-footer">
-        <p class="fine">{n.chapterCount > firstChapters.length ? `Показаны первые ${firstChapters.length} глав из ${n.chapterCount}.` : `Все ${n.chapterCount} глав доступны по ссылкам выше.`}</p>
+        <p class="fine">{n.chapterCount > firstChapters.length ? `В списке: ${chapterCount(firstChapters.length)} из ${n.chapterCount}.` : `Доступно для чтения: ${chapterCount(n.chapterCount)}.`}</p>
         <a class="button secondary" href={chapterListUrl(n.slug, 1)}>Полное оглавление →</a>
       </div>
     </section>
