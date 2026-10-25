@@ -25,7 +25,7 @@ export async function syncReaderState() {
         if (!merged.progress[slug] || progress.updatedAt >= merged.progress[slug].updatedAt)
           merged.progress[slug] = progress;
       }
-      // Настройки чтения на текущем устройстве сохраняют приоритет.
+      // Reading settings on this device take priority.
       await repository.restoreState(merged);
     }
     await rest('novel_reader_state','POST','',

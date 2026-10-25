@@ -16,7 +16,7 @@ test('продолжение, переход в следующую опубли�
 });
 test('последняя прочитанная глава означает конец опубликованных глав, новые главы возвращают продолжение',()=>{
  const p=progress('glava-3',1),a=readingAction(novel,p);
- assert.equal(a.kind,'caught-up');assert.equal(a.label,'Читать сначала');assert.equal(a.url,novel.firstUrl);
+ assert.equal(a.kind,'caught-up');assert.equal(a.label,'Read from the beginning');assert.equal(a.url,novel.firstUrl);
  const updated={...novel,chapters:[...chapters,{slug:'glava-4',number:4,url:'/novel/demo/glava-4/'}]};
  assert.equal(readingAction(updated,p).kind,'next');assert.equal(readingAction(updated,p).url,'/novel/demo/glava-4/');
  assert.equal(readingAction({...novel,chapters:[]},p).kind,'start');

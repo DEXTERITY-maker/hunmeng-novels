@@ -1,3 +1,4 @@
+import { rightsStatusLabels, jobStatusLabels } from '../lib/labels';
 import { backendConfigured, BackendError, getStaffRole, rest, signOut, type ApiRecord, type StaffRole } from '../lib/backend';
 
 type Source = {
@@ -33,35 +34,35 @@ export async function initAdmin() {
   };
   window.addEventListener('hunmeng:session-ended', () => {
     logout.hidden = true;
-    lock('Сессия завершена. Войдите в редакцию снова.');
+    lock('Your session has ended. Sign in to the editorial team again.');
   });
   logout.addEventListener('click', async () => {
     logout.disabled = true;
     const revoked = await signOut();
-    lock(revoked ? 'Вы вышли из редакции.' :
-      'Вы вышли в этой вкладке. Сервер не подтвердил завершение сессии: повторите вход и выход, когда соединение восстановится.');
+    lock(revoked ? 'You are signed out of editorial tools.' :
+      'You are signed out in this tab. The server could not confirm sign-out. Sign in and out again when your connection is restored.');
     logout.hidden = true;
     logout.disabled = false;
   });
   if (!backendConfigured) {
-    message.textContent = 'Сервер авторизации не настроен. Обратитесь к владельцу проекта.';
+    message.textContent = 'Sign-in is not configured. Contact the project owner.';
     return;
   }
   let role: StaffRole | null;
   try { role = await getStaffRole(); }
   catch (error) {
-    message.textContent = error instanceof BackendError ? error.message : 'Не удалось проверить доступ. Повторите попытку.';
+    message.textContent = error instanceof BackendError ? error.message : 'Unable to verify access. Please try again.';
     return;
   }
   if (!role) {
-    message.textContent = 'Доступ запрещён. Войдите в аккаунт редактора или администратора.';
+    message.textContent = 'Access denied. Sign in with an editor or administrator account.';
     return;
   }
   loginLink.hidden = true;
   logout.hidden = false;
   workspace.hidden = false;
-  message.textContent = role === 'admin' ? 'Администратор: полный редакторский доступ.' :
-    'Редактор: доступны черновики и словарь, права и утверждение публикаций — только админу.';
+  message.textContent = role === 'admin' ? 'Administrator: full editorial access.' :
+    'Editor: drafts and glossary are available. Only administrators can manage permissions and approve publication.';
   const rightsForm = document.querySelector<HTMLFormElement>('#rights-form')!;
   const sourceForm = document.querySelector<HTMLFormElement>('#source-form')!;
   const termForm = document.querySelector<HTMLFormElement>('#term-form')!;
@@ -78,7 +79,7 @@ export async function initAdmin() {
   let jobs: Job[] = [];
 
   const notify = (error: unknown) => {
-    const text = error instanceof BackendError ? error.message : 'Сервер отклонил запрос. Повторите попытку.';
+    const text = error instanceof BackendError ? error.message : 'The server rejected the request. Please try again.';
     if (error instanceof BackendError && (error.status === 401 || error.status === 403)) lock(text);
     else message.textContent = text;
   };
@@ -89,10 +90,10 @@ export async function initAdmin() {
     checking = true;
     try {
       if (await getStaffRole() !== role) {
-        lock('Редакторский доступ изменился. Войдите в редакцию снова.');
+        lock('Your editorial access has changed. Sign in again.');
         await signOut();
       }
-    } catch (error) { lock('Не удалось подтвердить доступ. Войдите в редакцию снова.'); }
+    } catch (error) { lock('Unable to verify access. Sign in to the editorial team again.'); }
     finally { checking = false; }
   };
   window.addEventListener('focus', () => void checkAccess());
@@ -122,13 +123,13 @@ export async function initAdmin() {
     sourceOptions();
     sourcesDiv.replaceChildren();
     const ul = el('ul');
-    for (const source of sources) ul.append(el('li', source.slug + ' · ' + source.rights_status));
+    for (const source of sources) ul.append(el('li', source.slug + ' · ' + (rightsStatusLabels[source.rights_status] ?? 'Unknown status')));
     sourcesDiv.append(ul);
     termsDiv.replaceChildren();
     const termsList = el('ul');
     for (const term of terms) {
       const row = el('li', term.original_term + ' → ' + term.translated_term + ' ');
-      const remove = el('button', 'Удалить');
+      const remove = el('button', 'Delete');
       remove.type = 'button';
       remove.className = 'text-button';
       remove.onclick = async () => {
@@ -141,22 +142,22 @@ export async function initAdmin() {
     }
     termsDiv.append(termsList);
     jobsDiv.replaceChildren();
-    if (!jobs.length) jobsDiv.append(el('p', 'Очередь пока пуста.'));
+    if (!jobs.length) jobsDiv.append(el('p', 'The queue is empty.'));
     for (const job of jobs) {
       const wrapper = el('div');
       wrapper.className = 'admin-job-row';
       wrapper.append(el('strong',
-        (sources.find(s => s.id === job.source_id)?.slug ?? 'Источник') +
-        ' / ' + job.chapter_number + '. ' + job.chapter_title + ' · ' + job.status));
+        (sources.find(s => s.id === job.source_id)?.slug ?? 'Source') +
+        ' / ' + job.chapter_number + '. ' + job.chapter_title + ' · ' + (jobStatusLabels[job.status] ?? 'Unknown status')));
       const note = el('textarea') as HTMLTextAreaElement;
       note.value = job.qa_notes ?? '';
-      note.placeholder = 'Комментарий о проверке, минимум 20 символов для одобрения';
+      note.placeholder = 'Review notes, at least 20 characters for approval';
       note.rows = 2;
-      note.setAttribute('aria-label','Заметки проверки: '+job.chapter_title);
+      note.setAttribute('aria-label','Review notes: '+job.chapter_title);
       wrapper.append(note);
       const actions = el('div');
       actions.className = 'admin-actions';
-      const edit = el('button','Открыть в редакторе');
+      const edit = el('button','Open in editor');
       edit.type = 'button';
       edit.className = 'button secondary';
       edit.onclick = () => {
@@ -174,14 +175,14 @@ export async function initAdmin() {
       };
       actions.append(edit);
       if (role === 'admin' && job.status !== 'published') {
-        const approve = el('button','Одобрить для публикации');
+        const approve = el('button','Approve for publication');
         approve.type = 'button';
         approve.className = 'button';
         approve.onclick = async () => {
           try {
             await rest('novel_translation_jobs','PATCH','id=eq.'+job.id,
               {status:'approved',qa_notes:note.value});
-            message.textContent = 'Глава одобрена. Публикация выполняется серверным заданием.';
+            message.textContent = 'Chapter approved. A server job will publish it.';
             await load();
           } catch(error) { notify(error); }
         };
@@ -195,7 +196,7 @@ export async function initAdmin() {
       e.preventDefault();
       try {
         await fn(form);
-        message.textContent = 'Сохранено.';
+        message.textContent = 'Saved.';
         form.reset();
         await load();
       } catch (error) { notify(error); }

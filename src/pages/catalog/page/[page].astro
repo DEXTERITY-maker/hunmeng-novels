@@ -17,19 +17,19 @@ export async function getStaticPaths() {
 const { novels, page, pages } = Astro.props;
 ---
 
-<Layout title={`Каталог — страница ${page}`} description="Произведения Хунмэнг с возможностью перехода между страницами без JavaScript.">
+<Layout title={`Catalog — page ${page}`} description="Browse Hunmeng novels with pagination that works without JavaScript.">
   <main id="main" class="page-shell catalog-page">
     <div class="page-heading">
-      <h1>Каталог — страница {page}</h1>
-      <p>Все произведения. <a class="catalog-inline-link" href="/catalog/">Расширенный поиск и фильтры</a>.</p>
+      <h1>Catalog — page {page}</h1>
+      <p>All novels. <a class="catalog-inline-link" href="/catalog/">Advanced search and filters</a>.</p>
     </div>
     <div class="novel-grid">
       {novels.map((novel) => <NovelCard novel={novel} />)}
     </div>
-    <nav class="catalog-pagination" aria-label="Страницы каталога">
-      <a href={page === 2 ? '/catalog/' : `/catalog/page/${page - 1}/`}>← Назад</a>
-      <span>Страница {page} из {pages}</span>
-      {page < pages && <a href={`/catalog/page/${page + 1}/`}>Вперёд →</a>}
+    <nav class="catalog-pagination" aria-label="Catalog pages">
+      <a href={page === 2 ? '/catalog/' : `/catalog/page/${page - 1}/`}>← Previous</a>
+      <span>Page {page} of {pages}</span>
+      {page < pages && <a href={`/catalog/page/${page + 1}/`}>Next →</a>}
     </nav>
   </main>
 </Layout>

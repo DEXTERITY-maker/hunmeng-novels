@@ -8,15 +8,15 @@ const { slug } = Astro.props;
 
 <div class="library-control" data-library-control data-slug={slug}>
   <button class="button secondary" type="button" data-add-library>
-    В библиотеку
+    Add to library
   </button>
   <label class="shelf-picker" hidden>
-    Полка
-    <select data-shelf aria-label="Полка в библиотеке">
+    Shelf
+    <select data-shelf aria-label="Library shelf">
       {Object.entries(shelves).map(([value, label]) => (
         <option value={value}>{label}</option>
       ))}
-      <option value="remove">Убрать из библиотеки</option>
+      <option value="remove">Remove from library</option>
     </select>
   </label>
 </div>

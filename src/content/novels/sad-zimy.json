@@ -1,19 +1,19 @@
 {
   "slug": "sad-zimy",
-  "title": "Сад на краю зимы",
+  "title": "The Garden at Winter’s Edge",
   "originalTitle": "The Garden at Winter’s Edge",
-  "author": "Мария Лесная (демо)",
+  "author": "Maria Lesnaya (demo)",
   "originalUrl": "https://example.org/original/garden",
   "cover": "/images/sad-zimy.svg",
-  "description": "В городе, где зима длится слишком долго, переплётчица Ника получает ключ от заброшенной оранжереи. Чтобы вернуть саду весну, ей придётся научиться слушать чужие истории — и наконец рассказать свою.",
+  "description": "In a city where winter lasts too long, a bookbinder named Nika receives a key to an abandoned greenhouse. To bring spring back to the garden, she must learn to listen to other people’s stories—and finally tell her own.",
   "genres": [
-    "Фэнтези",
-    "Повседневность"
+    "Fantasy",
+    "Slice of life"
   ],
   "tags": [
-    "Уютная история",
-    "Магия",
-    "Дружба"
+    "Cozy",
+    "Magic",
+    "Friendship"
   ],
   "originalStatus": "Завершён",
   "translationStatus": "Завершён",
@@ -21,6 +21,6 @@
   "demo": true,
   "addedAt": "2026-10-24",
   "categories": [
-    "Повседневность"
+    "Slice of life"
   ]
 }

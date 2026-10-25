@@ -1,27 +1,27 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 ---
-<Layout title="Вход в редакцию" noindex description="Вход администратора и редактора Хунмэнг.">
+<Layout title="Editorial sign-in" noindex description="Sign in for Hunmeng administrators and editors.">
   <main id="main" class="page-shell admin-login-page">
-    <a class="back-link" href="/">← На главную</a>
+    <a class="back-link" href="/">← Home</a>
     <header class="page-heading">
-      <h1>Вход в редакцию</h1>
-      <p>Для администраторов и редакторов с выданным доступом.</p>
+      <h1>Editorial sign-in</h1>
+      <p>For administrators and editors who have been granted access.</p>
     </header>
-    <p id="admin-login-status" class="notice" role="status" aria-live="polite">Проверяем сессию…</p>
+    <p id="admin-login-status" class="notice" role="status" aria-live="polite">Checking your session…</p>
     <form id="admin-login-form" class="account-card" method="post" action="/admin/login/">
       <fieldset id="admin-login-fields" disabled>
         <label>Email
           <input name="email" type="email" autocomplete="username" required maxlength="254" />
         </label>
-        <label>Пароль
+        <label>Password
           <input name="password" type="password" autocomplete="current-password" required />
         </label>
-        <button class="button" type="submit">Войти в редакцию</button>
+        <button class="button" type="submit">Editorial sign-in</button>
       </fieldset>
     </form>
-    <p class="fine">Регистрации сотрудников на сайте нет. Доступ предоставляет владелец проекта.</p>
-    <noscript><p class="notice">Для безопасного входа включите JavaScript. Чтение новелл доступно без входа.</p></noscript>
+    <p class="fine">Staff cannot register on this site. The project owner grants access.</p>
+    <noscript><p class="notice">Enable JavaScript to sign in securely. You can read novels without signing in.</p></noscript>
   </main>
   <script>
     import { initAdminLogin } from '../../scripts/admin-login';

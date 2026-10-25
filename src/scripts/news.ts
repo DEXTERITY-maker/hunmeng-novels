@@ -102,8 +102,8 @@ export function initNewsReactions() {
       button.setAttribute('aria-pressed', String(active));
     }
     message.textContent = selected
-      ? `Вы выбрали ${selected}. ${writable ? 'Сохранено на этом устройстве.' : 'Локальное сохранение недоступно.'}`
-      : 'Пока без реакции.';
+      ? `You selected ${selected}. ${writable ? 'Saved on this device.' : 'Local storage is unavailable.'}`
+      : 'No reaction yet.';
   };
   for (const button of buttons) {
     button.addEventListener('click', () => {

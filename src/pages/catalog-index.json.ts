@@ -1,7 +1,7 @@
 import type { APIRoute } from 'astro';
 import { getLibrary } from '../lib/content';
 
-// Узкий индекс для поиска: главы и объёмные тексты остаются вне ответа.
+// Lightweight search index excludes chapter lists and full text.
 export const GET: APIRoute = async () =>
   new Response(
     JSON.stringify(

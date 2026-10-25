@@ -5,14 +5,14 @@ import { makePublicationNews } from '../scripts/publication-news.mjs';
 
 const date = '2026-10-25';
 const novel = {kind: 'novel', novelSlug: 'legenda-hunmeng',
-  novelTitle: 'Легенда Хунмэнг', date};
+  novelTitle: 'The Legend of Hunmeng', date};
 const chapter = {...novel, kind: 'chapter', chapterSlug: 'glava-1',
-  chapterNumber: 1, chapterTitle: 'Начало путешествия'};
+  chapterNumber: 1, chapterTitle: 'The Journey Begins'};
 
 test('authorized novel gets a single publication announcement without GitHub links', () => {
   const note = makePublicationNews(novel);
   assert.equal(note.name, 'publication-novel-legenda-hunmeng.md');
-  assert.match(note.content, /title: "Новая новелла: Легенда Хунмэнг"/);
+  assert.match(note.content, /title: "New novel: The Legend of Hunmeng"/);
   assert.match(note.content, /publishedAt: "2026-10-25"/);
   assert.match(note.content, /category: announcements/);
   assert.match(note.content, /\/novel\/legenda-hunmeng\//);
@@ -22,7 +22,7 @@ test('authorized novel gets a single publication announcement without GitHub lin
 test('new authorized chapter generates a stable link and no technical release note', () => {
   const note = makePublicationNews(chapter);
   assert.equal(note.name, 'publication-chapter-legenda-hunmeng--glava-1.md');
-  assert.match(note.content, /Новая глава: Легенда Хунмэнг — 1/);
+  assert.match(note.content, /New chapter: The Legend of Hunmeng — 1/);
   assert.match(note.content, /\/novel\/legenda-hunmeng\/glava-1\//);
   assert.deepEqual(makePublicationNews(chapter), note);
 });

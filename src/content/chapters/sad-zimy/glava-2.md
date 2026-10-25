@@ -2,19 +2,19 @@
 novelSlug: 'sad-zimy'
 slug: 'glava-2'
 number: 2
-title: 'Разговор с садовником'
+title: 'A Conversation with the Gardener'
 publishedAt: '2026-10-21'
-description: 'Глава 2. Разговор с садовником. Продолжение оригинальной демонстрационной истории.'
+description: 'Chapter 2. A Conversation with the Gardener. An original demo story.'
 ---
 
-На следующее утро в оранжерее сидел старик в соломенной шляпе. Он читал книгу Ники, осторожно придерживая рассыпающийся корешок.
+The next morning, an old man in a straw hat was sitting in the greenhouse. He was reading Nika’s book, carefully supporting its crumbling spine.
 
-— Ты умеешь возвращать страницам их место, — сказал он. — Это полезнее, чем может показаться. Растения тоже иногда забывают, в какой истории они растут.
+“You know how to put pages back where they belong,” he said. “That is more useful than it might seem. Plants sometimes forget which story they are growing in too.”
 
-В горшке с трещиной появился зелёный росток. Ника присела рядом и спросила, как его зовут. Старик улыбнулся: он ждал именно этого вопроса.
+A green shoot had appeared in the cracked pot. Nika crouched beside it and asked its name. The old man smiled: that was exactly the question he had been waiting for.
 
-— Имя придёт позже. Сначала ему нужно узнать твой голос. Расскажи что-нибудь простое. Например, почему ты любишь свою работу.
+“The name will come later. First, it needs to learn your voice. Tell it something simple. Why you love your work, for instance.”
 
-Ника начала с бумаги. С того, как звучит новая страница, как пахнет старый клей и как меняется лицо человека, получившего обратно любимую книгу.
+Nika began with paper. With the sound of a fresh page, the smell of old glue, and the way a person’s face changed when a beloved book was returned to them.
 
-Пока она говорила, на ростке раскрылись два листа. За стеклом по-прежнему шёл снег. Но теперь Ника знала, что это не единственное, что происходит в мире.
+While she spoke, two leaves unfolded on the shoot. Snow still fell beyond the glass. But Nika now knew it was not the only thing happening in the world.

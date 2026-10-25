@@ -10,7 +10,7 @@ export function readingAction(novel: ClientNovel, progress?: Progress) {
     return {
       kind: 'start' as const,
       url: novel.firstUrl,
-      label: 'Начать читать',
+      label: 'Start reading',
       chapter: novel.chapters[0],
       ratio: 0,
     };
@@ -21,7 +21,7 @@ export function readingAction(novel: ClientNovel, progress?: Progress) {
       return {
         kind: 'next' as const,
         url: next.url,
-        label: 'Следующая глава',
+        label: 'Next chapter',
         chapter: next,
         ratio: 0,
       };
@@ -29,7 +29,7 @@ export function readingAction(novel: ClientNovel, progress?: Progress) {
     return {
       kind: 'caught-up' as const,
       url: novel.firstUrl,
-      label: 'Читать сначала',
+      label: 'Read from the beginning',
       chapter: current,
       ratio: 1,
     };
@@ -37,7 +37,7 @@ export function readingAction(novel: ClientNovel, progress?: Progress) {
   return {
     kind: 'resume' as const,
     url: current.url + '?resume=1',
-    label: 'Продолжить',
+    label: 'Continue',
     chapter: current,
     ratio: progress.ratio,
   };

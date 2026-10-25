@@ -8,7 +8,7 @@ export async function initAdminLogin() {
   const password = form.elements.namedItem('password') as HTMLInputElement;
   let busy = false;
   const failure = (error: unknown) => {
-    status.textContent = error instanceof BackendError ? error.message : 'Не удалось выполнить вход. Попробуйте снова.';
+    status.textContent = error instanceof BackendError ? error.message : 'Unable to sign in. Please try again.';
   };
   // Never accept next/redirect parameters. The sole destination is our editorial panel.
   form.addEventListener('submit', async (event) => {
@@ -16,13 +16,13 @@ export async function initAdminLogin() {
     if (busy || !backendConfigured) return;
     busy = true;
     fields.disabled = true;
-    status.textContent = 'Проверяем вход и редакторскую роль…';
+    status.textContent = 'Checking sign-in and editorial access…';
     try {
       await signIn(email.value.trim(), password.value);
       const role = await getStaffRole();
       if (!role) {
         await signOut();
-        status.textContent = 'Нет доступа к редакции. Владелец должен выдать роль администратора или редактора.';
+        status.textContent = 'No editorial access. The owner must assign an administrator or editor role.';
         return;
       }
       location.replace('/admin/');
@@ -36,13 +36,13 @@ export async function initAdminLogin() {
     }
   });
   if (!backendConfigured) {
-    status.textContent = 'Сервер авторизации не настроен. Обратитесь к владельцу проекта.';
+    status.textContent = 'Sign-in is not configured. Contact the project owner.';
     return;
   }
   try {
     const role = await getStaffRole();
     if (role) { location.replace('/admin/'); return; }
-    status.textContent = 'Введите email и пароль учётной записи редакции.';
+    status.textContent = 'Enter your editorial account email and password.';
   } catch (error) { failure(error); }
   fields.disabled = false;
 }

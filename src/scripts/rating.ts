@@ -1,6 +1,6 @@
 const KEY = 'hunmeng-personal-ratings:v1';
 
-// Это личные оценки на устройстве, не публичная статистика сайта.
+// These ratings are personal to this device, not public site statistics.
 export function initPersonalRatings() {
   const section = document.querySelector<HTMLElement>('[data-rating-novel]');
   if (!section) return;
@@ -18,7 +18,7 @@ export function initPersonalRatings() {
       );
     }
   } catch {
-    status.textContent = 'Локальное сохранение недоступно.';
+    status.textContent = 'Local storage is unavailable.';
   }
   const paint = () => {
     const value = ratings[slug] ?? 0;
@@ -27,8 +27,8 @@ export function initPersonalRatings() {
       button.setAttribute('aria-pressed', String(star === value));
       button.classList.toggle('selected', star <= value);
     }
-    if (value) status.textContent = 'Ваша оценка: ' + value + ' из 5. Сохранена на этом устройстве.';
-    else if (!status.textContent.includes('недоступно')) status.textContent = 'Вы ещё не оценили эту новеллу.';
+    if (value) status.textContent = 'Your rating: ' + value + ' out of 5. Saved on this device.';
+    else if (!status.textContent.includes('unavailable')) status.textContent = 'You have not rated this novel yet.';
   };
   for (const button of buttons) {
     button.addEventListener('click', () => {
@@ -36,7 +36,7 @@ export function initPersonalRatings() {
       try {
         localStorage.setItem(KEY, JSON.stringify(ratings));
       } catch {
-        status.textContent = 'Оценка действует только до закрытия этой страницы.';
+        status.textContent = 'This rating lasts only until you close this page.';
       }
       paint();
     });

@@ -23,21 +23,21 @@ export async function initAccount() {
   window.addEventListener('hashchange', () => {
     if (location.hash) {
       history.replaceState(null, '', '/account/');
-      status.textContent = 'Войдите по email и паролю. Данные входа из адресной строки не используются.';
+      status.textContent = 'Sign in with your email and password. Sign-in data from the address bar is not used.';
     }
   });
   let busy = true;
   let updateProfile: ((user: User | null) => void) | undefined;
   const render = (user: User | null, message?: string) => {
     authFields.hidden = !!user;
-    document.getElementById('account-title')!.textContent = user ? 'Мой профиль' : 'Вход и регистрация';
-    document.getElementById('account-subtitle')!.textContent = user ? 'Ваше имя и удобный ритм чтения.' : 'Читать новеллы можно и без аккаунта.';
-    document.title = (user ? 'Мой профиль' : 'Вход и регистрация') + ' — Хунмэнг новеллы';
+    document.getElementById('account-title')!.textContent = user ? 'My profile' : 'Sign in or register';
+    document.getElementById('account-subtitle')!.textContent = user ? 'Make yourself at home and read your way.' : 'You can read novels without an account.';
+    document.title = (user ? 'My profile' : 'Sign in or register') + ' — Hunmeng novels';
     updateProfile?.(user);
     window.dispatchEvent(new CustomEvent('reader:auth-change'));
     loggedIn.hidden = !user;
     document.getElementById('account-email')!.textContent = user?.email ?? '';
-    status.textContent = message ?? (user ? 'Вы вошли в аккаунт.' : 'Войдите или создайте аккаунт читателя.');
+    status.textContent = message ?? (user ? 'You are signed in.' : 'Sign in or create a reader account.');
   };
   const setMode = (value: string) => {
     mode = value === 'signup' ? 'signup' : 'signin';
@@ -50,7 +50,7 @@ export async function initAccount() {
     password.value = '';
     password.autocomplete = signup ? 'new-password' : 'current-password';
     password.minLength = signup ? 8 : 1;
-    submit.textContent = signup ? 'Создать аккаунт' : 'Войти';
+    submit.textContent = signup ? 'Create account' : 'Sign in';
     buttons.forEach(button => {
       const active = button.dataset.authMode === mode;
       button.setAttribute('aria-pressed', String(active));
@@ -61,51 +61,51 @@ export async function initAccount() {
   buttons.forEach(button => button.addEventListener('click', () => {
     if (busy) return;
     setMode(button.dataset.authMode!);
-    status.textContent = mode === 'signup' ? 'Создайте аккаунт по email и паролю.' : 'Введите email и пароль.';
+    status.textContent = mode === 'signup' ? 'Create an account with your email and password.' : 'Enter your email and password.';
   }));
   // Attach before any asynchronous work, so a slow SDK never submits credentials to the static host.
   form.addEventListener('submit', event => { event.preventDefault(); });
-  if (!readerAuthConfigured) { status.textContent = 'Сервис авторизации не настроен. Чтение без входа доступно.'; return; }
+  if (!readerAuthConfigured) { status.textContent = 'Sign-in is not configured. You can still read without an account.'; return; }
   try { assertAuthStorage(); }
-  catch { status.textContent = 'Для входа разрешите сохранение данных сайта в браузере. Читать можно без аккаунта.'; return; }
+  catch { status.textContent = 'Allow browser storage to sign in. You can read without an account.'; return; }
   const client = createReaderClient();
-  updateProfile = initProfile(client, () => render(null, 'Сессия завершена. Войдите снова.'));
+  updateProfile = initProfile(client, () => render(null, 'Your session has ended. Please sign in again.'));
   const refresh = async (message?: string) => {
     const {data:stored,error:sessionError} = await client.auth.getSession();
-    if (sessionError) { render(null, 'Сессия завершена. Войдите снова.'); return; }
+    if (sessionError) { render(null, 'Your session has ended. Please sign in again.'); return; }
     if (!stored.session) { render(null,message); return; }
     const {data,error} = await client.auth.getUser();
     if (error) { render(null, readerAuthMessage(error)); return; }
     render(data.user,message);
   };
   client.auth.onAuthStateChange(event => {
-    if (event === 'SIGNED_OUT') render(null, 'Вы вышли из аккаунта.');
+    if (event === 'SIGNED_OUT') render(null, 'You are signed out.');
     if (!busy && (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED'))
-      setTimeout(() => { void refresh().catch(()=>render(null,'Не удалось проверить сессию. Повторите вход.')); }, 0);
+      setTimeout(() => { void refresh().catch(()=>render(null,'Unable to verify your session. Please sign in again.')); }, 0);
   });
   form.addEventListener('submit', async () => {
     if (busy) return;
     if (mode === 'signup' && password.value !== confirm.value) {
-      status.textContent = 'Пароли не совпадают.';
+      status.textContent = 'Passwords do not match.';
       confirm.focus(); return;
     }
     busy = true; fields.disabled = true;
     buttons.forEach(button=>button.disabled=true);
-    status.textContent = mode === 'signup' ? 'Создаём аккаунт…' : 'Входим…';
+    status.textContent = mode === 'signup' ? 'Creating your account…' : 'Signing in…';
     try {
       assertAuthStorage();
       if (mode === 'signup') {
         const {data,error} = await client.auth.signUp({email:email.value.trim(),password:password.value,
           options:{emailRedirectTo:new URL('/account/',location.origin).href}});
         if (error) {status.textContent=readerAuthMessage(error);return;}
-        if (data.session) await refresh('Аккаунт создан. Вы вошли в Хунмэнг.');
-        else render(null, 'Проверьте почту: если регистрация доступна для этого адреса, придёт письмо со ссылкой подтверждения. После подтверждения можно войти.');
+        if (data.session) await refresh('Account created. You are signed in to Hunmeng.');
+        else render(null, 'Check your inbox. If registration is available for this address, you will receive a confirmation link. You can sign in after confirming your email.');
       } else {
         const {error} = await client.auth.signInWithPassword({email:email.value.trim(),password:password.value});
         if (error) {status.textContent=readerAuthMessage(error);return;}
         await refresh();
       }
-    } catch { status.textContent='Не удалось выполнить действие. Проверьте соединение и доступ к хранилищу браузера.'; }
+    } catch { status.textContent='Unable to complete the action. Check your connection and browser storage permissions.'; }
     finally {
       password.value='';confirm.value='';busy=false;fields.disabled=false;
       buttons.forEach(button=>button.disabled=false);
@@ -123,25 +123,25 @@ export async function initAccount() {
         sessionStorage.setItem('hunmeng-reader-local-logout','1');
         location.replace('/account/');return;
       }
-      render(null,'Вы вышли из аккаунта. Библиотека на этом устройстве сохранена.');
+      render(null,'You are signed out. Your library on this device is preserved.');
     } catch {
       clearReaderAuthStorage();
-      render(null,'Вход очищен в этом браузере. Сервер не подтвердил завершение сессии.');
+      render(null,'Sign-in data was cleared from this browser. The server could not confirm sign-out.');
     } finally {busy=false;logout.disabled=false;}
   });
   try {
     if (code && code.length <= 2048) {
-      status.textContent='Подтверждаем почту…';
+      status.textContent='Confirming your email…';
       const {error} = await client.auth.exchangeCodeForSession(code);
-      if (error) render(null,'Не удалось завершить подтверждение. Откройте ссылку в том же браузере или войдите после подтверждения почты.');
-      else await refresh('Почта подтверждена. Вы вошли в Хунмэнг.');
+      if (error) render(null,'Confirmation could not be completed. Open the link in the same browser, or sign in after confirming your email.');
+      else await refresh('Email confirmed. You are signed in to Hunmeng.');
     } else if (callbackError || address.hash.includes('access_token')) {
-      render(null,'Не удалось завершить подтверждение. Попробуйте войти по email и паролю.');
+      render(null,'Confirmation could not be completed. Try signing in with your email and password.');
     } else await refresh();
     if (sessionStorage.getItem('hunmeng-reader-local-logout')) {
       sessionStorage.removeItem('hunmeng-reader-local-logout');
-      render(null,'Вы вышли в этом браузере. Сервер не подтвердил завершение сессии.');
+      render(null,'You are signed out in this browser. The server could not confirm sign-out.');
     }
-  } catch {render(null,'Не удалось проверить сессию. Повторите вход.');}
+  } catch {render(null,'Unable to verify your session. Please sign in again.');}
   finally {busy=false;fields.disabled=false;}
 }

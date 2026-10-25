@@ -2,19 +2,19 @@
 novelSlug: 'khranitel-mayaka'
 slug: 'glava-2'
 number: 2
-title: 'Письмо без адреса'
+title: 'A Letter Without an Address'
 publishedAt: '2026-10-22'
-description: 'Глава 2. Письмо без адреса. Продолжение оригинальной демонстрационной истории.'
+description: 'Chapter 2. A Letter Without an Address. An original demo story.'
 ---
 
-В письме не было ни даты, ни подписи. Только просьба: «Если лодка вернётся пустой, скажите сестре, что я успел увидеть северные острова». Илья прочёл эти строки трижды.
+The letter had neither a date nor a signature. Only a request: “If the boat returns empty, tell my sister I managed to see the northern islands.” Ilya read those lines three times.
 
-Утром он пошёл в деревню. Дорога огибала серые камни, похожие на спины спящих животных. У пекарни сушились рыбацкие сети, а над дверью звенел маленький колокольчик.
+In the morning, he walked to the village. The road curved around gray rocks that resembled the backs of sleeping animals. Fishing nets hung drying beside the bakery, and a little bell rang above its door.
 
-Хозяйка пекарни выслушала его и молча достала из ящика фотографию. На ней двое детей стояли рядом с лодкой. Девочка держала белый камень, мальчик — бумажный кораблик.
+The baker listened to him, then silently took a photograph from a drawer. Two children stood beside a boat. The girl held a white stone; the boy, a paper ship.
 
-— Иногда письма приходят не тогда, когда мы их ждём, — сказала она. — Иногда они ждут, пока мы сможем их прочесть.
+“Sometimes letters do not arrive when we expect them,” she said. “Sometimes they wait until we are ready to read them.”
 
-Илья оставил конверт на прилавке. Впервые ему стало понятно, почему в доме хранителя стояли две чашки. Одна всегда предназначалась тому, кто ещё только должен прийти.
+Ilya left the envelope on the counter. For the first time, he understood why there were two cups in the keeper’s house. One was always meant for someone who had yet to arrive.
 
-К вечеру туман расступился. На горизонте показались три острова, которых не было ни на одной из карт в маячной комнате. Илья взял карандаш и провёл первую линию.
+By evening, the fog had parted. Three islands appeared on the horizon, absent from every chart in the lighthouse room. Ilya picked up a pencil and drew the first line.

@@ -19,8 +19,8 @@ function breadcrumbs(items: Array<{ name: string; path: string }>, base: URL | s
   };
 }
 const root = [
-  { name: 'Главная', path: '/' },
-  { name: 'Каталог', path: '/catalog/' },
+  { name: 'Home', path: '/' },
+  { name: 'Catalog', path: '/catalog/' },
 ];
 function book(n: Novel, base: URL | string) {
   const bookUrl = abs(n.url, base);
@@ -31,7 +31,7 @@ function book(n: Novel, base: URL | string) {
     name: n.title,
     alternateName: n.originalTitle,
     description: n.description,
-    inLanguage: 'ru',
+    inLanguage: 'en',
     image: abs(socialCover(n.cover), base),
     author: {
       '@type': 'Person',
@@ -67,16 +67,16 @@ export function chapterStructuredData(
         '@id': chapterUrl + '#chapter',
         url: chapterUrl,
         name: chapter.data.title,
-        headline: `${n.title} — глава ${chapter.data.number}: ${chapter.data.title}`,
+        headline: `${n.title} — chapter ${chapter.data.number}: ${chapter.data.title}`,
         description: chapter.data.description,
-        inLanguage: 'ru',
+        inLanguage: 'en',
         position: chapter.data.number,
         datePublished: chapter.data.publishedAt,
         image: abs(socialCover(n.cover), base),
         isPartOf: { '@id': abs(n.url, base) + '#book', '@type': 'Book', name: n.title },
       },
       breadcrumbs(
-        [...root, { name: n.title, path: n.url }, { name: `Глава ${chapter.data.number}: ${chapter.data.title}`, path: page }],
+        [...root, { name: n.title, path: n.url }, { name: `Chapter ${chapter.data.number}: ${chapter.data.title}`, path: page }],
         base, page,
       ),
     ],

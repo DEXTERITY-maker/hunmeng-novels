@@ -2,29 +2,29 @@ import { test, expect, serveStatic } from './fixtures';
 const chapter = '/novel/khranitel-mayaka/glava-1/';
 test('главная: разделы с реальным контентом, обложки и поиск', async ({ page }) => {
   await page.goto('/');
-  await expect(page.getByRole('heading', { name: 'Новые новеллы' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Последние главы' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'New novels' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Latest chapters' })).toBeVisible();
   await expect(page.locator('#popular-novels')).toHaveCount(0);
   await expect(page.locator('a[href="#popular-novels"]')).toHaveCount(0);
-  await expect(page.getByRole('heading', { name: 'Рекомендации' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Recommended reads' })).toBeVisible();
   await expect(page.locator('#new-novels .home-book-card')).toHaveCount(2);
   await expect(page.locator('#latest-chapters .home-chapter-link')).toHaveCount(4);
-  // Пока нет подтверждённых просмотров — рейтинг не показывается.
+  // Пока нет подтверждённыхviews — рейтинг не показывается.
   await expect(page.locator('#recommended-novels .home-recommendation-card')).toHaveCount(2);
-  await page.getByRole('searchbox', { name: 'Поиск новелл' }).fill('winter');
-  await page.getByRole('button', { name: 'Найти' }).click();
+  await page.getByRole('searchbox', { name: 'Search novels' }).fill('winter');
+  await page.getByRole('button', { name: 'Search' }).click();
   await expect(page).toHaveURL(/search=winter/);
   expect(new URL(page.url()).pathname).toBe('/catalog/');
-  await expect(page.locator('#result-count')).toHaveText('Найдено новелл: 1');
+  await expect(page.locator('#result-count')).toHaveText('Novels found: 1');
   await expect(page.locator('[data-novel]:visible')).toHaveCount(1);
-  await expect(page.locator('[data-novel]:visible h2')).toContainText('Сад');
+  await expect(page.locator('[data-novel]:visible h2')).toContainText('The Garden');
 });
 test('все обновления: главная показывает четыре главы, отдельная страница — полный список', async ({ page }) => {
   await page.goto('/');
   await expect(page.locator('#latest-chapters .home-chapter-link')).toHaveCount(4);
-  await page.getByRole('link', { name: 'Все обновления' }).click();
+  await page.getByRole('link', { name: 'All updates' }).click();
   expect(new URL(page.url()).pathname).toBe('/updates/');
-  await expect(page.getByRole('heading', { name: 'Все обновления' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'All updates' })).toBeVisible();
   await expect(page.locator('.updates-page .home-chapter-link')).toHaveCount(7);
   await page.locator('.updates-page .home-chapter-link').first().click();
   await expect(page.locator('#chapter-text')).toBeVisible();
@@ -76,40 +76,40 @@ test('мобильная главная: компактное продолжен
 });
 test('новости: единственная приветственная запись без технических релизов', async ({ page }) => {
   await page.goto('/');
-  await expect(page.getByRole('heading', { name: 'Последние новости' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Latest news' })).toBeVisible();
   await expect(page.locator('#latest-news [data-news-card]')).toHaveCount(1);
-  await expect(page.locator('#latest-news')).toContainText('Хунмэнг открывается');
-  await page.locator('#latest-news').getByRole('link', { name: 'Просмотреть все' }).click();
+  await expect(page.locator('#latest-news')).toContainText('Welcome to Hunmeng');
+  await page.locator('#latest-news').getByRole('link', { name: 'View all' }).click();
   expect(new URL(page.url()).pathname).toBe('/news/');
   await expect(page.locator('#news-feed [data-news-card]:visible')).toHaveCount(1);
   await expect(page.locator('#news-pagination')).toBeHidden();
   await expect(page.locator('a[href*="github.com"]')).toHaveCount(0);
-  await expect(page.locator('#news-feed')).not.toContainText('Обновление сайта:');
+  await expect(page.locator('#news-feed')).not.toContainText('Site update:');
 });
 test('новости: категории сохраняются, несуществующие публикации не показываются', async ({ page }) => {
   await page.goto('/news/');
-  await page.getByRole('link', { name: 'Объявления', exact: true }).click();
+  await page.getByRole('link', { name: 'Announcements', exact: true }).click();
   await expect(page.locator('#news-feed [data-news-card]:visible')).toHaveCount(1);
   await expect(page.locator('[data-news-filter=announcements]')).toHaveAttribute('aria-current', 'page');
-  await page.getByRole('link', { name: 'Журнал изменений', exact: true }).click();
+  await page.getByRole('link', { name: 'Changelog', exact: true }).click();
   await expect(page.locator('#news-empty')).toBeVisible();
-  await page.getByRole('link', { name: 'Розыгрыши', exact: true }).click();
+  await page.getByRole('link', { name: 'Giveaways', exact: true }).click();
   await expect(page.locator('#news-empty')).toBeVisible();
-  await page.getByRole('link', { name: 'Все', exact: true }).click();
+  await page.getByRole('link', { name: 'All', exact: true }).click();
   await expect(page.locator('#news-feed [data-news-card]:visible')).toHaveCount(1);
 });
 test('отдельная новость: приветствие, разрешения правообладателей и локальные реакции', async ({ page }) => {
   await page.goto('/news/hunmeng-opens/');
-  await expect(page.getByRole('heading', { name: 'Хунмэнг открывается' })).toBeVisible();
-  await expect(page.locator('.news-article-body')).toContainText('разрешения авторов');
+  await expect(page.getByRole('heading', { name: 'Welcome to Hunmeng' })).toBeVisible();
+  await expect(page.locator('.news-article-body')).toContainText('permission from authors');
   await expect(page.locator('.news-article')).not.toContainText('GitHub');
-  await page.getByRole('button', { name: 'Реакция 🔥' }).click();
-  await expect(page.getByRole('button', { name: 'Реакция 🔥' })).toHaveAttribute('aria-pressed', 'true');
+  await page.getByRole('button', { name: 'Reaction 🔥' }).click();
+  await expect(page.getByRole('button', { name: 'Reaction 🔥' })).toHaveAttribute('aria-pressed', 'true');
   await page.reload();
-  await expect(page.getByRole('button', { name: 'Реакция 🔥' })).toHaveAttribute('aria-pressed', 'true');
-  await page.getByRole('button', { name: 'Реакция 🔥' }).click();
-  await expect(page.getByRole('button', { name: 'Реакция 🔥' })).toHaveAttribute('aria-pressed', 'false');
-  await page.getByRole('link', { name: 'Все новости' }).last().click();
+  await expect(page.getByRole('button', { name: 'Reaction 🔥' })).toHaveAttribute('aria-pressed', 'true');
+  await page.getByRole('button', { name: 'Reaction 🔥' }).click();
+  await expect(page.getByRole('button', { name: 'Reaction 🔥' })).toHaveAttribute('aria-pressed', 'false');
+  await page.getByRole('link', { name: 'All news' }).last().click();
   expect(new URL(page.url()).pathname).toBe('/news/');
 });
 test('мобильная страница новостей без горизонтальной прокрутки', async ({ page }) => {
@@ -125,7 +125,7 @@ test('аккаунты читателей: видимый вход без пуб
     await expect(page.locator('header a[href="/account/"]')).toBeVisible();
   }
   await page.goto('/account/');
-  await expect(page.getByRole('heading', { name: 'Вход и регистрация' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Sign in or register' })).toBeVisible();
   await expect(page.locator('#auth-form')).toBeVisible();
   await expect(page.locator('#google-sign-in, a[href="/admin/"]')).toHaveCount(0);
 });
@@ -135,14 +135,14 @@ test('локальная библиотека сохраняется без за
     if (request.url().includes('.supabase.co')) outgoing.push(request.url());
   });
   await page.goto('/novel/khranitel-mayaka/');
-  await page.getByRole('button', { name: 'В библиотеку', exact: true }).click();
+  await page.getByRole('button', { name: 'Add to library', exact: true }).click();
   await page.goto('/library/');
   await page.locator('[data-shelf-tab=later]').click();
   await expect(page.locator('.library-row')).toHaveCount(1);
   await page.reload();
   await page.locator('[data-shelf-tab=later]').click();
   await expect(page.locator('.library-row')).toHaveCount(1);
-  await expect(page.locator('.storage-explanation')).toContainText('localStorage');
+  await expect(page.locator('.storage-explanation')).toContainText('saved only in this browser');
   expect(outgoing).toEqual([]);
 });
 test('мобильная читалка: выключены автоматические переносы, текст слева', async ({ page }) => {
@@ -159,9 +159,9 @@ test('мобильная читалка: выключены автоматиче
 });
 test('админка продолжает проверять роль, отдельно от читательских аккаунтов', async ({ page }) => {
   await page.goto('/admin/');
-  await expect(page.getByRole('heading', { name: 'Управление переводами' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Translation management' })).toBeVisible();
   await expect(page.locator('#admin-workspace')).toBeHidden();
-  await expect(page.locator('#admin-status')).toContainText('Доступ запрещён');
+  await expect(page.locator('#admin-status')).toContainText('Access denied');
 });
 test('статические страницы, SEO и отсутствие внешних запросов', async ({ page }) => {
   const errors: string[] = [],
@@ -190,7 +190,7 @@ test('статические страницы, SEO и отсутствие вн�
   ]) {
     await page.goto(route);
     await expect(page.locator('h1')).toBeVisible();
-    expect(await page.locator('html').getAttribute('lang')).toBe('ru');
+    expect(await page.locator('html').getAttribute('lang')).toBe('en');
     expect(await page.locator('meta[name=description]').getAttribute('content')).toBeTruthy();
     expect(
       await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
@@ -204,22 +204,22 @@ test('статические страницы, SEO и отсутствие вн�
 });
 test('каталог: оригинальное название, исключение тегов, статус и сортировка', async ({ page }) => {
   await page.goto('/catalog/');
-  await expect(page.locator('#result-count')).toHaveText('Найдено новелл: 2');
-  await page.getByPlaceholder('Русское или оригинальное название').fill('winter');
+  await expect(page.locator('#result-count')).toHaveText('Novels found: 2');
+  await page.getByPlaceholder('English or original title').fill('winter');
   await expect(page.locator('[data-novel]:visible')).toHaveCount(1);
-  await expect(page.locator('[data-novel]:visible h2')).toContainText('Сад');
-  await page.getByRole('button', { name: 'Сбросить фильтры' }).click();
+  await expect(page.locator('[data-novel]:visible h2')).toContainText('The Garden');
+  await page.getByRole('button', { name: 'Reset filters' }).click();
   const options = page.locator('#catalog-options');
   if (!(await options.evaluate(el => (el as HTMLDetailsElement).open))) await options.locator(':scope > summary').click();
   await page.locator('.tag-filters > summary').click();
-  await page.locator('input[name=exclude][value="Море"]').check();
+  await page.locator('input[name=exclude][value="Sea"]').check();
   await expect(page.locator('[data-novel]:visible')).toHaveCount(1);
-  await page.locator('input[name=include][value="Море"]').check();
+  await page.locator('input[name=include][value="Sea"]').check();
   await expect(page.locator('#catalog-empty')).toBeVisible();
-  await page.getByRole('button', { name: 'Сбросить фильтры' }).click();
-  await page.locator('select[name=status]').selectOption('Завершён');
-  await expect(page.locator('[data-novel]:visible h2')).toContainText('Сад');
-  await page.getByRole('button', { name: 'Сбросить фильтры' }).click();
+  await page.getByRole('button', { name: 'Reset filters' }).click();
+  await page.locator('select[name=status]').selectOption('Completed');
+  await expect(page.locator('[data-novel]:visible h2')).toContainText('The Garden');
+  await page.getByRole('button', { name: 'Reset filters' }).click();
   await page.locator('select[name=sort]').selectOption('chapters');
   await expect(page.locator('[data-novel]:visible').first()).toHaveAttribute(
     'data-novel',
@@ -230,34 +230,34 @@ test('расширенный каталог: категории, автор, к�
   await page.goto('/catalog/');
   const options = page.locator('#catalog-options');
   if (!(await options.evaluate(el => (el as HTMLDetailsElement).open))) await options.locator(':scope > summary').click();
-  await expect(page.locator('#result-count')).toHaveText('Найдено новелл: 2');
-  await page.locator('select[name=category]').selectOption('Повседневность');
+  await expect(page.locator('#result-count')).toHaveText('Novels found: 2');
+  await page.locator('select[name=category]').selectOption('Slice of life');
   await expect(page.locator('[data-novel]:visible')).toHaveCount(1);
   await expect(page.locator('[data-novel]:visible').first()).toHaveAttribute('data-novel', 'sad-zimy');
-  await page.getByRole('button', { name: 'Сбросить фильтры' }).click();
-  await page.getByPlaceholder('Русское или оригинальное название').fill('Алексей');
+  await page.getByRole('button', { name: 'Reset filters' }).click();
+  await page.getByPlaceholder('English or original title').fill('Alexey');
   await expect(page.locator('[data-novel]:visible')).toHaveCount(1);
   await expect(page.locator('[data-novel]:visible').first()).toHaveAttribute('data-novel', 'khranitel-mayaka');
-  await page.getByRole('button', { name: 'Сбросить фильтры' }).click();
+  await page.getByRole('button', { name: 'Reset filters' }).click();
   await page.locator('[name=minChapters]').fill('4');
   await expect(page.locator('[data-novel]:visible')).toHaveCount(1);
-  await page.getByRole('button', { name: 'Сбросить фильтры' }).click();
+  await page.getByRole('button', { name: 'Reset filters' }).click();
   await page.locator('select[name=minRating]').selectOption('4');
   await expect(page.locator('#catalog-empty')).toBeVisible();
-  await page.getByRole('button', { name: 'Сбросить фильтры' }).click();
+  await page.getByRole('button', { name: 'Reset filters' }).click();
   await page.locator('select[name=sort]').selectOption('views');
   await expect(page.locator('[data-novel]:visible')).toHaveCount(2);
   await expect(page.locator('.catalog-card-stats')).toHaveCount(0);
-  await expect(page.locator('#catalog-results')).not.toContainText('Нет данных о просмотрах');
+  await expect(page.locator('#catalog-results')).not.toContainText('No view data');
 });
 test('ссылки категории и тегов открывают каталог с предустановленными фильтрами', async ({ page }) => {
   await page.goto('/novel/sad-zimy/');
-  await page.getByRole('link', { name: 'Повседневность' }).first().click();
+  await page.getByRole('link', { name: 'Slice of life' }).first().click();
   await expect(page).toHaveURL(/category=/);
-  await expect(page.locator('select[name=category]')).toHaveValue('Повседневность');
+  await expect(page.locator('select[name=category]')).toHaveValue('Slice of life');
   await expect(page.locator('[data-novel]:visible')).toHaveCount(1);
   await page.goto('/catalog/?include=%D0%9C%D0%BE%D1%80%D0%B5');
-  await expect(page.locator('input[name=include][value="Море"]')).toBeChecked();
+  await expect(page.locator('input[name=include][value="Sea"]')).toBeChecked();
   await expect(page.locator('[data-novel]:visible')).toHaveCount(1);
 });
 
@@ -298,9 +298,9 @@ test('JSON-LD Book, Chapter и BreadcrumbList', async ({ page }) => {
   const book = JSON.parse((await page.locator('script[type="application/ld+json"]').textContent())!);
   const entity = book['@graph'].find((value: { '@type': string }) => value['@type'] === 'Book');
   const crumbs = book['@graph'].find((value: { '@type': string }) => value['@type'] === 'BreadcrumbList');
-  expect(entity.name).toBe('Хранитель тихого маяка');
+  expect(entity.name).toBe('The Keeper of the Quiet Lighthouse');
   expect(entity.image).toMatch(/khranitel-mayaka-og\.png$/);
-  expect(crumbs.itemListElement.map((item: { name: string }) => item.name)).toEqual(['Главная', 'Каталог', 'Хранитель тихого маяка']);
+  expect(crumbs.itemListElement.map((item: { name: string }) => item.name)).toEqual(['Home', 'Catalog', 'The Keeper of the Quiet Lighthouse']);
   await page.goto(chapter);
   const chapterData = JSON.parse((await page.locator('script[type="application/ld+json"]').textContent())!);
   const chapterEntity = chapterData['@graph'].find((value: { '@type': string }) => value['@type'] === 'Chapter');
@@ -312,50 +312,50 @@ test('JSON-LD Book, Chapter и BreadcrumbList', async ({ page }) => {
 });
 test('глоссарий по типам, сведения об авторе и отсутствие ложной лицензии у demo', async ({ page }) => {
   await page.goto('/novel/khranitel-mayaka/');
-  await expect(page.getByRole('heading', { name: 'Глоссарий' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Glossary' })).toBeVisible();
   await expect(page.locator('.glossary-group')).toHaveCount(4);
-  await expect(page.locator('.glossary-group h3')).toHaveText(['Персонажи', 'Места', 'Техники', 'Предметы']);
-  await expect(page.locator('.glossary-section')).toContainText('Возвращающий свет');
+  await expect(page.locator('.glossary-group h3')).toHaveText(['Characters', 'Places', 'Techniques', 'Items']);
   await expect(page.locator('.glossary-section')).toContainText('Returning Light');
-  await expect(page.getByRole('heading', { name: 'Об авторе' })).toBeVisible();
-  await expect(page.locator('.author-section')).toContainText('Алексей Ветров');
+  await expect(page.locator('.glossary-section')).toContainText('Returning Light');
+  await expect(page.getByRole('heading', { name: 'About the author' })).toBeVisible();
+  await expect(page.locator('.author-section')).toContainText('Alexey Vetrov');
   await expect(page.locator('.author-outbound-links')).toHaveCount(0);
-  await expect(page.locator('.author-section')).not.toContainText('Перевод публикуется с разрешения автора');
+  await expect(page.locator('.author-section')).not.toContainText('Published with the author');
 });
 test('пустой reportUrl не выводит кнопку в конце главы', async ({ page }) => {
   await page.goto(chapter);
-  await expect(page.getByRole('link', { name: /Сообщить об ошибке/ })).toHaveCount(0);
+  await expect(page.getByRole('link', { name: /Report an error/ })).toHaveCount(0);
   await expect(page.locator('.chapter-report')).toHaveCount(0);
 });
 
-test('страница новеллы: статистика без фиктивных чисел и личная оценка', async ({ page }) => {
+test('страница novels: статистика без фиктивных чисел и личная оценка', async ({ page }) => {
   await page.goto('/novel/khranitel-mayaka/');
-  await expect(page.locator('.novel-facts')).not.toContainText('Рейтинг читателей');
-  await expect(page.locator('.novel-facts')).not.toContainText('Просмотры');
-  await page.getByRole('button', { name: 'Оценить на 4 из 5' }).click();
-  await expect(page.getByText('Ваша оценка: 4 из 5.', { exact: false })).toBeVisible();
+  await expect(page.locator('.novel-facts')).not.toContainText('Reader rating');
+  await expect(page.locator('.novel-facts')).not.toContainText('Views');
+  await page.getByRole('button', { name: 'Rate 4 out of 5' }).click();
+  await expect(page.getByText('Your rating: 4 out of 5.', { exact: false })).toBeVisible();
   await page.reload();
-  await expect(page.getByRole('button', { name: 'Оценить на 4 из 5' })).toHaveAttribute('aria-pressed', 'true');
-  await expect(page.locator('.novel-facts')).not.toContainText('Рейтинг читателей');
+  await expect(page.getByRole('button', { name: 'Rate 4 out of 5' })).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('.novel-facts')).not.toContainText('Reader rating');
 });
 test('оглавление произведения разбито на страницы, диалог не выводит весь список', async ({ page }) => {
   await page.goto('/novel/khranitel-mayaka/');
-  await page.getByRole('link', { name: 'Полное оглавление' }).click();
+  await page.getByRole('link', { name: 'Full contents' }).click();
   expect(new URL(page.url()).pathname).toBe('/novel/khranitel-mayaka/chapters/1/');
   await expect(page.locator('.chapter-pages .chapter-list li')).toHaveCount(3);
   await page.locator('.chapter-pages .chapter-list a').first().click();
   await expect(page.locator('#chapter-text')).toBeVisible();
-  await page.getByRole('button', { name: 'Открыть оглавление' }).click();
-  await expect(page.getByRole('link', { name: /Полное оглавление \(3 главы\)/ })).toBeVisible();
+  await page.getByRole('button', { name: 'Open contents' }).click();
+  await expect(page.getByRole('link', { name: /Full contents \(3 chapters\)/ })).toBeVisible();
 });
 test('полки сохраняются и изменяются', async ({ page }) => {
   await page.goto('/novel/khranitel-mayaka/');
-  await page.getByRole('button', { name: 'В библиотеку', exact: true }).click();
+  await page.getByRole('button', { name: 'Add to library', exact: true }).click();
   await expect(page.locator('[data-shelf]')).toHaveValue('later');
   await page.goto('/library/');
   await page.locator('[data-shelf-tab=later]').click();
   await expect(page.locator('.library-row')).toHaveCount(1);
-  await expect(page.locator('.library-row .fine')).toContainText('3 главы');
+  await expect(page.locator('.library-row .fine')).toContainText('3 chapters');
   await page.locator('.library-row select').selectOption('completed');
   await page.locator('[data-shelf-tab=completed]').click();
   await expect(page.locator('.library-row')).toHaveCount(1);
@@ -390,7 +390,7 @@ test('настройки чтения применяются до загрузк
   expect(styles.font).toContain('Manrope');
   expect(styles.width).toBe('880px');
 });
-test('ранний скрипт не меняет документ при недоступном localStorage', async ({ page }) => {
+test('ранний скрипт не меняет документ при unavailableм localStorage', async ({ page }) => {
   await page.route('**/_astro/*.js', (route) => route.abort());
   await page.addInitScript(() =>
     Object.defineProperty(window, 'localStorage', {
@@ -468,12 +468,12 @@ test('читалка: настройки, скрытие панели и вос�
     )
     .toBe('glava-1');
   await page.locator('[data-open=settings]').click();
-  await expect(page.getByRole('dialog', { name: 'Настройки чтения' })).toBeVisible();
+  await expect(page.getByRole('dialog', { name: 'Reading settings' })).toBeVisible();
   await page.locator('input[name=theme][value=sepia]').check();
   await page.locator('input[name=font][value=sans]').check();
   await page.locator('input[name=size]').fill('26');
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'sepia');
-  await page.getByRole('button', { name: 'Закрыть настройки' }).click();
+  await page.getByRole('button', { name: 'Close settings' }).click();
   expect(await page.locator('#chapter-text').evaluate((el) => getComputedStyle(el).fontSize)).toBe(
     '26px',
   );
@@ -494,8 +494,8 @@ test('читалка: настройки, скрытие панели и вос�
   if (await page.locator('#show-reader-controls').isVisible())
     await page.locator('#show-reader-controls').click();
   await page.locator('[data-open=toc]').first().click();
-  await expect(page.getByRole('dialog', { name: 'Оглавление', exact: true })).toBeVisible();
-  await page.getByRole('dialog').getByRole('link', { name: 'Глава 2. Письмо без адреса' }).click();
+  await expect(page.getByRole('dialog', { name: 'Contents', exact: true })).toBeVisible();
+  await page.getByRole('dialog').getByRole('link', { name: 'Chapter 2. A Letter Without an Address' }).click();
   await expect(page).toHaveURL(/glava-2/);
   await expect.poll(() => page.evaluate(() => window.scrollY)).toBeLessThan(50);
 });
@@ -520,7 +520,7 @@ test('чтение работает без JavaScript', async ({ browser }) => {
   const page = await context.newPage();
   await page.goto('http://127.0.0.1:4321' + chapter);
   await expect(page.locator('#chapter-text p').first()).toBeVisible();
-  await page.locator('.chapter-end-nav').getByRole('link', { name: 'Следующая' }).click();
+  await page.locator('.chapter-end-nav').getByRole('link', { name: 'Next' }).click();
   await expect(page).toHaveURL(/glava-2/);
   await context.close();
 });
@@ -528,26 +528,26 @@ test('чтение работает без JavaScript', async ({ browser }) => {
 test('склонение после клиентского поиска и в полном оглавлении', async ({ page }) => {
   await page.goto('/catalog/?search=winter');
   await expect(page.locator('#catalog-results .novel-card')).toHaveCount(1);
-  await expect(page.locator('#catalog-results .fine')).toContainText('4 главы');
-  await expect(page.locator('#catalog-results')).not.toContainText('4 глав ·');
+  await expect(page.locator('#catalog-results .fine')).toContainText('4 chapters');
+  await expect(page.locator('#catalog-results')).not.toContainText('4 chapter ·');
   await page.goto('/novel/sad-zimy/');
-  await expect(page.locator('.chapter-pages-footer')).toContainText('4 главы');
+  await expect(page.locator('.chapter-pages-footer')).toContainText('4 chapters');
   await page.goto('/novel/sad-zimy/glava-1/');
-  await page.getByRole('button', { name:'Открыть оглавление', exact:true }).click();
-  await expect(page.locator('.reader-toc-all')).toHaveText('Полное оглавление (4 главы) →');
+  await page.getByRole('button', { name:'Open contents', exact:true }).click();
+  await expect(page.locator('.reader-toc-all')).toHaveText('Full contents (4 chapters) →');
 });
 test('контакты без выдуманных каналов и технических заглушек', async ({page}) => {
   for (const route of ['/contacts/','/rights/']) {
     await page.goto(route);
-    await expect(page.locator('main')).not.toContainText('Страница-заготовка');
+    await expect(page.locator('main')).not.toContainText('Placeholder page');
     await expect(page.locator('main a[href^="mailto:"], main a[href^="https://t.me/"]')).toHaveCount(0);
-    await expect(page.locator('main')).toContainText('пока не опубликован');
+    await expect(page.locator('main')).toContainText('not been published yet');
   }
 });
 test('метка версии и исключение всей редакции из sitemap', async ({page}) => {
   const version = await page.goto('/version.json');
   const data = JSON.parse(await version!.text());
-  expect(data.version).toBe('0.3.1');
+  expect(data.version).toBe('0.4.0');
   expect(data.commit === null || /^[0-9a-f]{40}$/.test(data.commit)).toBe(true);
   const sitemap = (await (await page.goto('/sitemap-0.xml'))!.text());
   expect(sitemap).not.toContain('/admin/');
@@ -558,16 +558,16 @@ test('метка версии и исключение всей редакции 
 
 test('мобильный каталог: поиск сразу доступен, фильтры раскрываются и сохраняются при сворачивании',async({page})=>{
  await page.setViewportSize({width:390,height:844});await page.goto('/catalog/');
- await expect(page.locator('#result-count')).toHaveText('Найдено новелл: 2');
+ await expect(page.locator('#result-count')).toHaveText('Novels found: 2');
  const options=page.locator('#catalog-options');
  await expect(options).not.toHaveAttribute('open','');
- await expect(page.getByPlaceholder('Русское или оригинальное название')).toBeVisible();
+ await expect(page.getByPlaceholder('English or original title')).toBeVisible();
  expect((await page.locator('#catalog-results .novel-card').first().boundingBox())!.y).toBeLessThan(700);
- await options.locator(':scope > summary').click();await page.locator('[name=status]').selectOption('Завершён');
- await expect(page.locator('#active-filter-count')).toHaveText('Выбрано: 1');
+ await options.locator(':scope > summary').click();await page.locator('[name=status]').selectOption('Completed');
+ await expect(page.locator('#active-filter-count')).toHaveText('Selected: 1');
  await expect(page.locator('#catalog-results .novel-card')).toHaveCount(1);
  await options.locator(':scope > summary').click();await expect(page.locator('#active-filter-count')).toBeVisible();
- await page.getByRole('button',{name:'Сбросить фильтры',exact:true}).click();
+ await page.getByRole('button',{name:'Reset filters',exact:true}).click();
  await expect(page.locator('#active-filter-count')).toBeHidden();
  await expect(page.locator('#catalog-results .novel-card')).toHaveCount(2);
  await page.setViewportSize({width:1280,height:900});await expect(options).toHaveAttribute('open','');
@@ -581,13 +581,13 @@ test('конец главы ведёт к следующей, дочитанна
  });await page.reload();
  await expect(page.locator('#continue-list a')).toHaveCount(1);
  await expect(page.locator('#continue-list a')).toHaveAttribute('href','/novel/khranitel-mayaka/glava-2/');
- await expect(page.locator('#continue-list')).toContainText('Следующая глава');
+ await expect(page.locator('#continue-list')).toContainText('Next chapter');
  await page.goto('/novel/khranitel-mayaka/');
  await expect(page.locator('[data-continue]')).toHaveAttribute('href','/novel/khranitel-mayaka/glava-2/');
- await page.goto('/novel/sad-zimy/');await expect(page.locator('[data-continue]')).toHaveText('Читать сначала');
+ await page.goto('/novel/sad-zimy/');await expect(page.locator('[data-continue]')).toHaveText('Read from the beginning');
  await page.goto('/library/');await expect(page.locator('.library-row')).toHaveCount(2);
- await expect(page.locator('.library-row').filter({hasText:'Сад на краю зимы'})).toContainText('Все опубликованные главы прочитаны');
- await expect(page.locator('.library-row').filter({hasText:'Сад на краю зимы'}).getByRole('link',{name:'Читать сначала →'})).toHaveAttribute('href','/novel/sad-zimy/glava-1/');
+ await expect(page.locator('.library-row').filter({hasText:'The Garden at Winter’s Edge'})).toContainText('You are all caught up');
+ await expect(page.locator('.library-row').filter({hasText:'The Garden at Winter’s Edge'}).getByRole('link',{name:'Read from the beginning →'})).toHaveAttribute('href','/novel/sad-zimy/glava-1/');
  expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('hunmeng-novels:v1')!).library)).toEqual({'khranitel-mayaka':'reading','sad-zimy':'reading'});
 });
 test('брошенные и прочитанные полки не предлагают продолжение, даты и ссылки читаемы на телефоне',async({page})=>{

@@ -8,7 +8,7 @@ function emailChannel(value: string, label: string): ContactChannel | null {
 }
 export function contactChannels(settings: ContactSettings, rights = false): ContactChannel[] {
   const email = emailChannel(rights ? settings.rightsEmail || settings.email : settings.email,
-    rights ? 'Обращения правообладателей' : 'Электронная почта');
+    rights ? 'Rights inquiries' : 'Email');
   let telegram: ContactChannel | null = null;
   try {
     const uri = new URL(settings.telegram);

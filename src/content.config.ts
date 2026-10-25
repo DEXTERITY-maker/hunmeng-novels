@@ -7,7 +7,7 @@ const date = z
   .regex(/^\d{4}-\d{2}-\d{2}$/)
   .refine(
     (s) => !Number.isNaN(Date.parse(s)) && new Date(s).toISOString().slice(0, 10) === s,
-    'Неверная дата',
+    'Invalid date',
   );
 const novels = defineCollection({
   loader: glob({ base: './src/content/novels', pattern: '*.json' }),
@@ -16,8 +16,8 @@ const novels = defineCollection({
     title: z.string().min(1),
     originalTitle: z.string().min(1),
     author: z.string().min(1),
-    authorUrl: z.url().refine((s) => new URL(s).protocol === 'https:', 'Только HTTPS').optional(),
-    supportUrl: z.url().refine((s) => new URL(s).protocol === 'https:', 'Только HTTPS').optional(),
+    authorUrl: z.url().refine((s) => new URL(s).protocol === 'https:', 'HTTPS only').optional(),
+    supportUrl: z.url().refine((s) => new URL(s).protocol === 'https:', 'HTTPS only').optional(),
     originalUrl: z.url(),
     cover: z.string().regex(/^\/images\/[^?#]+\.(svg|webp|png|jpg)$/),
     description: z.string().min(20),

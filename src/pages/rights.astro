@@ -5,31 +5,31 @@ import { contactChannels } from '../lib/contacts';
 const channels = contactChannels(site.contacts, true);
 ---
 
-<Layout title="Правообладателям" description="Условия размещения переводов в Хунмэнг и сведения для обращений авторов и правообладателей.">
+<Layout title="Rights holders" description="Translation publishing requirements and information for authors and rights holders.">
   <main id="main" class="page-shell prose-page">
     <a class="back-link" href="/">
-      ← Главная
+      ← Home
     </a>
-    <h1>Правообладателям</h1>
+    <h1>Rights holders</h1>
     <p>
-      Для размещения перевода в Хунмэнг требуется подтверждённое разрешение на перевод и публикацию текста. Права на обложку проверяются отдельно. Наличие текста в открытом доступе не заменяет разрешение правообладателя.
+      Publishing a translation on Hunmeng requires verified permission to translate and publish the text. Cover permissions are checked separately. Public availability does not replace permission from the rights holder.
     </p>
-    <p>Представленные демонстрационные истории написаны специально для проекта и не являются переводами чужих произведений.</p>
-    <h2>Обращение о правах</h2>
+    <p>The demo stories were written specifically for this project and are not translations of other authors' works.</p>
+    <h2>Rights requests</h2>
     {channels.length ? (
       <ul class="contact-channels">{channels.map(channel => (
         <li>{channel.label}: <a href={channel.href} rel="noopener noreferrer">{channel.value}</a></li>
       ))}</ul>
     ) : (
-      <p class="notice">Канал для обращений правообладателей пока не опубликован. Эта страница не принимает и не отправляет заявления.</p>
+      <p class="notice">A contact channel for rights holders has not been published yet. This page cannot receive or send requests.</p>
     )}
-    <p>Для рассмотрения вопроса потребуются:</p>
+    <p>Please include the following:</p>
     <ul>
-      <li>Название произведения и адреса спорных страниц.</li>
-      <li>Ваше имя или название организации и способ обратной связи.</li>
-      <li>Сведения, позволяющие подтвердить авторство или полномочия представителя.</li>
-      <li>Описание вопроса и желаемое действие: уточнение авторства, исправление или удаление материала.</li>
+      <li>The work's title and the addresses of the pages in question.</li>
+      <li>Your name or organization and a way to contact you.</li>
+      <li>Information verifying your authorship or authority to act for the rights holder.</li>
+      <li>A description of the issue and requested action: attribution, correction, or removal.</li>
     </ul>
-    <p>Не публикуйте документы с персональными данными в комментариях или открытых обсуждениях. Размещение новых переводов допускается только после проверки разрешений и редакторского одобрения.</p>
+    <p>Do not post documents containing personal information in comments or public discussions. New translations may be published only after permissions are verified and editorial approval is given.</p>
   </main>
 </Layout>

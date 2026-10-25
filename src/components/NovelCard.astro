@@ -16,13 +16,13 @@ const { novel: n } = Astro.props;
     <p class="original-title">{n.originalTitle} · {n.author}</p>
     <p class="card-description">{n.description}</p>
     {(n.rating || typeof n.views === 'number') && <p class="catalog-card-stats">
-      {n.rating && <span>★ {n.rating.average.toFixed(1)} / 5 · {n.rating.count} оценок</span>}
-      {typeof n.views === 'number' && <span>◉ {new Intl.NumberFormat('ru-RU').format(n.views)} просмотров</span>}
+      {n.rating && <span>★ {n.rating.average.toFixed(1)} / 5 · {n.rating.count} ratings</span>}
+      {typeof n.views === 'number' && <span>◉ {new Intl.NumberFormat('en-US').format(n.views)} views</span>}
     </p>}
     <p class="fine">
       {chapterCount(n.chapterCount)} · {n.translationStatus} ·{' '}
       <time datetime={n.updatedAt}>{dateLabel(n.updatedAt)}</time>
     </p>
-    <a class="text-link" href={n.url}>Открыть новеллу <span aria-hidden="true">→</span></a>
+    <a class="text-link" href={n.url}>View novel <span aria-hidden="true">→</span></a>
   </div>
 </article>

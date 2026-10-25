@@ -6,9 +6,9 @@ import { execFileSync } from 'node:child_process';
 import { chapterCount } from '../src/lib/format.ts';
 import { contactChannels } from '../src/lib/contacts.ts';
 
-test('склонение глав: единицы, подростковые числа и сотни', () => {
-  for (const [count, word] of [[0,'глав'],[1,'глава'],[2,'главы'],[4,'главы'],[5,'глав'],[11,'глав'],[12,'глав'],[14,'глав'],[21,'глава'],[22,'главы'],[100,'глав'],[101,'глава'],[111,'глав'],[122,'главы']])
-    assert.equal(chapterCount(count), `${count} ${word}`);
+test('English chapter counts use singular only for one chapter', () => {
+  for (const count of [0, 1, 2, 4, 5, 11, 12, 14, 21, 22, 100, 101, 111, 122])
+    assert.equal(chapterCount(count), `${count} ${count === 1 ? 'chapter' : 'chapters'}`);
 });
 test('пустые и небезопасные контакты не создают ссылок', () => {
   assert.deepEqual(contactChannels({email:'',telegram:'',rightsEmail:''}), []);

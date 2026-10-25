@@ -19,22 +19,18 @@ export function makePublicationNews(input) {
   let name, title, excerpt, details;
   if (kind === 'novel') {
     name = 'publication-novel-' + novelSlug + '.md';
-    title = 'Новая новелла: ' + novel;
-    excerpt = 'В библиотеке «Хунмэнг» опубликована новелла «' + novel +
-      '». Откройте страницу произведения, чтобы начать чтение.';
-    details = 'В библиотеке «Хунмэнг» появилась новая новелла **«' + novel +
-      '»**.\n\n[Открыть произведение](/novel/' + novelSlug + '/).';
+    title = 'New novel: ' + novel;
+    excerpt = 'New in the Hunmeng library: ' + novel + '. Open the novel to start reading.';
+    details = '**' + novel + '** is now available in the Hunmeng library.\n\n[View novel](/novel/' + novelSlug + '/).';
   } else if (kind === 'chapter') {
     if (!slugPattern.test(chapterSlug) || !Number.isSafeInteger(chapterNumber) || chapterNumber < 1)
       throw new Error('Invalid chapter slug or number');
     const chapter = clean(chapterTitle);
     if (!chapter) throw new Error('Chapter title is required');
     name = 'publication-chapter-' + novelSlug + '--' + chapterSlug + '.md';
-    title = 'Новая глава: ' + novel + ' — ' + chapterNumber;
-    excerpt = 'Для новеллы «' + novel + '» опубликована глава ' + chapterNumber +
-      ': «' + chapter + '». Продолжайте чтение на сайте.';
-    details = 'Опубликована **глава ' + chapterNumber + '. ' + chapter + '** новеллы «' +
-      novel + '».\n\n[Читать главу](/novel/' + novelSlug + '/' + chapterSlug + '/).';
+    title = 'New chapter: ' + novel + ' — ' + chapterNumber;
+    excerpt = 'Chapter ' + chapterNumber + ': ' + chapter + ' is now available for ' + novel + '. Continue reading on Hunmeng.';
+    details = '**Chapter ' + chapterNumber + '. ' + chapter + '** of **' + novel + '** is now available.\n\n[Read chapter](/novel/' + novelSlug + '/' + chapterSlug + '/).';
   } else {
     throw new Error('Unsupported publication type');
   }

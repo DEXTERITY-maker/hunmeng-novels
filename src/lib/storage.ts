@@ -37,8 +37,7 @@ export const defaults: Settings = {
   width: 720,
   theme: 'system',
 };
-// Функции самодостаточны: одна и та же нормализация и применение используются
-// ранним скриптом в head и основным клиентским модулем.
+// Self-contained helpers are shared by the early head script and client module.
 export function normalizeSettings(value: unknown, fallback: Settings): Settings {
   const s =
     value && typeof value === 'object' && !Array.isArray(value)
@@ -71,8 +70,7 @@ export function applySettings(s: Settings) {
   root.style.setProperty('--reader-leading', String(s.lineHeight));
   root.style.setProperty('--reader-width', `${s.width}px`);
 }
-// Синхронно применяем все настройки до первого кадра. Если хранилище
-// недоступно или JSON повреждён, ничего не меняем: работают значения CSS.
+// Apply settings before the first frame; unavailable or corrupt storage leaves CSS defaults.
 export const settingsBootstrap = `(() => {
   try {
     const state = JSON.parse(localStorage.getItem(${JSON.stringify(STORAGE_KEY)}) || 'null');

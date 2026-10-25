@@ -37,7 +37,7 @@ function setSession(session: Session | null) {
     if (session) sessionStore().setItem(sessionKey(), JSON.stringify(session));
     else sessionStore().removeItem(sessionKey());
   } catch {
-    if (session) throw new BackendError('Разрешите сохранение данных сайта в этой вкладке для входа.');
+    if (session) throw new BackendError('Allow site storage in this tab to sign in.');
   }
   window.dispatchEvent(new Event('hunmeng:auth-change'));
   if (!session) window.dispatchEvent(new Event('hunmeng:session-ended'));
@@ -47,17 +47,17 @@ function parseSession(data: ApiRecord): Session {
   if (!user?.id || typeof data.access_token !== 'string' || !data.access_token ||
       typeof data.refresh_token !== 'string' || !data.refresh_token ||
       typeof data.expires_in !== 'number' || !Number.isFinite(data.expires_in) || data.expires_in <= 0)
-    throw new BackendError('Сервер не подтвердил вход. Проверьте подтверждение электронной почты.');
+    throw new BackendError('The server could not confirm sign-in. Check your email confirmation.');
   return { user, access_token: data.access_token, refresh_token: data.refresh_token,
     expires_at: Math.floor(Date.now() / 1000) + data.expires_in };
 }
 async function request(path: string, options: RequestInit = {}) {
-  if (!backendConfigured) throw new BackendError('Сервер авторизации не настроен.');
+  if (!backendConfigured) throw new BackendError('Sign-in is not configured.');
   try {
     return await fetch(url + path, { ...options, cache: 'no-store', credentials: 'omit',
       referrerPolicy: 'no-referrer', signal: AbortSignal.timeout(15000) });
   } catch {
-    throw new BackendError('Не удалось связаться с сервером. Проверьте подключение и повторите попытку.');
+    throw new BackendError('Unable to reach the server. Check your connection and try again.');
   }
 }
 async function authRequest(path: string, payload: ApiRecord, accessToken?: string): Promise<ApiRecord> {
@@ -69,9 +69,9 @@ async function authRequest(path: string, payload: ApiRecord, accessToken?: strin
   const body: ApiRecord = await response.json().catch(() => ({}));
   // Never reflect upstream messages containing private values or English diagnostics.
   if (!response.ok) throw new BackendError(response.status === 429
-    ? 'Слишком много попыток. Подождите и попробуйте снова.'
-    : response.status >= 500 ? 'Сервер авторизации временно недоступен.'
-    : 'Не удалось войти. Проверьте email, пароль и подтверждение почты.', response.status);
+    ? 'Too many attempts. Wait a moment and try again.'
+    : response.status >= 500 ? 'Sign-in is temporarily unavailable.'
+    : 'Unable to sign in. Check your email, password, and email confirmation.', response.status);
   return body;
 }
 let refreshing: Promise<Session | null> | null = null;
@@ -101,7 +101,7 @@ export async function signIn(email: string, password: string) {
     try {
       sessionStorage.setItem(ADMIN_SESSION_KEY + ':check', '1');
       sessionStorage.removeItem(ADMIN_SESSION_KEY + ':check');
-    } catch { throw new BackendError('Разрешите сохранение данных сайта в этой вкладке для входа.'); }
+    } catch { throw new BackendError('Allow site storage in this tab to sign in.'); }
   }
   const session = parseSession(await authRequest('token?grant_type=password', { email, password }));
   setSession(session);
@@ -127,16 +127,16 @@ export async function getUser() {
     headers: { apikey: key, Authorization: 'Bearer ' + session.access_token },
   });
   if (response.status === 401 || response.status === 403) { setSession(null); return null; }
-  if (!response.ok) throw new BackendError('Не удалось проверить сессию. Повторите попытку.', response.status);
+  if (!response.ok) throw new BackendError('Unable to verify your session. Please try again.', response.status);
   const user = await response.json();
-  if (typeof user.id !== 'string') throw new BackendError('Сервер не подтвердил пользователя.');
+  if (typeof user.id !== 'string') throw new BackendError('The server could not verify the user.');
   return user as { id: string; email?: string };
 }
 export async function rest<T = ApiRecord[]>(table: string, method = 'GET',
   query = '', body?: unknown, extraHeaders: Record<string, string> = {}): Promise<T> {
   const session = await getSession();
-  if (!session) throw new BackendError('Сессия завершена. Войдите снова.', 401);
-  if (!/^[a-z_]+$/.test(table)) throw new BackendError('Некорректная таблица.');
+  if (!session) throw new BackendError('Your session has ended. Please sign in again.', 401);
+  if (!/^[a-z_]+$/.test(table)) throw new BackendError('Invalid table.');
   const response = await request('/rest/v1/' + table + (query ? '?' + query : ''), {
     method, headers: { apikey: key, Authorization: 'Bearer ' + session.access_token,
       'Content-Type': 'application/json', Prefer: 'return=representation', ...extraHeaders },
@@ -144,11 +144,11 @@ export async function rest<T = ApiRecord[]>(table: string, method = 'GET',
   });
   if (response.status === 401) {
     setSession(null);
-    throw new BackendError('Сессия завершена. Войдите снова.', 401);
+    throw new BackendError('Your session has ended. Please sign in again.', 401);
   }
   if (!response.ok) throw new BackendError(response.status === 403
-    ? 'Нет прав для этого действия. Обратитесь к владельцу проекта.'
-    : 'Сервер отклонил действие. Проверьте данные, права на произведение и статус вычитки.', response.status);
+    ? 'You do not have permission for this action. Contact the project owner.'
+    : 'The server rejected the action. Check the details, permissions, and review status.', response.status);
   if (response.status === 204) return [] as T;
   return await response.json() as T;
 }
@@ -168,15 +168,15 @@ function b64url(bytes: Uint8Array) {
   return btoa(raw).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 }
 export async function beginGoogleSignIn() {
-  if (!backendConfigured) throw new Error('Сервер авторизации не подключён.');
-  if (!window.crypto?.subtle) throw new Error('Для Google-входа требуется HTTPS.');
+  if (!backendConfigured) throw new Error('Sign-in is not connected.');
+  if (!window.crypto?.subtle) throw new Error('Google sign-in requires HTTPS.');
   const verifier = b64url(crypto.getRandomValues(new Uint8Array(32)));
   const bytes = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(verifier));
   const challenge = b64url(new Uint8Array(bytes));
   try {
     sessionStorage.setItem(GOOGLE_OAUTH_PKCE_KEY, verifier);
   } catch {
-    throw new Error('Разрешите сохранение данных сайта для Google-входа.');
+    throw new Error('Allow browser storage for Google sign-in.');
   }
   const target = new URL(url + '/auth/v1/authorize');
   target.searchParams.set('provider', 'google');
@@ -200,7 +200,7 @@ export async function completeGoogleSignIn(): Promise<boolean> {
   } catch { /* Cannot exchange without the verifier. */ }
   if (error) throw new Error('Google OAuth: ' + (description || error).slice(0, 240));
   if (!verifier || !/^[A-Za-z0-9_-]{43}$/.test(verifier)) {
-    throw new Error('Повторите Google-вход в той же вкладке браузера.');
+    throw new Error('Try Google sign-in again in the same browser tab.');
   }
   const tokens = await authRequest('token?grant_type=pkce', {
     auth_code: code, code_verifier: verifier,

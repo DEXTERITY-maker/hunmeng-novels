@@ -6,17 +6,17 @@ import { getNews, newsCategories } from '../../lib/news';
 const posts = await getNews();
 ---
 
-<Layout title="Новости и обновления" description="Последние новости Хунмэнг: журнал изменений сайта, объявления и информация о событиях.">
+<Layout title="News and updates" description="The latest Hunmeng news: site updates, announcements, and events.">
   <main id="main" class="page-shell news-page">
     <header class="news-heading">
       <div>
-        <h1>Новости</h1>
-        <p>Релизы, улучшения и важные объявления нашей библиотеки.</p>
+        <h1>News</h1>
+        <p>Updates, improvements, and announcements from our library.</p>
       </div>
-      <a class="news-back-link" href="/">← На главную</a>
+      <a class="news-back-link" href="/">← Home</a>
     </header>
-    <nav class="news-filter-tabs" aria-label="Категории новостей" id="news-filters">
-      <a href="/news/" data-news-filter="all" aria-current="page">Все</a>
+    <nav class="news-filter-tabs" aria-label="News categories" id="news-filters">
+      <a href="/news/" data-news-filter="all" aria-current="page">All</a>
       {Object.entries(newsCategories).map(([key, label]) => (
         <a href={`/news/?category=${key}`} data-news-filter={key}>{label}</a>
       ))}
@@ -24,10 +24,10 @@ const posts = await getNews();
     <div class="news-feed" id="news-feed">
       {posts.map((post) => <NewsCard post={post} />)}
     </div>
-    <p id="news-empty" class="home-section-empty" hidden>В этой категории пока нет публикаций.</p>
-    <nav id="news-pagination" class="news-pagination" aria-label="Страницы новостей" hidden></nav>
+    <p id="news-empty" class="home-section-empty" hidden>There are no posts in this category yet.</p>
+    <nav id="news-pagination" class="news-pagination" aria-label="News pages" hidden></nav>
     <noscript>
-      <p class="notice">Для фильтров и постраничного просмотра требуется JavaScript. Все новости доступны выше без него.</p>
+      <p class="notice">Filters and pagination require JavaScript. All news is available above without it.</p>
     </noscript>
   </main>
   <script>

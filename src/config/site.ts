@@ -1,18 +1,12 @@
 export const site = {
-  name: 'Хунмэнг',
-  tagline: 'новеллы',
+  name: 'Hunmeng',
+  tagline: 'novels',
   latinName: 'Hunmeng Novels',
-  description: 'Хунмэнг — новеллы на русском. Истории для неспешного чтения.',
-  // Основной адрес сайта; используется при сборке, если SITE_URL не задан.
+  description: 'Hunmeng — web novels in English. Stories to enjoy at your own pace.',
   url: 'https://dexterity-maker-hunmeng-novels-364c.twc1.net',
-  // Пустая строка: кнопки сообщения об ошибке в главах не показываются.
-  // Позже укажите https://t.me/YourBot: для главы используется start=e_{novel}_{number}.
   reportUrl: '',
-  // Реальные каналы добавляет владелец. Пустые строки не создают ссылок.
   contacts: { email: '', telegram: '', rightsEmail: '' },
-  // Вход читателей включён; синхронизация библиотеки требует отдельного решения.
   features: { accounts: true, readerSync: false },
-  // Локальные версии логотипа для светлой/сепии и тёмной темы.
   logo: {
     light: '/images/logo-light.png',
     dark: '/images/logo-dark.png',
@@ -40,9 +34,9 @@ export const site = {
   },
 } as const;
 export const shelves = {
-  reading: 'Читаю',
-  later: 'Прочитать позже',
-  completed: 'Прочитано',
-  dropped: 'Брошено',
+  reading: 'Reading',
+  later: 'Read later',
+  completed: 'Read',
+  dropped: 'Dropped',
 } as const;
 export type Shelf = keyof typeof shelves;

@@ -2,19 +2,19 @@
 novelSlug: 'khranitel-mayaka'
 slug: 'glava-3'
 number: 3
-title: 'Берег, который помнит'
+title: 'The Shore That Remembers'
 publishedAt: '2026-10-23'
-description: 'Глава 3. Берег, который помнит. Продолжение оригинальной демонстрационной истории.'
+description: 'Chapter 3. The Shore That Remembers. An original demo story.'
 ---
 
-Ночью море вынесло на берег маленькую лодку. В ней не было ни вёсел, ни паруса — только мешок земли и веточка с зелёными листьями.
+During the night, the sea washed a little boat ashore. It had neither oars nor a sail—only a sack of soil and a twig with green leaves.
 
-Илья посадил ветку возле калитки. Земля была тёплой, словно её только что принесли из летнего сада. Он долго держал ладони над грядкой, не решаясь уйти.
+Ilya planted the twig beside the gate. The soil was warm, as though it had just come from a summer garden. He held his palms above the little bed for a long time, reluctant to leave.
 
-Из деревни пришла хозяйка пекарни. Она принесла горячий хлеб и то самое письмо. Теперь на его обороте проступила карта: острова, узкий пролив и крошечный маяк.
+The baker came from the village with warm bread and the same letter. A map had now appeared on its reverse: islands, a narrow strait, and a tiny lighthouse.
 
-— Ты не обязан отправляться, — сказала она. — Хранить свет тоже путешествие. Просто не все дороги требуют покидать дом.
+“You do not have to set out,” she said. “Keeping a light is a journey too. Not every road asks you to leave home.”
 
-Они сидели у калитки, пока море не стало розовым. Ветка дрогнула, и на ней раскрылся один белый цветок. Он пах не солью и не дождём, а чем-то давно знакомым.
+They sat beside the gate until the sea turned pink. The twig trembled, and a single white flower opened on it. It smelled neither of salt nor rain, but of something long familiar.
 
-Илья вернулся в башню и открыл чистую тетрадь. На первой странице он написал: «Сегодня вернулось письмо». Потом подумал и добавил: «И, кажется, не только оно».
+Ilya returned to the tower and opened a fresh notebook. On the first page he wrote: “Today a letter came back.” Then he thought for a moment and added: “And perhaps it was not the only thing.”
