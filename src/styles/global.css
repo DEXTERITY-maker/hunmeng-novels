@@ -1983,3 +1983,175 @@ html[data-theme='dark'] .brand-logo-dark {
     transition: none;
   }
 }
+
+
+/* Уплотнённая мобильная главная и доступные для чтения подписи. */
+.home-updates-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  min-height: 44px;
+  gap: 9px;
+  margin: 16px auto 0;
+  padding: 9px 20px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--surface);
+  color: var(--accent);
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+.home-updates-button:hover {
+  border-color: var(--accent);
+  background: var(--soft);
+}
+.updates-page .page-heading {
+  padding-top: 0;
+}
+.updates-page .page-heading h1 {
+  margin-top: 7px;
+}
+@media (max-width: 760px) {
+  .home-page .home-hero {
+    gap: 0;
+    padding-top: 5px;
+    padding-bottom: 0;
+  }
+  .home-page .home-hero-copy {
+    padding: 14px 0 5px;
+  }
+  .home-page .home-hero h1 {
+    font-size: clamp(1.9rem, 6vw, 2.3rem);
+    line-height: 1.22;
+    margin-top: 8px;
+  }
+  .home-page .home-hero-description {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    line-height: 1.55;
+  }
+  .home-page .home-search {
+    margin-top: 17px;
+    padding: 5px 5px 5px 12px;
+  }
+  .home-page .home-quick-links {
+    margin-top: 10px;
+    gap: 6px;
+  }
+  .home-page .home-section {
+    padding-top: 23px;
+  }
+  .home-page .home-section-heading {
+    margin-bottom: 14px;
+  }
+  .home-page #continue-section {
+    padding-top: 18px;
+  }
+  .home-page #continue-section .section-heading {
+    margin-bottom: 11px;
+  }
+  .home-page #continue-section .section-heading h2 {
+    font-size: 1.25rem;
+  }
+  .home-page .continue-list {
+    gap: 10px;
+  }
+  .home-page .continue-card {
+    padding: 12px;
+    gap: 12px;
+    border-radius: 9px;
+    align-items: center;
+  }
+  .home-page .continue-card img {
+    width: 50px;
+    height: 74px;
+    flex: none;
+  }
+  .home-page .continue-card h3 {
+    font-size: 0.98rem;
+    line-height: 1.28;
+  }
+  .home-page .continue-card p {
+    margin: 4px 0 5px;
+    font-size: 0.82rem;
+    line-height: 1.45;
+  }
+  .home-page .continue-card .text-link {
+    margin-top: 5px;
+    font-size: 0.84rem;
+  }
+  .home-page .continue-card progress {
+    display: block;
+  }
+  /* Подписи карточек, дат и ссылок: не мельче примерно 13px. */
+  .home-page .home-eyebrow,
+  .home-page .home-section-kicker,
+  .home-page .home-quick-links a,
+  .home-page .home-book-genre,
+  .home-page .home-book-meta,
+  .home-page .home-chapter-novel,
+  .home-page .home-chapter-info time,
+  .home-page .home-recommendation-note,
+  .home-page .home-recommendation-description,
+  .home-page .home-views,
+  .home-page .home-popular-book small,
+  .home-page .home-recommendation-card .genre-line,
+  .home-page .home-section-heading > a,
+  .home-page .fine {
+    font-size: 0.825rem;
+    line-height: 1.5;
+  }
+  .home-page .home-book-title {
+    font-size: 0.94rem;
+  }
+  .home-page .home-chapter-info strong {
+    font-size: 0.9rem;
+  }
+  .home-page .home-recommendation-card h3 {
+    font-size: 1rem;
+  }
+  .home-page .home-popular-empty p {
+    font-size: 0.85rem;
+  }
+  .home-page .home-chapter-link {
+    min-height: 94px;
+    padding: 10px 4px;
+    gap: 11px;
+  }
+  .home-page .home-chapter-link img {
+    width: 49px;
+    height: 72px;
+  }
+  .updates-page .page-heading {
+    padding: 0 0 22px;
+  }
+  .updates-page .back-link {
+    margin: 18px 0;
+  }
+}
+@media (max-width: 510px) {
+  .home-page .home-search {
+    padding: 4px;
+  }
+  .home-page .home-search input[type='search'] {
+    padding-left: 10px;
+    font-size: 0.875rem;
+  }
+  .home-page .home-search .button {
+    min-height: 44px;
+    font-size: 0.875rem;
+  }
+  .home-page .home-quick-links a {
+    padding: 5px 9px;
+  }
+  .home-page .home-section-heading h2 {
+    font-size: 1.3rem;
+  }
+  .home-page .home-section-heading > a {
+    white-space: normal;
+  }
+  .home-page .home-recommendation-card {
+    gap: 12px;
+  }
+}

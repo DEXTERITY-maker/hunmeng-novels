@@ -48,7 +48,7 @@ export async function initPersonal() {
         bar.max = 1;
         bar.value = p.ratio;
         bar.setAttribute('aria-label', 'Прогресс текущей главы');
-        body.append(bar, element('span', 'Продолжить чтение →', 'text-link'));
+        body.append(bar, element('span', 'Продолжить →', 'text-link'));
         a.append(img, body);
         list.append(a);
       }

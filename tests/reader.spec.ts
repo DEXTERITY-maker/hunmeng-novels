@@ -7,7 +7,7 @@ test('главная: четыре раздела, обложки и поиск 
   await expect(page.getByRole('heading', { name: 'Популярное' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Рекомендации' })).toBeVisible();
   await expect(page.locator('#new-novels .home-book-card')).toHaveCount(2);
-  await expect(page.locator('#latest-chapters .home-chapter-link')).toHaveCount(7);
+  await expect(page.locator('#latest-chapters .home-chapter-link')).toHaveCount(4);
   await expect(page.locator('#popular-novels .home-popular-empty')).toBeVisible();
   await expect(page.locator('#recommended-novels .home-recommendation-card')).toHaveCount(2);
   await page.getByRole('searchbox', { name: 'Поиск новелл' }).fill('winter');
@@ -17,6 +17,61 @@ test('главная: четыре раздела, обложки и поиск 
   await expect(page.locator('#result-count')).toHaveText('Найдено новелл: 1');
   await expect(page.locator('[data-novel]:visible')).toHaveCount(1);
   await expect(page.locator('[data-novel]:visible h2')).toContainText('Сад');
+});
+test('все обновления: главная показывает четыре главы, отдельная страница — полный список', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.locator('#latest-chapters .home-chapter-link')).toHaveCount(4);
+  await page.getByRole('link', { name: 'Все обновления' }).click();
+  expect(new URL(page.url()).pathname).toBe('/updates/');
+  await expect(page.getByRole('heading', { name: 'Все обновления' })).toBeVisible();
+  await expect(page.locator('.updates-page .home-chapter-link')).toHaveCount(7);
+  await page.locator('.updates-page .home-chapter-link').first().click();
+  await expect(page.locator('#chapter-text')).toBeVisible();
+});
+test('мобильная главная: компактное продолжение чтения и читаемые подписи', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/');
+  await page.evaluate(() => {
+    const progress = () => ({
+      chapterSlug: 'glava-1',
+      chapterNumber: 1,
+      blockId: 'block-0',
+      offset: 0,
+      ratio: 0.3,
+      updatedAt: Date.now(),
+    });
+    localStorage.setItem('hunmeng-novels:v1', JSON.stringify({
+      version: 1,
+      settings: { font: 'serif', size: 20, lineHeight: 1.85, width: 720, theme: 'system' },
+      library: {},
+      progress: {
+        'khranitel-mayaka': progress(),
+        'sad-zimy': progress(),
+      },
+    }));
+  });
+  await page.reload();
+  const cards = page.locator('.home-page .continue-card');
+  await expect(cards).toHaveCount(2);
+  for (const card of await cards.all()) {
+    const rect = await card.boundingBox();
+    expect(rect).not.toBeNull();
+    expect(rect!.height).toBeLessThan(150);
+  }
+  for (const selector of [
+    '.home-book-genre',
+    '.home-book-meta',
+    '.home-chapter-novel',
+    '.home-chapter-info time',
+    '.home-recommendation-description',
+    '.home-section-heading > a',
+  ]) {
+    const fontSize = await page.locator(selector).first().evaluate((element) =>
+      parseFloat(getComputedStyle(element).fontSize),
+    );
+    expect(fontSize).toBeGreaterThanOrEqual(13);
+  }
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBeTruthy();
 });
 test('статические страницы, SEO и отсутствие внешних запросов', async ({ page }) => {
   const errors: string[] = [],
@@ -29,6 +84,7 @@ test('статические страницы, SEO и отсутствие вн�
   for (const route of [
     '/',
     '/catalog/',
+    '/updates/',
     '/library/',
     '/novel/khranitel-mayaka/',
     chapter,
