@@ -2,6 +2,7 @@ import { repository, onStorageChange } from '../lib/storage';
 import { getCatalog, element } from '../lib/client-data';
 import { shelves, type Shelf } from '../config/site';
 import { chapterCount } from '../lib/format';
+import { readingAction } from '../lib/reading-action';
 export async function initLibrary() {
   let active: Shelf = 'reading';
   const list = document.getElementById('library-list')!;
@@ -20,6 +21,7 @@ export async function initLibrary() {
       for (const n of catalog.filter((n) => state.library[n.slug] === active)) {
         const p = state.progress[n.slug],
           c = n.chapters.find((c) => c.slug === p?.chapterSlug);
+        const action = readingAction(n, p);
         const row = element('article', undefined, 'library-row');
         const img = element('img');
         img.src = n.cover;
@@ -35,14 +37,16 @@ export async function initLibrary() {
           title,
           element(
             'p',
-            p
-              ? `Глава ${c?.number || 1} из ${n.chapterCount}`
-              : `${chapterCount(n.chapterCount)} · ${n.translationStatus}`,
+            action.kind === 'caught-up'
+              ? 'Все опубликованные главы прочитаны'
+              : c
+                ? `Глава ${c.number} из ${n.chapterCount}`
+                : `${chapterCount(n.chapterCount)} · ${n.translationStatus}`,
             'fine',
           ),
         );
-        const read = element('a', c ? 'Продолжить →' : 'Начать читать →', 'text-link');
-        read.href = c ? c.url + '?resume=1' : n.firstUrl;
+        const read = element('a', action.label + ' →', 'text-link');
+        read.href = action.url;
         body.append(read);
         const label = element('label', 'Полка');
         const select = element('select');

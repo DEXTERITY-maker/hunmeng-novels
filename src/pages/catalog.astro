@@ -24,92 +24,101 @@ const PAGE_SIZE = 24;
           <h2>Подбор произведений</h2>
           <button type="reset" class="text-button">Сбросить фильтры</button>
         </div>
-        <div class="catalog-controls">
+        <div class="catalog-search-row">
           <label class="search-label">
             Название или автор
             <input type="search" name="search" placeholder="Русское или оригинальное название" autocomplete="off" />
           </label>
-          <label>
-            Категория
-            <select name="category">
-              <option value="">Все категории</option>
-              {categories.map((category) => <option value={category}>{category}</option>)}
-            </select>
-          </label>
-          <label>
-            Жанр
-            <select name="genre">
-              <option value="">Все жанры</option>
-              {genres.map((genre) => <option value={genre}>{genre}</option>)}
-            </select>
-          </label>
-          <label>
-            Статус перевода
-            <select name="status">
-              <option value="">Все статусы</option>
-              {['Переводится', 'Завершён', 'Приостановлен'].map((status) => <option>{status}</option>)}
-            </select>
-          </label>
-          <label>
-            Статус оригинала
-            <select name="originalStatus">
-              <option value="">Все статусы</option>
-              {['Продолжается', 'Завершён', 'Приостановлен'].map((status) => <option>{status}</option>)}
-            </select>
-          </label>
-          <label>
-            Минимум глав
-            <input type="number" name="minChapters" min="0" max="1000000" step="1" inputmode="numeric" placeholder="Без ограничений" />
-          </label>
-          <label>
-            Минимальный рейтинг
-            <select name="minRating">
-              <option value="">Любой рейтинг</option>
-              <option value="3">От 3 из 5</option>
-              <option value="4">От 4 из 5</option>
-              <option value="4.5">От 4,5 из 5</option>
-            </select>
-          </label>
-          <label>
-            Сортировка
-            <select name="sort">
-              <option value="updated">Последние обновления</option>
-              <option value="added">Новые произведения</option>
-              <option value="title">Название: А–Я</option>
-              <option value="chapters">По числу глав</option>
-              <option value="rating">По рейтингу</option>
-              <option value="views">По просмотрам</option>
-            </select>
-          </label>
-          <label>
-            На странице
-            <select name="size">
-              <option value="24">24 произведения</option>
-              <option value="48">48 произведений</option>
-            </select>
-          </label>
         </div>
-        <details class="tag-filters">
-          <summary>Расширенные фильтры по тегам</summary>
-          <div class="tag-columns">
-            <fieldset>
-              <legend>Включить все выбранные</legend>
-              {tags.map((tag) => (
-                <label class="check-label">
-                  <input type="checkbox" name="include" value={tag} />{tag}
-                </label>
-              ))}
-            </fieldset>
-            <fieldset>
-              <legend>Исключить выбранные</legend>
-              {tags.map((tag) => (
-                <label class="check-label">
-                  <input type="checkbox" name="exclude" value={tag} />{tag}
-                </label>
-              ))}
-            </fieldset>
+        <details id="catalog-options" class="catalog-options">
+          <summary>Фильтры и сортировка <span id="active-filter-count" hidden></span></summary>
+          <div class="catalog-controls">
+            <label>
+              Категория
+              <select name="category">
+                <option value="">Все категории</option>
+                {categories.map((category) => <option value={category}>{category}</option>)}
+              </select>
+            </label>
+            <label>
+              Жанр
+              <select name="genre">
+                <option value="">Все жанры</option>
+                {genres.map((genre) => <option value={genre}>{genre}</option>)}
+              </select>
+            </label>
+            <label>
+              Статус перевода
+              <select name="status">
+                <option value="">Все статусы</option>
+                {['Переводится', 'Завершён', 'Приостановлен'].map((status) => <option>{status}</option>)}
+              </select>
+            </label>
+            <label>
+              Статус оригинала
+              <select name="originalStatus">
+                <option value="">Все статусы</option>
+                {['Продолжается', 'Завершён', 'Приостановлен'].map((status) => <option>{status}</option>)}
+              </select>
+            </label>
+            <label>
+              Минимум глав
+              <input type="number" name="minChapters" min="0" max="1000000" step="1" inputmode="numeric" placeholder="Без ограничений" />
+            </label>
+            <label>
+              Минимальный рейтинг
+              <select name="minRating">
+                <option value="">Любой рейтинг</option>
+                <option value="3">От 3 из 5</option>
+                <option value="4">От 4 из 5</option>
+                <option value="4.5">От 4,5 из 5</option>
+              </select>
+            </label>
+            <label>
+              Сортировка
+              <select name="sort">
+                <option value="updated">Последние обновления</option>
+                <option value="added">Новые произведения</option>
+                <option value="title">Название: А–Я</option>
+                <option value="chapters">По числу глав</option>
+                <option value="rating">По рейтингу</option>
+                <option value="views">По просмотрам</option>
+              </select>
+            </label>
+            <label>
+              На странице
+              <select name="size">
+                <option value="24">24 произведения</option>
+                <option value="48">48 произведений</option>
+              </select>
+            </label>
           </div>
+          <details class="tag-filters">
+            <summary>Расширенные фильтры по тегам</summary>
+            <div class="tag-columns">
+              <fieldset>
+                <legend>Включить все выбранные</legend>
+                {tags.map((tag) => (
+                  <label class="check-label">
+                    <input type="checkbox" name="include" value={tag} />{tag}
+                  </label>
+                ))}
+              </fieldset>
+              <fieldset>
+                <legend>Исключить выбранные</legend>
+                {tags.map((tag) => (
+                  <label class="check-label">
+                    <input type="checkbox" name="exclude" value={tag} />{tag}
+                  </label>
+                ))}
+              </fieldset>
+            </div>
+          </details>
         </details>
+        <script is:inline>
+          // Desktop opens its sidebar during parsing. Mobile starts compact; no zoom overrides.
+          document.getElementById('catalog-options').open = !matchMedia('(max-width: 760px)').matches;
+        </script>
       </form>
       <div class="catalog-main">
         <div class="results-heading catalog-results-heading">
