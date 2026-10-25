@@ -44,7 +44,7 @@ test('markup in the source title cannot inject HTML or new Markdown links', () =
 
 test('one welcome announcement remains; old commit-based job is removed', async () => {
   const paths = await fs.readdir('src/content/news');
-  assert.ok(paths.includes('hongmeng-opens.md'));
+  assert.ok(paths.includes('hunmeng-opens.md'));
   assert.equal(paths.filter(p => /^(update-|release-)/.test(p)).length,0);
   await assert.rejects(fs.access('.github/workflows/auto-news.yml'),{code:'ENOENT'});
   await assert.rejects(fs.access('scripts/generate-update-news.mjs'),{code:'ENOENT'});

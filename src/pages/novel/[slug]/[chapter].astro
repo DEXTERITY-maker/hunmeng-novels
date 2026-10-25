@@ -20,7 +20,7 @@ const prev = n.chapters[index - 1],
 const nearby = n.chapters.slice(Math.max(0, index - 10), Math.min(n.chapterCount, index + 11));
 const tocPage = Math.floor(index / CHAPTERS_PER_PAGE) + 1;
 const structuredData = chapterStructuredData(n, c, Astro.site || site.url);
-const reportHref = chapterReportUrl(site.reportUrl, n.slug, c.data.slug);
+const reportHref = chapterReportUrl(site.reportUrl, n.slug, c.data.number);
 const coverIsSvg = n.cover.endsWith('.svg');
 ---
 

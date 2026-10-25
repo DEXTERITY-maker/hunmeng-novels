@@ -12,7 +12,7 @@ jobs:
       - run: npm ci
       - run: node --check scripts/publish-approved.mjs
       - run: node --check scripts/publication-news.mjs
-      - run: node --test tests/news-generator.test.mjs
+      - run: node --test tests/news-generator.test.mjs tests/seo-report.test.mjs
       - run: npm run build
       - run: npx playwright install --with-deps chromium
       - run: npm test

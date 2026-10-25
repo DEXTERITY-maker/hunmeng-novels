@@ -99,7 +99,7 @@ test('новости: категории сохраняются, несущес�
   await expect(page.locator('#news-feed [data-news-card]:visible')).toHaveCount(1);
 });
 test('отдельная новость: приветствие, разрешения правообладателей и локальные реакции', async ({ page }) => {
-  await page.goto('/news/hongmeng-opens/');
+  await page.goto('/news/hunmeng-opens/');
   await expect(page.getByRole('heading', { name: 'Хунмэнг открывается' })).toBeVisible();
   await expect(page.locator('.news-article-body')).toContainText('разрешения авторов');
   await expect(page.locator('.news-article')).not.toContainText('GitHub');
@@ -114,7 +114,7 @@ test('отдельная новость: приветствие, разреше�
 });
 test('мобильная страница новостей без горизонтальной прокрутки', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  for (const url of ['/news/', '/news/hongmeng-opens/']) {
+  for (const url of ['/news/', '/news/hunmeng-opens/']) {
     await page.goto(url);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
   }
@@ -177,7 +177,7 @@ test('статические страницы, SEO и отсутствие вн�
     '/catalog/',
     '/updates/',
     '/news/',
-    '/news/hongmeng-opens/',
+    '/news/hunmeng-opens/',
     '/account/',
     '/admin/',
     '/library/',

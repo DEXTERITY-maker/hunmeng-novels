@@ -6,7 +6,7 @@ export const site = {
   // Основной адрес сайта; используется при сборке, если SITE_URL не задан.
   url: 'https://dexterity-maker-hunmeng-novels-364c.twc1.net',
   // Пустая строка: кнопки сообщения об ошибке в главах не показываются.
-  // Позже можно указать https://t.me/YourBot?start=report_{novel}_{chapter}
+  // Позже укажите https://t.me/YourBot: для главы используется start=e_{novel}_{number}.
   reportUrl: '',
   // Reader accounts are disabled until data localization and availability are addressed.
   features: { accounts: false },
