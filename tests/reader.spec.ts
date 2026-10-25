@@ -73,6 +73,50 @@ test('мобильная главная: компактное продолжен
   }
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBeTruthy();
 });
+test('новости: блок на главной и открытие полной ленты', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.getByRole('heading', { name: 'Последние новости' })).toBeVisible();
+  await expect(page.locator('#latest-news [data-news-card]')).toHaveCount(3);
+  await page.locator('#latest-news').getByRole('link', { name: 'Просмотреть все' }).click();
+  expect(new URL(page.url()).pathname).toBe('/news/');
+  await expect(page.getByRole('heading', { name: 'Новости', exact: true })).toBeVisible();
+  await expect(page.locator('#news-feed [data-news-card]:visible')).toHaveCount(4);
+  await expect(page.locator('#news-pagination')).toBeVisible();
+});
+test('новостная лента: категории, пагинация, пустой раздел и возврат', async ({ page }) => {
+  await page.goto('/news/');
+  await page.locator('#news-pagination').getByRole('link', { name: '2' }).click();
+  await expect(page.locator('#news-feed [data-news-card]:visible')).toHaveCount(2);
+  await expect(page).toHaveURL(/page=2/);
+  await page.getByRole('link', { name: 'Объявления', exact: true }).click();
+  await expect(page.locator('#news-feed [data-news-card]:visible')).toHaveCount(2);
+  await expect(page.locator('[data-news-filter=announcements]')).toHaveAttribute('aria-current', 'page');
+  await page.getByRole('link', { name: 'Розыгрыши', exact: true }).click();
+  await expect(page.locator('#news-empty')).toBeVisible();
+  await expect(page.locator('#news-pagination')).toBeHidden();
+  await page.getByRole('link', { name: 'Все', exact: true }).click();
+  await expect(page.locator('#news-feed [data-news-card]:visible')).toHaveCount(4);
+});
+test('отдельная новость: статья, категории и локальные реакции', async ({ page }) => {
+  await page.goto('/news/catalog-release/');
+  await expect(page.getByRole('heading', { name: 'Каталог стал удобнее: расширенный поиск и оглавления' })).toBeVisible();
+  await expect(page.locator('.news-article-body h2')).toHaveCount(2);
+  await page.getByRole('button', { name: 'Реакция 🔥' }).click();
+  await expect(page.getByRole('button', { name: 'Реакция 🔥' })).toHaveAttribute('aria-pressed', 'true');
+  await page.reload();
+  await expect(page.getByRole('button', { name: 'Реакция 🔥' })).toHaveAttribute('aria-pressed', 'true');
+  await page.getByRole('button', { name: 'Реакция 🔥' }).click();
+  await expect(page.getByRole('button', { name: 'Реакция 🔥' })).toHaveAttribute('aria-pressed', 'false');
+  await page.getByRole('link', { name: 'Все новости' }).last().click();
+  expect(new URL(page.url()).pathname).toBe('/news/');
+});
+test('мобильная страница новостей без горизонтальной прокрутки', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  for (const url of ['/news/', '/news/news-launch/']) {
+    await page.goto(url);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
+  }
+});
 test('статические страницы, SEO и отсутствие внешних запросов', async ({ page }) => {
   const errors: string[] = [],
     external: string[] = [];
@@ -85,6 +129,8 @@ test('статические страницы, SEO и отсутствие вн�
     '/',
     '/catalog/',
     '/updates/',
+    '/news/',
+    '/news/news-launch/',
     '/library/',
     '/novel/khranitel-mayaka/',
     chapter,
