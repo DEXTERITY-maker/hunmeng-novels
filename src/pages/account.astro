@@ -2,55 +2,55 @@
 import Layout from '../layouts/Layout.astro';
 import { site } from '../config/site';
 ---
-<Layout title="Аккаунт и синхронизация" noindex description="Вход и синхронизация библиотеки Хунмэнг между устройствами.">
-  {site.features.accounts ? (
-  <main id="main" class="page-shell account-page">
+<Layout title="Вход и регистрация" noindex description="Войдите в Хунмэнг или создайте аккаунт читателя по email и паролю.">
+  <main id="main" class="page-shell account-page reader-account-page">
     <header class="page-heading">
-      <p class="home-section-kicker">ВАША БИБЛИОТЕКА</p>
-      <h1>Аккаунт</h1>
-      <p>Войдите для синхронизации полок и прогресса между устройствами.</p>
+      <p class="home-section-kicker">ХУНМЭНГ · ВАШ АККАУНТ</p>
+      <h1>Вход и регистрация</h1>
+      <p>Читать новеллы можно и без аккаунта.</p>
     </header>
-    <p class="notice" id="account-status" role="status">Проверяем настройки подключения…</p>
-    <form id="auth-form" class="account-card">
-      <div id="auth-fields">
-        <label>Действие
-          <select name="mode"><option value="signin">Войти</option><option value="signup">Создать аккаунт</option></select>
-        </label>
-        <label>Email
-          <input name="email" type="email" autocomplete="email" required maxlength="254" />
-        </label>
-        <label>Пароль
-          <input name="password" type="password" autocomplete="current-password" minlength="8" required />
-        </label>
-        <button class="button" type="submit">Продолжить</button>
-        <div class="account-oauth-divider" aria-hidden="true"><span>или</span></div>
-        <button class="button secondary account-google-button" type="button" id="google-sign-in">
-          <span class="google-icon" aria-hidden="true">G</span> Войти через Google
-        </button>
-        <p class="fine account-google-hint">Для Google-входа провайдер должен быть включён в Supabase.</p>
-      </div>
-      <div id="auth-logged-in" hidden>
-        <p>Данные чтения синхронизируются с вашей учётной записью.</p>
-        <div class="account-actions">
-          <button type="button" id="account-sync" class="button">Синхронизировать сейчас</button>
-          <button type="button" id="account-signout" class="button secondary">Выйти</button>
-          <a href="/admin/" class="button secondary">Редакторская панель</a>
-        </div>
-      </div>
-    </form>
-    <p class="fine account-help">Если сервер недоступен, локальная читалка продолжит работать. При первом входе полки объединяются, а для прогресса выбирается более новая позиция. Для одновременных изменений на двух устройствах пока действует упрощённая синхронизация; не используйте её как резервную копию важных данных.</p>
+    {site.features.accounts ? (
+      <>
+        <p class="notice" id="account-status" role="status" aria-live="polite">Проверяем сессию…</p>
+        <section id="auth-fields" class="account-card" aria-label="Авторизация читателя">
+          <div class="auth-mode-switch" role="group" aria-label="Выберите действие">
+            <button type="button" class="button" data-auth-mode="signin" aria-pressed="true">Войти</button>
+            <button type="button" class="button secondary" data-auth-mode="signup" aria-pressed="false">Зарегистрироваться</button>
+          </div>
+          <form id="auth-form" method="post" action="/account/">
+            <fieldset id="reader-auth-fields" disabled>
+              <label>Email
+                <input name="email" type="email" autocomplete="username" required maxlength="254" />
+              </label>
+              <label>Пароль
+                <input name="password" type="password" autocomplete="current-password" required />
+              </label>
+              <label id="confirm-password-label" hidden>Повторите пароль
+                <input name="confirmPassword" type="password" autocomplete="new-password" disabled />
+              </label>
+              <p class="fine" id="signup-hint" hidden>От 8 символов. После регистрации подтвердите email по ссылке из письма. Регистрация не даёт доступа к редакции.</p>
+              <button class="button" type="submit" id="reader-auth-submit">Войти</button>
+            </fieldset>
+          </form>
+          <p class="fine">Для аккаунта используется ваш email. Подробнее — в <a href="/rules/">правилах и информации о данных</a>.</p>
+        </section>
+        <section id="auth-logged-in" class="account-card" hidden aria-label="Ваш аккаунт">
+          <h2>Вы вошли в Хунмэнг</h2>
+          <p id="account-email"></p>
+          <p>Библиотека и место остановки сохраняются на этом устройстве. Синхронизация пока выключена.</p>
+          <div class="account-actions">
+            <a href="/library/" class="button">Открыть библиотеку</a>
+            <button type="button" id="account-signout" class="button secondary">Выйти из аккаунта</button>
+          </div>
+        </section>
+        <noscript><p class="notice">Для регистрации и входа включите JavaScript. Новеллы можно читать без входа.</p></noscript>
+      </>
+    ) : (
+      <p class="notice">Аккаунты читателей временно недоступны. Библиотека работает локально.</p>
+    )}
   </main>
-  ) : (
-    <main id="main" class="page-shell account-page">
-      <h1>Аккаунты читателей временно недоступны</h1>
-      <p>Библиотека и прогресс чтения сохраняются только на этом устройстве.</p>
-      <a href="/library/">Перейти в локальную библиотеку →</a>
-    </main>
-  )}
   <script>
     import { site } from '../config/site';
-    if (site.features.accounts) {
-      void import('../scripts/account').then(({ initAccount }) => initAccount());
-    }
+    if (site.features.accounts) void import('../scripts/account').then(({ initAccount }) => initAccount());
   </script>
 </Layout>

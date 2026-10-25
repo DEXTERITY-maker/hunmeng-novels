@@ -7,7 +7,7 @@ import { shelves, site } from '../config/site';
   <main id="main" class="page-shell">
     <div class="page-heading">
       <h1>Библиотека</h1>
-      <p>Ваши истории и прогресс чтения.{site.features.accounts && <> <a href="/account/">Войдите для синхронизации</a>.</>}</p>
+      <p>Ваши истории и прогресс чтения сохраняются на этом устройстве.</p>
     </div>
     <div class="shelf-tabs" role="group" aria-label="Полки">
       {Object.entries(shelves).map(([value, label], i) => (
@@ -30,13 +30,9 @@ import { shelves, site } from '../config/site';
       <a href="/catalog/">Выбрать новеллу в каталоге →</a>
     </p>
     <p class="fine storage-explanation">
-      {site.features.accounts ? (
-        <>Без входа библиотека хранится в этом браузере. После входа данные могут синхронизироваться
-        между устройствами. <a href="/account/">Настройки аккаунта →</a></>
-      ) : (
-        <>Библиотека и прогресс сохраняются только в этом браузере (localStorage), без отправки на сервер.
-        Синхронизация между устройствами выключена. Не очищайте данные сайта, если хотите сохранить библиотеку.</>
-      )}
+      Библиотека и прогресс сохраняются только в этом браузере (localStorage), без отправки на сервер.
+      Синхронизация между устройствами выключена, в том числе после входа. Не очищайте данные сайта, если хотите сохранить библиотеку.
+      {site.features.accounts && <> <a href="/account/">Ваш аккаунт →</a></>}
     </p>
     <noscript>
       <p class="notice">
