@@ -1,0 +1,49 @@
+name: Release scheduled chapters
+# Every day at 15:07 UTC (18:07 Moscow, 11:07 New York) the next chapters move from scheduled/
+# to the site. The push to main triggers the Timeweb deploy. A missing chapter fails the run,
+# so GitHub emails the repository owner.
+on:
+  schedule:
+    - cron: "7 15 * * *"
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: hunmeng-publish
+  cancel-in-progress: false
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - name: Move today's chapters from the queue
+        env:
+          RELEASE_REPORT_DIR: ${{ runner.temp }}
+        run: node scripts/release-scheduled.mjs
+      - name: Build the site before publishing
+        run: |
+          npm ci
+          npm run build
+      - name: Push released chapters
+        run: |
+          git config user.name "Hunmeng Publisher"
+          git config user.email "actions@users.noreply.github.com"
+          git add scheduled src/content
+          if ! git diff --cached --quiet; then
+            git commit -m "$(cat "$RUNNER_TEMP/release-summary.txt")"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+      - name: Report queue problems
+        run: |
+          if [ -s "$RUNNER_TEMP/release-problems.txt" ]; then
+            cat "$RUNNER_TEMP/release-problems.txt"
+            exit 1
+          fi
