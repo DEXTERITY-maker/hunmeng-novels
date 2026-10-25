@@ -1,10 +1,11 @@
 import { backendConfigured, getSession, rest } from './backend';
+import { site } from '../config/site';
 import { repository, sanitizeState, onStorageChange, type ReaderState } from './storage';
 
 let synchronizing = false;
 let scheduled: ReturnType<typeof setTimeout> | null = null;
 export async function syncReaderState() {
-  if (synchronizing || !backendConfigured) return;
+  if (!site.features.accounts || synchronizing || !backendConfigured) return;
   const session = await getSession();
   if (!session) return;
   synchronizing = true;
@@ -34,7 +35,7 @@ export async function syncReaderState() {
   } finally { synchronizing = false; }
 }
 export function startReaderSync() {
-  if (!backendConfigured || typeof window === 'undefined') return;
+  if (!site.features.accounts || !backendConfigured || typeof window === 'undefined') return;
   const queue = () => {
     if (synchronizing) return;
     if (scheduled) clearTimeout(scheduled);
