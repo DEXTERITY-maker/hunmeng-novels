@@ -117,6 +117,55 @@ test('мобильная страница новостей без горизон
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
   }
 });
+test('Google OAuth: кнопка запускает PKCE без секрета в запросе', async ({ page }) => {
+  let authUrl = '';
+  await page.route('**/auth/v1/authorize?**', async route => {
+    authUrl = route.request().url();
+    await route.fulfill({ status: 200, contentType: 'text/plain', body: 'OAuth mock' });
+  });
+  await page.goto('/account/');
+  await page.getByRole('button', { name: 'Войти через Google' }).click();
+  await expect.poll(() => authUrl).not.toBe('');
+  const redirect = new URL(authUrl);
+  expect(redirect.hostname).toBe('kvgnjsntumofwqhywiea.supabase.co');
+  expect(redirect.searchParams.get('provider')).toBe('google');
+  expect(redirect.searchParams.get('code_challenge_method')).toBe('s256');
+  expect(redirect.searchParams.get('code_challenge')).toMatch(/^[A-Za-z0-9_-]{43}$/);
+  expect(redirect.searchParams.get('redirect_to')).toBe('http://127.0.0.1:4321/account/');
+  expect(authUrl).not.toContain('client_secret');
+});
+
+test('Google OAuth: код не принимается без исходного PKCE и удаляется из адреса', async ({ page }) => {
+  await page.goto('/account/?code=fake-oauth-code');
+  await expect(page.locator('#account-status')).toContainText('Повторите Google-вход');
+  await expect(page).toHaveURL(/\/account\/$/);
+});
+
+test('Google OAuth: обмен кода восстанавливает сессию пользователя', async ({ page }) => {
+  await page.addInitScript(() =>
+    sessionStorage.setItem('hunmeng-google-pkce:v1', 'x'.repeat(43)),
+  );
+  let exchanged = false;
+  await page.route('**/auth/v1/token?grant_type=pkce', async route => {
+    const body = route.request().postDataJSON();
+    expect(body.auth_code).toBe('mock-oauth-code');
+    expect(body.code_verifier).toBe('x'.repeat(43));
+    exchanged = true;
+    await route.fulfill({ status: 200, contentType: 'application/json',
+      body: JSON.stringify({ access_token: 'test-access-token', refresh_token: 'test-refresh-token',
+        expires_in: 3600, user: { id: '11111111-1111-4111-8111-111111111111', email: 'tester@example.test' } }) });
+  });
+  await page.route('**/auth/v1/user', async route =>
+    route.fulfill({ status: 200, contentType: 'application/json',
+      body: JSON.stringify({ id: '11111111-1111-4111-8111-111111111111', email: 'tester@example.test' }) }));
+  await page.route('**/rest/v1/novel_reader_state**', async route =>
+    route.fulfill({ status: 200, contentType: 'application/json', body: '[]' }));
+  await page.goto('/account/?code=mock-oauth-code');
+  await expect(page.locator('#account-status')).toContainText('Вход через Google выполнен');
+  await expect(page.locator('#auth-logged-in')).toBeVisible();
+  await expect(page).toHaveURL(/\/account\/$/);
+  expect(exchanged).toBeTruthy();
+});
 test('аккаунт подключён к Supabase, а админка закрыта для гостя', async ({ page }) => {
   await page.goto('/account/');
   await expect(page.getByRole('heading', { name: 'Аккаунт' })).toBeVisible();
