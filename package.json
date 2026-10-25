@@ -1,6 +1,6 @@
 {
   "name": "hunmeng-novels",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "private": true,
   "type": "module",
   "engines": {
@@ -12,6 +12,7 @@
     "dev": "node scripts/astro.mjs dev --host 127.0.0.1",
     "check": "node scripts/astro.mjs check",
     "build": "node scripts/astro.mjs check && node scripts/astro.mjs build && node scripts/audit-build.mjs",
+    "build:demo": "node scripts/build-demo.mjs",
     "preview": "node scripts/astro.mjs preview --host 127.0.0.1",
     "test": "tsc --noEmit -p tsconfig.tests.json && playwright test",
     "format": "prettier --write ."

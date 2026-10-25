@@ -1,10 +1,10 @@
-# Hunmeng Novels · English edition · v0.4.1
+# Hunmeng Novels · English edition · v0.4.2
 
 Hunmeng is a static Astro + TypeScript web novel library. The default and only interface language is now **English**, including reader and editorial tools, auth errors, form validation, demo fiction, news, catalog filters, PWA metadata, structured data, covers, and social preview images.
 
 - Production: https://dexterity-maker-hunmeng-novels-364c.twc1.net/
 - Node.js 24 (minimum 22.12), `npm ci`, `npm run build`; publish `dist` on Timeweb.
-- Validate: `node --test tests/*.test.mjs` and `npm test` (Chromium required).
+- Validate: `node --test tests/*.test.mjs`, then `npm run build:demo` and `npm test` (Chromium required). Browser tests need the demo build; do not deploy it.
 - Routes, novel/chapter slugs, browser storage keys, accounts, and permissions are preserved. Existing reading progress and shelves survive this release. User-entered nicknames and bios are not translated.
 - Database enums and legacy column names such as `title_ru` remain unchanged for compatibility. The editorial form accepts the English title and description in those columns; `src/lib/labels.ts` provides English labels for stored statuses and glossary types. No database migration is needed.
 - Reader accounts remain enabled; Google OAuth and cross-device library sync remain disabled.
@@ -12,6 +12,7 @@ Hunmeng is a static Astro + TypeScript web novel library. The default and only i
 - Keep source permissions and human review requirements for publication. Publication announcements are generated in English. New editorial content should be supplied in English.
 - English form messages are set locally and do not depend on the browser's language. Dates, numbers, sorting, and chapter plurals use English conventions. Localization tests exercise English and Russian browser locales.
 - Vector cover/social sources and their PNG exports are committed. Production builds verify PNGs and do not generate images or rely on server fonts.
+- 0.4.2: The two demo stories are removed from the site. Their content and covers now live only in `tests/demo/` and are used by `npm run build:demo` (env `HUNMENG_DEMO_CONTENT=1`) for the browser tests. The production build (`npm run build`) reads only real novels from `src/content/`; until one is added, the catalog is empty. Older Russian notes below that mention the demo stories in `src/content/` describe earlier releases.
 - 0.4.1: English quotation marks “…” replace leftover Russian «…» in cover alt texts and link labels. The default genre for new `novel_sources` rows is `Fantasy` (was `Фэнтези`) in `backend/schema.sql` and in the live Supabase project `kvgnjsntumofwqhywiea` (applied as migration `novel_sources_english_default_genre`). Stored status and glossary-type values are unchanged.
 
 The release notes below are historical Russian documentation. Current language behavior is described above; earlier references to a Russian interface apply to those releases.

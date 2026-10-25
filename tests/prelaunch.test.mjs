@@ -23,9 +23,10 @@ test('проверенные каналы и отдельный email право
   assert.equal(contactChannels(settings)[1].value, '@ExampleContact');
 });
 test('сборочный скрипт только проверяет PNG и не изменяет сохранённые изображения', async () => {
-  const names = ['og-default.png', 'khranitel-mayaka-og.png', 'sad-zimy-og.png'];
-  const hashes = async () => Promise.all(names.map(async name => createHash('sha256').update(await readFile(`public/images/${name}`)).digest('hex')));
+  const files = ['public/images/og-default.png', 'tests/demo/public/images/khranitel-mayaka-og.png', 'tests/demo/public/images/sad-zimy-og.png'];
+  const hashes = async () => Promise.all(files.map(async file => createHash('sha256').update(await readFile(file)).digest('hex')));
   const before = await hashes();
   execFileSync(process.execPath, ['scripts/prepare-social-images.mjs']);
+  execFileSync(process.execPath, ['scripts/prepare-social-images.mjs'], { env: { ...process.env, HUNMENG_DEMO_CONTENT: '1' } });
   assert.deepEqual(await hashes(), before);
 });
