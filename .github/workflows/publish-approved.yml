@@ -1,0 +1,42 @@
+name: Publish approved translations
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "25 */6 * * *"
+permissions:
+  contents: write
+concurrency:
+  group: hunmeng-publish
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Stage only reviewed and authorized content
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: node scripts/publish-approved.mjs stage
+      - name: Push content
+        id: push
+        run: |
+          git config user.name "Hunmeng Publisher"
+          git config user.email "actions@users.noreply.github.com"
+          git add src/content/novels src/content/glossaries src/content/chapters
+          if ! git diff --cached --quiet; then
+            git commit -m "Публикация проверенных переводов"
+            git push origin HEAD:main
+          fi
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+      - name: Confirm publication after successful push
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          GITHUB_SHA_PUBLISHED: ${{ steps.push.outputs.sha }}
+        run: node scripts/publish-approved.mjs finalize
