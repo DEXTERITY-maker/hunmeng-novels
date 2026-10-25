@@ -100,7 +100,7 @@ test('новостная лента: категории, пагинация, п�
 test('отдельная новость: статья, категории и локальные реакции', async ({ page }) => {
   await page.goto('/news/catalog-release/');
   await expect(page.getByRole('heading', { name: 'Каталог стал удобнее: расширенный поиск и оглавления' })).toBeVisible();
-  await expect(page.locator('.news-article-body h2')).toHaveCount(2);
+  await expect(page.locator('.news-article-body h3')).toHaveCount(2);
   await page.getByRole('button', { name: 'Реакция 🔥' }).click();
   await expect(page.getByRole('button', { name: 'Реакция 🔥' })).toHaveAttribute('aria-pressed', 'true');
   await page.reload();
