@@ -8,7 +8,7 @@ export default defineConfig({
   output: 'static',
   trailingSlash: 'always',
   integrations: [
-    sitemap({ filter: (page) => !page.endsWith('/404/') && !page.endsWith('/library/') }),
+    sitemap({ filter: (page) => !page.endsWith('/404/') && !page.endsWith('/library/') && !page.endsWith('/account/') && !page.endsWith('/admin/') }),
   ],
   vite: { build: { sourcemap: false } },
 });
