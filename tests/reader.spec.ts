@@ -1,14 +1,15 @@
 import { test, expect, serveStatic } from './fixtures';
 const chapter = '/novel/khranitel-mayaka/glava-1/';
-test('главная: четыре раздела, обложки и поиск из главной в каталог', async ({ page }) => {
+test('главная: разделы с реальным контентом, обложки и поиск', async ({ page }) => {
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'Новые новеллы' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Последние главы' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Популярное' })).toBeVisible();
+  await expect(page.locator('#popular-novels')).toHaveCount(0);
+  await expect(page.locator('a[href="#popular-novels"]')).toHaveCount(0);
   await expect(page.getByRole('heading', { name: 'Рекомендации' })).toBeVisible();
   await expect(page.locator('#new-novels .home-book-card')).toHaveCount(2);
   await expect(page.locator('#latest-chapters .home-chapter-link')).toHaveCount(4);
-  await expect(page.locator('#popular-novels .home-popular-empty')).toBeVisible();
+  // Пока нет подтверждённых просмотров — рейтинг не показывается.
   await expect(page.locator('#recommended-novels .home-recommendation-card')).toHaveCount(2);
   await page.getByRole('searchbox', { name: 'Поиск новелл' }).fill('winter');
   await page.getByRole('button', { name: 'Найти' }).click();
@@ -73,36 +74,35 @@ test('мобильная главная: компактное продолжен
   }
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBeTruthy();
 });
-test('новости: блок на главной и открытие полной ленты', async ({ page }) => {
+test('новости: единственная приветственная запись без технических релизов', async ({ page }) => {
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'Последние новости' })).toBeVisible();
-  await expect(page.locator('#latest-news [data-news-card]')).toHaveCount(3);
+  await expect(page.locator('#latest-news [data-news-card]')).toHaveCount(1);
+  await expect(page.locator('#latest-news')).toContainText('Хунмэнг открывается');
   await page.locator('#latest-news').getByRole('link', { name: 'Просмотреть все' }).click();
   expect(new URL(page.url()).pathname).toBe('/news/');
-  await expect(page.getByRole('heading', { name: 'Новости', exact: true })).toBeVisible();
-  await expect(page.locator('#news-feed [data-news-card]:visible')).toHaveCount(4);
-  await expect(page.locator('#news-pagination')).toBeVisible();
+  await expect(page.locator('#news-feed [data-news-card]:visible')).toHaveCount(1);
+  await expect(page.locator('#news-pagination')).toBeHidden();
+  await expect(page.locator('a[href*="github.com"]')).toHaveCount(0);
+  await expect(page.locator('#news-feed')).not.toContainText('Обновление сайта:');
 });
-test('новостная лента: категории, пагинация, пустой раздел и возврат', async ({ page }) => {
+test('новости: категории сохраняются, несуществующие публикации не показываются', async ({ page }) => {
   await page.goto('/news/');
-  await page.locator('#news-pagination').getByRole('link', { name: '2' }).click();
-  const secondPageCount = await page.locator('#news-feed [data-news-card]:visible').count();
-  expect(secondPageCount).toBeGreaterThan(0);
-  expect(secondPageCount).toBeLessThanOrEqual(4);
-  await expect(page).toHaveURL(/page=2/);
   await page.getByRole('link', { name: 'Объявления', exact: true }).click();
-  await expect(page.locator('#news-feed [data-news-card]:visible')).toHaveCount(2);
+  await expect(page.locator('#news-feed [data-news-card]:visible')).toHaveCount(1);
   await expect(page.locator('[data-news-filter=announcements]')).toHaveAttribute('aria-current', 'page');
+  await page.getByRole('link', { name: 'Журнал изменений', exact: true }).click();
+  await expect(page.locator('#news-empty')).toBeVisible();
   await page.getByRole('link', { name: 'Розыгрыши', exact: true }).click();
   await expect(page.locator('#news-empty')).toBeVisible();
-  await expect(page.locator('#news-pagination')).toBeHidden();
   await page.getByRole('link', { name: 'Все', exact: true }).click();
-  await expect(page.locator('#news-feed [data-news-card]:visible')).toHaveCount(4);
+  await expect(page.locator('#news-feed [data-news-card]:visible')).toHaveCount(1);
 });
-test('отдельная новость: статья, категории и локальные реакции', async ({ page }) => {
-  await page.goto('/news/catalog-release/');
-  await expect(page.getByRole('heading', { name: 'Каталог стал удобнее: расширенный поиск и оглавления' })).toBeVisible();
-  await expect(page.locator('.news-article-body h3')).toHaveCount(2);
+test('отдельная новость: приветствие, разрешения правообладателей и локальные реакции', async ({ page }) => {
+  await page.goto('/news/hongmeng-opens/');
+  await expect(page.getByRole('heading', { name: 'Хунмэнг открывается' })).toBeVisible();
+  await expect(page.locator('.news-article-body')).toContainText('разрешения авторов');
+  await expect(page.locator('.news-article')).not.toContainText('GitHub');
   await page.getByRole('button', { name: 'Реакция 🔥' }).click();
   await expect(page.getByRole('button', { name: 'Реакция 🔥' })).toHaveAttribute('aria-pressed', 'true');
   await page.reload();
@@ -114,7 +114,7 @@ test('отдельная новость: статья, категории и л�
 });
 test('мобильная страница новостей без горизонтальной прокрутки', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  for (const url of ['/news/', '/news/news-launch/']) {
+  for (const url of ['/news/', '/news/hongmeng-opens/']) {
     await page.goto(url);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
   }
@@ -177,7 +177,7 @@ test('статические страницы, SEO и отсутствие вн�
     '/catalog/',
     '/updates/',
     '/news/',
-    '/news/news-launch/',
+    '/news/hongmeng-opens/',
     '/account/',
     '/admin/',
     '/library/',
