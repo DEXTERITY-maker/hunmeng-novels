@@ -1,0 +1,47 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { getLibrary, dateLabel } from '../lib/content';
+import { getLatestChapters } from '../lib/updates';
+
+const chapters = getLatestChapters(await getLibrary());
+---
+
+<Layout
+  title="Все обновления глав"
+  description="Все последние опубликованные главы веб-новелл Хунмэнг в хронологическом порядке."
+>
+  <main id="main" class="page-shell home-page updates-page">
+    <a class="back-link" href="/">← На главную</a>
+    <header class="page-heading">
+      <p class="home-section-kicker">Свежие публикации</p>
+      <h1>Все обновления</h1>
+      <p>Полный список опубликованных глав — сначала самые новые.</p>
+    </header>
+    {chapters.length ? (
+      <ol class="home-chapter-grid">
+        {chapters.map((chapter) => (
+          <li>
+            <a class="home-chapter-link" href={chapter.url}>
+              <img
+                src={chapter.cover}
+                alt=""
+                width="60"
+                height="88"
+                loading="lazy"
+                decoding="async"
+              />
+              <span class="home-chapter-info">
+                <span class="home-chapter-novel">{chapter.novel}</span>
+                <strong>Глава {chapter.number}. {chapter.title}</strong>
+                <time datetime={chapter.date}>{dateLabel(chapter.date)}</time>
+              </span>
+              <span class="home-chapter-arrow" aria-hidden="true">↗</span>
+            </a>
+          </li>
+        ))}
+      </ol>
+    ) : (
+      <p class="home-section-empty">Главы пока не опубликованы.</p>
+    )}
+  </main>
+</Layout>

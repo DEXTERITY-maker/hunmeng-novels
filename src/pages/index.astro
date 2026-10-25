@@ -2,26 +2,15 @@
 import Layout from '../layouts/Layout.astro';
 import CompactNovelCard from '../components/CompactNovelCard.astro';
 import ContinueReading from '../components/ContinueReading.astro';
-import { getLibrary, dateLabel, chapterUrl, chapterCount } from '../lib/content';
+import { getLibrary, dateLabel, chapterCount } from '../lib/content';
+import { getLatestChapters } from '../lib/updates';
 
 const novels = await getLibrary();
 const newNovels = novels
   .filter((n) => !!n.addedAt)
   .sort((a, b) => b.addedAt!.localeCompare(a.addedAt!) || b.updatedAt.localeCompare(a.updatedAt))
   .slice(0, 12);
-const updates = novels
-  .flatMap((n) =>
-    n.chapters.map((c) => ({
-      novel: n.title,
-      cover: n.cover,
-      title: c.data.title,
-      number: c.data.number,
-      date: c.data.publishedAt,
-      url: chapterUrl(n.slug, c.data.slug),
-    })),
-  )
-  .sort((a, b) => b.date.localeCompare(a.date) || b.number - a.number)
-  .slice(0, 8);
+const updates = getLatestChapters(novels).slice(0, 4);
 const popular = novels
   .filter((n) => typeof n.views === 'number' && n.views > 0)
   .sort((a, b) => (b.views ?? 0) - (a.views ?? 0))
@@ -110,7 +99,7 @@ const viewsLabel = new Intl.NumberFormat('ru-RU');
           <p class="home-section-kicker">Только что в библиотеке</p>
           <h2 id="updates-title">Последние главы</h2>
         </div>
-        <a href="/catalog/">К произведениям <span aria-hidden="true">→</span></a>
+        <span class="fine">Новые публикации</span>
       </div>
       {updates.length ? (
         <ol class="home-chapter-grid">
@@ -131,6 +120,9 @@ const viewsLabel = new Intl.NumberFormat('ru-RU');
       ) : (
         <p class="home-section-empty">Опубликованные главы скоро появятся здесь.</p>
       )}
+      <a class="home-updates-button" href="/updates/">
+        Все обновления <span aria-hidden="true">→</span>
+      </a>
     </section>
 
     <section id="popular-novels" class="section home-section" aria-labelledby="popular-title">
