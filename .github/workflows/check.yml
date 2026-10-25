@@ -14,5 +14,7 @@ jobs:
       - run: node --check scripts/publication-news.mjs
       - run: node --test tests/*.test.mjs
       - run: npm run build
+      # Browser tests run against a separate build with the demo stories from tests/demo.
+      - run: npm run build:demo
       - run: npx playwright install --with-deps chromium
       - run: npm test

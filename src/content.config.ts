@@ -1,6 +1,9 @@
 import { defineCollection } from 'astro:content';
 import { z } from 'astro/zod';
 import { glob } from 'astro/loaders';
+// Browser tests build the site with the demo stories from tests/demo (npm run build:demo).
+// The production build reads only real content from src/content.
+const libraryRoot = process.env.HUNMENG_DEMO_CONTENT === '1' ? './tests/demo/content' : './src/content';
 const slug = z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);
 const date = z
   .string()
@@ -10,7 +13,7 @@ const date = z
     'Invalid date',
   );
 const novels = defineCollection({
-  loader: glob({ base: './src/content/novels', pattern: '*.json' }),
+  loader: glob({ base: `${libraryRoot}/novels`, pattern: '*.json' }),
   schema: z.object({
     slug,
     title: z.string().min(1),
@@ -35,7 +38,7 @@ const novels = defineCollection({
 });
 const chapters = defineCollection({
   loader: glob({
-    base: './src/content/chapters',
+    base: `${libraryRoot}/chapters`,
     pattern: '**/*.md',
     generateId: ({ data }) => `${data.novelSlug}/${data.slug}`,
   }),
@@ -49,7 +52,7 @@ const chapters = defineCollection({
   }),
 });
 const glossaries = defineCollection({
-  loader: glob({ base: './src/content/glossaries', pattern: '*.json' }),
+  loader: glob({ base: `${libraryRoot}/glossaries`, pattern: '*.json' }),
   schema: z.object({
     novelSlug: slug,
     terms: z.array(
