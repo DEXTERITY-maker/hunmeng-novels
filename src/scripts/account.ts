@@ -1,3 +1,4 @@
+import { initProfile } from './profile';
 import type { User } from '@supabase/supabase-js';
 import { assertAuthStorage, clearReaderAuthStorage, createReaderClient, readerAuthConfigured, readerAuthMessage } from '../lib/reader-auth';
 
@@ -26,8 +27,14 @@ export async function initAccount() {
     }
   });
   let busy = true;
+  let updateProfile: ((user: User | null) => void) | undefined;
   const render = (user: User | null, message?: string) => {
     authFields.hidden = !!user;
+    document.getElementById('account-title')!.textContent = user ? 'Мой профиль' : 'Вход и регистрация';
+    document.getElementById('account-subtitle')!.textContent = user ? 'Ваше имя и удобный ритм чтения.' : 'Читать новеллы можно и без аккаунта.';
+    document.title = (user ? 'Мой профиль' : 'Вход и регистрация') + ' — Хунмэнг новеллы';
+    updateProfile?.(user);
+    window.dispatchEvent(new CustomEvent('reader:auth-change'));
     loggedIn.hidden = !user;
     document.getElementById('account-email')!.textContent = user?.email ?? '';
     status.textContent = message ?? (user ? 'Вы вошли в аккаунт.' : 'Войдите или создайте аккаунт читателя.');
@@ -62,6 +69,7 @@ export async function initAccount() {
   try { assertAuthStorage(); }
   catch { status.textContent = 'Для входа разрешите сохранение данных сайта в браузере. Читать можно без аккаунта.'; return; }
   const client = createReaderClient();
+  updateProfile = initProfile(client, () => render(null, 'Сессия завершена. Войдите снова.'));
   const refresh = async (message?: string) => {
     const {data:stored,error:sessionError} = await client.auth.getSession();
     if (sessionError) { render(null, 'Сессия завершена. Войдите снова.'); return; }
