@@ -152,7 +152,7 @@ const viewsLabel = new Intl.NumberFormat('en-US');
         <div class="home-recommendation-grid">
           {recommendations.map((n) => (
             <article class="home-recommendation-card">
-              <a href={n.url} class="home-recommendation-cover" aria-label={'Open “' + n.title + '»'}>
+              <a href={n.url} class="home-recommendation-cover" aria-label={'Open “' + n.title + '”'}>
                 <img src={n.cover} alt="" width="115" height="168" loading="lazy" decoding="async" />
               </a>
               <div>
