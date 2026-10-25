@@ -117,15 +117,15 @@ test('мобильная страница новостей без горизон
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
   }
 });
-test('аккаунт и редакторская панель безопасно отключены до настройки сервера', async ({ page }) => {
+test('аккаунт подключён к Supabase, а админка закрыта для гостя', async ({ page }) => {
   await page.goto('/account/');
   await expect(page.getByRole('heading', { name: 'Аккаунт' })).toBeVisible();
-  await expect(page.locator('#account-status')).toContainText('Сервер ещё не подключён');
-  await expect(page.getByRole('button', { name: 'Продолжить' })).toBeDisabled();
+  await expect(page.locator('#account-status')).toContainText('Войдите или зарегистрируйтесь');
+  await expect(page.getByRole('button', { name: 'Продолжить' })).toBeEnabled();
   await page.goto('/admin/');
   await expect(page.getByRole('heading', { name: 'Управление переводами' })).toBeVisible();
   await expect(page.locator('#admin-workspace')).toBeHidden();
-  await expect(page.locator('#admin-status')).toContainText('Backend ещё не подключён');
+  await expect(page.locator('#admin-status')).toContainText('Доступ запрещён');
 });
 test('статические страницы, SEO и отсутствие внешних запросов', async ({ page }) => {
   const errors: string[] = [],
