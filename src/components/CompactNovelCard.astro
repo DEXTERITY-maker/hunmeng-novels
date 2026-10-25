@@ -7,7 +7,7 @@ const { novel: n } = Astro.props;
 ---
 
 <article class="home-book-card">
-  <a class="home-book-link" href={n.url} aria-label={'View novel «' + n.title + '»'}>
+  <a class="home-book-link" href={n.url} aria-label={'View novel “' + n.title + '”'}>
     <span class="home-book-cover">
       <img src={n.cover} alt="" width="260" height="380" loading="lazy" decoding="async" />
     </span>

@@ -19,7 +19,7 @@ create table if not exists public.novel_sources (
   original_title text not null check (length(original_title) between 1 and 250),
   title_ru text not null default '' check (length(title_ru) <= 250),
   description_ru text not null default '' check (length(description_ru) <= 10000),
-  genres text[] not null default array['Фэнтези']::text[],
+  genres text[] not null default array['Fantasy']::text[],
   tags text[] not null default array[]::text[],
   original_status text not null default 'Продолжается'
     check (original_status in ('Продолжается','Завершён','Приостановлен')),

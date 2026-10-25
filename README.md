@@ -1,4 +1,4 @@
-# Hunmeng Novels · English edition · v0.4.0
+# Hunmeng Novels · English edition · v0.4.1
 
 Hunmeng is a static Astro + TypeScript web novel library. The default and only interface language is now **English**, including reader and editorial tools, auth errors, form validation, demo fiction, news, catalog filters, PWA metadata, structured data, covers, and social preview images.
 
@@ -12,6 +12,7 @@ Hunmeng is a static Astro + TypeScript web novel library. The default and only i
 - Keep source permissions and human review requirements for publication. Publication announcements are generated in English. New editorial content should be supplied in English.
 - English form messages are set locally and do not depend on the browser's language. Dates, numbers, sorting, and chapter plurals use English conventions. Localization tests exercise English and Russian browser locales.
 - Vector cover/social sources and their PNG exports are committed. Production builds verify PNGs and do not generate images or rely on server fonts.
+- 0.4.1: English quotation marks “…” replace leftover Russian «…» in cover alt texts and link labels. The default genre for new `novel_sources` rows is `Fantasy` (was `Фэнтези`) in `backend/schema.sql` and in the live Supabase project `kvgnjsntumofwqhywiea` (applied as migration `novel_sources_english_default_genre`). Stored status and glossary-type values are unchanged.
 
 The release notes below are historical Russian documentation. Current language behavior is described above; earlier references to a Russian interface apply to those releases.
 
@@ -145,7 +146,7 @@ description: 'Глава 1. Линь впервые входит в город, 
 
 ## Каталог и показатели произведений
 
-Каталог поддерживает поиск по русскому/оригинальному названию, автору и тегам, категории, жанры, статусы, минимальное количество глав, включение/исключение тегов, минимальную оценку, сортировки и постраничное отображение по 24/48 карточок. Состояние фильтров и страницы отражается в URL. Клиент получает лёгкий индекс `/catalog-index.json`, не загружая тексты и списки глав в поиск. При отключённом JavaScript первая страница каталога и статические страницы `/catalog/page/2/` и далее остаются доступны.
+Каталог поддерживает поиск по русскому/оригинальному названию, автору и тегам, категории, жанры, статусы, минимальное количество глав, включение/исключение тегов, минимальную оценку, сортировки и постраничное отображение по 24/48 карточек. Состояние фильтров и страницы отражается в URL. Клиент получает лёгкий индекс `/catalog-index.json`, не загружая тексты и списки глав в поиск. При отключённом JavaScript первая страница каталога и статические страницы `/catalog/page/2/` и далее остаются доступны.
 
 Дополнительные необязательные поля каждой `src/content/novels/*.json`:
 
