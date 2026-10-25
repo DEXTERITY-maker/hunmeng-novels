@@ -3,6 +3,8 @@ import { render } from 'astro:content';
 import Layout from '../../../layouts/Layout.astro';
 import { getLibrary, chapterUrl } from '../../../lib/content';
 import { CHAPTERS_PER_PAGE, chapterListUrl } from '../../../lib/pagination';
+import { chapterReportUrl, chapterStructuredData, socialCover } from '../../../lib/seo';
+import { site } from '../../../config/site';
 export async function getStaticPaths() {
   return (await getLibrary()).flatMap((n) =>
     n.chapters.map((c, i) => ({
@@ -17,11 +19,19 @@ const prev = n.chapters[index - 1],
   next = n.chapters[index + 1];
 const nearby = n.chapters.slice(Math.max(0, index - 10), Math.min(n.chapterCount, index + 11));
 const tocPage = Math.floor(index / CHAPTERS_PER_PAGE) + 1;
+const structuredData = chapterStructuredData(n, c, Astro.site || site.url);
+const reportHref = chapterReportUrl(site.reportUrl, n.slug, c.data.slug);
+const coverIsSvg = n.cover.endsWith('.svg');
 ---
 
 <Layout
   title={`${n.title} — глава ${c.data.number}: ${c.data.title}`}
   description={c.data.description}
+  ogImage={socialCover(n.cover)}
+  ogImageWidth={coverIsSvg ? 520 : undefined}
+  ogImageHeight={coverIsSvg ? 760 : undefined}
+  ogImageAlt={`Обложка новеллы «${n.title}»`}
+  structuredData={structuredData}
   reader
 >
   <header class="reader-header reader-chrome">
@@ -86,6 +96,13 @@ const tocPage = Math.floor(index / CHAPTERS_PER_PAGE) + 1;
       )}
     </nav>
     {!next && <p class="end-note">Вы прочитали все опубликованные главы.</p>}
+    {reportHref && (
+      <div class="chapter-report">
+        <a href={reportHref} class="chapter-report-link" target="_blank" rel="noopener noreferrer">
+          Сообщить об ошибке ↗
+        </a>
+      </div>
+    )}
   </main>
   <nav class="reader-toolbar reader-chrome" aria-label="Панель чтения">
     <button type="button" data-open="toc">

@@ -10,9 +10,22 @@ interface Props {
   description?: string;
   reader?: boolean;
   noindex?: boolean;
+  ogImage?: string;
+  ogImageWidth?: number;
+  ogImageHeight?: number;
+  ogImageAlt?: string;
+  structuredData?: Record<string, unknown>;
 }
-const { title, description = site.description, reader = false, noindex = false } = Astro.props;
+const {
+  title, description = site.description, reader = false, noindex = false,
+  ogImage, ogImageWidth, ogImageHeight, ogImageAlt, structuredData,
+} = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site || site.url);
+const socialImage = new URL(ogImage ?? '/images/og-default.png', Astro.site || site.url);
+const socialWidth = ogImage ? ogImageWidth : 1200;
+const socialHeight = ogImage ? ogImageHeight : 630;
+const socialAlt = ogImageAlt ?? `${site.name} — библиотека веб-новелл`;
+const socialTitle = `${title} — ${site.name} ${site.tagline}`;
 const c = site.colors;
 const darkTokens = `--bg:${c.darkBackground};--surface:${c.darkSurface};--ink:${c.darkText};--muted:${c.darkMuted};--accent:${c.darkAccent};--soft:${c.darkSurface};--line:${c.darkBorder};color-scheme:dark`;
 const tokens = `:root{--bg:${c.background};--surface:${c.surface};--ink:${c.text};--muted:${c.muted};--accent:${c.accent};--soft:${c.accentSoft};--line:${c.border};color-scheme:light}html[data-theme="dark"]{${darkTokens}}@media(prefers-color-scheme:dark){html[data-theme="system"]{${darkTokens}}}html[data-theme="sepia"]{--bg:${c.sepiaBackground};--surface:${c.sepiaSurface};--ink:${c.sepiaText};--muted:${c.sepiaMuted};--accent:${c.sepiaAccent};--soft:${c.sepiaSurface};--line:${c.sepiaBorder}}`;
@@ -39,11 +52,25 @@ const tokens = `:root{--bg:${c.background};--surface:${c.surface};--ink:${c.text
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
     <meta property="og:type" content="website" />
+    <meta property="og:locale" content="ru_RU" />
     <meta property="og:site_name" content={site.latinName} />
     <meta name="application-name" content={site.latinName} />
-    <meta property="og:title" content={`${title} — ${site.name} ${site.tagline}`} />
+    <meta property="og:title" content={socialTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={socialImage} />
+    <meta property="og:image:secure_url" content={socialImage} />
+    {socialWidth && <meta property="og:image:width" content={String(socialWidth)} />}
+    {socialHeight && <meta property="og:image:height" content={String(socialHeight)} />}
+    <meta property="og:image:alt" content={socialAlt} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={socialTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={socialImage} />
+    <meta name="twitter:image:alt" content={socialAlt} />
+    {structuredData && (
+      <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData).replace(/</g, '\\u003c')} />
+    )}
     <style is:inline set:html={tokens} />
   </head>
   <body class:list={[reader && 'reader-page']}>
