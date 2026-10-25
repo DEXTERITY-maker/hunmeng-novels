@@ -119,18 +119,17 @@ test('мобильная страница новостей без горизон
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
   }
 });
-test('отключённые аккаунты: нет ссылок и форм регистрации для читателей', async ({ page }) => {
+test('аккаунты читателей: видимый вход без публичной ссылки в редакцию', async ({ page }) => {
   for (const url of ['/', '/catalog/', '/library/', '/news/']) {
     await page.goto(url);
-    await expect(page.locator('a[href="/account/"]')).toHaveCount(0);
-    await expect(page.locator('#auth-form')).toHaveCount(0);
+    await expect(page.locator('header a[href="/account/"]')).toBeVisible();
   }
   await page.goto('/account/');
-  await expect(page.getByRole('heading', { name: 'Аккаунты читателей временно недоступны' })).toBeVisible();
-  await expect(page.locator('#auth-form, #google-sign-in, input[type="email"], input[type="password"]')).toHaveCount(0);
-  await expect(page.locator('a[href="/admin/"]')).toHaveCount(0);
+  await expect(page.getByRole('heading', { name: 'Вход и регистрация' })).toBeVisible();
+  await expect(page.locator('#auth-form')).toBeVisible();
+  await expect(page.locator('#google-sign-in, a[href="/admin/"]')).toHaveCount(0);
 });
-test('отключённые аккаунты: локальная библиотека сохраняется без запросов к Supabase', async ({ page }) => {
+test('локальная библиотека сохраняется без запросов к Supabase', async ({ page }) => {
   const outgoing: string[] = [];
   page.on('request', request => {
     if (request.url().includes('.supabase.co')) outgoing.push(request.url());
@@ -158,7 +157,7 @@ test('мобильная читалка: выключены автоматиче
   const desktop = await page.locator('#chapter-text').evaluate(el => getComputedStyle(el).hyphens);
   expect(desktop).toBe('auto');
 });
-test('админка продолжает проверять роль, несмотря на отключение читательских аккаунтов', async ({ page }) => {
+test('админка продолжает проверять роль, отдельно от читательских аккаунтов', async ({ page }) => {
   await page.goto('/admin/');
   await expect(page.getByRole('heading', { name: 'Управление переводами' })).toBeVisible();
   await expect(page.locator('#admin-workspace')).toBeHidden();
@@ -544,7 +543,7 @@ test('контакты без выдуманных каналов и техни�
 test('метка версии и исключение всей редакции из sitemap', async ({page}) => {
   const version = await page.goto('/version.json');
   const data = JSON.parse(await version!.text());
-  expect(data.version).toBe('0.2.2');
+  expect(data.version).toBe('0.2.3');
   expect(data.commit === null || /^[0-9a-f]{40}$/.test(data.commit)).toBe(true);
   const sitemap = (await (await page.goto('/sitemap-0.xml'))!.text());
   expect(sitemap).not.toContain('/admin/');

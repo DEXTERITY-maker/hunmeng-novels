@@ -2884,3 +2884,15 @@ html[data-theme='dark'] .brand-logo-dark {
 .admin-auth-actions > [hidden] { display: none; }
 .contact-channels { display: grid; gap: 14px; padding-left: 22px; overflow-wrap: anywhere; }
 @media (max-width: 480px) { .admin-auth-actions > .button { width: 100%; } }
+
+.reader-account-page { max-width: 680px; }
+.reader-account-page .account-card { max-width: none; }
+.auth-mode-switch { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 24px; }
+.auth-mode-switch button { min-height: 44px; padding: 10px; }
+#reader-auth-fields { display: grid; gap: 20px; min-width: 0; padding: 0; margin: 0; border: 0; }
+#reader-auth-fields input { width: 100%; min-height: 44px; }
+#reader-auth-fields label[hidden], #reader-auth-fields p[hidden] { display: none; }
+#reader-auth-fields:disabled { opacity: .65; }
+#auth-logged-in[hidden] { display: none; }
+#account-email { overflow-wrap: anywhere; }
+@media (max-width: 360px) { .auth-mode-switch { grid-template-columns: 1fr; } }

@@ -10,8 +10,8 @@ export const site = {
   reportUrl: '',
   // Реальные каналы добавляет владелец. Пустые строки не создают ссылок.
   contacts: { email: '', telegram: '', rightsEmail: '' },
-  // Reader accounts are disabled until data localization and availability are addressed.
-  features: { accounts: false },
+  // Вход читателей включён; синхронизация библиотеки требует отдельного решения.
+  features: { accounts: true, readerSync: false },
   // Локальные версии логотипа для светлой/сепии и тёмной темы.
   logo: {
     light: '/images/logo-light.png',
