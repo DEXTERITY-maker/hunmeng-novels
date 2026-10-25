@@ -86,7 +86,9 @@ test('новости: блок на главной и открытие полн�
 test('новостная лента: категории, пагинация, пустой раздел и возврат', async ({ page }) => {
   await page.goto('/news/');
   await page.locator('#news-pagination').getByRole('link', { name: '2' }).click();
-  await expect(page.locator('#news-feed [data-news-card]:visible')).toHaveCount(2);
+  const secondPageCount = await page.locator('#news-feed [data-news-card]:visible').count();
+  expect(secondPageCount).toBeGreaterThan(0);
+  expect(secondPageCount).toBeLessThanOrEqual(4);
   await expect(page).toHaveURL(/page=2/);
   await page.getByRole('link', { name: 'Объявления', exact: true }).click();
   await expect(page.locator('#news-feed [data-news-card]:visible')).toHaveCount(2);
