@@ -1,0 +1,40 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+<Layout title="Аккаунт и синхронизация" noindex description="Вход и синхронизация библиотеки Хунмэнг между устройствами.">
+  <main id="main" class="page-shell account-page">
+    <header class="page-heading">
+      <p class="home-section-kicker">ВАША БИБЛИОТЕКА</p>
+      <h1>Аккаунт</h1>
+      <p>Войдите для синхронизации полок и прогресса между устройствами.</p>
+    </header>
+    <p class="notice" id="account-status" role="status">Проверяем настройки подключения…</p>
+    <form id="auth-form" class="account-card">
+      <div id="auth-fields">
+        <label>Действие
+          <select name="mode"><option value="signin">Войти</option><option value="signup">Создать аккаунт</option></select>
+        </label>
+        <label>Email
+          <input name="email" type="email" autocomplete="email" required maxlength="254" />
+        </label>
+        <label>Пароль
+          <input name="password" type="password" autocomplete="current-password" minlength="8" required />
+        </label>
+        <button class="button" type="submit">Продолжить</button>
+      </div>
+      <div id="auth-logged-in" hidden>
+        <p>Данные чтения синхронизируются с вашей учётной записью.</p>
+        <div class="account-actions">
+          <button type="button" id="account-sync" class="button">Синхронизировать сейчас</button>
+          <button type="button" id="account-signout" class="button secondary">Выйти</button>
+          <a href="/admin/" class="button secondary">Редакторская панель</a>
+        </div>
+      </div>
+    </form>
+    <p class="fine account-help">Если сервер недоступен, локальная читалка продолжит работать. При первом входе полки объединяются, а для прогресса выбирается более новая позиция. Для одновременных изменений на двух устройствах пока действует упрощённая синхронизация; не используйте её как резервную копию важных данных.</p>
+  </main>
+  <script>
+    import { initAccount } from '../scripts/account';
+    void initAccount();
+  </script>
+</Layout>
