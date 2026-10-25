@@ -57,7 +57,7 @@ test('мобильная главная: компактное продолжен
   for (const card of await cards.all()) {
     const rect = await card.boundingBox();
     expect(rect).not.toBeNull();
-    expect(rect!.height).toBeLessThan(150);
+    expect(rect!.height).toBeLessThan(175);
   }
   for (const selector of [
     '.home-book-genre',
@@ -209,7 +209,9 @@ test('каталог: оригинальное название, исключе�
   await expect(page.locator('[data-novel]:visible')).toHaveCount(1);
   await expect(page.locator('[data-novel]:visible h2')).toContainText('Сад');
   await page.getByRole('button', { name: 'Сбросить фильтры' }).click();
-  await page.locator('details').evaluate((e) => ((e as HTMLDetailsElement).open = true));
+  const options = page.locator('#catalog-options');
+  if (!(await options.evaluate(el => (el as HTMLDetailsElement).open))) await options.locator(':scope > summary').click();
+  await page.locator('.tag-filters > summary').click();
   await page.locator('input[name=exclude][value="Море"]').check();
   await expect(page.locator('[data-novel]:visible')).toHaveCount(1);
   await page.locator('input[name=include][value="Море"]').check();
@@ -226,6 +228,8 @@ test('каталог: оригинальное название, исключе�
 });
 test('расширенный каталог: категории, автор, количество глав, теги и рейтинг', async ({ page }) => {
   await page.goto('/catalog/');
+  const options = page.locator('#catalog-options');
+  if (!(await options.evaluate(el => (el as HTMLDetailsElement).open))) await options.locator(':scope > summary').click();
   await expect(page.locator('#result-count')).toHaveText('Найдено новелл: 2');
   await page.locator('select[name=category]').selectOption('Повседневность');
   await expect(page.locator('[data-novel]:visible')).toHaveCount(1);
@@ -543,11 +547,57 @@ test('контакты без выдуманных каналов и техни�
 test('метка версии и исключение всей редакции из sitemap', async ({page}) => {
   const version = await page.goto('/version.json');
   const data = JSON.parse(await version!.text());
-  expect(data.version).toBe('0.3.0');
+  expect(data.version).toBe('0.3.1');
   expect(data.commit === null || /^[0-9a-f]{40}$/.test(data.commit)).toBe(true);
   const sitemap = (await (await page.goto('/sitemap-0.xml'))!.text());
   expect(sitemap).not.toContain('/admin/');
   expect(sitemap).not.toContain('/account/');
   const robots = (await (await page.goto('/robots.txt'))!.text());
   expect(robots).toContain('Disallow: /admin/');
+});
+
+test('мобильный каталог: поиск сразу доступен, фильтры раскрываются и сохраняются при сворачивании',async({page})=>{
+ await page.setViewportSize({width:390,height:844});await page.goto('/catalog/');
+ await expect(page.locator('#result-count')).toHaveText('Найдено новелл: 2');
+ const options=page.locator('#catalog-options');
+ await expect(options).not.toHaveAttribute('open','');
+ await expect(page.getByPlaceholder('Русское или оригинальное название')).toBeVisible();
+ expect((await page.locator('#catalog-results .novel-card').first().boundingBox())!.y).toBeLessThan(700);
+ await options.locator(':scope > summary').click();await page.locator('[name=status]').selectOption('Завершён');
+ await expect(page.locator('#active-filter-count')).toHaveText('Выбрано: 1');
+ await expect(page.locator('#catalog-results .novel-card')).toHaveCount(1);
+ await options.locator(':scope > summary').click();await expect(page.locator('#active-filter-count')).toBeVisible();
+ await page.getByRole('button',{name:'Сбросить фильтры',exact:true}).click();
+ await expect(page.locator('#active-filter-count')).toBeHidden();
+ await expect(page.locator('#catalog-results .novel-card')).toHaveCount(2);
+ await page.setViewportSize({width:1280,height:900});await expect(options).toHaveAttribute('open','');
+ await expect(page.locator('[name=status]')).toBeVisible();
+ await page.setViewportSize({width:390,height:844});await expect(options).not.toHaveAttribute('open','');
+});
+test('конец главы ведёт к следующей, дочитанная книга исчезает с главной без изменения полок',async({page})=>{
+ await page.goto('/');await page.evaluate(()=>{
+  const progress=(chapterSlug:string,chapterNumber:number,updatedAt:number)=>({chapterSlug,chapterNumber,updatedAt,blockId:'block-0',offset:0,ratio:1});
+  localStorage.setItem('hunmeng-novels:v1',JSON.stringify({version:1,settings:{},library:{'khranitel-mayaka':'reading','sad-zimy':'reading'},progress:{'khranitel-mayaka':progress('glava-1',1,100),'sad-zimy':progress('glava-4',4,200)}}));
+ });await page.reload();
+ await expect(page.locator('#continue-list a')).toHaveCount(1);
+ await expect(page.locator('#continue-list a')).toHaveAttribute('href','/novel/khranitel-mayaka/glava-2/');
+ await expect(page.locator('#continue-list')).toContainText('Следующая глава');
+ await page.goto('/novel/khranitel-mayaka/');
+ await expect(page.locator('[data-continue]')).toHaveAttribute('href','/novel/khranitel-mayaka/glava-2/');
+ await page.goto('/novel/sad-zimy/');await expect(page.locator('[data-continue]')).toHaveText('Читать сначала');
+ await page.goto('/library/');await expect(page.locator('.library-row')).toHaveCount(2);
+ await expect(page.locator('.library-row').filter({hasText:'Сад на краю зимы'})).toContainText('Все опубликованные главы прочитаны');
+ await expect(page.locator('.library-row').filter({hasText:'Сад на краю зимы'}).getByRole('link',{name:'Читать сначала →'})).toHaveAttribute('href','/novel/sad-zimy/glava-1/');
+ expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('hunmeng-novels:v1')!).library)).toEqual({'khranitel-mayaka':'reading','sad-zimy':'reading'});
+});
+test('брошенные и прочитанные полки не предлагают продолжение, даты и ссылки читаемы на телефоне',async({page})=>{
+ await page.setViewportSize({width:390,height:844});await page.goto('/');await page.evaluate(()=>localStorage.setItem('hunmeng-novels:v1',JSON.stringify({version:1,settings:{},library:{'khranitel-mayaka':'dropped','sad-zimy':'completed'},progress:{'khranitel-mayaka':{chapterSlug:'glava-1',chapterNumber:1,ratio:.4,blockId:'',offset:0,updatedAt:100},'sad-zimy':{chapterSlug:'glava-2',chapterNumber:2,ratio:.3,blockId:'',offset:0,updatedAt:200}}})));
+ await page.reload();await expect(page.locator('#continue-section')).toBeHidden();
+ for(const selector of ['.home-book-meta','.home-book-genre','.home-chapter-info time','.home-section-heading > a','.header-inner nav a']) {
+  expect(await page.locator(selector).first().evaluate(el=>parseFloat(getComputedStyle(el).fontSize))).toBeGreaterThanOrEqual(14);
+ }
+ for(const selector of ['.home-section-heading > a','.header-inner nav a','.site-footer nav a','.news-read-more']) {
+  expect((await page.locator(selector).first().boundingBox())!.height).toBeGreaterThanOrEqual(44);
+ }
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
 });

@@ -86,11 +86,17 @@ export async function initCatalog() {
     }
   };
   loadQuery();
+  const options = document.querySelector<HTMLDetailsElement>('#catalog-options');
+  const mobile = matchMedia('(max-width: 760px)');
+  mobile.addEventListener('change', () => { if (options) options.open = !mobile.matches; });
   try {
     const novels = await getCatalogIndex();
     const render = (syncUrl: boolean, requestedPage?: number) => {
       const f = new FormData(form);
       const q = fold(String(f.get('search') ?? ''));
+      const selected = [...f.entries()].filter(([key,value]) => value && !['search','sort','size'].includes(key)).length;
+      const summary = document.getElementById('active-filter-count');
+      if (summary) { summary.textContent = `Выбрано: ${selected}`; summary.hidden = selected === 0; }
       const required = f.getAll('include').map(String);
       const forbidden = f.getAll('exclude').map(String);
       const minChapters = Math.max(0, Number(f.get('minChapters') || 0));
@@ -147,7 +153,8 @@ export async function initCatalog() {
       else onFilter();
     });
     form.addEventListener('change',onFilter);
-    form.addEventListener('reset',()=>queueMicrotask(onFilter));
+    // Native controls reset after the event. Re-render in the next task, including collapsed fields.
+    form.addEventListener('reset',()=>setTimeout(onFilter,0));
     pager.addEventListener('click',(e)=>{
       const a=(e.target as Element).closest('a');
       if (!a || !pager.contains(a)) return;

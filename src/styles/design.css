@@ -268,3 +268,82 @@ textarea:focus-visible {outline:3px solid var(--accent);outline-offset:4px}
  .profile-sidebar nav {overflow-x:auto;min-width:0;}
  .profile-sidebar nav a {flex:1 0 auto;font-size:.8rem;padding-inline:6px;gap:6px;}
 }
+
+
+/* 0.3.1: readable metadata and touch controls, without changing browser zoom. */
+.home-page .home-book-meta,.home-page .home-book-genre,
+.home-page .home-chapter-novel,.home-page .home-chapter-info time,
+.home-page .home-recommendation-note,.home-page .home-recommendation-card .fine,
+.home-page .home-recommendation-card .genre-line {font-size:.875rem;line-height:1.55;}
+.home-page .home-book-description {font-size:.9rem;line-height:1.7;}
+.home-section-heading > a,.home-page #continue-section .section-heading > a,
+.news-read-more,.site-footer nav a,.library-row .text-link {min-height:44px;display:inline-flex;align-items:center;}
+.home-page .home-section-heading > a {font-size:.875rem;}
+.home-page .home-chapter-info strong {font-size:.9375rem;}
+.home-page .home-book-title {font-size:1.3rem;line-height:1.4;}
+.home-page .continue-card h3 {font-size:1.15rem;}
+.home-page .continue-card p {font-size:.875rem;line-height:1.5;}
+.continue-card .text-link {font-size:.9rem;min-height:30px;display:inline-flex;align-items:center;}
+.continue-meter {display:flex;align-items:center;gap:10px;}
+.continue-meter progress {flex:1;min-width:0;}
+.continue-percent {font-size:.8125rem;line-height:1.5;color:var(--muted);font-variant-numeric:tabular-nums;}
+.catalog-search-row {margin-bottom:16px;}
+.catalog-search-row label {font-size:.875rem;}
+.catalog-options {border-top:1px solid var(--line);padding-top:12px;}
+.catalog-options > summary {cursor:pointer;min-height:48px;display:flex;align-items:center;gap:12px;font-size:.9rem;font-weight:650;list-style:none;}
+.catalog-options > summary::-webkit-details-marker {display:none;}
+.catalog-options > summary::after {content:'+';font-size:1.3rem;margin-left:auto;color:var(--accent);}
+.catalog-options[open] > summary::after {content:'−';}
+#active-filter-count {font-size:.78rem;font-weight:500;color:var(--muted);margin-left:auto;}
+.catalog-options[open] .catalog-controls {padding-top:14px;}
+.catalog-options .tag-filters {margin-top:16px;}
+.catalog-options summary:focus-visible {outline:3px solid var(--accent);outline-offset:3px;border-radius:4px;}
+@media(min-width:761px) {
+ .catalog-options[open] > summary {display:none;}
+ .catalog-options[open] {border:0;padding:0;}
+ .catalog-options[open] .catalog-controls {padding-top:0;}
+}
+@media(min-width:761px) and (max-width:1024px) {
+ .home-editorial-columns {grid-template-columns:1fr;gap:0;}
+ .home-editorial-columns #latest-news {border-top:1px solid var(--line);margin-top:24px;}
+ .home-page .home-chapter-info {grid-template-columns:minmax(180px,1fr) minmax(180px,1.5fr);}
+}
+@media(max-width:760px) {
+ .header-inner nav {font-size:.875rem;gap:22px;}
+ .home-page .home-hero {padding:22px 0 24px;}
+ .home-page .home-hero-copy {padding:0;}
+ .home-page .home-hero h1 {margin:0;font-size:clamp(1.9rem,6.5vw,2.4rem);line-height:1.22;}
+ .home-page .home-search {margin-top:20px;}
+ .home-page .home-search input[type='search'] {font-size:1rem;}
+ .home-page .home-search .button {font-size:.9375rem;min-height:46px;}
+ .home-page .home-cover-grid {gap:26px;}
+ .home-page .home-book-link {grid-template-columns:104px minmax(0,1fr);gap:18px;}
+ .home-page .home-book-cover {width:104px;}
+ .home-page .home-book-title {font-size:1.125rem;}
+ .home-page .home-book-description {font-size:.875rem;}
+ .home-page .home-book-meta,.home-page .home-book-genre {font-size:.875rem;}
+ .home-page .home-section-heading > a {font-size:.875rem;max-width:44%;line-height:1.4;justify-content:flex-end;}
+ .home-page .continue-list {grid-template-columns:minmax(0,1fr);}
+ .home-page .continue-card h3 {font-size:1.05rem;}
+ .home-page .continue-card p {font-size:.875rem;}
+ .home-page .continue-card .text-link {font-size:.9rem;min-height:28px;margin-top:0;}
+ .home-page .continue-card progress {margin:0;}
+ .home-page .home-chapter-link {min-height:88px;}
+ .home-page .home-chapter-info time {font-size:.875rem;}
+ .site-footer nav {font-size:.875rem;gap:0 20px;}
+ .site-footer > p,.site-footer > .fine {font-size:.8125rem;line-height:1.7;}
+ .catalog-filter-panel {padding:16px;}
+ .catalog-filter-header {align-items:center;gap:12px;}
+ .catalog-filter-header h2 {font-size:1rem;}
+ .catalog-filter-header .text-button {min-height:44px;font-size:.8125rem;flex:none;}
+ .catalog-controls label {font-size:.875rem;}
+ .catalog-results-heading {gap:8px;}
+ .catalog-results-heading .fine {display:none;}
+}
+@media(max-width:360px) {
+ .home-page .home-book-link {grid-template-columns:82px minmax(0,1fr);gap:14px;}
+ .home-page .home-book-cover {width:82px;}
+ .home-page .home-book-title {font-size:1.0625rem;}
+ .catalog-filter-header {flex-wrap:wrap;gap:0 10px;}
+ #active-filter-count {font-size:.75rem;}
+}
