@@ -21,6 +21,11 @@ import Layout from '../layouts/Layout.astro';
           <input name="password" type="password" autocomplete="current-password" minlength="8" required />
         </label>
         <button class="button" type="submit">Продолжить</button>
+        <div class="account-oauth-divider" aria-hidden="true"><span>или</span></div>
+        <button class="button secondary account-google-button" type="button" id="google-sign-in">
+          <span class="google-icon" aria-hidden="true">G</span> Войти через Google
+        </button>
+        <p class="fine account-google-hint">Для Google-входа провайдер должен быть включён в Supabase.</p>
       </div>
       <div id="auth-logged-in" hidden>
         <p>Данные чтения синхронизируются с вашей учётной записью.</p>

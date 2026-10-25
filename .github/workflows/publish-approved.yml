@@ -5,6 +5,7 @@ on:
     - cron: "25 */6 * * *"
 permissions:
   contents: write
+  actions: write
 concurrency:
   group: hunmeng-publish
   cancel-in-progress: false
@@ -45,3 +46,9 @@ jobs:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           GITHUB_SHA_PUBLISHED: ${{ steps.push.outputs.sha }}
         run: node scripts/publish-approved.mjs finalize
+
+      - name: Record approved chapter publication in project news
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh workflow run auto-news.yml --ref main || echo "News dispatch unavailable; publication remains valid."

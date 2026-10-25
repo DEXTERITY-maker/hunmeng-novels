@@ -11,6 +11,8 @@ jobs:
           cache: npm
       - run: npm ci
       - run: node --check scripts/publish-approved.mjs
+      - run: node --check scripts/generate-update-news.mjs
+      - run: node --test tests/news-generator.test.mjs
       - run: npm run build
       - run: npx playwright install --with-deps chromium
       - run: npm test

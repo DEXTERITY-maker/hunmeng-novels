@@ -129,3 +129,52 @@ export async function getStaffRole(): Promise<'admin'|'editor'|null> {
     'select=role&user_id=eq.' + encodeURIComponent(user.id));
   return rows[0]?.role ?? null;
 }
+
+
+const GOOGLE_OAUTH_PKCE_KEY = 'hunmeng-google-pkce:v1';
+function b64url(bytes: Uint8Array) {
+  let raw = '';
+  for (const byte of bytes) raw += String.fromCharCode(byte);
+  return btoa(raw).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+export async function beginGoogleSignIn() {
+  if (!backendConfigured) throw new Error('Сервер авторизации не подключён.');
+  if (!window.crypto?.subtle) throw new Error('Для Google-входа требуется HTTPS.');
+  const verifier = b64url(crypto.getRandomValues(new Uint8Array(32)));
+  const bytes = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(verifier));
+  const challenge = b64url(new Uint8Array(bytes));
+  try {
+    sessionStorage.setItem(GOOGLE_OAUTH_PKCE_KEY, verifier);
+  } catch {
+    throw new Error('Разрешите сохранение данных сайта для Google-входа.');
+  }
+  const target = new URL(url + '/auth/v1/authorize');
+  target.searchParams.set('provider', 'google');
+  target.searchParams.set('redirect_to', new URL('/account/', location.origin).href);
+  target.searchParams.set('code_challenge', challenge);
+  target.searchParams.set('code_challenge_method', 's256');
+  location.assign(target.href);
+}
+export async function completeGoogleSignIn(): Promise<boolean> {
+  const address = new URL(location.href);
+  const code = address.searchParams.get('code');
+  const error = address.searchParams.get('error');
+  if (!code && !error) return false;
+  const description = address.searchParams.get('error_description');
+  for (const field of ['code', 'error', 'error_description']) address.searchParams.delete(field);
+  history.replaceState(history.state, '', address.pathname + address.search + address.hash);
+  let verifier: string | null = null;
+  try {
+    verifier = sessionStorage.getItem(GOOGLE_OAUTH_PKCE_KEY);
+    sessionStorage.removeItem(GOOGLE_OAUTH_PKCE_KEY);
+  } catch { /* Cannot exchange without the verifier. */ }
+  if (error) throw new Error('Google OAuth: ' + (description || error).slice(0, 240));
+  if (!verifier || !/^[A-Za-z0-9_-]{43}$/.test(verifier)) {
+    throw new Error('Повторите Google-вход в той же вкладке браузера.');
+  }
+  const tokens = await authRequest('token?grant_type=pkce', {
+    auth_code: code, code_verifier: verifier,
+  });
+  setSession(parseSession(tokens));
+  return true;
+}

@@ -1,4 +1,4 @@
-import { backendConfigured, signIn, signOut, signUp, getUser } from '../lib/backend';
+import { backendConfigured, signIn, signOut, signUp, getUser, beginGoogleSignIn, completeGoogleSignIn } from '../lib/backend';
 import { syncReaderState } from '../lib/sync';
 
 export async function initAccount() {
@@ -9,6 +9,7 @@ export async function initAccount() {
   const email = form.elements.namedItem('email') as HTMLInputElement;
   const password = form.elements.namedItem('password') as HTMLInputElement;
   const submit = form.querySelector<HTMLButtonElement>('button[type=submit]')!;
+  const google = document.querySelector<HTMLButtonElement>('#google-sign-in')!;
   const refresh = async () => {
     const user = await getUser();
     authFields.hidden = !!user;
@@ -17,7 +18,18 @@ export async function initAccount() {
       backendConfigured ? 'Войдите или зарегистрируйтесь, чтобы синхронизировать библиотеку.' :
       'Сервер ещё не подключён. Локальная библиотека работает как прежде.';
     submit.disabled = !backendConfigured;
+    google.disabled = !backendConfigured;
   };
+  google.addEventListener('click', async () => {
+    google.disabled = true;
+    status.textContent = 'Перенаправляем в Google…';
+    try {
+      await beginGoogleSignIn();
+    } catch (error) {
+      status.textContent = error instanceof Error ? error.message : 'Не удалось начать Google-вход.';
+      google.disabled = !backendConfigured;
+    }
+  });
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
     submit.disabled = true;
@@ -47,5 +59,25 @@ export async function initAccount() {
     await signOut();
     await refresh();
   });
-  await refresh();
+  const query = new URL(location.href).searchParams;
+  if (query.has('code') || query.has('error')) {
+    status.textContent = 'Завершаем вход через Google…';
+    try {
+      if (await completeGoogleSignIn()) {
+        await refresh();
+        status.textContent = 'Вход через Google выполнен.';
+        try {
+          await syncReaderState();
+          status.textContent = 'Вход через Google выполнен. Библиотека синхронизирована.';
+        } catch {
+          status.textContent = 'Вход выполнен, но синхронизация пока недоступна. Повторите её вручную.';
+        }
+      }
+    } catch (error) {
+      await refresh();
+      status.textContent = error instanceof Error ? error.message : 'Не удалось завершить Google-вход.';
+    }
+  } else {
+    await refresh();
+  }
 }
