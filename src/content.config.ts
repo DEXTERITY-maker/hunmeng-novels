@@ -16,6 +16,8 @@ const novels = defineCollection({
     title: z.string().min(1),
     originalTitle: z.string().min(1),
     author: z.string().min(1),
+    authorUrl: z.url().refine((s) => new URL(s).protocol === 'https:', 'Только HTTPS').optional(),
+    supportUrl: z.url().refine((s) => new URL(s).protocol === 'https:', 'Только HTTPS').optional(),
     originalUrl: z.url(),
     cover: z.string().regex(/^\/images\/[^?#]+\.(svg|webp|png|jpg)$/),
     description: z.string().min(20),

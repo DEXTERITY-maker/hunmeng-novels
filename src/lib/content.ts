@@ -38,13 +38,15 @@ export async function getLibrary() {
       ids.add(c.data.slug);
       numbers.add(c.data.number);
     }
-    if (glossaries.filter((g) => g.data.novelSlug === n.slug).length !== 1)
+    const ownGlossaries = glossaries.filter((g) => g.data.novelSlug === n.slug);
+    if (ownGlossaries.length !== 1)
       throw new Error(`Нужен один глоссарий: ${n.slug}`);
     const updatedAt = [n.updatedAt, ...own.map((c) => c.data.publishedAt)].sort().at(-1)!;
     return {
       ...n,
       updatedAt,
       chapters: own,
+      glossary: ownGlossaries[0].data.terms,
       chapterCount: own.length,
       url: novelUrl(n.slug),
       firstUrl: chapterUrl(n.slug, own[0].data.slug),
