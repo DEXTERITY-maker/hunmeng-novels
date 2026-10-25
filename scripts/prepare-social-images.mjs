@@ -35,6 +35,8 @@ const files = await readdir(novels).catch((error) => {
 for (const filename of files) {
   if (!filename.endsWith('.json')) continue;
   const novel = JSON.parse(await readFile(path.join(novels, filename), 'utf8'));
+  // The generic placeholder cover uses og-default.png for link previews (see src/lib/seo.ts).
+  if (novel.cover === '/images/novel-placeholder.svg') continue;
   if (/^\/images\/[a-z0-9-]+\.svg$/.test(novel.cover)) {
     const target = path.basename(novel.cover, '.svg') + '-og.png';
     await verifyPng(target, 520, 760, novelImages);

@@ -13,7 +13,7 @@ const { novel: n } = Astro.props;
   <div class="novel-copy">
     <p class="genre-line">{n.categories.length ? n.categories.join(' · ') : n.genres.join(' · ')}</p>
     <h2><a href={n.url}>{n.title}</a></h2>
-    <p class="original-title">{n.originalTitle} · {n.author}</p>
+    <p class="original-title">{n.originalTitle === n.title ? n.author : `${n.originalTitle} · ${n.author}`}</p>
     <p class="card-description">{n.description}</p>
     {(n.rating || typeof n.views === 'number') && <p class="catalog-card-stats">
       {n.rating && <span>★ {n.rating.average.toFixed(1)} / 5 · {n.rating.count} ratings</span>}

@@ -20,6 +20,7 @@ export async function getLibrary() {
   const slugs = new Set<string>();
   for (const { data: n } of novels) {
     if (slugs.has(n.slug)) throw new Error(`Duplicate slug: ${n.slug}`);
+    if (!n.original && !n.originalUrl) throw new Error(`originalUrl is required for a translation: ${n.slug}`);
     slugs.add(n.slug);
   }
   for (const { data: c } of chapters)
