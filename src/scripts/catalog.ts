@@ -3,6 +3,16 @@ const fold = (s: string) => s.normalize('NFKC').toLocaleLowerCase('ru').replaceA
 export async function initCatalog() {
   const form = document.querySelector<HTMLFormElement>('#catalog-filters')!,
     container = document.getElementById('catalog-results')!;
+  const query = new URLSearchParams(window.location.search);
+  const searchField = form.elements.namedItem('search');
+  if (searchField instanceof HTMLInputElement && query.has('search'))
+    searchField.value = query.get('search') ?? '';
+  const genreField = form.elements.namedItem('genre');
+  if (genreField instanceof HTMLSelectElement && query.has('genre')) {
+    const genre = query.get('genre') ?? '';
+    if (Array.from(genreField.options).some((option) => option.value === genre))
+      genreField.value = genre;
+  }
   try {
     const novels = await getCatalog(),
       cards = new Map(

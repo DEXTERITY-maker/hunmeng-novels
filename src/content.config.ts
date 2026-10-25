@@ -24,6 +24,8 @@ const novels = defineCollection({
     originalStatus: z.enum(['Продолжается', 'Завершён', 'Приостановлен']),
     translationStatus: z.enum(['Переводится', 'Завершён', 'Приостановлен']),
     updatedAt: date,
+    addedAt: date.optional(),
+    views: z.number().int().nonnegative().optional(),
     demo: z.boolean().default(false),
   }),
 });

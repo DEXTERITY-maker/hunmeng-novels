@@ -1,78 +1,202 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import NovelCard from '../components/NovelCard.astro';
+import CompactNovelCard from '../components/CompactNovelCard.astro';
 import ContinueReading from '../components/ContinueReading.astro';
-import { getLibrary, dateLabel, chapterUrl } from '../lib/content';
+import { getLibrary, dateLabel, chapterUrl, chapterCount } from '../lib/content';
+
 const novels = await getLibrary();
+const newNovels = novels
+  .filter((n) => !!n.addedAt)
+  .sort((a, b) => b.addedAt!.localeCompare(a.addedAt!) || b.updatedAt.localeCompare(a.updatedAt))
+  .slice(0, 12);
 const updates = novels
   .flatMap((n) =>
     n.chapters.map((c) => ({
       novel: n.title,
+      cover: n.cover,
       title: c.data.title,
       number: c.data.number,
       date: c.data.publishedAt,
       url: chapterUrl(n.slug, c.data.slug),
     })),
   )
-  .sort((a, b) => b.date.localeCompare(a.date))
+  .sort((a, b) => b.date.localeCompare(a.date) || b.number - a.number)
+  .slice(0, 8);
+const popular = novels
+  .filter((n) => typeof n.views === 'number' && n.views > 0)
+  .sort((a, b) => (b.views ?? 0) - (a.views ?? 0))
   .slice(0, 5);
+const recommendations = [...novels]
+  .sort((a, b) => b.chapterCount - a.chapterCount || b.updatedAt.localeCompare(a.updatedAt))
+  .slice(0, 4);
+const totalChapters = novels.reduce((sum, n) => sum + n.chapterCount, 0);
+const viewsLabel = new Intl.NumberFormat('ru-RU');
 ---
 
-<Layout title="Читать веб-новеллы на русском">
-  <main id="main" class="page-shell">
-    <section class="home-intro">
-      <div>
-        <h1>
-          Истории, к которым
-          <br class="desktop-break" /> хочется вернуться
-        </h1>
-        <p>
-          Веб-новеллы на русском для тихого вечера.
-          <br />
-          Выберите историю и читайте в своём ритме.
+<Layout
+  title="Веб-новеллы: новые истории и последние главы"
+  description="Хунмэнг — читайте веб-новеллы на русском. Новые истории, свежие главы, рекомендации и удобная читалка."
+>
+  <main id="main" class="page-shell home-page">
+    <section class="home-hero" aria-labelledby="home-title">
+      <div class="home-hero-copy">
+        <p class="home-eyebrow">ХУНМЭНГ · БИБЛИОТЕКА ВЕБ-НОВЕЛЛ</p>
+        <h1 id="home-title">Найдите историю, <span>в которую захочется вернуться</span></h1>
+        <p class="home-hero-description">
+          Фэнтези, приключения и истории на каждый вечер.
+          Выбирайте произведение и продолжайте чтение в своём ритме.
         </p>
-        <a class="button" href="/catalog/">
-          Найти свою историю <span aria-hidden="true">→</span>
-        </a>
+        <form class="home-search" role="search" action="/catalog/" method="get">
+          <label class="home-sr-only" for="home-search-input">Поиск новелл</label>
+          <span class="home-search-symbol" aria-hidden="true">⌕</span>
+          <input
+            id="home-search-input"
+            type="search"
+            name="search"
+            placeholder="Название новеллы на русском или языке оригинала"
+            autocomplete="off"
+            required
+          />
+          <button class="button" type="submit">Найти</button>
+        </form>
+        <nav class="home-quick-links" aria-label="Разделы главной">
+          <a href="#new-novels">Новые новеллы</a>
+          <a href="#latest-chapters">Последние главы</a>
+          <a href="#popular-novels">Популярное</a>
+          <a href="#recommended-novels">Рекомендации</a>
+        </nav>
       </div>
-      <div class="intro-art" aria-hidden="true">
-        <div class="book-shape book-one"></div>
-        <div class="book-shape book-two"></div>
-        <div class="book-shape book-three"></div>
-        <span class="art-line"></span>
+      <div class="home-hero-aside">
+        <div class="home-hero-covers" aria-hidden="true">
+          {novels.slice(0, 2).map((n) => (
+            <img src={n.cover} alt="" width="180" height="263" decoding="async" />
+          ))}
+        </div>
+        <div class="home-hero-counts">
+          <span class="home-hero-counter">
+            <strong>{novels.length}</strong>
+            <span>Новелл в каталоге</span>
+          </span>
+          <span class="home-hero-counter">
+            <strong>{totalChapters}</strong>
+            <span>Глав для чтения</span>
+          </span>
+        </div>
       </div>
     </section>
+
     <ContinueReading />
-    <section class="section" aria-labelledby="updates-title">
-      <div class="section-heading">
-        <h2 id="updates-title">Последние обновления</h2>
-        <span class="fine">Новые главы</span>
+
+    <section id="new-novels" class="section home-section" aria-labelledby="new-title">
+      <div class="section-heading home-section-heading">
+        <div>
+          <p class="home-section-kicker">Откройте новое</p>
+          <h2 id="new-title">Новые новеллы</h2>
+        </div>
+        <a href="/catalog/">Весь каталог <span aria-hidden="true">→</span></a>
       </div>
-      <div class="updates-list">
-        {updates.map((u) => (
-          <a class="update-row" href={u.url}>
-            <div>
-              <strong>{u.novel}</strong>
-              <span>
-                Глава {u.number}. {u.title}
-              </span>
-            </div>
-            <time datetime={u.date}>{dateLabel(u.date)}</time>
-            <span aria-hidden="true">↗</span>
-          </a>
-        ))}
-      </div>
+      {newNovels.length ? (
+        <div class="home-cover-grid">
+          {newNovels.map((n) => <CompactNovelCard novel={n} />)}
+        </div>
+      ) : (
+        <p class="home-section-empty">Новые произведения скоро появятся здесь.</p>
+      )}
     </section>
-    <section class="section" aria-labelledby="all-title">
-      <div class="section-heading">
-        <h2 id="all-title">Все новеллы</h2>
-        <a href="/catalog/">В каталог →</a>
+
+    <section id="latest-chapters" class="section home-section" aria-labelledby="updates-title">
+      <div class="section-heading home-section-heading">
+        <div>
+          <p class="home-section-kicker">Только что в библиотеке</p>
+          <h2 id="updates-title">Последние главы</h2>
+        </div>
+        <a href="/catalog/">К произведениям <span aria-hidden="true">→</span></a>
       </div>
-      <div class="novel-grid">
-        {novels.map((n) => (
-          <NovelCard novel={n} />
-        ))}
+      {updates.length ? (
+        <ol class="home-chapter-grid">
+          {updates.map((u) => (
+            <li>
+              <a class="home-chapter-link" href={u.url}>
+                <img src={u.cover} alt="" width="60" height="88" loading="lazy" decoding="async" />
+                <span class="home-chapter-info">
+                  <span class="home-chapter-novel">{u.novel}</span>
+                  <strong>Глава {u.number}. {u.title}</strong>
+                  <time datetime={u.date}>{dateLabel(u.date)}</time>
+                </span>
+                <span class="home-chapter-arrow" aria-hidden="true">↗</span>
+              </a>
+            </li>
+          ))}
+        </ol>
+      ) : (
+        <p class="home-section-empty">Опубликованные главы скоро появятся здесь.</p>
+      )}
+    </section>
+
+    <section id="popular-novels" class="section home-section" aria-labelledby="popular-title">
+      <div class="section-heading home-section-heading">
+        <div>
+          <p class="home-section-kicker">Выбор читателей</p>
+          <h2 id="popular-title">Популярное</h2>
+        </div>
+        <a href="/catalog/">Посмотреть каталог <span aria-hidden="true">→</span></a>
       </div>
+      {popular.length ? (
+        <ol class="home-popular-list">
+          {popular.map((n, i) => (
+            <li>
+              <span class="home-rank">{String(i + 1).padStart(2, '0')}</span>
+              <a href={n.url} class="home-popular-book">
+                <img src={n.cover} alt="" width="52" height="76" loading="lazy" decoding="async" />
+                <span>
+                  <strong>{n.title}</strong>
+                  <small>{chapterCount(n.chapterCount)} · {n.genres[0]}</small>
+                </span>
+              </a>
+              <span class="home-views">{viewsLabel.format(n.views ?? 0)} просмотров</span>
+            </li>
+          ))}
+        </ol>
+      ) : (
+        <div class="home-popular-empty">
+          <span class="home-popular-mark" aria-hidden="true">☆</span>
+          <div>
+            <h3>Рейтинг пока формируется</h3>
+            <p>Когда появятся реальные данные о просмотрах, здесь будут самые читаемые новеллы. Пока можно найти историю в каталоге.</p>
+          </div>
+          <a class="button secondary" href="/catalog/">В каталог</a>
+        </div>
+      )}
+    </section>
+
+    <section id="recommended-novels" class="section home-section" aria-labelledby="recommended-title">
+      <div class="section-heading home-section-heading">
+        <div>
+          <p class="home-section-kicker">С чего начать</p>
+          <h2 id="recommended-title">Рекомендации</h2>
+        </div>
+        <a href="/catalog/">Открыть каталог <span aria-hidden="true">→</span></a>
+      </div>
+      <p class="home-recommendation-note">Истории из нашего каталога — подборка по объёму и свежести обновлений, без персонализации и выдуманных оценок.</p>
+      {recommendations.length ? (
+        <div class="home-recommendation-grid">
+          {recommendations.map((n) => (
+            <article class="home-recommendation-card">
+              <a href={n.url} class="home-recommendation-cover" aria-label={'Открыть «' + n.title + '»'}>
+                <img src={n.cover} alt="" width="115" height="168" loading="lazy" decoding="async" />
+              </a>
+              <div>
+                <p class="genre-line">{n.genres.join(' · ')}</p>
+                <h3><a href={n.url}>{n.title}</a></h3>
+                <p class="home-recommendation-description">{n.description}</p>
+                <span class="fine">{chapterCount(n.chapterCount)} · {n.translationStatus}</span>
+              </div>
+            </article>
+          ))}
+        </div>
+      ) : (
+        <p class="home-section-empty">Рекомендации появятся, когда в каталоге будут произведения.</p>
+      )}
     </section>
   </main>
   <script>
