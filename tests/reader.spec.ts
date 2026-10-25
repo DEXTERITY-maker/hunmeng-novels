@@ -312,8 +312,8 @@ test('глоссарий по типам, сведения об авторе и 
   await expect(page.getByRole('heading', { name: 'Глоссарий' })).toBeVisible();
   await expect(page.locator('.glossary-group')).toHaveCount(4);
   await expect(page.locator('.glossary-group h3')).toHaveText(['Персонажи', 'Места', 'Техники', 'Предметы']);
-  await expect(page.locator('.glossary-entries')).toContainText('Возвращающий свет');
-  await expect(page.locator('.glossary-entries')).toContainText('Returning Light');
+  await expect(page.locator('.glossary-section')).toContainText('Возвращающий свет');
+  await expect(page.locator('.glossary-section')).toContainText('Returning Light');
   await expect(page.getByRole('heading', { name: 'Об авторе' })).toBeVisible();
   await expect(page.locator('.author-section')).toContainText('Алексей Ветров');
   await expect(page.locator('.author-outbound-links')).toHaveCount(0);
