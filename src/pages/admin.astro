@@ -20,8 +20,30 @@ import Layout from '../layouts/Layout.astro';
             <label>Название оригинала
               <input name="original_title" required maxlength="250" />
             </label>
+            <label>Название на русском
+              <input name="title_ru" required maxlength="250" />
+            </label>
+            <label>Описание на русском (от 20 символов)
+              <textarea name="description_ru" rows="4" required minlength="20"></textarea>
+            </label>
             <label>Автор
               <input name="author_name" maxlength="150" />
+            </label>
+            <label>Жанры через запятую
+              <input name="genres" value="Фэнтези" required />
+            </label>
+            <label>Теги через запятую
+              <input name="tags" placeholder="Приключения, Культивация" />
+            </label>
+            <label>Статус оригинала
+              <select name="original_status">
+                <option>Продолжается</option><option>Завершён</option><option>Приостановлен</option>
+              </select>
+            </label>
+            <label>Статус перевода
+              <select name="translation_status">
+                <option>Переводится</option><option>Завершён</option><option>Приостановлен</option>
+              </select>
             </label>
             <label>Ссылка на оригинал (HTTPS)
               <input name="original_url" type="url" required placeholder="https://..." />
@@ -58,6 +80,11 @@ import Layout from '../layouts/Layout.astro';
             <label>Оригинал <select name="source_id" required></select></label>
             <label>Термин оригинала <input name="original_term" required maxlength="200" /></label>
             <label>Закреплённый перевод <input name="translated_term" required maxlength="200" /></label>
+            <label>Тип термина
+              <select name="term_type">
+                <option>предмет</option><option>персонаж</option><option>место</option><option>техника</option>
+              </select>
+            </label>
             <label>Примечание <input name="note" maxlength="300" /></label>
             <button class="button" type="submit">Добавить термин</button>
           </form>

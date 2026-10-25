@@ -170,6 +170,24 @@ begin
     and current_user <> 'service_role' then
     raise exception 'Only server publisher can publish';
   end if;
+  if tg_op = 'UPDATE' and current_user <> 'service_role' and (
+    new.published_at is distinct from old.published_at
+    or new.publish_commit is distinct from old.publish_commit
+    or (new.status <> 'approved' and (
+      new.reviewed_by is distinct from old.reviewed_by
+      or new.approved_at is distinct from old.approved_at
+    ))
+  ) then
+    raise exception 'Server-managed approval/publication fields cannot be changed';
+  end if;
+  if tg_op = 'UPDATE' and old.status = 'approved' and new.status = 'approved'
+     and (new.source_id, new.chapter_number, new.chapter_slug, new.chapter_title,
+       new.chapter_description, new.original_text, new.translated_text, new.qa_notes)
+       is distinct from
+       (old.source_id, old.chapter_number, old.chapter_slug, old.chapter_title,
+       old.chapter_description, old.original_text, old.translated_text, old.qa_notes) then
+    raise exception 'Approved content is immutable; move it to review to edit';
+  end if;
   if tg_op = 'UPDATE' and old.status = 'published' and current_user <> 'service_role' then
     raise exception 'Published chapter is immutable';
   end if;

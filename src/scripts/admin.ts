@@ -155,6 +155,11 @@ export async function initAdmin() {
     await rest('novel_sources','POST','',{
       slug:value(f,'slug'),original_title:value(f,'original_title'),
       original_url:value(f,'original_url'),author_name:value(f,'author_name'),
+      title_ru:value(f,'title_ru'),description_ru:value(f,'description_ru'),
+      genres:value(f,'genres').split(',').map(s=>s.trim()).filter(Boolean),
+      tags:value(f,'tags').split(',').map(s=>s.trim()).filter(Boolean),
+      original_status:value(f,'original_status'),
+      translation_status:value(f,'translation_status'),
     });
   });
   onSubmit(rightsForm, async f => {
@@ -169,7 +174,7 @@ export async function initAdmin() {
   onSubmit(termForm, async f => {
     await rest('novel_terms','POST','',{
       source_id:value(f,'source_id'),original_term:value(f,'original_term'),
-      translated_term:value(f,'translated_term'),note:value(f,'note'),
+      translated_term:value(f,'translated_term'),term_type:value(f,'term_type'),note:value(f,'note'),
     });
   });
   onSubmit(jobForm, async f => {
