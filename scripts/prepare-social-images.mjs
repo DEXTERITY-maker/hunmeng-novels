@@ -12,7 +12,7 @@ async function exists(file) {
 await mkdir(images, { recursive: true });
 const defaultPath = path.join(images, 'og-default.png');
 if (!(await exists(defaultPath))) {
-  const art = \`<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  const art = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
     <rect width="1200" height="630" fill="#1c3455"/>
     <rect x="35" y="35" width="1130" height="560" fill="none" stroke="#d9c99c" stroke-width="3"/>
     <rect x="55" y="55" width="1090" height="520" fill="none" stroke="#7e8ca0" stroke-width="2"/>
@@ -20,7 +20,7 @@ if (!(await exists(defaultPath))) {
     <path d="M540 220 Q600 150 660 220 M600 115 L600 275" fill="none" stroke="#e8d8ae" stroke-width="7"/>
     <text x="600" y="387" font-family="serif" font-size="76" font-weight="bold" text-anchor="middle" fill="#f6efde">ХУНМЭНГ</text>
     <text x="600" y="448" font-family="sans-serif" font-size="29" text-anchor="middle" letter-spacing="5" fill="#d9c99c">НОВЕЛЛЫ НА РУССКОМ</text>
-  </svg>\`;
+  </svg>`;
   await sharp(Buffer.from(art)).png().toFile(defaultPath);
   console.log('Created temporary 1200×630 /images/og-default.png');
 }
