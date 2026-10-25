@@ -57,7 +57,7 @@ export function chapterStructuredData(
   chapter: Novel['chapters'][number],
   base: URL | string,
 ) {
-  const page = \`/novel/\${n.slug}/\${chapter.data.slug}/\`;
+  const page = `/novel/${n.slug}/${chapter.data.slug}/`;
   const chapterUrl = abs(page, base);
   return {
     '@context': 'https://schema.org',
@@ -67,7 +67,7 @@ export function chapterStructuredData(
         '@id': chapterUrl + '#chapter',
         url: chapterUrl,
         name: chapter.data.title,
-        headline: \`\${n.title} — глава \${chapter.data.number}: \${chapter.data.title}\`,
+        headline: `${n.title} — глава ${chapter.data.number}: ${chapter.data.title}`,
         description: chapter.data.description,
         inLanguage: 'ru',
         position: chapter.data.number,
@@ -76,7 +76,7 @@ export function chapterStructuredData(
         isPartOf: { '@id': abs(n.url, base) + '#book', '@type': 'Book', name: n.title },
       },
       breadcrumbs(
-        [...root, { name: n.title, path: n.url }, { name: \`Глава \${chapter.data.number}: \${chapter.data.title}\`, path: page }],
+        [...root, { name: n.title, path: n.url }, { name: `Глава ${chapter.data.number}: ${chapter.data.title}`, path: page }],
         base, page,
       ),
     ],
