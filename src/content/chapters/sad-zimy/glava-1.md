@@ -2,19 +2,19 @@
 novelSlug: 'sad-zimy'
 slug: 'glava-1'
 number: 1
-title: 'Ключ среди страниц'
+title: 'A Key Among the Pages'
 publishedAt: '2026-10-20'
-description: 'Глава 1. Ключ среди страниц. Продолжение оригинальной демонстрационной истории.'
+description: 'Chapter 1. A Key Among the Pages. An original demo story.'
 ---
 
-Ника нашла ключ в корешке книги, которую принесли на починку. Книга была о летних птицах, и ни одной из них она никогда не видела.
+Nika found the key in the spine of a book brought in for repair. The book was about summer birds, and she had never seen a single one of them.
 
-Ключ оказался зелёным, как стекло старых бутылок. На его головке был вырезан лист. Ника приложила его к окну, и снег снаружи на мгновение показался дождём.
+The key was green, like the glass of old bottles. A leaf had been carved into its bow. Nika held it against the window, and for a moment the snow outside looked like rain.
 
-Вечером она закрыла мастерскую раньше обычного. На площади горели фонари. Люди шли быстро, пряча лица в шарфы, а снег беззвучно ложился на их плечи.
+That evening, she closed the workshop earlier than usual. Lamps glowed in the square. People hurried past with their faces buried in scarves, while snow settled soundlessly on their shoulders.
 
-Оранжерея стояла за последним домом. Все считали, что внутри давно ничего нет. Но ключ легко повернулся в замке, и из щели потянуло влажной землёй.
+The greenhouse stood beyond the last house. Everyone thought it had been empty for years. But the key turned easily in the lock, and the scent of damp earth drifted through the gap.
 
-На пустой скамейке лежала записка: «Начните с одного горшка». Рядом стояла лейка, полная воды. Над разбитой крышей сияла звезда, похожая на семечко.
+A note lay on an empty bench: “Begin with one pot.” Beside it stood a watering can, filled to the brim. Above the broken roof shone a star that looked like a seed.
 
-Ника сняла варежки. Впервые за долгую зиму ей не хотелось торопиться домой. Она выбрала горшок с маленькой трещиной и поставила его ближе к свету.
+Nika took off her mittens. For the first time that long winter, she felt no hurry to go home. She chose a pot with a little crack and moved it closer to the light.

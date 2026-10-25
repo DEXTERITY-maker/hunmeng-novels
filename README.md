@@ -1,3 +1,22 @@
+# Hunmeng Novels · English edition · v0.4.0
+
+Hunmeng is a static Astro + TypeScript web novel library. The default and only interface language is now **English**, including reader and editorial tools, auth errors, form validation, demo fiction, news, catalog filters, PWA metadata, structured data, covers, and social preview images.
+
+- Production: https://dexterity-maker-hunmeng-novels-364c.twc1.net/
+- Node.js 24 (minimum 22.12), `npm ci`, `npm run build`; publish `dist` on Timeweb.
+- Validate: `node --test tests/*.test.mjs` and `npm test` (Chromium required).
+- Routes, novel/chapter slugs, browser storage keys, accounts, and permissions are preserved. Existing reading progress and shelves survive this release. User-entered nicknames and bios are not translated.
+- Database enums and legacy column names such as `title_ru` remain unchanged for compatibility. The editorial form accepts the English title and description in those columns; `src/lib/labels.ts` provides English labels for stored statuses and glossary types. No database migration is needed.
+- Reader accounts remain enabled; Google OAuth and cross-device library sync remain disabled.
+- Supabase Auth email templates are configured outside this repository. This release translates the website and its confirmation/error screens; it does not change external email templates.
+- Keep source permissions and human review requirements for publication. Publication announcements are generated in English. New editorial content should be supplied in English.
+- English form messages are set locally and do not depend on the browser's language. Dates, numbers, sorting, and chapter plurals use English conventions. Localization tests exercise English and Russian browser locales.
+- Vector cover/social sources and their PNG exports are committed. Production builds verify PNGs and do not generate images or rely on server fonts.
+
+The release notes below are historical Russian documentation. Current language behavior is described above; earlier references to a Russian interface apply to those releases.
+
+---
+
 # Хунмэнг · новеллы · Astro
 
 Латиницей: **Hunmeng Novels**. Версия **0.3.1**. Мобильные улучшения — в разделе 0.3.1, оформление и профиль — в разделе 0.3.0; вход читателей — в разделе 0.2.3, редакция и развёртывание — в разделе 0.2.2.

@@ -14,9 +14,9 @@ export function initProfile(client: SupabaseClient, onExpired: () => void) {
     const profile = readProfile(user.user_metadata);
     document.getElementById('profile-name')!.textContent = profile.nickname;
     const avatar = document.getElementById('profile-avatar')!;
-    avatar.textContent = [...profile.nickname][0].toLocaleUpperCase('ru');
+    avatar.textContent = [...profile.nickname][0].toLocaleUpperCase('en');
     avatar.dataset.avatar = profile.avatar_color;
-    document.getElementById('account-confirmed')!.textContent = user.email_confirmed_at ? 'Email подтверждён' : 'Подтверждение email не получено';
+    document.getElementById('account-confirmed')!.textContent = user.email_confirmed_at ? 'Email confirmed' : 'Email not confirmed';
     if (fill) {
       nickname.value = profile.nickname; bio.value = profile.bio;
       form.querySelector<HTMLInputElement>(`input[name="avatar_color"][value="${profile.avatar_color}"]`)!.checked = true;
@@ -26,17 +26,17 @@ export function initProfile(client: SupabaseClient, onExpired: () => void) {
     event.preventDefault();
     if (!current || saving) return;
     const name = validateNickname(nickname.value);
-    if (!name) { status.textContent='Проверьте никнейм: от 3 до 24 символов, начиная с буквы или цифры.'; nickname.focus(); return; }
-    if (bio.value.length > 160) { status.textContent='Описание должно быть не длиннее 160 символов.'; return; }
+    if (!name) { status.textContent='Check your nickname: use 3–24 characters, starting with a letter or number.'; nickname.focus(); return; }
+    if (bio.value.length > 160) { status.textContent='Your bio must be no more than 160 characters.'; return; }
     const metadata = readProfile({nickname:name,bio:bio.value.trim(),avatar_color:new FormData(form).get('avatar_color')});
     const userId = current.id;
-    saving = true; fields.disabled = true; status.textContent='Сохраняем профиль…';
+    saving = true; fields.disabled = true; status.textContent='Saving your profile…';
     try {
       const verified = await client.auth.getUser();
       if (verified.error) {
         if (verified.error.status === 401 || verified.error.status === 403 || verified.error.name === 'AuthSessionMissingError') {
-          onExpired(); status.textContent='Сессия завершена. Войдите снова.';
-        } else if (current?.id === userId) status.textContent='Не удалось проверить сессию. Проверьте соединение и повторите сохранение.';
+          onExpired(); status.textContent='Your session has ended. Please sign in again.';
+        } else if (current?.id === userId) status.textContent='Unable to verify your session. Check your connection and try saving again.';
         return;
       }
       if (current?.id !== userId) return;
@@ -49,8 +49,8 @@ export function initProfile(client: SupabaseClient, onExpired: () => void) {
         return;
       }
       if (current?.id !== userId) return;
-      if (data.user) { current=data.user; paint(data.user,true); status.textContent='Профиль сохранён.'; }
-    } catch { status.textContent='Не удалось сохранить профиль. Проверьте соединение и повторите попытку.'; }
+      if (data.user) { current=data.user; paint(data.user,true); status.textContent='Profile saved.'; }
+    } catch { status.textContent='Your profile could not be saved. Check your connection and try again.'; }
     finally { saving=false; fields.disabled=!current; }
   });
   void initPreferences();

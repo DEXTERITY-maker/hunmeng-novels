@@ -47,11 +47,11 @@ export async function initPersonal() {
         img.width = 64;
         img.height = 94;
         const body = element('div');
-        body.append(element('h3', n.title), element('p', `Глава ${c.number}. ${c.title}`));
+        body.append(element('h3', n.title), element('p', `Chapter ${c.number}. ${c.title}`));
         const bar = element('progress');
         bar.max = 1;
         bar.value = action.ratio;
-        bar.setAttribute('aria-label', 'Прогресс текущей главы');
+        bar.setAttribute('aria-label', 'Current chapter progress');
         const meter = element('div', undefined, 'continue-meter');
         meter.append(bar, element('span', `${Math.round(action.ratio * 100)}%`, 'continue-percent'));
         body.append(meter, element('span', action.label + ' →', 'text-link'));

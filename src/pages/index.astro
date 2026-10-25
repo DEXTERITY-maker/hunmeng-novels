@@ -21,32 +21,32 @@ const popular = novels
 const recommendations = [...novels]
   .sort((a, b) => b.chapterCount - a.chapterCount || b.updatedAt.localeCompare(a.updatedAt))
   .slice(0, 4);
-const viewsLabel = new Intl.NumberFormat('ru-RU');
+const viewsLabel = new Intl.NumberFormat('en-US');
 ---
 
 <Layout
-  title="Веб-новеллы: новые истории и последние главы"
-  description="Хунмэнг — читайте веб-новеллы на русском. Новые истории, свежие главы, рекомендации и удобная читалка."
+  title="Web novels: new stories and latest chapters"
+  description="Hunmeng — read web novels in English. Discover new stories, fresh chapters, and a comfortable reading experience."
 >
   <main id="main" class="page-shell home-page">
     <section class="home-hero" aria-labelledby="home-title">
       <div class="home-hero-copy">
-        <h1 id="home-title">Истории, к которым<br /> хочется вернуться</h1>
+        <h1 id="home-title">Stories worth<br /> coming back to</h1>
         <p class="home-hero-description">
-          Читайте веб-новеллы на русском — в своём ритме.
+          Read web novels in English, at your own pace.
         </p>
         <form class="home-search" role="search" action="/catalog/" method="get">
-          <label class="home-sr-only" for="home-search-input">Поиск новелл</label>
+          <label class="home-sr-only" for="home-search-input">Search novels</label>
           <span class="home-search-symbol" aria-hidden="true">⌕</span>
           <input
             id="home-search-input"
             type="search"
             name="search"
-            placeholder="Название или автор"
+            placeholder="Title or author"
             autocomplete="off"
             required
           />
-          <button class="button" type="submit">Найти</button>
+          <button class="button" type="submit">Search</button>
         </form>
       </div>
     </section>
@@ -56,16 +56,16 @@ const viewsLabel = new Intl.NumberFormat('ru-RU');
     <section id="new-novels" class="section home-section" aria-labelledby="new-title">
       <div class="section-heading home-section-heading">
         <div>
-          <h2 id="new-title">Новые новеллы</h2>
+          <h2 id="new-title">New novels</h2>
         </div>
-        <a href="/catalog/">Весь каталог <span aria-hidden="true">→</span></a>
+        <a href="/catalog/">Full catalog <span aria-hidden="true">→</span></a>
       </div>
       {newNovels.length ? (
         <div class="home-cover-grid">
           {newNovels.map((n) => <CompactNovelCard novel={n} />)}
         </div>
       ) : (
-        <p class="home-section-empty">Новые произведения скоро появятся здесь.</p>
+        <p class="home-section-empty">New stories will appear here soon.</p>
       )}
     </section>
 
@@ -73,9 +73,9 @@ const viewsLabel = new Intl.NumberFormat('ru-RU');
     <section id="latest-chapters" class="section home-section" aria-labelledby="updates-title">
       <div class="section-heading home-section-heading">
         <div>
-          <h2 id="updates-title">Последние главы</h2>
+          <h2 id="updates-title">Latest chapters</h2>
         </div>
-        <a href="/updates/">Все обновления →</a>
+        <a href="/updates/">All updates →</a>
       </div>
       {updates.length ? (
         <ol class="home-chapter-grid">
@@ -85,7 +85,7 @@ const viewsLabel = new Intl.NumberFormat('ru-RU');
                 <img src={u.cover} alt="" width="60" height="88" loading="lazy" decoding="async" />
                 <span class="home-chapter-info">
                   <span class="home-chapter-novel">{u.novel}</span>
-                  <strong>Глава {u.number}. {u.title}</strong>
+                  <strong>Chapter {u.number}. {u.title}</strong>
                   <time datetime={u.date}>{dateLabel(u.date)}</time>
                 </span>
                 <span class="home-chapter-arrow" aria-hidden="true">↗</span>
@@ -94,19 +94,19 @@ const viewsLabel = new Intl.NumberFormat('ru-RU');
           ))}
         </ol>
       ) : (
-        <p class="home-section-empty">Опубликованные главы скоро появятся здесь.</p>
+        <p class="home-section-empty">Published chapters will appear here soon.</p>
       )}
       <a class="home-updates-button" href="/updates/">
-        Все обновления <span aria-hidden="true">→</span>
+        All updates <span aria-hidden="true">→</span>
       </a>
     </section>
 
     <section id="latest-news" class="section home-section latest-news-section" aria-labelledby="latest-news-title">
       <div class="section-heading home-section-heading">
         <div>
-          <h2 id="latest-news-title">Последние новости</h2>
+          <h2 id="latest-news-title">Latest news</h2>
         </div>
-        <a href="/news/">Просмотреть все <span aria-hidden="true">→</span></a>
+        <a href="/news/">View all <span aria-hidden="true">→</span></a>
       </div>
       <div class="home-news-list">
         {latestNews.map((post) => <NewsCard post={post} compact />)}
@@ -118,9 +118,9 @@ const viewsLabel = new Intl.NumberFormat('ru-RU');
     <section id="popular-novels" class="section home-section" aria-labelledby="popular-title">
       <div class="section-heading home-section-heading">
         <div>
-          <h2 id="popular-title">Популярное</h2>
+          <h2 id="popular-title">Popular</h2>
         </div>
-        <a href="/catalog/">Посмотреть каталог <span aria-hidden="true">→</span></a>
+        <a href="/catalog/">Browse catalog <span aria-hidden="true">→</span></a>
       </div>
       <ol class="home-popular-list">
         {popular.map((n, i) => (
@@ -133,7 +133,7 @@ const viewsLabel = new Intl.NumberFormat('ru-RU');
                 <small>{chapterCount(n.chapterCount)} · {n.genres[0]}</small>
               </span>
             </a>
-            <span class="home-views">{viewsLabel.format(n.views ?? 0)} просмотров</span>
+            <span class="home-views">{viewsLabel.format(n.views ?? 0)} views</span>
           </li>
         ))}
       </ol>
@@ -143,16 +143,16 @@ const viewsLabel = new Intl.NumberFormat('ru-RU');
     <section id="recommended-novels" class="section home-section" aria-labelledby="recommended-title">
       <div class="section-heading home-section-heading">
         <div>
-          <h2 id="recommended-title">Рекомендации</h2>
+          <h2 id="recommended-title">Recommended reads</h2>
         </div>
-        <a href="/catalog/">Открыть каталог <span aria-hidden="true">→</span></a>
+        <a href="/catalog/">Browse catalog <span aria-hidden="true">→</span></a>
       </div>
-      <p class="home-recommendation-note">Истории из каталога, с которых можно начать.</p>
+      <p class="home-recommendation-note">A few stories to get you started.</p>
       {recommendations.length ? (
         <div class="home-recommendation-grid">
           {recommendations.map((n) => (
             <article class="home-recommendation-card">
-              <a href={n.url} class="home-recommendation-cover" aria-label={'Открыть «' + n.title + '»'}>
+              <a href={n.url} class="home-recommendation-cover" aria-label={'Open “' + n.title + '»'}>
                 <img src={n.cover} alt="" width="115" height="168" loading="lazy" decoding="async" />
               </a>
               <div>
@@ -165,7 +165,7 @@ const viewsLabel = new Intl.NumberFormat('ru-RU');
           ))}
         </div>
       ) : (
-        <p class="home-section-empty">Рекомендации появятся, когда в каталоге будут произведения.</p>
+        <p class="home-section-empty">Recommendations will appear when novels are available.</p>
       )}
     </section>
   </main>

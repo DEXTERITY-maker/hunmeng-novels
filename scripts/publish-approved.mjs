@@ -49,8 +49,8 @@ async function stage(){
       const cover=source.cover_path||'/images/novel-placeholder.svg';
       if(!(await exists('public'+cover))){console.log('SKIP missing cover: '+j.id);continue;}
       const novel={slug:source.slug,title:source.title_ru,originalTitle:source.original_title,
-        author:source.author_name||'Не указан',originalUrl:source.original_url,cover,
-        description:source.description_ru,genres:source.genres?.length?source.genres:['Фэнтези'],
+        author:source.author_name||'Not specified',originalUrl:source.original_url,cover,
+        description:source.description_ru,genres:source.genres?.length?source.genres:['Fantasy'],
         tags:source.tags||[],categories:[],originalStatus:source.original_status||'Продолжается',
         translationStatus:source.translation_status||'Переводится',
         updatedAt:today(),addedAt:today(),demo:false};

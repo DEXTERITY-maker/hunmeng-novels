@@ -26,16 +26,16 @@ export function createReaderClient() {
 export function readerAuthMessage(error: unknown) {
   const authError = error as Partial<AuthError> | null;
   if (authError?.status === 429 || authError?.code === 'over_request_rate_limit' || authError?.code === 'over_email_send_rate_limit')
-    return 'Слишком много попыток. Подождите немного и повторите.';
+    return 'Too many attempts. Wait a moment and try again.';
   switch (authError?.code) {
-    case 'invalid_credentials': return 'Не удалось войти. Проверьте email и пароль.';
-    case 'email_not_confirmed': return 'Сначала подтвердите email по ссылке из письма.';
-    case 'signup_disabled': return 'Сервер временно не принимает новые регистрации.';
-    case 'weak_password': return 'Пароль недостаточно надёжен. Используйте не менее 8 символов, буквы и цифры.';
-    case 'email_address_not_authorized': return 'Сервис пока не может отправить письмо на этот адрес. Владельцу сайта нужно настроить отправку почты.';
-    case 'user_already_exists': return 'Не удалось создать аккаунт. Попробуйте войти или проверьте письмо подтверждения.';
+    case 'invalid_credentials': return 'Unable to sign in. Check your email and password.';
+    case 'email_not_confirmed': return 'Confirm your email using the link in the message first.';
+    case 'signup_disabled': return 'New registrations are temporarily disabled.';
+    case 'weak_password': return 'This password is too weak. Use at least 8 characters, including letters and numbers.';
+    case 'email_address_not_authorized': return 'Email cannot be sent to this address yet. The site owner needs to configure email delivery.';
+    case 'user_already_exists': return 'Unable to create an account. Try signing in or check your confirmation email.';
     default: return authError?.status && authError.status >= 500
-      ? 'Сервис авторизации временно недоступен. Попробуйте позже.'
-      : 'Не удалось выполнить действие. Проверьте соединение и повторите попытку.';
+      ? 'Sign-in is temporarily unavailable. Please try again later.'
+      : 'Unable to complete the action. Check your connection and try again.';
   }
 }

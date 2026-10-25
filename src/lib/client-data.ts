@@ -27,7 +27,7 @@ export interface ClientNovel {
 let data: Promise<ClientNovel[]> | undefined;
 export function getCatalog() {
   return (data ??= fetch('/catalog.json').then((r) => {
-    if (!r.ok) throw new Error('Не удалось загрузить каталог');
+    if (!r.ok) throw new Error('Unable to load the catalog');
     return r.json() as Promise<ClientNovel[]>;
   }));
 }
@@ -64,7 +64,7 @@ export interface CatalogIndexNovel {
 let indexData: Promise<CatalogIndexNovel[]> | undefined;
 export function getCatalogIndex() {
   return (indexData ??= fetch('/catalog-index.json').then((response) => {
-    if (!response.ok) throw new Error('Не удалось загрузить поисковый индекс');
+    if (!response.ok) throw new Error('Unable to load the search index');
     return response.json() as Promise<CatalogIndexNovel[]>;
   }));
 }

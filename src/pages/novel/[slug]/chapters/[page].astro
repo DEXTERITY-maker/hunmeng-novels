@@ -17,17 +17,17 @@ const { novel: n, page, pages } = Astro.props;
 const chapters = n.chapters.slice((page - 1) * CHAPTERS_PER_PAGE, page * CHAPTERS_PER_PAGE);
 ---
 
-<Layout title={`Оглавление ${n.title} — страница ${page}`} description={`Главы произведения «${n.title}», страница ${page} из ${pages}.`}>
+<Layout title={`${n.title} contents — page ${page}`} description={`Chapters of ${n.title}, page ${page} of ${pages}.`}>
   <main id="main" class="page-shell chapter-pages">
-    <a class="back-link" href={n.url}>← К новелле</a>
+    <a class="back-link" href={n.url}>← Back to novel</a>
     <div class="page-heading">
       <h1>{n.title}</h1>
-      <p>{chapterCount(n.chapterCount)} · Страница {page} из {pages}</p>
+      <p>{chapterCount(n.chapterCount)} · Page {page} of {pages}</p>
     </div>
-    <nav class="chapter-pagination" aria-label="Страницы оглавления">
-      {page > 1 && <a href={chapterListUrl(n.slug, page - 1)}>← Предыдущие 100</a>}
-      <span>Главы {chapters[0].data.number}–{chapters.at(-1)!.data.number}</span>
-      {page < pages && <a href={chapterListUrl(n.slug, page + 1)}>Следующие 100 →</a>}
+    <nav class="chapter-pagination" aria-label="Contents pages">
+      {page > 1 && <a href={chapterListUrl(n.slug, page - 1)}>← Previous 100</a>}
+      <span>Chapters {chapters[0].data.number}–{chapters.at(-1)!.data.number}</span>
+      {page < pages && <a href={chapterListUrl(n.slug, page + 1)}>Next 100 →</a>}
     </nav>
     <ol class="chapter-list">
       {chapters.map((chapter) => (
@@ -39,11 +39,11 @@ const chapters = n.chapters.slice((page - 1) * CHAPTERS_PER_PAGE, page * CHAPTER
         </li>
       ))}
     </ol>
-    <nav class="chapter-pagination" aria-label="Переход по оглавлению">
-      <a href={n.url}>К описанию</a>
-      {page > 1 && <a href={chapterListUrl(n.slug, page - 1)}>← Назад</a>}
+    <nav class="chapter-pagination" aria-label="Contents navigation">
+      <a href={n.url}>Back to overview</a>
+      {page > 1 && <a href={chapterListUrl(n.slug, page - 1)}>← Previous</a>}
       <span>{page} / {pages}</span>
-      {page < pages && <a href={chapterListUrl(n.slug, page + 1)}>Вперёд →</a>}
+      {page < pages && <a href={chapterListUrl(n.slug, page + 1)}>Next →</a>}
     </nav>
   </main>
 </Layout>

@@ -3,13 +3,13 @@ import Layout from '../layouts/Layout.astro';
 import { shelves, site } from '../config/site';
 ---
 
-<Layout title="Моя библиотека" noindex>
+<Layout title="My library" noindex>
   <main id="main" class="page-shell">
     <div class="page-heading">
-      <h1>Библиотека</h1>
-      <p>Ваши истории и прогресс чтения сохраняются на этом устройстве.</p>
+      <h1>Library</h1>
+      <p>Your stories and reading progress are saved on this device.</p>
     </div>
-    <div class="shelf-tabs" role="group" aria-label="Полки">
+    <div class="shelf-tabs" role="group" aria-label="Shelves">
       {Object.entries(shelves).map(([value, label], i) => (
         <button
           class="shelf-tab"
@@ -25,18 +25,18 @@ import { shelves, site } from '../config/site';
     <p id="library-count" role="status" aria-live="polite"></p>
     <div id="library-list" class="library-list"></div>
     <p id="library-empty" class="empty-state">
-      На этой полке пока пусто.
+      This shelf is empty.
       <br />
-      <a href="/catalog/">Выбрать новеллу в каталоге →</a>
+      <a href="/catalog/">Find a novel in the catalog →</a>
     </p>
     <p class="fine storage-explanation">
-      Библиотека и прогресс сохраняются только в этом браузере (localStorage), без отправки на сервер.
-      Синхронизация между устройствами выключена, в том числе после входа. Не очищайте данные сайта, если хотите сохранить библиотеку.
-      {site.features.accounts && <> <a href="/account/">Ваш аккаунт →</a></>}
+      Your library and reading progress are saved only in this browser, without being sent to a server.
+      Cross-device sync is disabled, including after signing in. Keep this site's browser data to preserve your library.
+      {site.features.accounts && <> <a href="/account/">Your account →</a></>}
     </p>
     <noscript>
       <p class="notice">
-        Для локальной библиотеки нужен JavaScript. Каталог и чтение доступны без него.
+        Your local library requires JavaScript. The catalog and chapters are available without it.
       </p>
     </noscript>
   </main>

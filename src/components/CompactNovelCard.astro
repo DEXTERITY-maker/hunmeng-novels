@@ -7,7 +7,7 @@ const { novel: n } = Astro.props;
 ---
 
 <article class="home-book-card">
-  <a class="home-book-link" href={n.url} aria-label={'Открыть новеллу «' + n.title + '»'}>
+  <a class="home-book-link" href={n.url} aria-label={'View novel «' + n.title + '»'}>
     <span class="home-book-cover">
       <img src={n.cover} alt="" width="260" height="380" loading="lazy" decoding="async" />
     </span>
@@ -16,7 +16,7 @@ const { novel: n } = Astro.props;
     <h3 class="home-book-title">{n.title}</h3>
     <span class="home-book-description">{n.description}</span>
     <span class="home-book-meta">{chapterCount(n.chapterCount)} · {n.translationStatus}</span>
-    <span class="home-book-read">Читать <span aria-hidden="true">→</span></span>
+    <span class="home-book-read">Read <span aria-hidden="true">→</span></span>
     </span>
   </a>
 </article>

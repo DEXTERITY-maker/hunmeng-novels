@@ -1,13 +1,13 @@
 ---
-title: "Хунмэнг открывается"
-excerpt: "Хунмэнг — библиотека веб-новелл на русском языке. Переводы публикуются с разрешения авторов и правообладателей."
+title: "Welcome to Hunmeng"
+excerpt: "Hunmeng is a library of web novels in English. Translations are published with permission from authors and rights holders."
 category: announcements
 publishedAt: '2026-10-25'
 order: 0
 ---
 
-**«Хунмэнг»** — сайт для чтения веб-новелл на русском языке. Здесь можно находить произведения, читать главы и сохранять прогресс в браузере.
+**Hunmeng** is a place to read web novels in English. Discover stories, read chapters, and save your progress in your browser.
 
-Переводы публикуются только при наличии разрешения авторов или других правообладателей.
+Translations are published only with permission from authors or other rights holders.
 
-Сейчас библиотека развивается; новые произведения и главы будут появляться по мере подготовки и проверки переводов.
+Our library is growing. New novels and chapters will appear as translations are prepared and reviewed.

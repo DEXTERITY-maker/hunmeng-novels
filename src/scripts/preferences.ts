@@ -9,7 +9,7 @@ export async function initPreferences() {
   const renderPreview = () => {
     const s = value();
     document.getElementById('pref-size-value')!.textContent = `${s.size} px`;
-    document.getElementById('pref-leading-value')!.textContent = String(s.lineHeight).replace('.', ',');
+    document.getElementById('pref-leading-value')!.textContent = String(s.lineHeight);
     document.getElementById('pref-width-value')!.textContent = `${s.width} px`;
     preview.style.fontSize = `${s.size}px`; preview.style.lineHeight = String(s.lineHeight);
     preview.style.maxWidth = `${s.width}px`;
@@ -24,10 +24,10 @@ export async function initPreferences() {
   form.addEventListener('input', renderPreview);
   form.addEventListener('submit', event => {
     event.preventDefault();
-    void repository.setSettings(value()).then(()=> { applySettings(value()); status.textContent='Настройки сохранены на этом устройстве.'; });
+    void repository.setSettings(value()).then(()=> { applySettings(value()); status.textContent='Settings saved on this device.'; });
   });
   document.getElementById('preferences-reset')!.addEventListener('click', ()=> {
-    void repository.setSettings({...defaults}).then(()=> { applySettings(defaults); status.textContent='Восстановлены настройки по умолчанию.'; });
+    void repository.setSettings({...defaults}).then(()=> { applySettings(defaults); status.textContent='Default settings restored.'; });
   });
   onStorageChange(()=>void fill());
   await fill();

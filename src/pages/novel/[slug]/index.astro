@@ -11,10 +11,10 @@ export async function getStaticPaths() {
 const { novel: n } = Astro.props;
 const firstChapters = n.chapters.slice(0, 30);
 const glossaryKinds = [
-  { type: 'персонаж', title: 'Персонажи' },
-  { type: 'место', title: 'Места' },
-  { type: 'техника', title: 'Техники' },
-  { type: 'предмет', title: 'Предметы' },
+  { type: 'character', title: 'Characters' },
+  { type: 'place', title: 'Places' },
+  { type: 'technique', title: 'Techniques' },
+  { type: 'item', title: 'Items' },
 ] as const;
 const glossaryGroups = glossaryKinds.map(({ type, title }) => ({
   title, entries: n.glossary.filter((term) => term.type === type),
@@ -24,30 +24,30 @@ const coverIsSvg = n.cover.endsWith('.svg');
 ---
 
 <Layout
-  title={`${n.title} — читать онлайн`}
+  title={`${n.title} — read online`}
   description={n.description}
   ogImage={socialCover(n.cover)}
   ogImageWidth={coverIsSvg ? 520 : undefined}
   ogImageHeight={coverIsSvg ? 760 : undefined}
-  ogImageAlt={`Обложка новеллы «${n.title}»`}
+  ogImageAlt={`Novel cover «${n.title}»`}
   structuredData={structuredData}
 >
   <main id="main" class="page-shell">
     <a class="back-link" href="/catalog/">
-      ← Каталог
+      ← Catalog
     </a>
     <article class="novel-detail" data-novel-detail={n.slug}>
       <img
         class="detail-cover"
         src={n.cover}
-        alt={`Обложка: ${n.title}`}
+        alt={`Cover: ${n.title}`}
         width="260"
         height="380"
         fetchpriority="high"
       />
       <div class="detail-copy">
         <p class="genre-line">{n.genres.join(' · ')}</p>
-        <div class="work-categories" aria-label="Категории">
+        <div class="work-categories" aria-label="Categories">
           {n.categories.map((category) => (
             <a href={`/catalog/?category=${encodeURIComponent(category)}`}>{category}</a>
           ))}
@@ -58,31 +58,31 @@ const coverIsSvg = n.cover.endsWith('.svg');
         <p class="detail-description">{n.description}</p>
         <dl class="novel-facts">
           <div>
-            <dt>Оригинал</dt>
+            <dt>Original</dt>
             <dd>{n.originalStatus}</dd>
           </div>
           <div>
-            <dt>Перевод</dt>
+            <dt>Translation</dt>
             <dd>{n.translationStatus}</dd>
           </div>
           <div>
-            <dt>Объём</dt>
+            <dt>Length</dt>
             <dd>{chapterCount(n.chapterCount)}</dd>
           </div>
           {n.rating && (
             <div>
-              <dt>Рейтинг читателей</dt>
-              <dd>★ {n.rating.average.toFixed(1)} / 5 · {n.rating.count} оценок</dd>
+              <dt>Reader rating</dt>
+              <dd>★ {n.rating.average.toFixed(1)} / 5 · {n.rating.count} ratings</dd>
             </div>
           )}
           {typeof n.views === 'number' && (
             <div>
-              <dt>Просмотры</dt>
-              <dd>{new Intl.NumberFormat('ru-RU').format(n.views)}</dd>
+              <dt>Views</dt>
+              <dd>{new Intl.NumberFormat('en-US').format(n.views)}</dd>
             </div>
           )}
           <div>
-            <dt>Обновлено</dt>
+            <dt>Updated</dt>
             <dd>
               <time datetime={n.updatedAt}>{dateLabel(n.updatedAt)}</time>
             </dd>
@@ -94,43 +94,43 @@ const coverIsSvg = n.cover.endsWith('.svg');
           ))}
         </div>
         <div class="personal-rating" data-rating-novel={n.slug}>
-          <p class="personal-rating-title">Ваша оценка</p>
-          <div class="personal-rating-stars" role="group" aria-label="Поставить личную оценку">
+          <p class="personal-rating-title">Your rating</p>
+          <div class="personal-rating-stars" role="group" aria-label="Rate this novel">
             {[1, 2, 3, 4, 5].map((star) => (
-              <button type="button" data-star={star} aria-label={`Оценить на ${star} из 5`} aria-pressed="false">★</button>
+              <button type="button" data-star={star} aria-label={`Rate ${star} out of 5`} aria-pressed="false">★</button>
             ))}
           </div>
-          <p class="fine" data-rating-status aria-live="polite">Оценка сохраняется только на вашем устройстве и не влияет на общий рейтинг.</p>
+          <p class="fine" data-rating-status aria-live="polite">Your rating is saved only on this device and does not affect the overall rating.</p>
         </div>
         <div class="detail-actions">
           <a class="button" href={n.firstUrl} data-continue={n.slug}>
-            Начать читать
+            Start reading
           </a>
           <LibraryControl slug={n.slug} />
         </div>
         {n.demo && (
-          <p class="fine">Демонстрационная новелла. Текст и автор вымышлены.</p>
+          <p class="fine">Demo novel. The story and author are fictional.</p>
         )}
       </div>
     </article>
     <section class="section author-section" aria-labelledby="author-title">
-      <div class="section-heading"><h2 id="author-title">Об авторе</h2></div>
+      <div class="section-heading"><h2 id="author-title">About the author</h2></div>
       <p class="author-info-name">{n.author}</p>
       {(n.authorUrl || n.supportUrl) && (
         <div class="author-outbound-links">
           {n.authorUrl && (
-            <a href={n.authorUrl} target="_blank" rel="noopener noreferrer">Оригинал у автора ↗</a>
+            <a href={n.authorUrl} target="_blank" rel="noopener noreferrer">Author's original ↗</a>
           )}
           {n.supportUrl && (
-            <a href={n.supportUrl} target="_blank" rel="noopener noreferrer">Поддержать автора ↗</a>
+            <a href={n.supportUrl} target="_blank" rel="noopener noreferrer">Support the author ↗</a>
           )}
         </div>
       )}
-      {!n.demo && <p class="fine author-permission">Перевод публикуется с разрешения автора.</p>}
+      {!n.demo && <p class="fine author-permission">Published with the author's permission.</p>}
     </section>
     {glossaryGroups.length > 0 && (
       <section class="section glossary-section" aria-labelledby="glossary-title">
-        <div class="section-heading"><h2 id="glossary-title">Глоссарий</h2></div>
+        <div class="section-heading"><h2 id="glossary-title">Glossary</h2></div>
         <div class="glossary-groups">
           {glossaryGroups.map((group) => (
             <div class="glossary-group">
@@ -150,7 +150,7 @@ const coverIsSvg = n.cover.endsWith('.svg');
     )}
     <section class="section contents-section" aria-labelledby="contents-title">
       <div class="section-heading">
-        <h2 id="contents-title">Оглавление</h2>
+        <h2 id="contents-title">Contents</h2>
         <span class="fine">{chapterCount(n.chapterCount)}</span>
       </div>
       <ol class="chapter-list">
@@ -167,8 +167,8 @@ const coverIsSvg = n.cover.endsWith('.svg');
         ))}
       </ol>
       <div class="chapter-pages-footer">
-        <p class="fine">{n.chapterCount > firstChapters.length ? `В списке: ${chapterCount(firstChapters.length)} из ${n.chapterCount}.` : `Доступно для чтения: ${chapterCount(n.chapterCount)}.`}</p>
-        <a class="button secondary" href={chapterListUrl(n.slug, 1)}>Полное оглавление →</a>
+        <p class="fine">{n.chapterCount > firstChapters.length ? `Showing ${chapterCount(firstChapters.length)} of ${n.chapterCount}.` : `Available to read: ${chapterCount(n.chapterCount)}.`}</p>
+        <a class="button secondary" href={chapterListUrl(n.slug, 1)}>Full contents →</a>
       </div>
     </section>
   </main>

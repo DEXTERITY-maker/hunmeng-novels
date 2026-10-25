@@ -7,14 +7,14 @@ const chapters = getLatestChapters(await getLibrary());
 ---
 
 <Layout
-  title="Все обновления глав"
-  description="Все последние опубликованные главы веб-новелл Хунмэнг в хронологическом порядке."
+  title="All chapter updates"
+  description="All recently published Hunmeng chapters, with the newest first."
 >
   <main id="main" class="page-shell home-page updates-page">
-    <a class="back-link" href="/">← На главную</a>
+    <a class="back-link" href="/">← Home</a>
     <header class="page-heading">
-      <h1>Все обновления</h1>
-      <p>Полный список опубликованных глав — сначала самые новые.</p>
+      <h1>All updates</h1>
+      <p>All published chapters, newest first.</p>
     </header>
     {chapters.length ? (
       <ol class="home-chapter-grid">
@@ -31,7 +31,7 @@ const chapters = getLatestChapters(await getLibrary());
               />
               <span class="home-chapter-info">
                 <span class="home-chapter-novel">{chapter.novel}</span>
-                <strong>Глава {chapter.number}. {chapter.title}</strong>
+                <strong>Chapter {chapter.number}. {chapter.title}</strong>
                 <time datetime={chapter.date}>{dateLabel(chapter.date)}</time>
               </span>
               <span class="home-chapter-arrow" aria-hidden="true">↗</span>
@@ -40,7 +40,7 @@ const chapters = getLatestChapters(await getLibrary());
         ))}
       </ol>
     ) : (
-      <p class="home-section-empty">Главы пока не опубликованы.</p>
+      <p class="home-section-empty">No chapters have been published yet.</p>
     )}
   </main>
 </Layout>

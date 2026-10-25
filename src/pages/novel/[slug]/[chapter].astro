@@ -25,23 +25,23 @@ const coverIsSvg = n.cover.endsWith('.svg');
 ---
 
 <Layout
-  title={`${n.title} — глава ${c.data.number}: ${c.data.title}`}
+  title={`${n.title} — chapter ${c.data.number}: ${c.data.title}`}
   description={c.data.description}
   ogImage={socialCover(n.cover)}
   ogImageWidth={coverIsSvg ? 520 : undefined}
   ogImageHeight={coverIsSvg ? 760 : undefined}
-  ogImageAlt={`Обложка новеллы «${n.title}»`}
+  ogImageAlt={`Novel cover «${n.title}»`}
   structuredData={structuredData}
   reader
 >
   <header class="reader-header reader-chrome">
-    <a href={n.url} class="reader-back" aria-label="К странице новеллы">
+    <a href={n.url} class="reader-back" aria-label="Back to novel">
       ←
     </a>
     <a href={n.url} class="reader-novel-title">
       {n.title}
     </a>
-    <button type="button" class="icon-button" data-open="toc" aria-label="Открыть оглавление">
+    <button type="button" class="icon-button" data-open="toc" aria-label="Open contents">
       ☰
     </button>
   </header>
@@ -50,7 +50,7 @@ const coverIsSvg = n.cover.endsWith('.svg');
       id="reading-progress"
       value="0"
       max="100"
-      aria-label="Прогресс чтения главы"
+      aria-label="Chapter reading progress"
     ></progress>
   </div>
   <main
@@ -64,59 +64,59 @@ const coverIsSvg = n.cover.endsWith('.svg');
     <div class="reader-heading">
       <a href={n.url}>{n.title}</a>
       <p class="fine">
-        Глава {c.data.number} из {n.chapterCount}
+        Chapter {c.data.number} of {n.chapterCount}
       </p>
       <h1>{c.data.title}</h1>
     </div>
     <article
       id="chapter-text"
       class="chapter-text"
-      aria-label={`Глава ${c.data.number}. ${c.data.title}`}
+      aria-label={`Chapter ${c.data.number}. ${c.data.title}`}
     >
       <Content />
     </article>
-    <nav class="chapter-end-nav" aria-label="Переход между главами">
+    <nav class="chapter-end-nav" aria-label="Chapter navigation">
       {prev ? (
         <a class="button secondary" href={chapterUrl(n.slug, prev.data.slug)}>
-          ← Предыдущая
+          ← Previous
         </a>
       ) : (
         <a class="button secondary" href={n.url}>
-          К новелле
+          Back to novel
         </a>
       )}
       {next ? (
         <a class="button" href={chapterUrl(n.slug, next.data.slug)}>
-          Следующая →
+          Next →
         </a>
       ) : (
         <a class="button" href={n.url}>
-          К оглавлению →
+          Back to contents →
         </a>
       )}
     </nav>
-    {!next && <p class="end-note">Вы прочитали все опубликованные главы.</p>}
+    {!next && <p class="end-note">You have read all published chapters.</p>}
     {reportHref && (
       <div class="chapter-report">
         <a href={reportHref} class="chapter-report-link" target="_blank" rel="noopener noreferrer">
-          Сообщить об ошибке ↗
+          Report an error ↗
         </a>
       </div>
     )}
   </main>
-  <nav class="reader-toolbar reader-chrome" aria-label="Панель чтения">
+  <nav class="reader-toolbar reader-chrome" aria-label="Reading controls">
     <button type="button" data-open="toc">
-      <span aria-hidden="true">☰</span> Оглавление
+      <span aria-hidden="true">☰</span> Contents
     </button>
     <button type="button" data-open="settings">
-      <span aria-hidden="true">Аа</span> Настройки
+      <span aria-hidden="true">Aa</span> Settings
     </button>
     <span id="progress-label" class="fine">
       0%
     </span>
     <div class="toolbar-arrows">
       {prev ? (
-        <a href={chapterUrl(n.slug, prev.data.slug)} aria-label="Предыдущая глава">
+        <a href={chapterUrl(n.slug, prev.data.slug)} aria-label="Previous chapter">
           ←
         </a>
       ) : (
@@ -125,7 +125,7 @@ const coverIsSvg = n.cover.endsWith('.svg');
         </span>
       )}
       {next ? (
-        <a href={chapterUrl(n.slug, next.data.slug)} aria-label="Следующая глава">
+        <a href={chapterUrl(n.slug, next.data.slug)} aria-label="Next chapter">
           →
         </a>
       ) : (
@@ -139,80 +139,80 @@ const coverIsSvg = n.cover.endsWith('.svg');
     id="show-reader-controls"
     class="show-controls"
     type="button"
-    aria-label="Показать панель чтения"
+    aria-label="Show reading controls"
     hidden
   >
-    Аа
+    Aa
   </button>
   <dialog id="reader-settings" class="reader-dialog" aria-labelledby="settings-title">
     <div class="dialog-heading">
-      <h2 id="settings-title">Настройки чтения</h2>
-      <button type="button" class="icon-button" data-close aria-label="Закрыть настройки">
+      <h2 id="settings-title">Reading settings</h2>
+      <button type="button" class="icon-button" data-close aria-label="Close settings">
         ×
       </button>
     </div>
     <form id="settings-form">
       <fieldset>
-        <legend>Шрифт</legend>
+        <legend>Font</legend>
         <div class="font-choices">
           <label>
             <input type="radio" name="font" value="serif" checked />
-            <span class="font-serif">Аа</span>Книжный
+            <span class="font-serif">Aa</span>Book
           </label>
           <label>
             <input type="radio" name="font" value="sans" />
-            <span class="font-sans">Аа</span>Современный
+            <span class="font-sans">Aa</span>Modern
           </label>
           <label>
             <input type="radio" name="font" value="system" />
-            <span>Аа</span>Системный
+            <span>Aa</span>System
           </label>
         </div>
       </fieldset>
       <label>
-        Размер текста <output data-output="size">20 px</output>
+        Text size <output data-output="size">20 px</output>
         <input name="size" type="range" min="16" max="32" step="1" value="20" />
       </label>
       <label>
-        Межстрочный интервал <output data-output="lineHeight">1,85</output>
+        Line height <output data-output="lineHeight">1,85</output>
         <input name="lineHeight" type="range" min="1.4" max="2.4" step="0.05" value="1.85" />
       </label>
       <label>
-        Ширина колонки <output data-output="width">720 px</output>
+        Column width <output data-output="width">720 px</output>
         <input name="width" type="range" min="480" max="960" step="40" value="720" />
-        <small>На телефоне ширина ограничена экраном.</small>
+        <small>On mobile, the width is limited to your screen.</small>
       </label>
       <fieldset>
-        <legend>Тема</legend>
+        <legend>Theme</legend>
         <div class="theme-choices">
           <label>
             <input type="radio" name="theme" value="system" checked />
-            <span class="theme-sample system-sample">Аа</span>Как в системе
+            <span class="theme-sample system-sample">Aa</span>System default
           </label>
           <label>
             <input type="radio" name="theme" value="light" />
-            <span class="theme-sample light-sample">Аа</span>Светлая
+            <span class="theme-sample light-sample">Aa</span>Light
           </label>
           <label>
             <input type="radio" name="theme" value="dark" />
-            <span class="theme-sample dark-sample">Аа</span>Тёмная
+            <span class="theme-sample dark-sample">Aa</span>Dark
           </label>
           <label>
             <input type="radio" name="theme" value="sepia" />
-            <span class="theme-sample sepia-sample">Аа</span>Сепия
+            <span class="theme-sample sepia-sample">Aa</span>Sepia
           </label>
         </div>
       </fieldset>
       <button type="button" id="reset-settings" class="text-button">
-        Вернуть исходные настройки
+        Reset to default
       </button>
-      <p class="fine">Изменения сохраняются автоматически.</p>
+      <p class="fine">Changes are saved automatically.</p>
     </form>
   </dialog>
   <dialog id="reader-toc" class="reader-dialog" aria-labelledby="toc-title">
     <div class="dialog-heading">
-      <h2 id="toc-title">Оглавление</h2>
-      <button type="button" class="icon-button" data-close aria-label="Закрыть оглавление">
+      <h2 id="toc-title">Contents</h2>
+      <button type="button" class="icon-button" data-close aria-label="Close contents">
         ×
       </button>
     </div>
@@ -224,16 +224,16 @@ const coverIsSvg = n.cover.endsWith('.svg');
             href={chapterUrl(n.slug, ch.data.slug)}
             aria-current={ch.data.slug === c.data.slug ? 'page' : undefined}
           >
-            Глава {ch.data.number}. {ch.data.title}
+            Chapter {ch.data.number}. {ch.data.title}
           </a>
         </li>
       ))}
     </ol>
-    <a class="reader-toc-all" href={chapterListUrl(n.slug, tocPage)}>Полное оглавление ({chapterCount(n.chapterCount)}) →</a>
+    <a class="reader-toc-all" href={chapterListUrl(n.slug, tocPage)}>Full contents ({chapterCount(n.chapterCount)}) →</a>
   </dialog>
   <noscript>
     <p class="notice">
-      Сохранение позиции и настройки требуют JavaScript. Текст главы и переходы доступны.
+      Saving your position and settings requires JavaScript. Chapter text and navigation are still available.
     </p>
   </noscript>
   <script>

@@ -3,101 +3,101 @@ import Layout from '../layouts/Layout.astro';
 import NovelCard from '../components/NovelCard.astro';
 import { getLibrary } from '../lib/content';
 const novels = await getLibrary();
-const genres = [...new Set(novels.flatMap((n) => n.genres))].sort((a, b) => a.localeCompare(b, 'ru'));
-const categories = [...new Set(novels.flatMap((n) => n.categories))].sort((a, b) => a.localeCompare(b, 'ru'));
-const tags = [...new Set(novels.flatMap((n) => n.tags))].sort((a, b) => a.localeCompare(b, 'ru'));
+const genres = [...new Set(novels.flatMap((n) => n.genres))].sort((a, b) => a.localeCompare(b, 'en'));
+const categories = [...new Set(novels.flatMap((n) => n.categories))].sort((a, b) => a.localeCompare(b, 'en'));
+const tags = [...new Set(novels.flatMap((n) => n.tags))].sort((a, b) => a.localeCompare(b, 'en'));
 const PAGE_SIZE = 24;
 ---
 
 <Layout
-  title="Каталог веб-новелл — расширенный поиск"
-  description="Каталог новелл Хунмэнг: поиск по названию и автору, категории, жанры, теги, рейтинг, новые главы и удобная сортировка."
+  title="Web novel catalog — advanced search"
+  description="Explore Hunmeng novels by title, author, category, genre, tags, ratings, and recent updates."
 >
   <main id="main" class="page-shell catalog-page">
     <div class="page-heading catalog-heading">
-      <h1>Каталог новелл</h1>
-      <p>Поиск, категории и фильтры — для истории под любое настроение.</p>
+      <h1>Novel catalog</h1>
+      <p>Search and filter for a story to match your mood.</p>
     </div>
     <div class="catalog-layout">
       <form id="catalog-filters" class="filter-panel catalog-filter-panel" role="search">
         <div class="catalog-filter-header">
-          <h2>Подбор произведений</h2>
-          <button type="reset" class="text-button">Сбросить фильтры</button>
+          <h2>Find your next read</h2>
+          <button type="reset" class="text-button">Reset filters</button>
         </div>
         <div class="catalog-search-row">
           <label class="search-label">
-            Название или автор
-            <input type="search" name="search" placeholder="Русское или оригинальное название" autocomplete="off" />
+            Title or author
+            <input type="search" name="search" placeholder="English or original title" autocomplete="off" />
           </label>
         </div>
         <details id="catalog-options" class="catalog-options">
-          <summary>Фильтры и сортировка <span id="active-filter-count" hidden></span></summary>
+          <summary>Filters and sorting <span id="active-filter-count" hidden></span></summary>
           <div class="catalog-controls">
             <label>
-              Категория
+              Category
               <select name="category">
-                <option value="">Все категории</option>
+                <option value="">All categories</option>
                 {categories.map((category) => <option value={category}>{category}</option>)}
               </select>
             </label>
             <label>
-              Жанр
+              Genre
               <select name="genre">
-                <option value="">Все жанры</option>
+                <option value="">All genres</option>
                 {genres.map((genre) => <option value={genre}>{genre}</option>)}
               </select>
             </label>
             <label>
-              Статус перевода
+              Translation status
               <select name="status">
-                <option value="">Все статусы</option>
-                {['Переводится', 'Завершён', 'Приостановлен'].map((status) => <option>{status}</option>)}
+                <option value="">All statuses</option>
+                {['In progress', 'Completed', 'On hiatus'].map((status) => <option>{status}</option>)}
               </select>
             </label>
             <label>
-              Статус оригинала
+              Original status
               <select name="originalStatus">
-                <option value="">Все статусы</option>
-                {['Продолжается', 'Завершён', 'Приостановлен'].map((status) => <option>{status}</option>)}
+                <option value="">All statuses</option>
+                {['Ongoing', 'Completed', 'On hiatus'].map((status) => <option>{status}</option>)}
               </select>
             </label>
             <label>
-              Минимум глав
-              <input type="number" name="minChapters" min="0" max="1000000" step="1" inputmode="numeric" placeholder="Без ограничений" />
+              Minimum chapters
+              <input type="number" name="minChapters" min="0" max="1000000" step="1" inputmode="numeric" placeholder="No minimum" />
             </label>
             <label>
-              Минимальный рейтинг
+              Minimum rating
               <select name="minRating">
-                <option value="">Любой рейтинг</option>
-                <option value="3">От 3 из 5</option>
-                <option value="4">От 4 из 5</option>
-                <option value="4.5">От 4,5 из 5</option>
+                <option value="">Any rating</option>
+                <option value="3">3 out of 5 or higher</option>
+                <option value="4">4 out of 5 or higher</option>
+                <option value="4.5">4.5 out of 5 or higher</option>
               </select>
             </label>
             <label>
-              Сортировка
+              Sort by
               <select name="sort">
-                <option value="updated">Последние обновления</option>
-                <option value="added">Новые произведения</option>
-                <option value="title">Название: А–Я</option>
-                <option value="chapters">По числу глав</option>
-                <option value="rating">По рейтингу</option>
-                <option value="views">По просмотрам</option>
+                <option value="updated">Recently updated</option>
+                <option value="added">Recently added</option>
+                <option value="title">Title: A–Z</option>
+                <option value="chapters">Chapter count</option>
+                <option value="rating">Rating</option>
+                <option value="views">Views</option>
               </select>
             </label>
             <label>
-              На странице
+              Per page
               <select name="size">
-                <option value="24">24 произведения</option>
-                <option value="48">48 произведений</option>
+                <option value="24">24 novels</option>
+                <option value="48">48 novels</option>
               </select>
             </label>
           </div>
           <details class="tag-filters">
-            <summary>Расширенные фильтры по тегам</summary>
+            <summary>Advanced tag filters</summary>
             <div class="tag-columns">
               <fieldset>
-                <legend>Включить все выбранные</legend>
+                <legend>Include all selected</legend>
                 {tags.map((tag) => (
                   <label class="check-label">
                     <input type="checkbox" name="include" value={tag} />{tag}
@@ -105,7 +105,7 @@ const PAGE_SIZE = 24;
                 ))}
               </fieldset>
               <fieldset>
-                <legend>Исключить выбранные</legend>
+                <legend>Exclude selected</legend>
                 {tags.map((tag) => (
                   <label class="check-label">
                     <input type="checkbox" name="exclude" value={tag} />{tag}
@@ -122,17 +122,17 @@ const PAGE_SIZE = 24;
       </form>
       <div class="catalog-main">
         <div class="results-heading catalog-results-heading">
-          <p id="result-count" role="status" aria-live="polite">Новелл: {novels.length}</p>
-          <p class="fine">Рейтинг и просмотры показываются только при наличии данных.</p>
+          <p id="result-count" role="status" aria-live="polite">Novels: {novels.length}</p>
+          <p class="fine">Ratings and views appear only when data is available.</p>
         </div>
         <div id="catalog-results" class="novel-grid">
           {novels.slice(0, PAGE_SIZE).map((novel) => <NovelCard novel={novel} />)}
         </div>
-        <p id="catalog-empty" class="empty-state" hidden>Ничего не найдено. Попробуйте убрать часть фильтров.</p>
-        <nav id="catalog-pagination" class="catalog-pagination" aria-label="Страницы каталога" hidden></nav>
+        <p id="catalog-empty" class="empty-state" hidden>Nothing found. Try removing some filters.</p>
+        <nav id="catalog-pagination" class="catalog-pagination" aria-label="Catalog pages" hidden></nav>
         <noscript>
-          <p class="notice">Интерактивный поиск требует JavaScript. Первые произведения доступны выше; полный каталог можно листать по страницам.</p>
-          {novels.length > PAGE_SIZE && <a class="button secondary" href="/catalog/page/2/">Следующая страница каталога →</a>}
+          <p class="notice">Interactive search requires JavaScript. The first novels are shown above; you can browse the full catalog using the page links.</p>
+          {novels.length > PAGE_SIZE && <a class="button secondary" href="/catalog/page/2/">Next catalog page →</a>}
         </noscript>
       </div>
     </div>

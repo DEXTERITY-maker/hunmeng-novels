@@ -1,9 +1,10 @@
+import { catalogFilterLabel } from '../lib/labels';
 import { getCatalogIndex, type CatalogIndexNovel } from '../lib/client-data';
 import { chapterCount } from '../lib/format';
 
 const PAGE_SIZES = [24, 48];
-const fold = (s: string) => s.normalize('NFKC').toLocaleLowerCase('ru').replaceAll('ё', 'е').trim();
-const numberLabel = (x: number) => new Intl.NumberFormat('ru-RU').format(x);
+const fold = (s: string) => s.normalize('NFKC').toLocaleLowerCase('en').trim();
+const numberLabel = (x: number) => new Intl.NumberFormat('en-US').format(x);
 const make = <K extends keyof HTMLElementTagNameMap>(tag: K, text?: string, cls?: string) => {
   const node = document.createElement(tag);
   if (text !== undefined) node.textContent = text;
@@ -33,16 +34,16 @@ function card(n: CatalogIndexNovel) {
   body.append(h2, make('p', n.originalTitle + ' · ' + n.author, 'original-title'));
   body.append(make('p', n.description, 'card-description'));
   const stats = make('p', undefined, 'catalog-card-stats');
-  if (n.rating) stats.append(make('span', '★ ' + n.rating.average.toFixed(1) + ' / 5 · ' + n.rating.count + ' оценок'));
-  if (n.views !== null) stats.append(make('span', '◉ ' + numberLabel(n.views) + ' просмотров'));
+  if (n.rating) stats.append(make('span', '★ ' + n.rating.average.toFixed(1) + ' / 5 · ' + n.rating.count + ' ratings'));
+  if (n.views !== null) stats.append(make('span', '◉ ' + numberLabel(n.views) + ' views'));
   if (stats.childElementCount) body.append(stats);
   const meta = make('p', undefined, 'fine');
   meta.append(document.createTextNode(chapterCount(n.chapterCount) + ' · ' + n.translationStatus + ' · '));
-  const time = make('time', new Intl.DateTimeFormat('ru-RU', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(n.updatedAt)));
+  const time = make('time', new Intl.DateTimeFormat('en-US', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(n.updatedAt)));
   time.dateTime = n.updatedAt;
   meta.append(time);
   body.append(meta);
-  const link = make('a', 'Открыть новеллу →', 'text-link');
+  const link = make('a', 'View novel →', 'text-link');
   link.href = n.url;
   body.append(link);
   article.append(cover, body);
@@ -76,11 +77,11 @@ export async function initCatalog() {
     const params = new URLSearchParams(location.search);
     for (const key of ['search','category','genre','status','originalStatus','sort','size','minChapters','minRating']) {
       const value = params.get(key);
-      if (value !== null) validField(form.elements.namedItem(key), value);
+      if (value !== null) validField(form.elements.namedItem(key), key === 'search' ? value : catalogFilterLabel(value));
     }
     for (const key of ['include','exclude']) {
       for (const tag of params.getAll(key)) {
-        const checkbox = Array.from(form.querySelectorAll<HTMLInputElement>('input[type="checkbox"]')).find((x) => x.name === key && x.value === tag);
+        const checkbox = Array.from(form.querySelectorAll<HTMLInputElement>('input[type="checkbox"]')).find((x) => x.name === key && x.value === catalogFilterLabel(tag));
         if (checkbox) checkbox.checked = true;
       }
     }
@@ -96,7 +97,7 @@ export async function initCatalog() {
       const q = fold(String(f.get('search') ?? ''));
       const selected = [...f.entries()].filter(([key,value]) => value && !['search','sort','size'].includes(key)).length;
       const summary = document.getElementById('active-filter-count');
-      if (summary) { summary.textContent = `Выбрано: ${selected}`; summary.hidden = selected === 0; }
+      if (summary) { summary.textContent = `Selected: ${selected}`; summary.hidden = selected === 0; }
       const required = f.getAll('include').map(String);
       const forbidden = f.getAll('exclude').map(String);
       const minChapters = Math.max(0, Number(f.get('minChapters') || 0));
@@ -114,13 +115,13 @@ export async function initCatalog() {
       );
       const sort = String(f.get('sort') ?? 'updated');
       filtered.sort((a,b) => {
-        if (sort === 'title') return a.title.localeCompare(b.title,'ru');
-        if (sort === 'chapters') return b.chapterCount - a.chapterCount || a.title.localeCompare(b.title,'ru');
-        if (sort === 'added') return (b.addedAt ?? '').localeCompare(a.addedAt ?? '') || a.title.localeCompare(b.title,'ru');
+        if (sort === 'title') return a.title.localeCompare(b.title,'en');
+        if (sort === 'chapters') return b.chapterCount - a.chapterCount || a.title.localeCompare(b.title,'en');
+        if (sort === 'added') return (b.addedAt ?? '').localeCompare(a.addedAt ?? '') || a.title.localeCompare(b.title,'en');
         if (sort === 'rating') return (b.rating?.average ?? -1) - (a.rating?.average ?? -1) ||
-          (b.rating?.count ?? 0) - (a.rating?.count ?? 0) || a.title.localeCompare(b.title,'ru');
-        if (sort === 'views') return (b.views ?? -1) - (a.views ?? -1) || a.title.localeCompare(b.title,'ru');
-        return b.updatedAt.localeCompare(a.updatedAt) || a.title.localeCompare(b.title,'ru');
+          (b.rating?.count ?? 0) - (a.rating?.count ?? 0) || a.title.localeCompare(b.title,'en');
+        if (sort === 'views') return (b.views ?? -1) - (a.views ?? -1) || a.title.localeCompare(b.title,'en');
+        return b.updatedAt.localeCompare(a.updatedAt) || a.title.localeCompare(b.title,'en');
       });
       const sizeValue = Number(f.get('size'));
       const size = PAGE_SIZES.includes(sizeValue) ? sizeValue : PAGE_SIZES[0];
@@ -129,7 +130,7 @@ export async function initCatalog() {
       const desired = requestedPage ?? fromUrl;
       const page = Number.isSafeInteger(desired) ? Math.max(1, Math.min(desired, pages)) : 1;
       container.replaceChildren(...filtered.slice((page - 1) * size, page * size).map(card));
-      count.textContent = 'Найдено новелл: ' + filtered.length;
+      count.textContent = 'Novels found: ' + filtered.length;
       empty.hidden = filtered.length > 0;
       pager.replaceChildren();
       pager.hidden = pages <= 1;
@@ -166,6 +167,6 @@ export async function initCatalog() {
     window.addEventListener('popstate',()=>{loadQuery();render(false);});
     render(false);
   } catch {
-    count.textContent='Расширенный поиск временно недоступен. Ниже показаны доступные новеллы.';
+    count.textContent='Advanced search is temporarily unavailable. Available novels are shown below.';
   }
 }

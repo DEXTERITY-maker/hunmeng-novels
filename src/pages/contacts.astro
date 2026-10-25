@@ -5,24 +5,24 @@ import { contactChannels } from '../lib/contacts';
 const channels = contactChannels(site.contacts);
 ---
 
-<Layout title="Контакты" description="Связь с редакцией Хунмэнг: вопросы о сайте, предложения и сообщения об ошибках.">
+<Layout title="Contact" description="Contact the Hunmeng team with site questions, suggestions, and error reports.">
   <main id="main" class="page-shell prose-page">
     <a class="back-link" href="/">
-      ← Главная
+      ← Home
     </a>
-    <h1>Контакты</h1>
+    <h1>Contact</h1>
     <p>
-      Здесь публикуются каналы связи с редакцией: для вопросов о сайте, предложений и сообщений об ошибках в переводе.
+      Contact channels for the editorial team will be listed here for site questions, suggestions, and translation error reports.
     </p>
     {channels.length ? (
       <ul class="contact-channels">{channels.map(channel => (
         <li>{channel.label}: <a href={channel.href} rel="noopener noreferrer">{channel.value}</a></li>
       ))}</ul>
     ) : (
-      <p class="notice">Контактные каналы пока не опубликованы. Сейчас отправить сообщение через сайт нельзя.</p>
+      <p class="notice">Contact channels have not been published yet. You cannot send a message through the site at this time.</p>
     )}
-    <h2>Сообщение об ошибке</h2>
-    <p>Укажите название новеллы, номер главы и короткий фрагмент с ошибкой. Для технической проблемы добавьте адрес страницы и название браузера. Не отправляйте пароли и коды входа.</p>
-    <p>По вопросам прав на произведения см. <a href="/rights/">информацию для правообладателей</a>.</p>
+    <h2>Report an error</h2>
+    <p>Include the novel title, chapter number, and a short excerpt showing the error. For technical issues, include the page address and browser name. Do not send passwords or sign-in codes.</p>
+    <p>For rights-related questions, see our <a href="/rights/">information for rights holders</a>.</p>
   </main>
 </Layout>

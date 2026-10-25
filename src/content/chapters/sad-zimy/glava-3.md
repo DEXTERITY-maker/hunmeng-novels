@@ -2,19 +2,19 @@
 novelSlug: 'sad-zimy'
 slug: 'glava-3'
 number: 3
-title: 'Тепло под снегом'
+title: 'Warmth Beneath the Snow'
 publishedAt: '2026-10-22'
-description: 'Глава 3. Тепло под снегом. Продолжение оригинальной демонстрационной истории.'
+description: 'Chapter 3. Warmth Beneath the Snow. An original demo story.'
 ---
 
-Она принесла в сад книги, которые никто не забрал из мастерской. У каждой была своя полка, но Ника решила, что хотя бы на один день полки могут стать грядками.
+She brought the garden books that no one had collected from the workshop. Each had its own shelf, but Nika decided that, for at least one day, shelves could become garden beds.
 
-Пришёл мальчик из пекарни, потом учительница, потом молчаливый часовщик. Каждый выбрал историю и прочёл несколько строк вслух. Старик слушал, закрыв глаза.
+The boy from the bakery came, then a teacher, then a quiet watchmaker. Each chose a story and read a few lines aloud. The old man listened with his eyes closed.
 
-Оранжерея наполнялась голосами. Где-то пахло хлебом, где-то — морем, а возле старого фикуса вдруг стало слышно летний дождь.
+Voices filled the greenhouse. Here was the smell of bread, there the scent of the sea; beside the old ficus, the sound of summer rain suddenly rose.
 
-Когда люди ушли, Ника заметила, что снег на дорожке растаял. Не весь — только узкая полоска от калитки к двери. Но по ней уже можно было пройти без следов.
+After everyone had left, Nika noticed that the snow on the path had melted. Not all of it—only a narrow strip between the gate and the door. But it was already possible to walk along it without leaving footprints.
 
-— Вот и сад, — сказал старик. — Он начинается не с цветов. Он начинается с места, куда хочется вернуться.
+“There is your garden,” the old man said. “It does not begin with flowers. It begins with a place you want to return to.”
 
-Ника оставила ключ в замке. Завтра кто-нибудь придёт раньше неё, и было бы жаль заставлять его ждать на холоде.
+Nika left the key in the lock. Tomorrow, someone might arrive before she did, and it would be a shame to make them wait in the cold.

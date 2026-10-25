@@ -38,8 +38,8 @@ async function mockBackend(page: Page, role: string | null = 'admin') {
 }
 async function login(page: Page) {
   await page.getByLabel('Email', {exact:true}).fill(user.email);
-  await page.getByLabel('Пароль', {exact:true}).fill('fixture-password');
-  await page.getByRole('button', {name:'Войти в редакцию',exact:true}).click();
+  await page.getByLabel('Password', {exact:true}).fill('fixture-password');
+  await page.getByRole('button', {name:'Editorial sign-in',exact:true}).click();
 }
 async function seededSession(page: Page, expired = false) {
   await page.goto('/admin/login/');
@@ -51,7 +51,7 @@ async function seededSession(page: Page, expired = false) {
 test('вход редакции отдельно: noindex, нет регистрации/OAuth, безопасный адрес', async ({page}) => {
   await page.goto('/admin/login/?next=https://evil.example/#access_token=fixture');
   await expect(page).toHaveURL(/\/admin\/login\/$/);
-  await expect(page.getByRole('heading', {name:'Вход в редакцию'})).toBeVisible();
+  await expect(page.getByRole('heading', {name:'Editorial sign-in'})).toBeVisible();
   await expect(page.locator('meta[name=robots]')).toHaveAttribute('content','noindex,follow');
   await expect(page.locator('meta[name=referrer]')).toHaveAttribute('content','no-referrer');
   await expect(page.locator('#google-sign-in, select[name=mode], a[href*="signup"]')).toHaveCount(0);
@@ -59,7 +59,7 @@ test('вход редакции отдельно: noindex, нет регистр
   await page.goto('/admin/');
   await expect(page.locator('#admin-login-link')).toBeVisible();
   await expect(page.locator('#admin-workspace')).toBeHidden();
-  await page.getByRole('link', {name:'Войти в редакцию',exact:true}).click();
+  await page.getByRole('link', {name:'Editorial sign-in',exact:true}).click();
   await expect(page).toHaveURL(/\/admin\/login\/$/);
 });
 for (const role of ['admin', 'editor']) test(`вход ${role}: разрешённые функции без синхронизации читателей`, async ({page}) => {
@@ -70,7 +70,7 @@ for (const role of ['admin', 'editor']) test(`вход ${role}: разрешён
   await login(page);
   await expect(page).toHaveURL(/\/admin\/$/);
   await expect(page.locator('#admin-workspace')).toBeVisible();
-  await expect(page.locator('#admin-status')).toContainText(role === 'admin' ? 'Администратор' : 'Редактор');
+  await expect(page.locator('#admin-status')).toContainText(role === 'admin' ? 'Administrator' : 'Editor');
   await expect(page.locator('#source-form')).toBeVisible({visible:role === 'admin'});
   await expect(page.locator('#rights-form')).toBeVisible({visible:role === 'admin'});
   expect(state.requests.some(path=>path.includes('novel_reader_state'))).toBe(false);
@@ -78,9 +78,9 @@ for (const role of ['admin', 'editor']) test(`вход ${role}: разрешён
   expect(await page.evaluate(key=>localStorage.getItem(key),sessionKey)).toBeNull();
   expect(await page.evaluate(key=>sessionStorage.getItem(key)!==null,sessionKey)).toBe(true);
   expect(errors).toEqual([]);
-  await page.getByRole('button',{name:'Выйти из редакции'}).click();
+  await page.getByRole('button',{name:'Sign out of editorial tools'}).click();
   await expect(page.locator('#admin-workspace')).toBeHidden();
-  await expect(page.locator('#admin-status')).toHaveText('Вы вышли из редакции.');
+  await expect(page.locator('#admin-status')).toHaveText('You are signed out of editorial tools.');
   expect(await page.evaluate(key=>sessionStorage.getItem(key),sessionKey)).toBeNull();
   await page.reload();
   await expect(page.locator('#admin-workspace')).toBeHidden();
@@ -89,7 +89,7 @@ for (const role of [null,'reader','owner']) test(`роль ${String(role)} не 
   const state=await mockBackend(page, role);
   await page.goto('/admin/login/');
   await login(page);
-  await expect(page.locator('#admin-login-status')).toContainText('Нет доступа к редакции');
+  await expect(page.locator('#admin-login-status')).toContainText('No editorial access');
   expect(state.requests.some(path=>/novel_(sources|terms|translation_jobs)/.test(path))).toBe(false);
   expect(await page.evaluate(key=>sessionStorage.getItem(key),sessionKey)).toBeNull();
 });
@@ -98,12 +98,12 @@ test('неверный пароль и частые попытки: понятн
   state.passwordStatus=400;
   await page.goto('/admin/login/');
   await login(page);
-  await expect(page.locator('#admin-login-status')).toContainText('Проверьте email, пароль');
-  await expect(page.getByLabel('Пароль',{exact:true})).toHaveValue('');
+  await expect(page.locator('#admin-login-status')).toContainText('Check your email, password');
+  await expect(page.getByLabel('Password',{exact:true})).toHaveValue('');
   await expect(page.locator('body')).not.toContainText('Private upstream');
   state.passwordStatus=429;
   await login(page);
-  await expect(page.locator('#admin-login-status')).toContainText('Слишком много попыток');
+  await expect(page.locator('#admin-login-status')).toContainText('Too many attempts');
   expect(state.requests.some(path=>path.endsWith('novel_staff'))).toBe(false);
 });
 test('истёкший токен обновляется; отозванная сессия требует входа', async ({page}) => {
@@ -122,23 +122,23 @@ test('401 и 403 API закрывают редакторские данные', 
   const state=await mockBackend(page);
   await seededSession(page);
   await expect(page.locator('#admin-workspace')).toBeVisible();
-  await expect(page.locator('#admin-job-list')).toContainText('Очередь пока пуста.');
+  await expect(page.locator('#admin-job-list')).toContainText('The queue is empty.');
   state.dataStatus=401;
-  await page.getByRole('button',{name:'Обновить очередь'}).click();
+  await page.getByRole('button',{name:'Refresh queue'}).click();
   await expect(page.locator('#admin-workspace')).toBeHidden();
-  await expect(page.locator('#admin-status')).toContainText('Сессия завершена');
+  await expect(page.locator('#admin-status')).toContainText('Your session has ended');
   state.dataStatus=403;
   await seededSession(page);
   await expect(page.locator('#admin-workspace')).toBeHidden();
-  await expect(page.locator('#admin-status')).toContainText('Нет прав');
+  await expect(page.locator('#admin-status')).toContainText('You do not have permission');
 });
 test('выход без соединения очищает сессию и предупреждает', async ({page}) => {
   const state=await mockBackend(page);
   await seededSession(page);
   await expect(page.locator('#admin-workspace')).toBeVisible();
   state.logoutOffline=true;
-  await page.getByRole('button',{name:'Выйти из редакции'}).click();
-  await expect(page.locator('#admin-status')).toContainText('Сервер не подтвердил');
+  await page.getByRole('button',{name:'Sign out of editorial tools'}).click();
+  await expect(page.locator('#admin-status')).toContainText('The server could not confirm');
   await expect(page.locator('#admin-workspace')).toBeHidden();
   expect(await page.evaluate(key=>sessionStorage.getItem(key),sessionKey)).toBeNull();
 });
@@ -147,7 +147,7 @@ test('запрещённое хранилище не отправляет пар
   await page.addInitScript(()=>Object.defineProperty(window,'sessionStorage',{get(){throw new Error('blocked');}}));
   await page.goto('/admin/login/');
   await login(page);
-  await expect(page.locator('#admin-login-status')).toContainText('Разрешите сохранение');
+  await expect(page.locator('#admin-login-status')).toContainText('Allow site storage');
   expect(state.passwordCalls).toBe(0);
 });
 test('отозванная роль скрывает редакцию при возвращении во вкладку', async ({page}) => {
@@ -158,4 +158,41 @@ test('отозванная роль скрывает редакцию при в�
   await page.evaluate(()=>window.dispatchEvent(new Event('focus')));
   await expect(page.locator('#admin-workspace')).toBeHidden();
   await expect(page.locator('#admin-login-link')).toBeVisible();
+});
+
+test('English editorial labels preserve existing database enum values', async ({ page }) => {
+  await mockBackend(page);
+  const source = { id: '00000000-0000-4000-8000-000000000040', slug: 'english-demo',
+    original_title: 'English Demo', rights_status: 'verified', permission_publish: true, permission_translate: true };
+  let submitted: Record<string, unknown> | undefined;
+  await page.route('https://*.supabase.co/rest/v1/novel_sources?**', async route => {
+    if (route.request().method() === 'POST') submitted = route.request().postDataJSON();
+    await route.fulfill({ headers: { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': '*' }, contentType: 'application/json', body: JSON.stringify([source]) });
+  });
+  // Source creation has no query string.
+  await page.route('https://*.supabase.co/rest/v1/novel_sources', async route => {
+    if (route.request().method() === 'OPTIONS') return route.fulfill({ headers: { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': '*', 'Access-Control-Allow-Methods': 'GET, POST, OPTIONS' }, status: 204 });
+    submitted = route.request().postDataJSON();
+    await route.fulfill({ headers: { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': '*' }, contentType: 'application/json', body: JSON.stringify([source]) });
+  });
+  await page.route('https://*.supabase.co/rest/v1/novel_translation_jobs?**', route => route.fulfill({
+    headers: { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': '*' }, contentType: 'application/json', body: JSON.stringify([{ id: 'job', source_id: source.id,
+      chapter_number: 1, chapter_title: 'First Light', status: 'review', qa_notes: '' }]),
+  }));
+  await seededSession(page);
+  await expect(page.locator('#admin-source-list')).toHaveText('english-demo · Verified');
+  await expect(page.locator('#admin-job-list')).toContainText('In review');
+  const form = page.locator('#source-form');
+  await form.locator('[name=slug]').fill('english-demo');
+  await form.getByLabel('Original title', { exact: true }).fill('English Demo');
+  await form.getByLabel('English title', { exact: true }).fill('English Demo');
+  await form.getByLabel('English description (at least 20 characters)', { exact: true }).fill('An English description of the demo novel.');
+  await form.locator('select[name=original_status]').selectOption({ label: 'Completed' });
+  await form.locator('select[name=translation_status]').selectOption({ label: 'In progress' });
+  await form.getByLabel('Source URL (HTTPS)', { exact: true }).fill('https://example.test/original');
+  await form.getByRole('button', { name: 'Create source' }).click();
+  await expect.poll(() => submitted?.original_status).toBe('Завершён');
+  expect(submitted?.translation_status).toBe('Переводится');
+  expect(submitted?.title_ru).toBe('English Demo');
+  expect(submitted?.genres).toEqual(['Fantasy']);
 });

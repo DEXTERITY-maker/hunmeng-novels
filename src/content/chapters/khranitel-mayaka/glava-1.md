@@ -2,23 +2,23 @@
 novelSlug: 'khranitel-mayaka'
 slug: 'glava-1'
 number: 1
-title: 'Свет в пустом окне'
+title: 'A Light in the Empty Window'
 publishedAt: '2026-10-21'
-description: 'Глава 1. Свет в пустом окне. Продолжение оригинальной демонстрационной истории.'
+description: 'Chapter 1. A Light in the Empty Window. An original demo story.'
 ---
 
-Маяк стоял на краю берега, словно последняя буква в длинном письме. Когда Илья впервые увидел его, свет уже горел, хотя прежний хранитель уехал три дня назад.
+The lighthouse stood at the edge of the shore like the final letter in a long message. When Ilya first saw it, the light was already burning, though the previous keeper had left three days earlier.
 
-У калитки лежал ключ. К нему была привязана деревянная бирка: «Не торопись выключать то, чего пока не понимаешь». Илья решил, что это местная шутка, и положил бирку в карман.
+A key lay by the gate. A wooden tag was tied to it: “Do not rush to turn off what you do not yet understand.” Ilya decided it was a local joke and slipped the tag into his pocket.
 
-Внутри пахло солью, тёплым железом и яблоками. На столе стояли две чашки. Одна была перевёрнута, а в другой лежал гладкий белый камень. За окном медленно темнело море.
+Inside, the air smelled of salt, warm iron, and apples. Two cups stood on the table. One was upside down; a smooth white stone lay in the other. Beyond the window, the sea was slowly darkening.
 
-Илья поднялся по винтовой лестнице. Ступени отзывались каждая своим звуком, и к середине подъёма ему показалось, что башня негромко напевает. Он остановился — и песня оборвалась.
+Ilya climbed the spiral staircase. Each step answered with its own note, and halfway up he thought the tower was humming softly. He stopped—and the song broke off.
 
-В фонарной комнате никого не было. Огромная линза поворачивалась без скрипа. Луч уходил в туман, задерживался там и возвращался с едва заметным золотым отблеском.
+The lantern room was empty. The great lens turned without a creak. Its beam reached into the fog, lingered there, and returned with the faintest glimmer of gold.
 
-На подоконнике лежал конверт. Бумага была сухой, хотя окно оставалось открытым. На конверте аккуратным почерком было написано: «Тому, кто придёт после дождя».
+An envelope rested on the windowsill. The paper was dry, though the window stood open. In a careful hand, someone had written: “To the one who comes after the rain.”
 
-Дождь начался, когда Илья коснулся письма. Он сел прямо на ступеньку и впервые за долгую дорогу перестал думать, куда ему идти дальше.
+The rain began when Ilya touched the letter. He sat down on a step and, for the first time in his long journey, stopped wondering where he should go next.
 
-Внизу хлопнула дверь. Кто-то оставил на пороге корзину яблок и ушёл, не дожидаясь ответа. Илья посмотрел на свет и решил, что до утра он точно ничего выключать не станет.
+Downstairs, a door banged shut. Someone had left a basket of apples on the doorstep and gone without waiting for an answer. Ilya looked at the light and decided he would certainly leave it burning until morning.

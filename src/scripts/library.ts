@@ -38,9 +38,9 @@ export async function initLibrary() {
           element(
             'p',
             action.kind === 'caught-up'
-              ? 'Все опубликованные главы прочитаны'
+              ? 'You are all caught up'
               : c
-                ? `Глава ${c.number} из ${n.chapterCount}`
+                ? `Chapter ${c.number} of ${n.chapterCount}`
                 : `${chapterCount(n.chapterCount)} · ${n.translationStatus}`,
             'fine',
           ),
@@ -48,15 +48,15 @@ export async function initLibrary() {
         const read = element('a', action.label + ' →', 'text-link');
         read.href = action.url;
         body.append(read);
-        const label = element('label', 'Полка');
+        const label = element('label', 'Shelf');
         const select = element('select');
-        select.setAttribute('aria-label', `Полка: ${n.title}`);
+        select.setAttribute('aria-label', `Shelf: ${n.title}`);
         for (const [value, text] of Object.entries(shelves)) {
           const op = element('option', text);
           op.value = value;
           select.append(op);
         }
-        const remove = element('option', 'Убрать из библиотеки');
+        const remove = element('option', 'Remove from library');
         remove.value = 'remove';
         select.append(remove);
         select.value = active;
@@ -86,6 +86,6 @@ export async function initLibrary() {
     onStorageChange(() => void render());
   } catch {
     document.getElementById('library-empty')!.textContent =
-      'Не удалось загрузить библиотеку. Обновите страницу.';
+      'Unable to load your library. Refresh the page.';
   }
 }
