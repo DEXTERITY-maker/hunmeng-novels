@@ -1,7 +1,9 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { site } from '../config/site';
 ---
 <Layout title="Аккаунт и синхронизация" noindex description="Вход и синхронизация библиотеки Хунмэнг между устройствами.">
+  {site.features.accounts ? (
   <main id="main" class="page-shell account-page">
     <header class="page-heading">
       <p class="home-section-kicker">ВАША БИБЛИОТЕКА</p>
@@ -38,8 +40,17 @@ import Layout from '../layouts/Layout.astro';
     </form>
     <p class="fine account-help">Если сервер недоступен, локальная читалка продолжит работать. При первом входе полки объединяются, а для прогресса выбирается более новая позиция. Для одновременных изменений на двух устройствах пока действует упрощённая синхронизация; не используйте её как резервную копию важных данных.</p>
   </main>
+  ) : (
+    <main id="main" class="page-shell account-page">
+      <h1>Аккаунты читателей временно недоступны</h1>
+      <p>Библиотека и прогресс чтения сохраняются только на этом устройстве.</p>
+      <a href="/library/">Перейти в локальную библиотеку →</a>
+    </main>
+  )}
   <script>
-    import { initAccount } from '../scripts/account';
-    void initAccount();
+    import { site } from '../config/site';
+    if (site.features.accounts) {
+      void import('../scripts/account').then(({ initAccount }) => initAccount());
+    }
   </script>
 </Layout>
