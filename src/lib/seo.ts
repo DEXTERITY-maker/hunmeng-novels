@@ -82,14 +82,23 @@ export function chapterStructuredData(
     ],
   };
 }
-/** HTTPS URL or template like https://t.me/YourBot?start=err_{novel}_{chapter}. */
-export function chapterReportUrl(template: string, novelSlug: string, chapterSlug: string): string | null {
-  if (!template.trim()) return null;
-  const filled = template.replaceAll('{novel}', encodeURIComponent(novelSlug))
-    .replaceAll('{chapter}', encodeURIComponent(chapterSlug));
+/** Telegram deep link. reportUrl must be https://t.me/<bot> without query parameters.
+ * Telegram start accepts only [A-Za-z0-9_-] and at most 64 characters.
+ * Return null for invalid configuration, slug, chapter number, or long payload.
+ */
+export function chapterReportUrl(reportUrl: string, novelSlug: string, chapterNumber: number): string | null {
+  if (!reportUrl.trim()) return null;
+  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(novelSlug)) return null;
+  if (!Number.isSafeInteger(chapterNumber) || chapterNumber < 1) return null;
+  const payload = `e_${novelSlug}_${chapterNumber}`;
+  if (payload.length > 64 || !/^[A-Za-z0-9_-]+$/.test(payload)) return null;
   try {
-    const uri = new URL(filled);
-    if (uri.protocol !== 'https:') return null;
+    const uri = new URL(reportUrl);
+    if (uri.protocol !== 'https:' || uri.hostname !== 't.me' ||
+        uri.username || uri.password || uri.port || uri.search || uri.hash ||
+        !/^\/[A-Za-z][A-Za-z0-9_]{4,31}\/?$/.test(uri.pathname)) return null;
+    uri.pathname = uri.pathname.replace(/\/$/, '');
+    uri.searchParams.set('start', payload);
     return uri.href;
   } catch { return null; }
 }
