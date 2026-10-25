@@ -7,7 +7,8 @@ const validDate = value => typeof value === 'string' &&
   !Number.isNaN(Date.parse(value)) && new Date(value).toISOString().slice(0, 10) === value;
 function clean(text) {
   return String(text ?? '').replace(/[\u0000-\u001f\u007f<>{}[\]*_#\\]/g, '')
-    .replaceAll(String.fromCharCode(96), '').replace(/\s+/g, ' ').trim().slice(0, 120);
+    .replaceAll(String.fromCharCode(96), '').replace(/https?:\/\/[^\s)]+/gi, '')
+    .replace(/\s+/g, ' ').trim().slice(0, 120);
 }
 export function makePublicationNews(input) {
   const { kind, novelSlug, novelTitle, chapterSlug, chapterNumber, chapterTitle, date } = input;
