@@ -1,0 +1,20 @@
+---
+import { dateLabel } from '../lib/content';
+import { newsCategories, newsUrl, type NewsPost } from '../lib/news';
+
+interface Props {
+  post: NewsPost;
+  compact?: boolean;
+}
+const { post, compact = false } = Astro.props;
+const { title, excerpt, publishedAt, category } = post.data;
+---
+<article class:list={['news-card', compact && 'news-card-compact']} data-news-card data-news-category={category}>
+  <div class="news-card-top">
+    <span class:list={['news-category', `news-category-${category}`]}>{newsCategories[category]}</span>
+    <time datetime={publishedAt}>{dateLabel(publishedAt)}</time>
+  </div>
+  <h3><a href={newsUrl(post.id)}>{title}</a></h3>
+  <p>{excerpt}</p>
+  <a class="news-read-more" href={newsUrl(post.id)}>Читать далее <span aria-hidden="true">→</span></a>
+</article>

@@ -1,0 +1,38 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import NewsCard from '../../components/NewsCard.astro';
+import { getNews, newsCategories } from '../../lib/news';
+
+const posts = await getNews();
+---
+
+<Layout title="Новости и обновления" description="Последние новости Хунмэнг: журнал изменений сайта, объявления и информация о событиях.">
+  <main id="main" class="page-shell news-page">
+    <header class="news-heading">
+      <div>
+        <p class="home-section-kicker">ХУНМЭНГ · НОВОСТИ ПРОЕКТА</p>
+        <h1>Новости</h1>
+        <p>Релизы, улучшения и важные объявления нашей библиотеки.</p>
+      </div>
+      <a class="news-back-link" href="/">← На главную</a>
+    </header>
+    <nav class="news-filter-tabs" aria-label="Категории новостей" id="news-filters">
+      <a href="/news/" data-news-filter="all" aria-current="page">Все</a>
+      {Object.entries(newsCategories).map(([key, label]) => (
+        <a href={`/news/?category=${key}`} data-news-filter={key}>{label}</a>
+      ))}
+    </nav>
+    <div class="news-feed" id="news-feed">
+      {posts.map((post) => <NewsCard post={post} />)}
+    </div>
+    <p id="news-empty" class="home-section-empty" hidden>В этой категории пока нет публикаций.</p>
+    <nav id="news-pagination" class="news-pagination" aria-label="Страницы новостей" hidden></nav>
+    <noscript>
+      <p class="notice">Для фильтров и постраничного просмотра требуется JavaScript. Все новости доступны выше без него.</p>
+    </noscript>
+  </main>
+  <script>
+    import { initNewsFeed } from '../../scripts/news';
+    initNewsFeed();
+  </script>
+</Layout>
