@@ -22,7 +22,7 @@ test('все обновления: главная показывает четы�
   await page.goto('/');
   await expect(page.locator('#latest-chapters .home-chapter-link')).toHaveCount(4);
   await page.getByRole('link', { name: 'Все обновления' }).click();
-  await expect(page).toHaveURL(/\\/updates\\/$/);
+  expect(new URL(page.url()).pathname).toBe('/updates/');
   await expect(page.getByRole('heading', { name: 'Все обновления' })).toBeVisible();
   await expect(page.locator('.updates-page .home-chapter-link')).toHaveCount(7);
   await page.locator('.updates-page .home-chapter-link').first().click();
@@ -32,7 +32,7 @@ test('мобильная главная: компактное продолжен
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
   await page.evaluate(() => {
-    const progress = (slug: string) => ({
+    const progress = () => ({
       chapterSlug: 'glava-1',
       chapterNumber: 1,
       blockId: 'block-0',
@@ -45,8 +45,8 @@ test('мобильная главная: компактное продолжен
       settings: { font: 'serif', size: 20, lineHeight: 1.85, width: 720, theme: 'system' },
       library: {},
       progress: {
-        'khranitel-mayaka': progress('khranitel-mayaka'),
-        'sad-zimy': progress('sad-zimy'),
+        'khranitel-mayaka': progress(),
+        'sad-zimy': progress(),
       },
     }));
   });
