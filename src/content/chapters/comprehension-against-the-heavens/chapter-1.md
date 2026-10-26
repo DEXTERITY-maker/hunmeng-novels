@@ -75,7 +75,7 @@ Her footsteps retreated. Ye Xuan sat down and pressed both palms against his eye
 
 He wanted to scream.
 
-Instead, he opened the nearest book.
+Instead, he opened the nearest book, a thick volume on structural mechanics. He read every chapter, exercise and appendix until his eyes burned.
 
 When he turned the final page, something changed.
 
@@ -89,7 +89,7 @@ He could see the structure of every argument, the assumptions beneath every equa
 
 He seized a pencil and wrote out its solution.
 
-Then a third, which used a different constraint and exposed an approximation the textbook had treated too casually.
+He tried another approach, then a third, which used a different constraint and exposed an approximation the textbook had treated too casually.
 
 His hand stopped.
 
@@ -97,7 +97,7 @@ He checked the calculation twice. The reasoning held.
 
 He had not merely learned what the author knew. He had found something the author had not written.
 
-That limitation reassured him.
+Yet he still could not predict when the bent shelf above his desk would fail without measuring its brackets. That limitation reassured him.
 
 Understanding had arrived in an instant. The missing measurements had not.
 
