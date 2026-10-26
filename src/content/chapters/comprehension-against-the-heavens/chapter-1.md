@@ -2,91 +2,185 @@
 novelSlug: "comprehension-against-the-heavens"
 slug: "chapter-1"
 number: 1
-title: "The Last Page"
+title: "The Boy Who Read the Last Page"
 publishedAt: "2026-10-26"
-description: "Ye Xuan dies saving a child and awakens in a world of superpowers, where reading a complete textbook reveals his impossible gift."
+description: "In Hangzhou, Ye Xuan makes one irreversible choice. In New York, an impossible gift waits at the end of a book."
 ---
 
-The morning Ye Xuan died, his landlord took the last of his savings.
+The last message Ye Xuan received from his mother contained six words.
 
-“Your brother's things occupy a room,” she said. “Rooms cost money.”
+*Don't forget to eat something warm.*
 
-“They're two shirts and a watch.”
+He read it outside a convenience store in Hangzhou, standing beneath an awning that failed to keep the rain off his shoes. His phone battery showed nine percent. In his pocket were twenty-three yuan, a bus card, and a key that no longer opened anything.
 
-“Then take them.”
+That morning, the landlord had finally cleared his brother's room.
 
-He put the belongings in a canvas bag and counted the change left in his palm. Twenty-three yuan. Not enough for lunch and a bus ride home.
+Three years had passed since Ye Ming disappeared. Three years of unanswered calls, visits to police offices, and strangers who said they might have seen him. Their mother had kept paying for the room because Ye Ming had once promised to come back for the books.
 
-His older brother, Ye Ming, had disappeared three years earlier. The police had a file and a date of last contact. The family had a cracked watch that no longer ran. His mother still set aside the best piece of fish at dinner before remembering that no one would eat it.
+The landlord had given them until noon.
 
-Ye Xuan was eighteen, finished with his examinations and waiting for the results. He planned to take a delivery shift after lunch. His phone displayed a message from his mother asking him to come home early.
+Ye Xuan had carried the books downstairs himself. Most were ordinary: electrical engineering, mathematics, a battered English dictionary. In the bottom drawer he found a notebook with half its pages torn out. On the last written page his brother had copied a sentence in careful characters:
 
-He typed: I will.
+*If the result is impossible, check what you assumed.*
 
-At the intersection, a plastic dinosaur bounced from a child's shopping bag. The child slipped between two parked cars after it. Ye Xuan heard a horn and looked up.
+Ye Xuan put the notebook in his bag.
 
-A truck was coming through the light too fast.
+At eighteen, he had no idea what his brother had meant. He only knew that Ye Ming had been the person who could explain anything. A broken charger. A school problem. Why the moon looked enormous above the apartment blocks but small in a photograph. Whenever Ye Xuan asked how he knew so much, his brother said the same thing: he had read the whole chapter.
 
-He did not calculate the distance. His body moved. He caught the child's shoulder and threw him toward the curb. The boy landed against his mother's legs. The dinosaur shattered beneath a tire.
+Now the room was empty, and their mother was working a second shift.
 
-Ye Xuan had time for a single thought: I promised her.
+Ye Xuan bought a steamed bun and ate half of it. He wrapped the rest for the bus ride home. Across the street, a woman struggled with a shopping bag while a small boy in a yellow raincoat jumped over puddles.
 
-Then the truck struck him.
+A plastic dinosaur fell from the bag.
 
-When he opened his eyes, a crack in the ceiling looked like a crooked finger.
+The boy chased it.
 
-Not a hospital. The air smelled of bread and hot oil. A siren wailed below an open window. Someone shouted in English, and someone answered in Mandarin.
+A delivery truck entered the intersection as the signal changed. Its horn sounded once, long and desperate.
 
-He sat up on a narrow bed. His jaw hurt. A mirror showed a thin Chinese boy with stubborn black hair and a faint scar down one side of his face. The face was almost his, but not quite.
+Ye Xuan saw the truck, the child, and the distance between them. He did not see a way for all three to occupy the same stretch of road and survive.
 
-“Where am I?”
+He ran anyway.
 
-A student card lay on the desk: HUDSON POLYTECHNIC INSTITUTE. YE XUAN. An address on its reverse placed him in Manhattan. A rent reminder was pinned above it. His phone, unlocked with the face in the mirror, displayed a bank balance of forty-three dollars and seventeen cents.
+His hand caught the back of the yellow raincoat. He pulled, twisted, and threw the child toward the woman. Something struck his shoulder with the force of a collapsing wall.
 
-Same name. Different body. Different continent.
+The street turned sideways.
 
-For a while he sat holding the phone. He wanted to call his mother. No number in this world would reach her.
+He remembered the bun slipping from its paper. He remembered thinking that his mother would wait for him to come home.
 
-Finally he examined the desk. Engineering texts stood against a wall. A library copy of An Introduction to Structural Mechanics lay open beside the laptop. Someone had circled equations and folded corners.
+Then even the rain was gone.
 
-He began reading. It was better than thinking about the truck.
+***
 
-Ye Xuan had always learned slowly and stubbornly. He understood difficult ideas only after rereading them until he could explain them without looking. Yet here he continued through page after page. The words were clear, but something seemed to wait beyond them.
+The first thing he heard was an argument in English.
 
-He finished the exercises, references and appendix. He turned the last page.
+The second was a siren.
 
-Understanding arrived.
+Ye Xuan opened his eyes to a ceiling stained by an old leak. Sunlight crossed the wall in a narrow rectangle. Someone downstairs was frying onions.
 
-Not a voice or glowing message. The material became a complete structure inside his mind. Every equation belonged to assumptions he could identify. He saw why certain approximations worked, why others failed, and how the conclusions could be extended without forgetting their limits.
+He tried to sit up and discovered that his left ribs hurt.
 
-He picked up a pencil and derived an alternative solution to a bridge-loading problem. He checked it against the original, found an overlooked assumption, corrected it, and arrived at a simpler expression.
+There was no hospital bed, no monitor, no smell of disinfectant. He lay on a narrow mattress in a room barely large enough for a desk and a wardrobe. Through the window rose brick buildings, water towers, and a distant glass skyline.
 
-He looked at the cheap shelf above him. Its metal brackets were bending. He could list several possible failure modes. He could not say which would occur first without measurements.
+His hands were different.
 
-That distinction made the experience more convincing.
+Not dramatically. They were still slender and callused near the fingers. But a pale scar crossed his right thumb, and the small burn he had earned at thirteen was gone.
 
-He had mastered a book in the instant he finished it. He had not gained facts the book did not contain.
+He stumbled to the mirror.
 
-He opened another volume and read a single page of electromagnetism. Nothing extraordinary happened. He skipped to its ending. Still nothing. The ideas were interesting, but they had not joined into the same effortless understanding.
+A Chinese boy looked back at him. Eighteen, perhaps nineteen. Black hair refusing to lie flat. A narrow face. A faint scar near the left jaw.
 
-“Everything,” he whispered. “I have to finish it.”
+Almost him.
 
-He looked at the unmarked pages. Reading was still reading. The gift would not do that part for him.
+Not him.
 
-A knock came from the door.
+On the desk lay a student identification card.
 
-“Xiao Ye! Rent!” an older woman called. “And there are people downstairs asking about you.”
+**YE XUAN — HUDSON POLYTECHNIC INSTITUTE.**
 
-“Who?”
+Below the name was a New York address.
 
-“Government investigators. They mentioned the waterfront.”
+He checked the date on the phone beside it. November 2026. He checked again, as though the month might change out of embarrassment.
 
-Through the window, a huge display showed a woman hovering above traffic, one hand holding back a falling sign. The caption beneath her called her a registered Awakened.
+His mother's number was not in the contacts. Neither was his brother's.
 
-New York, 2026. A world that looked familiar until one looked up.
+He searched for the street where he had died. It existed. So did Hangzhou. So did every ordinary city he knew. Yet the headlines scrolling across the phone mentioned registered Awakened, ability licensing, and a public dispute over whether a woman who could lift cars should be permitted to work without emergency-service training.
 
-There were flying people here, investigators asking about a night he could not remember, and money he owed. He folded his calculations and put them in his pocket. A small part of his fear gave way to curiosity.
+Ye Xuan stared at the screen.
 
-He could learn almost anything placed before him.
+A video showed the woman lifting a crushed vehicle from a flooded underpass. The camera shook. The vehicle rose anyway.
 
-But first he would have to find out what was true.
+It was too detailed to dismiss as a film clip, and far too strange to accept because of one video.
+
+He opened another report. Then another.
+
+The same unfamiliar reality appeared everywhere.
+
+On the desk, a rent notice demanded payment by Friday. The banking app showed forty-three dollars and seventeen cents.
+
+Whatever had happened to him, the person whose life he now occupied had been poor.
+
+A knock rattled the door.
+
+“Xiao Ye?” an older woman called in Mandarin. “If you're awake, answer me. I heard you fall.”
+
+“I'm fine,” he said automatically.
+
+“You never sound fine when you say that.”
+
+Her footsteps retreated. Ye Xuan sat down and pressed both palms against his eyes.
+
+He was alive. Somewhere, a mother in another world might be waiting for a son who would never return. And the only brother who might have understood this impossible event had vanished long before it happened.
+
+He wanted to scream.
+
+Instead, he opened the nearest book.
+
+It was an introductory text on structural mechanics, thick with diagrams and pencil marks. He had always turned to problems when frightened. Problems, unlike people, could sometimes be persuaded to give an answer.
+
+He read the first chapter, then the second. The material was difficult but familiar enough to follow. As the afternoon passed, he forgot to check the window. He read the worked examples, the exercises, the footnotes, even the appendix explaining where the simplified models failed.
+
+When he turned the final page, something changed.
+
+There was no voice in his head. No luminous screen announced a blessing.
+
+The book simply became clear.
+
+Not remembered. Understood.
+
+He could see the structure of every argument, the assumptions beneath every equation, the places where one result depended on another. An exercise he had struggled with twenty minutes earlier now seemed as transparent as a glass of water.
+
+He seized a pencil and wrote out its solution.
+
+Then a second solution.
+
+Then a third, which used a different constraint and exposed an approximation the textbook had treated too casually.
+
+His hand stopped.
+
+He checked the calculation twice. The reasoning held.
+
+He had not merely learned what the author knew. He had found something the author had not written.
+
+Across the room, the cheap wall shelf leaned forward by a few degrees. Ye Xuan looked at its brackets and immediately recognized several possible ways it could fail. He also knew that without measurements he could not predict the exact load at which it would collapse.
+
+That limitation reassured him.
+
+Understanding had arrived in an instant. The missing measurements had not.
+
+He took another book from the shelf, this one on electromagnetism, and opened it halfway through. He read three pages. Nothing happened.
+
+He turned to the last page without reading the rest.
+
+Nothing.
+
+Only when he returned to the beginning did he notice the anticipation gathering in his mind, like a door that would open once he had truly reached it.
+
+He laughed once. It sounded close to a sob.
+
+His brother had always told him to read the whole chapter.
+
+Outside, a low boom rolled over the rooftops. Ye Xuan looked up. Above the avenue, a figure in a dark uniform descended slowly through the evening light, carrying a damaged traffic signal with one hand.
+
+People below raised their phones. Nobody ran.
+
+The figure landed, and the street resumed its noise.
+
+Ye Xuan closed the textbook.
+
+There were powers in this world that the science he knew could not explain. There were books he had not read, people he had not met, and a missing brother whose fate remained uncertain even in his memories.
+
+For the first time since waking, he felt something stronger than terror.
+
+He wanted to understand.
+
+Then his borrowed phone vibrated.
+
+A message appeared from an unknown number.
+
+**If you remember what happened at the waterfront, do not tell the police before we speak.**
+
+Ye Xuan read it twice.
+
+He had been in this world for less than a day.
+
+Someone here already believed he knew a secret.
