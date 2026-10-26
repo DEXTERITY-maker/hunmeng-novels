@@ -17,8 +17,6 @@ That morning, the landlord had finally cleared his brother's room.
 
 Three years had passed since Ye Ming disappeared. Three years of unanswered calls, visits to police offices, and strangers who said they might have seen him. Their mother had kept paying for the room because Ye Ming had once promised to come back for the books.
 
-The landlord had given them until noon.
-
 Ye Xuan had carried the books downstairs himself. Most were ordinary: electrical engineering, mathematics, a battered English dictionary. In the bottom drawer he found a notebook with half its pages torn out. On the last written page his brother had copied a sentence in careful characters:
 
 *If the result is impossible, check what you assumed.*
@@ -26,8 +24,6 @@ Ye Xuan had carried the books downstairs himself. Most were ordinary: electrical
 Ye Xuan put the notebook in his bag.
 
 At eighteen, he had no idea what his brother had meant. He only knew that Ye Ming had been the person who could explain anything. A broken charger. A school problem. Why the moon looked enormous above the apartment blocks but small in a photograph. Whenever Ye Xuan asked how he knew so much, his brother said the same thing: he had read the whole chapter.
-
-Now the room was empty, and their mother was working a second shift.
 
 Ye Xuan bought a steamed bun and ate half of it. He wrapped the rest for the bus ride home. Across the street, a woman struggled with a shopping bag while a small boy in a yellow raincoat jumped over puddles.
 
@@ -53,11 +49,7 @@ Then even the rain was gone.
 
 The first thing he heard was an argument in English.
 
-The second was a siren.
-
 Ye Xuan opened his eyes to a ceiling stained by an old leak. Sunlight crossed the wall in a narrow rectangle. Someone downstairs was frying onions.
-
-He tried to sit up and discovered that his left ribs hurt.
 
 There was no hospital bed, no monitor, no smell of disinfectant. He lay on a narrow mattress in a room barely large enough for a desk and a wardrobe. Through the window rose brick buildings, water towers, and a distant glass skyline.
 
@@ -89,15 +81,9 @@ Ye Xuan stared at the screen.
 
 A video showed the woman lifting a crushed vehicle from a flooded underpass. The camera shook. The vehicle rose anyway.
 
-It was too detailed to dismiss as a film clip, and far too strange to accept because of one video.
-
-He opened another report. Then another.
-
 The same unfamiliar reality appeared everywhere.
 
 On the desk, a rent notice demanded payment by Friday. The banking app showed forty-three dollars and seventeen cents.
-
-Whatever had happened to him, the person whose life he now occupied had been poor.
 
 A knock rattled the door.
 
@@ -130,8 +116,6 @@ Not remembered. Understood.
 He could see the structure of every argument, the assumptions beneath every equation, the places where one result depended on another. An exercise he had struggled with twenty minutes earlier now seemed as transparent as a glass of water.
 
 He seized a pencil and wrote out its solution.
-
-Then a second solution.
 
 Then a third, which used a different constraint and exposed an approximation the textbook had treated too casually.
 
