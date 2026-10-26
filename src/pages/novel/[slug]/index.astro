@@ -5,10 +5,12 @@ import { getLibrary, dateLabel, chapterCount, chapterUrl } from '../../../lib/co
 import { chapterListUrl } from '../../../lib/pagination';
 import { novelStructuredData, placeholderCover, socialCover } from '../../../lib/seo';
 import { site } from '../../../config/site';
+import serials from '../../../data/serials.json';
 export async function getStaticPaths() {
   return (await getLibrary()).map((n) => ({ params: { slug: n.slug }, props: { novel: n } }));
 }
 const { novel: n } = Astro.props;
+const serial = serials.find(s => s.slug === n.slug);
 const firstChapters = n.chapters.slice(0, 30);
 const glossaryKinds = [
   { type: 'character', title: 'Characters' },
@@ -57,6 +59,7 @@ const usesPlaceholder = n.cover === placeholderCover;
         {n.originalTitle !== n.title && <p class="original-title">{n.originalTitle}</p>}
         <p class="author">{n.author}</p>
         <p class="detail-description">{n.description}</p>
+        {serial && <p class="fine">{n.chapterCount} opening chapters published · {serial.totalChapters} planned. <a href={`${n.url}releases/`}>Release schedule</a></p>}
         <dl class="novel-facts">
           {n.original ? (
             <div>
@@ -163,6 +166,7 @@ const usesPlaceholder = n.cover === placeholderCover;
       </section>
     )}
     <section class="section contents-section" aria-labelledby="contents-title">
+      {serial && <p class="notice" data-serial-summary={n.slug} data-published={n.chapterCount}><span data-serial-summary-text>The novel is being written. The daily schedule has not started yet. Once the complete manuscript is ready: 50 chapters at launch, then one daily at 12:00 Moscow time. </span><a href={`${n.url}releases/`}>Check chapter availability →</a></p>}
       <div class="section-heading">
         <h2 id="contents-title">Contents</h2>
         <span class="fine">{chapterCount(n.chapterCount)}</span>
@@ -191,5 +195,7 @@ const usesPlaceholder = n.cover === placeholderCover;
     void initPersonal();
     import { initPersonalRatings } from '../../../scripts/rating';
     initPersonalRatings();
+    import { initSerialSummary } from '../../../scripts/serial-summary';
+    void initSerialSummary();
   </script>
 </Layout>

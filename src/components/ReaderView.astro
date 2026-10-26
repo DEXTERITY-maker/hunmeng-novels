@@ -1,0 +1,253 @@
+---
+import { render } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+import { chapterUrl, chapterCount, type Novel } from '../lib/content';
+import { CHAPTERS_PER_PAGE, chapterListUrl } from '../lib/pagination';
+import { chapterReportUrl, chapterStructuredData, placeholderCover, socialCover } from '../lib/seo';
+import { site } from '../config/site';
+import type { CollectionEntry } from 'astro:content';
+import serials from '../data/serials.json';
+interface Props { novel: Novel; chapter?: CollectionEntry<'chapters'>; index: number; remoteNumber?: number; remoteTitle?: string }
+const { novel: n, chapter: localChapter, index, remoteNumber, remoteTitle } = Astro.props;
+const remote = remoteNumber !== undefined;
+const serial = serials.find(s => s.slug === n.slug);
+const c = localChapter ?? { data: { novelSlug: n.slug, slug: `chapter-${remoteNumber}`, number: remoteNumber!, title: remoteTitle!, description: `Read chapter ${remoteNumber} of ${n.title} when released.`, publishedAt: '' } };
+const releaseLink = (number: number) => ({ data: { slug: `chapter-${number}`, number, title: serial?.chapters[number - 1]?.title ?? `Chapter ${number}` } });
+const Content = localChapter ? (await render(localChapter)).Content : undefined;
+const prev = remote ? (c.data.number > (serial?.initialChapters ?? 50) + 1 ? releaseLink(c.data.number - 1) : n.chapters.find(ch => ch.data.number === c.data.number - 1)) : n.chapters[index - 1];
+const next = remote ? (c.data.number < (serial?.totalChapters ?? 0) ? releaseLink(c.data.number + 1) : undefined) : n.chapters[index + 1] ?? (serial && c.data.number === serial.initialChapters ? releaseLink(c.data.number + 1) : undefined);
+const nearby = n.chapters.slice(Math.max(0, index - 10), Math.min(n.chapterCount, index + 11));
+const tocPage = Math.floor(index / CHAPTERS_PER_PAGE) + 1;
+const structuredData = localChapter ? chapterStructuredData(n, localChapter, Astro.site || site.url) : undefined;
+const reportHref = chapterReportUrl(site.reportUrl, n.slug, c.data.number);
+const coverIsSvg = n.cover.endsWith('.svg');
+const usesPlaceholder = n.cover === placeholderCover;
+---
+
+<Layout
+  title={`${n.title} — chapter ${c.data.number}: ${c.data.title}`}
+  description={c.data.description}
+  ogImage={usesPlaceholder ? undefined : socialCover(n.cover)}
+  ogImageWidth={coverIsSvg ? 520 : undefined}
+  ogImageHeight={coverIsSvg ? 760 : undefined}
+  ogImageAlt={usesPlaceholder ? undefined : `Novel cover “${n.title}”`}
+  structuredData={structuredData}
+  noindex={remote}
+  reader
+>
+  <header class="reader-header reader-chrome">
+    <a href={n.url} class="reader-back" aria-label="Back to novel">
+      ←
+    </a>
+    <a href={n.url} class="reader-novel-title">
+      {n.title}
+    </a>
+    <button type="button" class="icon-button" data-open="toc" aria-label="Open contents" hidden={remote} data-release-unlock>
+      ☰
+    </button>
+  </header>
+  <div class="reading-progress">
+    <progress
+      id="reading-progress"
+      value="0"
+      max="100"
+      aria-label="Chapter reading progress"
+    ></progress>
+  </div>
+  <main
+    id="main"
+    class="reader-main"
+    data-reader={remote ? undefined : true}
+    data-serial-chapter={remote ? true : undefined}
+    data-novel={n.slug}
+    data-chapter={c.data.slug}
+    data-number={c.data.number}
+  >
+    <div class="reader-heading">
+      <a href={n.url}>{n.title}</a>
+      <p class="fine">
+        Chapter {c.data.number} of {remote ? serial?.totalChapters : n.chapterCount}
+      </p>
+      <h1>{c.data.title}</h1>
+    </div>
+    {remote && <div id="serial-gate" class="notice">
+      <p id="serial-status" role="status">Checking chapter availability…</p>
+      <button id="serial-retry" type="button" class="button secondary">Check availability</button>
+      <p class="fine">50 chapters at launch, then one daily at 12:00 MSK (UTC+3).</p>
+    </div>}
+    <article
+      id="chapter-text"
+      class="chapter-text"
+      aria-label={`Chapter ${c.data.number}. ${c.data.title}`}
+    >
+      {Content && <Content />}
+    </article>
+    <nav class="chapter-end-nav" aria-label="Chapter navigation" hidden={remote} data-release-unlock>
+      {prev ? (
+        <a class="button secondary" href={chapterUrl(n.slug, prev.data.slug)}>
+          ← Previous
+        </a>
+      ) : (
+        <a class="button secondary" href={n.url}>
+          Back to novel
+        </a>
+      )}
+      {next ? (
+        <a class="button" href={chapterUrl(n.slug, next.data.slug)}>
+          Next →
+        </a>
+      ) : (
+        <a class="button" href={n.url}>
+          Back to contents →
+        </a>
+      )}
+    </nav>
+    {!next && !remote && <p class="end-note">You have read all published chapters.</p>}
+    {serial && <p class="end-note"><a href={`${n.url}releases/`}>Complete release schedule →</a></p>}
+    {serial && <p class="fine">© 2026 Hunmeng.</p>}
+    {reportHref && (
+      <div class="chapter-report">
+        <a href={reportHref} class="chapter-report-link" target="_blank" rel="noopener noreferrer">
+          Report an error ↗
+        </a>
+      </div>
+    )}
+  </main>
+  <nav class="reader-toolbar reader-chrome" aria-label="Reading controls" hidden={remote} data-release-unlock>
+    <button type="button" data-open="toc">
+      <span aria-hidden="true">☰</span> Contents
+    </button>
+    <button type="button" data-open="settings">
+      <span aria-hidden="true">Aa</span> Settings
+    </button>
+    <span id="progress-label" class="fine">
+      0%
+    </span>
+    <div class="toolbar-arrows">
+      {prev ? (
+        <a href={chapterUrl(n.slug, prev.data.slug)} aria-label="Previous chapter">
+          ←
+        </a>
+      ) : (
+        <span aria-hidden="true" class="disabled">
+          ←
+        </span>
+      )}
+      {next ? (
+        <a href={chapterUrl(n.slug, next.data.slug)} aria-label="Next chapter">
+          →
+        </a>
+      ) : (
+        <span aria-hidden="true" class="disabled">
+          →
+        </span>
+      )}
+    </div>
+  </nav>
+  <button
+    id="show-reader-controls"
+    class="show-controls"
+    type="button"
+    aria-label="Show reading controls"
+    hidden
+  >
+    Aa
+  </button>
+  <dialog id="reader-settings" class="reader-dialog" aria-labelledby="settings-title">
+    <div class="dialog-heading">
+      <h2 id="settings-title">Reading settings</h2>
+      <button type="button" class="icon-button" data-close aria-label="Close settings">
+        ×
+      </button>
+    </div>
+    <form id="settings-form">
+      <fieldset>
+        <legend>Font</legend>
+        <div class="font-choices">
+          <label>
+            <input type="radio" name="font" value="serif" checked />
+            <span class="font-serif">Aa</span>Book
+          </label>
+          <label>
+            <input type="radio" name="font" value="sans" />
+            <span class="font-sans">Aa</span>Modern
+          </label>
+          <label>
+            <input type="radio" name="font" value="system" />
+            <span>Aa</span>System
+          </label>
+        </div>
+      </fieldset>
+      <label>
+        Text size <output data-output="size">20 px</output>
+        <input name="size" type="range" min="16" max="32" step="1" value="20" />
+      </label>
+      <label>
+        Line height <output data-output="lineHeight">1,85</output>
+        <input name="lineHeight" type="range" min="1.4" max="2.4" step="0.05" value="1.85" />
+      </label>
+      <label>
+        Column width <output data-output="width">720 px</output>
+        <input name="width" type="range" min="480" max="960" step="40" value="720" />
+        <small>On mobile, the width is limited to your screen.</small>
+      </label>
+      <fieldset>
+        <legend>Theme</legend>
+        <div class="theme-choices">
+          <label>
+            <input type="radio" name="theme" value="system" checked />
+            <span class="theme-sample system-sample">Aa</span>System default
+          </label>
+          <label>
+            <input type="radio" name="theme" value="light" />
+            <span class="theme-sample light-sample">Aa</span>Light
+          </label>
+          <label>
+            <input type="radio" name="theme" value="dark" />
+            <span class="theme-sample dark-sample">Aa</span>Dark
+          </label>
+          <label>
+            <input type="radio" name="theme" value="sepia" />
+            <span class="theme-sample sepia-sample">Aa</span>Sepia
+          </label>
+        </div>
+      </fieldset>
+      <button type="button" id="reset-settings" class="text-button">
+        Reset to default
+      </button>
+      <p class="fine">Changes are saved automatically.</p>
+    </form>
+  </dialog>
+  <dialog id="reader-toc" class="reader-dialog" aria-labelledby="toc-title">
+    <div class="dialog-heading">
+      <h2 id="toc-title">Contents</h2>
+      <button type="button" class="icon-button" data-close aria-label="Close contents">
+        ×
+      </button>
+    </div>
+    <p>{n.title}</p>
+    <ol class="chapter-list">
+      {nearby.map((ch) => (
+        <li>
+          <a
+            href={chapterUrl(n.slug, ch.data.slug)}
+            aria-current={ch.data.slug === c.data.slug ? 'page' : undefined}
+          >
+            Chapter {ch.data.number}. {ch.data.title}
+          </a>
+        </li>
+      ))}
+    </ol>
+    <a class="reader-toc-all" href={remote ? `${n.url}releases/` : chapterListUrl(n.slug, tocPage)}>Full contents ({chapterCount(n.chapterCount)}) →</a>
+  </dialog>
+  <noscript>
+    <p class="notice">
+      {remote ? 'Checking scheduled chapters requires JavaScript and a connection to the release service.' : 'Saving your position and settings requires JavaScript. Chapter text and navigation are still available.'}
+    </p>
+  </noscript>
+  <script>
+    import { initReader } from '../scripts/reader';
+    import { initSerialReader } from '../scripts/serial-reader';
+    void (async () => { if (!await initSerialReader()) await initReader(); })();
+  </script>
+</Layout>

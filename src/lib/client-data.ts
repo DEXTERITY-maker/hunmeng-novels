@@ -1,3 +1,4 @@
+import { getReleasedChapters } from './serial-release';
 export interface ClientChapter {
   slug: string;
   title: string;
@@ -5,6 +6,7 @@ export interface ClientChapter {
   url: string;
 }
 export interface ClientNovel {
+  serial?: boolean;
   slug: string;
   title: string;
   originalTitle: string;
@@ -29,7 +31,19 @@ export function getCatalog() {
   return (data ??= fetch('/catalog.json').then((r) => {
     if (!r.ok) throw new Error('Unable to load the catalog');
     return r.json() as Promise<ClientNovel[]>;
-  }));
+  }).then(novels => Promise.all(novels.map(async novel => {
+    if (!novel.serial) return novel;
+    try {
+      const chapters = await getReleasedChapters(novel.slug);
+      const merged = new Map(novel.chapters.map(c => [c.number, c]));
+      for (const chapter of chapters) merged.set(chapter.number, {
+        slug: `chapter-${chapter.number}`, number: chapter.number, title: chapter.title,
+        url: `/novel/${novel.slug}/chapter-${chapter.number}/`,
+      });
+      const all = [...merged.values()].sort((a, b) => a.number - b.number);
+      return { ...novel, chapters: all, chapterCount: all.length };
+    } catch { return novel; }
+  }))));
 }
 export function element<K extends keyof HTMLElementTagNameMap>(
   tag: K,
@@ -43,6 +57,7 @@ export function element<K extends keyof HTMLElementTagNameMap>(
 }
 
 export interface CatalogIndexNovel {
+  serial?: boolean;
   slug: string;
   title: string;
   originalTitle: string;
@@ -66,5 +81,9 @@ export function getCatalogIndex() {
   return (indexData ??= fetch('/catalog-index.json').then((response) => {
     if (!response.ok) throw new Error('Unable to load the search index');
     return response.json() as Promise<CatalogIndexNovel[]>;
-  }));
+  }).then(novels => Promise.all(novels.map(async novel => {
+    if (!novel.serial) return novel;
+    try { return { ...novel, chapterCount: Math.max(novel.chapterCount, (await getReleasedChapters(novel.slug)).length) }; }
+    catch { return novel; }
+  }))));
 }

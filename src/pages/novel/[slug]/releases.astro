@@ -1,0 +1,42 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import { getLibrary, chapterUrl } from '../../../lib/content';
+import serials from '../../../data/serials.json';
+export async function getStaticPaths() {
+  return (await getLibrary()).flatMap(n => {
+    const serial = serials.find(s => s.slug === n.slug);
+    return serial ? [{ params: { slug: n.slug }, props: { novel: n, serial } }] : [];
+  });
+}
+const { novel: n, serial } = Astro.props;
+---
+<Layout title={`${n.title} — release schedule`} description={`Chapter availability and daily release schedule for ${n.title}.`} noindex>
+  <main id="main" class="page-shell" data-serial-contents={n.slug} data-published={n.chapterCount}>
+    <a class="back-link" href={n.url}>← Back to novel</a>
+    <div class="page-heading">
+      <h1>Release schedule</h1>
+      <p>{n.title}</p>
+    </div>
+    <p class="notice" data-release-status role="status">{n.chapterCount} opening chapters available. The {serial.totalChapters}-chapter manuscript is being written. The daily release schedule has not started yet.</p>
+    <p>At launch: {serial.initialChapters} chapters. After launch: one additional chapter every day at 12:00 Moscow time (MSK, UTC+3).</p>
+    <button type="button" class="button secondary" data-release-refresh>Check new releases</button>
+    <ol class="chapter-list">
+      {serial.chapters.map(c => {
+        const local = n.chapters.find(ch => ch.data.number === c.number);
+        const title = `${String(c.number).padStart(2, '0')} · ${c.title}`;
+        const href = local ? chapterUrl(n.slug, local.data.slug) : c.number > serial.initialChapters ? chapterUrl(n.slug, `chapter-${c.number}`) : n.url;
+        return <li data-release-number={c.number}>
+          <a href={href} hidden={!local}>{title}</a>
+          <span hidden={!!local} data-locked-title>{title}</span>
+          <span class="fine" data-release-date>{local ? 'Available' : 'Not published yet'}</span>
+        </li>;
+      })}
+    </ol>
+    <noscript><p class="notice">The published opening chapters are linked above. JavaScript and an internet connection are required to check scheduled releases.</p></noscript>
+    <p class="fine">© 2026 Hunmeng.</p>
+  </main>
+  <script>
+    import { initSerialContents } from '../../../scripts/serial-contents';
+    void initSerialContents();
+  </script>
+</Layout>

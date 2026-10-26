@@ -1,4 +1,4 @@
-# Hunmeng Novels · English edition · v0.5.1
+# Hunmeng Novels · English edition · v0.5.2
 
 Hunmeng is a static Astro + TypeScript web novel library. The default and only interface language is now **English**, including reader and editorial tools, auth errors, form validation, demo fiction, news, catalog filters, PWA metadata, structured data, covers, and social preview images.
 
@@ -458,3 +458,18 @@ CI выполняет те же проверки с Chromium на Node.js 24. Т
 Если на телефоне видна целая двухколоночная страница с очень мелкими буквами, проверьте режим «Версия для ПК» в браузере. Он может заставлять браузер использовать широкий виртуальный экран и уменьшать весь сайт. Сайт не должен принудительно отключать этот выбор пользователя; для мобильной вёрстки выключите данный режим. Возможность масштабировать страницу сохраняется.
 
 Проверки: `npm run build`, `npm test`, `node --test tests/*.test.mjs`. Дополнены сценарии сворачивания/сброса фильтров, изменения ширины, конца главы, новых глав, сохранения полок и минимальных размеров текста/ссылок. Авторизация, RLS и Supabase в этом выпуске не меняются.
+
+
+### Original serial releases
+
+`The Latency of Tomorrow` is planned as 247 English chapters, each 4,000–5,090 Unicode characters including spaces (body only, LF paragraph breaks, trimmed at both ends). Twenty opening chapters are currently written and published. `npm run build` validates every opening chapter against the agreed plan and rejects public manuscript files beyond chapter 50. Demo novels remain test fixtures only.
+
+The generated cover is `public/images/the-latency-of-tomorrow.jpg`; its creation brief is in `editorial/the-latency-of-tomorrow-cover.md`.
+
+`backend/serial-releases.sql` installs a separate, RLS-protected manuscript store and an inactive edition. Never put chapters 51–247 in Git, static JSON, HTML, or client bundles. Import their complete plain-prose bodies privately into `serial_chapters`. Public `anon` and signed-in `authenticated` requests have the same read-only release policy; neither can write or change the schedule. No service key is used by the browser.
+
+Before activation, finish and validate all 247 bodies, import them privately, deploy chapters 1–50, verify the live initial chapters and all scheduled shells, and then set `serial_editions.launch_at` to the actual launch instant through an authorized backend operation. The database refuses activation of an incomplete manuscript and makes the schedule immutable afterward. Do not backdate it. The current edition has **not** been activated.
+
+Chapters 1–50 are available at launch. Chapter 51 opens at 12:00 Europe/Moscow on the following calendar day; chapter 247 opens at noon on day 197. Postgres evaluates availability on each request, so opening a chapter does not depend on a delayed build, cron job, visitor clock, or JavaScript hiding its text. The release contents page and scheduled reader fetch only rows allowed by RLS, with no browser caching. An open page checks again every 15 seconds and on return to the tab. Network latency can delay display; access is determined by the server boundary.
+
+`playwright.serial.config.ts` tests the production novel and scheduled reader. The normal browser suite continues to use `npm run build:demo`; it is never a deployable production build. Scheduled shells carry no chapter body or article structured data and are excluded from the sitemap.

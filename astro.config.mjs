@@ -20,7 +20,13 @@ export default defineConfig({
   output: 'static',
   trailingSlash: 'always',
   integrations: [
-    sitemap({ filter: (page) => !['/404/', '/library/', '/account/'].includes(new URL(page).pathname) && !new URL(page).pathname.startsWith('/admin/') }),
+    sitemap({ filter: (page) => {
+      const path = new URL(page).pathname;
+      // Scheduled shells carry no article text and stay out of search results.
+      const scheduled = /^\/novel\/the-latency-of-tomorrow\/chapter-(\d+)\/$/.exec(path);
+      return !['/404/', '/library/', '/account/'].includes(path) && !path.startsWith('/admin/') &&
+        !path.endsWith('/releases/') && !(scheduled && Number(scheduled[1]) > 50);
+    } }),
     ...(demoContent ? [demoAssets] : []),
   ],
   // Keep even small font subsets as local files: CSP deliberately disallows data: fonts.
