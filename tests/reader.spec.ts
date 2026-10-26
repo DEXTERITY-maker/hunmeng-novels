@@ -547,7 +547,7 @@ test('контакты без выдуманных каналов и техни�
 test('метка версии и исключение всей редакции из sitemap', async ({page}) => {
   const version = await page.goto('/version.json');
   const data = JSON.parse(await version!.text());
-  expect(data.version).toBe('0.5.1');
+  expect(data.version).toBe('0.5.2');
   expect(data.commit === null || /^[0-9a-f]{40}$/.test(data.commit)).toBe(true);
   const sitemap = (await (await page.goto('/sitemap-0.xml'))!.text());
   expect(sitemap).not.toContain('/admin/');
