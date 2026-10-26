@@ -79,6 +79,8 @@ She asked about his access card. He told her where he had found it. When she ask
 
 “Don't delete anything,” she said. “If this person contacts you, call me. Don't meet them alone.”
 
+She left a card with a direct number.
+
 “Do you still attend Hudson Polytechnic?”
 
 “As far as I know.”
