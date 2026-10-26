@@ -111,6 +111,8 @@ He laughed once. It sounded close to a sob.
 
 His brother had always told him to read the whole chapter.
 
+A low boom drew him to the window. Above the avenue, a figure in a dark uniform drifted through the air, carrying a broken traffic light in one hand.
+
 People below raised their phones. Nobody ran.
 
 The figure landed, and the street resumed its noise. Ye Xuan watched the crowd accept the impossible as part of an ordinary commute.
