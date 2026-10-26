@@ -7,24 +7,24 @@
       "type": "персонаж"
     },
     {
+      "original": "叶明",
+      "translation": "Ye Ming",
+      "type": "персонаж"
+    },
+    {
       "original": "唐太太",
       "translation": "Mrs. Tang",
       "type": "персонаж"
     },
     {
-      "original": "唐人街",
-      "translation": "Chinatown",
+      "original": "曼哈顿华埠",
+      "translation": "Manhattan Chinatown",
       "type": "место"
     },
     {
-      "original": "大道悟性",
-      "translation": "Great Dao Comprehension",
+      "original": "逆天悟性",
+      "translation": "Exceptional Comprehension",
       "type": "техника"
-    },
-    {
-      "original": "心石",
-      "translation": "Heartstone",
-      "type": "предмет"
     }
   ]
 }

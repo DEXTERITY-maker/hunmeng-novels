@@ -1,15 +1,13 @@
 ---
-title: "New novel: Comprehension Against the Heavens"
-excerpt: "Our first original story is here. A transmigrator wakes up in a New York of Awakened heroes and sees the Dao behind their powers. Three chapters are out now."
+title: "Comprehension Against the Heavens: a fresh beginning"
+excerpt: "The original novel has been restarted with a new opening, a revised comprehension talent, and two newly written chapters."
 category: announcements
-publishedAt: '2026-10-25'
+publishedAt: '2026-10-26'
 order: 1
 ---
 
-**Comprehension Against the Heavens** is the first original novel written for Hunmeng.
+**Comprehension Against the Heavens** has a fresh beginning. The previous opening chapters have been replaced. Ye Xuan must complete a source to master it instantly; turning that knowledge into actual power still takes real work.
 
-Ye Xuan dies saving a child on a rainy street in Hangzhou and wakes up in New York, in a world where the sky burned white twelve years ago and people began to Awaken. Everyone calls them powers. Ye Xuan sees what lies underneath: the threads of the Great Dao.
+Two newly written chapters are available. Later chapters have not been published.
 
-The first three chapters are available now, and new chapters will follow.
-
-[Start reading](/novel/comprehension-against-the-heavens/chapter-1/)
+[Read Chapter 1](/novel/comprehension-against-the-heavens/chapter-1/)
