@@ -47,6 +47,20 @@ export async function initLibrary() {
         );
         const read = element('a', action.label + ' →', 'text-link');
         read.href = action.url;
+        if (c && p) {
+          const chapterProgress = Math.round(Math.max(0, Math.min(1, p.ratio)) * 100);
+          const progressText = element('p', `Current chapter: ${chapterProgress}%`, 'fine');
+          const progressBar = element('progress') as HTMLProgressElement;
+          progressBar.max = 100;
+          progressBar.value = chapterProgress;
+          progressBar.setAttribute('aria-label', `${n.title}: chapter ${c.number} progress`);
+          progressBar.className = 'library-chapter-progress';
+          body.append(progressText, progressBar);
+          if (p.updatedAt > 0) {
+            const last = element('p', `Last read: ${new Date(p.updatedAt).toLocaleDateString()}`, 'fine');
+            body.append(last);
+          }
+        }
         body.append(read);
         const label = element('label', 'Shelf');
         const select = element('select');
