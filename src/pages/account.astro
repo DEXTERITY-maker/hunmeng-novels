@@ -2,6 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import { site } from '../config/site';
 import ReaderPreferences from '../components/ReaderPreferences.astro';
+import ReaderProgression from '../components/ReaderProgression.astro';
 import Icon from '../components/Icon.astro';
 ---
 <Layout title="Sign in or register" noindex description="Sign in to Hunmeng or create a reader account with your email and password.">
@@ -44,7 +45,8 @@ import Icon from '../components/Icon.astro';
           </aside>
           <div class="profile-content">
             <section id="profile-details" class="profile-panel" aria-labelledby="profile-title">
-              <p class="eyebrow">Personal space</p><h2 id="profile-title">Profile</h2><p class="profile-intro">Your name and a little about you.</p>
+              <p class="eyebrow">Personal space</p><h2 id="profile-title">Profile</h2><p class="profile-intro">Your reading journey, achievements and personal details.</p>
+              <ReaderProgression />
               <form id="profile-form">
                 <fieldset id="profile-fields" disabled>
                   <label>Nickname<input name="nickname" aria-label="Nickname" autocomplete="nickname" minlength="3" maxlength="24" required aria-describedby="nickname-help" /><small id="nickname-help">Use 3–24 characters: letters, numbers, spaces, hyphens, or underscores. Nicknames do not need to be unique.</small></label>
