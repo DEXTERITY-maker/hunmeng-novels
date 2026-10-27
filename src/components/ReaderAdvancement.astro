@@ -1,0 +1,77 @@
+---
+import { ranks,titles,achievements,rankImage } from '../lib/reader-progression';
+---
+<div id="reader-advancement" class="reader-advancement" data-status="loading" aria-label="Reader progression">
+  <p id="reader-advancement-status" class="fine" role="status" aria-live="polite">Loading verified reading achievements…</p>
+  <section class="advancement-hero" aria-labelledby="advancement-heading" hidden>
+    <div class="advancement-emblem-wrap">
+      <img id="reader-current-emblem" src={rankImage('iron')} width="150" height="168" alt="Current rank emblem" />
+    </div>
+    <div class="advancement-intro">
+      <p class="eyebrow">Your reading journey</p>
+      <h3 id="advancement-heading"><span id="reader-level">Level 1</span> <span class="advancement-separator">·</span> <span id="reader-rank">Iron</span></h3>
+      <p class="advancement-title-line">Equipped title: <strong id="reader-equipped-title">Novice Reader</strong></p>
+      <div class="advancement-xp-label"><span id="reader-xp-numbers">0 / 500 XP</span><span id="reader-xp-remaining">500 XP to next level</span></div>
+      <progress id="reader-xp-progress" aria-label="Experience toward next level" max="500" value="0"></progress>
+      <p class="fine advancement-trust">Ranks and XP come from verified, account-linked chapter rewards. Browsing and scrolling alone do not earn XP.</p>
+    </div>
+  </section>
+  <section class="advancement-stats" aria-label="Reading statistics" hidden>
+    <div><span>Chapters rewarded</span><strong id="reader-stat-chapters">0</strong><small>Verified</small></div>
+    <div><span>Novels finished</span><strong id="reader-stat-novels">0</strong><small>Verified</small></div>
+    <div><span>Reading days</span><strong id="reader-stat-days">0</strong><small>Verified</small></div>
+    <div><span>Reading now</span><strong id="reader-stat-reading">0</strong><small>On this device</small></div>
+    <div><span>Read later</span><strong id="reader-stat-later">0</strong><small>On this device</small></div>
+    <div><span>Unlocked achievements</span><strong id="reader-stat-achievements">0</strong><small>Verified</small></div>
+  </section>
+  <section class="advancement-section" aria-labelledby="rank-gallery-title" hidden>
+    <div class="advancement-section-header"><p class="eyebrow">Nine milestones</p><h3 id="rank-gallery-title">Reader ranks</h3><p>Rank follows your level automatically. It cannot be selected manually.</p></div>
+    <div class="rank-gallery">
+      {ranks.map(r => (
+        <article class="rank-tile" data-rank-id={r.id} data-rank-min={r.min}>
+          <img src={rankImage(r.id)} alt={`${r.en} emblem`} width="112" height="125" loading="lazy" decoding="async" />
+          <h4>{r.en}</h4><p class="rank-tile-levels">Levels {r.min}–{r.max}</p>
+          <p class="rank-tile-description">{r.description}</p><span class="rank-tile-state" data-rank-state>Locked</span>
+        </article>
+      ))}
+    </div>
+  </section>
+  <section class="advancement-section" aria-labelledby="reader-titles-heading" hidden>
+    <div class="advancement-section-header"><p class="eyebrow">Earn your own identity</p><h3 id="reader-titles-heading">Reader titles</h3><p>Titles are earned separately from ranks. Choose any title you've unlocked.</p></div>
+    <div class="reader-awards-list">
+      {titles.map(t => (
+        <article class="reader-award" data-title-id={t.id}>
+          <div class="award-symbol" aria-hidden="true">✦</div>
+          <div class="award-body"><h4>{t.en}</h4><p>{t.description}</p>
+            <progress max={Math.max(1,t.target)} value="0" aria-label={`${t.en} unlock progress`}></progress>
+            <small data-award-progress>Checking progress…</small>
+          </div>
+          <button type="button" class="button secondary award-select" data-equip-title={t.id} disabled>Locked</button>
+        </article>
+      ))}
+    </div>
+    <p id="reader-title-status" class="fine" role="status" aria-live="polite"></p>
+  </section>
+  <section class="advancement-section" aria-labelledby="reader-achievements-heading" hidden>
+    <div class="advancement-section-header"><p class="eyebrow">Moments worth remembering</p><h3 id="reader-achievements-heading">Achievements</h3></div>
+    <div class="reader-achievements-grid">
+      {achievements.map((a,i) => (
+        <article class="achievement-tile" data-achievement-id={a.id}>
+          <div class="achievement-icon" aria-hidden="true">{['✧','❖','✦','◈','✶'][i]}</div>
+          <h4>{a.en}</h4><p>{a.description}</p>
+          <progress value="0" max={a.target} aria-label={`${a.en} achievement progress`}></progress>
+          <span data-achievement-status>Checking…</span>
+        </article>
+      ))}
+    </div>
+  </section>
+</div>
+<dialog id="reader-rank-unlocked" class="reader-rank-dialog" aria-labelledby="reader-new-rank-title">
+  <div class="reader-rank-dialog-inner">
+    <p class="eyebrow">A new chapter in your journey</p>
+    <img id="reader-new-rank-image" width="155" height="176" alt="" />
+    <h2 id="reader-new-rank-title">Congratulations!</h2>
+    <p id="reader-new-rank-detail"></p>
+    <button type="button" id="reader-rank-acknowledge" class="button">Continue reading</button>
+  </div>
+</dialog>
