@@ -117,7 +117,7 @@ He closed them and opened the photograph of Yansheng beside the packing crate. H
 
 The review had not proved a crime. It had shown a technical question that deserved a complete answer and a handover that still lacked a named witness.
 
-No audience had needed to see the test for that to matter.
+Han sent the calculation sheet back with one cell marked. Yanchuan had included the auxiliary demand correctly but had not shown which measured interval it came from. He added the source reference before anyone outside the workshop saw it.
 
 On his desk, beside the photograph, the case chronology remained open to Friday, October 30. The visitor's departure column was blank in the copy the family had received. Tomorrow Wanjiru expected an answer about that blank.
 
