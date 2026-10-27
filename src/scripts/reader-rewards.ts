@@ -13,7 +13,6 @@ export async function startReaderRewardTracking(novel: string, chapter: string, 
     p_novel: novel, p_chapter: chapter,
   });
   if (startError || typeof token !== 'string' || !/^[0-9a-f-]{36}$/i.test(token)) return;
-  const beganAt = performance.now();
   let activeMs = 0;
   let lastTick = performance.now();
   let readingGesture = false;
@@ -21,6 +20,7 @@ export async function startReaderRewardTracking(novel: string, chapter: string, 
   let startY = window.scrollY;
   let finished = false;
   let pending = false;
+  let failedAttempts = 0;
   let disposed = false;
   const tick = () => {
     const now = performance.now();
@@ -52,7 +52,12 @@ export async function startReaderRewardTracking(novel: string, chapter: string, 
       if (!error && data === true) {
         finished = true;
         window.dispatchEvent(new Event('reader:verified-chapter-finished'));
+      } else if (++failedAttempts >= 3) {
+        // Avoid polling forever on invalid, expired or duplicate sessions.
+        finished = true;
       }
+    } catch {
+      if (++failedAttempts >= 3) finished = true;
     } finally {
       pending = false;
     }
