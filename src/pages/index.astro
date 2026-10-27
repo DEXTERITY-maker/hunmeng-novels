@@ -33,9 +33,8 @@ const viewsLabel = new Intl.NumberFormat('en-US');
     <section class="home-hero" aria-labelledby="home-title">
       <div class="home-hero-copy">
         <div class="home-hero-content">
-          <p class="home-eyebrow"><span class="hero-eyebrow-mark" aria-hidden="true">✦</span> HUNMENG READING ROOM</p>
           <h1 id="home-title">Stories worth <em>coming back to.</em></h1>
-          <p class="home-hero-description">A quiet place for extraordinary worlds. Find your next novel, pick up where you left off, and make every chapter your own.</p>
+          <p class="home-hero-description">A library of web novels in English, for quiet moments and big imaginations.</p>
           <form class="home-search" role="search" action="/catalog/" method="get">
             <label class="home-sr-only" for="home-search-input">Search novels</label>
             <span class="home-search-symbol"><Icon name="search" size={21} /></span>
@@ -43,31 +42,11 @@ const viewsLabel = new Intl.NumberFormat('en-US');
             <button class="button" type="submit">Search <Icon name="arrow" size={17} /></button>
           </form>
           <nav class="home-discover" aria-label="Explore the library">
-            <span>Explore by</span>
-            <a href="/genres/">Genres <Icon name="arrow" size={15} /></a>
-            <a href="/tags/">Tags <Icon name="arrow" size={15} /></a>
-            <a href="/catalog/">All novels <Icon name="arrow" size={15} /></a>
+            <a href="/genres/"><Icon name="layers" size={20} /> Browse genres <Icon name="arrow" size={15} /></a>
+            <a href="/tags/"><Icon name="tag" size={20} /> Browse tags <Icon name="arrow" size={15} /></a>
+            <a href="/library/"><Icon name="book" size={20} /> My library <Icon name="arrow" size={15} /></a>
           </nav>
         </div>
-        {recommendations[0] && (
-          <a class="home-hero-feature" href={recommendations[0].url} aria-label={'Discover featured novel: ' + recommendations[0].title}>
-            <div class="home-feature-top">
-              <span class="home-feature-kicker"><span aria-hidden="true">✧</span> EDITOR'S SHELF</span>
-              <span class="home-feature-count">{chapterCount(recommendations[0].chapterCount)}</span>
-            </div>
-            <div class="home-feature-visual">
-              <span class="home-feature-cover">
-                <img src={recommendations[0].cover} alt="" width="250" height="375" fetchpriority="high" decoding="async" />
-              </span>
-            </div>
-            <div class="home-feature-details">
-              <p>{recommendations[0].genres.slice(0, 2).join(' · ')}</p>
-              <h2>{recommendations[0].title}</h2>
-              <span class="home-feature-author">By {recommendations[0].author}</span>
-              <span class="home-feature-cta">Discover this story <Icon name="arrow" size={17} /></span>
-            </div>
-          </a>
-        )}
       </div>
     </section>
 

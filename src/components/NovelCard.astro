@@ -1,4 +1,5 @@
 ---
+import Icon from './Icon.astro';
 import { dateLabel, chapterCount, type Novel } from '../lib/content';
 interface Props {
   novel: Novel;
@@ -26,6 +27,6 @@ const { novel: n } = Astro.props;
       {chapterCount(n.chapterCount)} · {n.translationStatus} ·{' '}
       <time datetime={n.updatedAt}>{dateLabel(n.updatedAt)}</time>
     </p>
-    <a class="text-link catalog-read-action" href={n.url}>Read novel <span aria-hidden="true">→</span></a>
+    <a class="text-link catalog-read-action" href={n.url}>Read novel <Icon name="arrow" size={18} /></a>
   </div>
 </article>
