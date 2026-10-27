@@ -1,9 +1,6 @@
 name: Проверка подключения Timeweb
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths: [.github/workflows/timeweb-connection.yml]
 permissions:
   contents: read
 jobs:

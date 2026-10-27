@@ -21,11 +21,21 @@ function repoMatches(repository) {
 }
 export function selectApp(apps) {
   if (!Array.isArray(apps)) throw new Error('Timeweb returned an invalid app list.');
-  const matches = apps.filter(app => app.branch_name === 'main' && repoMatches(app.repository) &&
-    app.domains?.some(domain => String(domain.fqdn).toLowerCase().replace(/\.$/, '') === productionHost));
+  const candidates = apps.filter(app => (app.branch_name ?? app.branch) === 'main' && repoMatches(app.repository));
+  const oldHostMatches = candidates.filter(app => app.domains?.some(domain => domain.fqdn === productionHost));
+  const matches = oldHostMatches.length ? oldHostMatches : candidates;
   if (matches.length !== 1) throw new Error(`Expected one Hunmeng app on main; found ${matches.length}. No deployment was started.`);
   if (!/^\d+$/.test(String(matches[0].id))) throw new Error('Timeweb returned an invalid app ID.');
+  publicOrigin(matches[0]);
   return matches[0];
+}
+export function publicOrigin(app) {
+  const hosts = app.domains?.filter(domain => domain.fqdn === productionHost ||
+    (domain.is_technical === true && /^[a-z0-9-]+\.twc1\.net$/i.test(domain.fqdn)))
+    .map(domain => domain.fqdn.toLowerCase());
+  const unique = [...new Set(hosts ?? [])];
+  if (unique.length !== 1) throw new Error('Could not identify one existing Timeweb technical domain for Hunmeng.');
+  return 'https://' + unique[0];
 }
 
 export async function deployTimeweb({ token, sha, fetchImpl = fetch, sleep = pause,
@@ -54,7 +64,8 @@ export async function deployTimeweb({ token, sha, fetchImpl = fetch, sleep = pau
   }
   const app = selectApp((await request('/apps')).apps);
   const path = `/apps/${app.id}`;
-  log(`Hunmeng app ${app.id}; deploying commit ${sha}.`);
+  const origin = publicOrigin(app);
+  log(`Hunmeng app ${app.id}; deploying commit ${sha}; site ${origin}/.`);
   const deployments = (await request(path + '/deploys?limit=100')).deploys;
   if (!Array.isArray(deployments)) throw new Error('Timeweb returned an invalid deployment list.');
   const current = deployments.filter(d => d.commit_sha === sha)
@@ -94,7 +105,6 @@ export async function deployTimeweb({ token, sha, fetchImpl = fetch, sleep = pau
   }
   log(`Timeweb confirmed deployment ${deployment.id} for ${sha}.`);
   // Public smoke checks use a new request without the Timeweb Authorization header.
-  const origin = `https://${productionHost}`;
   const pages = ['/', '/catalog/', '/library/', '/news/', '/novel/the-latency-of-tomorrow/', '/account/'];
   for (const route of pages) {
     let healthy = false;

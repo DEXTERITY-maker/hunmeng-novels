@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { deployTimeweb, selectApp, productionHost } from '../scripts/deploy-timeweb.mjs';
+import { deployTimeweb, selectApp, publicOrigin, productionHost } from '../scripts/deploy-timeweb.mjs';
 const sha = 'a'.repeat(40);
 const token = 'synthetic-timeweb-token-for-tests';
 const app = { id: 42, branch_name: 'main', repository: { url: 'https://github.com/DEXTERITY-maker/hunmeng-novels.git' },
@@ -45,7 +45,7 @@ test('rejects no match, wrong branch and ambiguous app identity before any mutat
     const f = fixture({ apps }); await assert.rejects(deployTimeweb(f.args), /Expected one Hunmeng app/);
     assert.equal(f.calls.some(call => call.method === 'POST'), false);
   }
-  assert.throws(() => selectApp([{ ...app, domains: [{ fqdn: 'other.example' }] }]), /found 0/);
+  assert.throws(() => selectApp([{ ...app, domains: [{ fqdn: 'other.example' }] }]), /technical domain/);
 });
 test('requires the expected GitHub repository even when a domain matches', () => {
   assert.throws(() => selectApp([{ ...app, repository: { url: 'https://github.com/unrelated/repo' } }]), /found 0/);
@@ -79,4 +79,11 @@ test('missing credentials and invalid commits fail before making network request
 test('API errors with sensitive bodies report only the HTTP status', async () => {
   const f = fixture(); f.args.fetchImpl = async () => new Response(JSON.stringify({ detail: token }), { status: 401 });
   await assert.rejects(deployTimeweb(f.args), error => error.message.includes('HTTP 401') && !error.message.includes(token));
+});
+
+test('supports the live branch field and a replacement technical domain on the same repository', () => {
+  const live = { ...app, branch_name: undefined, branch: 'main', domains: [{ fqdn: 'hunmeng-replacement.twc1.net', is_technical: true }] };
+  assert.equal(selectApp([live]).id, 42);
+  assert.equal(publicOrigin(live), 'https://hunmeng-replacement.twc1.net');
+  assert.throws(() => selectApp([{ ...live, domains: [{ fqdn: 'private.example', is_technical: true }] }]), /technical domain/);
 });
