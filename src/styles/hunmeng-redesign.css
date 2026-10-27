@@ -1188,7 +1188,7 @@ html[data-theme='sepia'] body:has([data-reader]) {
 .reader-focus-mode .show-controls {opacity:.72;}
 @media(max-width:760px) {
   .reader-header {height:57px;padding-inline:9px;gap:6px;}
-  .reader-header .reader-back {width:44px;height:44px;padding:0;}
+  .reader-header .reader-back {width:44px;height:46px;min-height:46px;padding:0;}
   .reader-brand-label {font-size:.91rem;}
   .reader-brand-label small {display:none;}
   .reader-book-label {font-size:.68rem;}
