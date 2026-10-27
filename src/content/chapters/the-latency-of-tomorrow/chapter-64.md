@@ -65,6 +65,4 @@ A month later the supplier returned with a more realistic proposal. It included 
 
 The robot waited in its demonstration enclosure. The mechanical aid had already completed an approved trial.
 
-Yanchuan closed the comparison without declaring a winner. A machine could be clever, fast and expensive. It could not operate as a useful service without a place that could keep it working.
-
-A robot needed a workshop, and the workshop already belonged to people who understood what happened there.
+Yanchuan closed the comparison and asked the supplier to price the extra fixture and its annual inspection. The robot's next demonstration remained booked, but Arjun had not signed the acceptance form. Someone at the factory would have to maintain the arrangement after the visiting engineer went home.
