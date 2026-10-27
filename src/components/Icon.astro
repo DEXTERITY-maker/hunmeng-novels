@@ -1,5 +1,5 @@
 ---
-interface Props { name: 'search' | 'arrow' | 'sun' | 'moon' | 'system' | 'sepia' | 'user' | 'book' | 'bookmark' | 'layers' | 'tag' | 'clock' | 'check' | 'ban' | 'chevron'; size?: number }
+interface Props { name: 'search' | 'arrow' | 'sun' | 'moon' | 'system' | 'sepia' | 'user' | 'book' | 'bookmark' | 'layers' | 'tag' | 'clock' | 'check' | 'ban' | 'chevron' | 'info' | 'shield' | 'pen' | 'logout' | 'sliders'; size?: number }
 const { name, size = 18 } = Astro.props;
 ---
 <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
@@ -17,5 +17,10 @@ const { name, size = 18 } = Astro.props;
   {name === 'check' && <><circle cx="12" cy="12" r="9" /><path d="m7 12 3 3 7-7" /></>}
   {name === 'ban' && <><circle cx="12" cy="12" r="9" /><path d="m6 6 12 12" /></>}
   {name === 'chevron' && <path d="m9 5 7 7-7 7" />}
+  {name === 'info' && <><circle cx="12" cy="12" r="9" /><path d="M12 11v5m0-9h.01" /></>}
+  {name === 'shield' && <path d="M12 2 21 6v5c0 6-3.5 9-9 11-5.5-2-9-5-9-11V6l9-4Zm-4 10 3 3 5-6" />}
+  {name === 'pen' && <><path d="m4 20 5.5-1.2L20 8.3 15.7 4 5.2 14.5 4 20Z" /><path d="m13.8 6 4.3 4.3M4 20l5.5-1.2" /></>}
+  {name === 'logout' && <><path d="M10 4H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h5" /><path d="M14 7l5 5-5 5M8 12h11" /></>}
+  {name === 'sliders' && <><path d="M4 5h16M4 12h16M4 19h16" /><circle cx="9" cy="5" r="2" fill="var(--surface)" /><circle cx="16" cy="12" r="2" fill="var(--surface)" /><circle cx="11" cy="19" r="2" fill="var(--surface)" /></>}
   {name === 'bookmark'  && <path d="M6 3h12v18l-6-4-6 4V3Z" />}
 </svg>
