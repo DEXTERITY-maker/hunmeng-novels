@@ -1,5 +1,5 @@
 name: Проверка статической сборки
-on: [push, pull_request]
+on: [push, pull_request, workflow_dispatch]
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -12,6 +12,7 @@ jobs:
       - run: npm ci
       - run: node --check scripts/publish-approved.mjs
       - run: node --check scripts/publication-news.mjs
+      - run: node --check scripts/deploy-timeweb.mjs
       - run: node --test tests/*.test.mjs
       - run: npm run build
       - run: npx playwright install --with-deps chromium
@@ -19,3 +20,28 @@ jobs:
       # Browser tests run against a separate build with the demo stories from tests/demo.
       - run: npm run build:demo
       - run: npm test
+
+  deploy-timeweb:
+    name: Публикация Hunmeng в Timeweb
+    needs: build
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    concurrency:
+      group: hunmeng-timeweb-production
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Deploy the checked commit and verify public pages
+        env:
+          TIMEWEB_API_TOKEN: ${{ secrets.TIMEWEB_API_TOKEN }}
+          DEPLOY_SHA: ${{ github.sha }}
+        run: node scripts/deploy-timeweb.mjs
