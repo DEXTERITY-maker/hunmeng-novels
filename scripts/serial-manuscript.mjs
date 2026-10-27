@@ -12,7 +12,7 @@ export function parseChapter(source) {
 }
 export function validateBody(body) {
   const count = Array.from(body).length;
-  if (count < 4000) throw new Error(`Chapter body has ${count} characters; expected at least 4000`);
+  if (count < 4000 || count > 8500) throw new Error(`Chapter body has ${count} characters; expected 4000–8500`);
   return count;
 }
 export async function validateSerials(root = process.cwd()) {
@@ -37,7 +37,7 @@ export async function validateSerials(root = process.cwd()) {
       throw new Error(`Published opening chapters must be contiguous: ${serial.slug}`);
     report.push({ slug: serial.slug, written: chapters.length, planned: serial.totalChapters, chapters });
   }
-  // The minimum applies to every published novel, not just planned serials.
+  // The chapter length range applies to every published novel, not just planned serials.
   const planned = new Set(serials.map(s => s.slug));
   const chaptersRoot = join(root, 'src/content/chapters');
   for (const entry of await readdir(chaptersRoot, { withFileTypes: true })) {
