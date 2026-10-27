@@ -66,7 +66,7 @@ test('editorial surfaces work in light, dark and sepia modes', async ({ page }) 
     }
     await page.getByRole('radio', { name: theme[0].toUpperCase() + theme.slice(1), exact: true }).check();
     await expect(page.locator('html')).toHaveAttribute('data-theme', theme);
-    const visual = await page.locator('.home-hero-content').evaluate(element => {
+    const visual = await page.locator('.home-hero-copy').evaluate(element => {
       const css = getComputedStyle(element);
       return { background: css.backgroundImage, color: css.color, border: css.borderColor };
     });

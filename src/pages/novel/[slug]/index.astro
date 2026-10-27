@@ -11,7 +11,7 @@ export async function getStaticPaths() {
 }
 const { novel: n } = Astro.props;
 const serial = serials.find(s => s.slug === n.slug);
-const firstChapters = n.chapters.slice(0, 30);
+const firstChapters = n.chapters.slice(0, 10);
 const glossaryKinds = [
   { type: 'character', title: 'Characters' },
   { type: 'place', title: 'Places' },
@@ -60,7 +60,6 @@ const usesPlaceholder = n.cover === placeholderCover;
           <LibraryControl slug={n.slug} />
           <a class="detail-contents-link" href="#contents-title">Contents <span aria-hidden="true">→</span></a>
         </div>
-        <p class="detail-description">{n.description}</p>
         {serial && <p class="fine">{n.chapterCount} opening chapters published · {serial.totalChapters} planned. <a href={`${n.url}releases/`}>Release schedule</a></p>}
         <dl class="novel-facts">
           {n.original ? (
@@ -108,11 +107,6 @@ const usesPlaceholder = n.cover === placeholderCover;
             <a href={`/catalog/?category=${encodeURIComponent(category)}`}>{category}</a>
           ))}
         </div>
-        <div class="tag-list">
-          {n.tags.map((t) => (
-            <a href={`/catalog/?include=${encodeURIComponent(t)}`}>{t}</a>
-          ))}
-        </div>
         <div class="personal-rating" data-rating-novel={n.slug}>
           <p class="personal-rating-title">Your rating</p>
           <div class="personal-rating-stars" role="group" aria-label="Rate this novel">
@@ -127,6 +121,11 @@ const usesPlaceholder = n.cover === placeholderCover;
         )}
       </div>
     </article>
+    <section class="synopsis-panel" aria-labelledby="synopsis-title">
+      <h2 id="synopsis-title">Synopsis</h2>
+      <p class="detail-description">{n.description}</p>
+      <div class="tag-list">{n.tags.map(t => <a href={`/catalog/?include=${encodeURIComponent(t)}`}>{t}</a>)}</div>
+    </section>
     <nav class="novel-section-nav" aria-label="Novel sections">
       <a href="#contents-title">Contents</a>
       <a href="#author-title">About the author</a>
