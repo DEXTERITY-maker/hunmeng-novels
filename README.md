@@ -462,7 +462,9 @@ CI выполняет те же проверки с Chromium на Node.js 24. Т
 
 ### Original serial releases
 
-`The Latency of Tomorrow` is planned as 247 English chapters, each 4,000–5,090 Unicode characters including spaces (body only, LF paragraph breaks, trimmed at both ends). Twenty opening chapters are currently written and published. `npm run build` validates every opening chapter against the agreed plan and rejects public manuscript files beyond chapter 50. Demo novels remain test fixtures only.
+All published novel chapter bodies must be at least 4,000 Unicode characters long (spaces and paragraph breaks included; frontmatter excluded). There is no upper chapter-length limit. This rule is checked by `scripts/validate-serials.mjs` for every published novel.
+
+`The Latency of Tomorrow` is planned as 247 English chapters, each at least 4,000 Unicode characters including spaces (body only, LF paragraph breaks, trimmed at both ends). Twenty opening chapters are currently written and published. `npm run build` validates every opening chapter against the agreed plan and rejects public manuscript files beyond chapter 50. Demo novels remain test fixtures only.
 
 The generated cover is `public/images/the-latency-of-tomorrow.jpg`; its creation brief is in `editorial/the-latency-of-tomorrow-cover.md`.
 
