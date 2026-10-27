@@ -73,4 +73,4 @@ Nobody laughed immediately. Then Arjun did.
 
 For the first time, Yanchuan felt that the project's paperwork had become as much an engineering product as the classifier itself. The agreement told people what would be demonstrated, who could question the result and what completion would actually mean.
 
-Two languages could support one promise. They could not do it by leaving the important word undefined.
+Arjun asked the lawyer to mark the acceptance clause in both signed copies. He wanted to show the two sentences to Leela and the purchasing team at the same meeting, without asking either to trust a translation made after the dispute.
