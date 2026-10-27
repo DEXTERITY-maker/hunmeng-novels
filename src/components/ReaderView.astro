@@ -97,6 +97,7 @@ const usesPlaceholder = n.cover === placeholderCover;
     >
       {Content && <Content />}
     </article>
+    <p id="reader-reward-status" class="reader-reward-status" role="status" aria-live="polite" hidden></p>
     <nav class="chapter-end-nav" aria-label="Chapter navigation" hidden={remote} data-release-unlock>
       {prev ? (
         <a class="button secondary chapter-previous" href={chapterUrl(n.slug, prev.data.slug)}>← Previous chapter</a>
