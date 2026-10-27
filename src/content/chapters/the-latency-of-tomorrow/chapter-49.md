@@ -107,6 +107,4 @@ They talked about the neighbour instead.
 
 Before closing the factory report Yanchuan added a note on dependent errors. Different columns in a table did not guarantee independent knowledge. A forecast could be honest in every calculation and still be too sure if all its assumptions leaned on one imperfect source.
 
-He printed the revised band. It was wider, less graceful and more likely to contain the weather the factory would actually experience.
-
-He preferred it that way.
+He printed the revised band and took it to Gao. “Will this leave you enough time to call the extra crew?” he asked. Gao checked the warning threshold, then said the answer depended on the afternoon shift roster. They added it to the test plan.
