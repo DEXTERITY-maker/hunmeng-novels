@@ -261,13 +261,13 @@ img {color:transparent;}
 }
 @media (max-width:760px) {
   .header-account .account-panel {
-    top:calc(100% + 8px);
+    top:62px;
     right:12px;
     left:auto;
     width:min(306px,calc(100vw - 24px));
     max-width:calc(100vw - 24px);
     padding:13px;
-    max-height:calc(100dvh - 92px);
+    max-height:calc(100dvh - 76px);
   }
 }
 @media (max-width:350px) {
