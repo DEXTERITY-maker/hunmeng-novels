@@ -346,7 +346,8 @@ test('Dark Gold promotion at level 140 is announced once and survives refresh', 
  await expect(modal).toContainText('Dark Gold');
  await page.screenshot({path:'test-results/hunmeng-dark-gold-upgrade.png',fullPage:false});
  await modal.getByRole('button',{name:'Continue reading'}).click();
- await expect.poll(()=>state.rankStats.last_rank_notified).toBe('dark-gold');
+ await expect.poll(()=>state.requests.filter(p=>p.includes('reader_mark_rank_seen')).length).toBeGreaterThan(0);
+ await expect.poll(()=>state.rankStats.last_rank_notified, {message: JSON.stringify(state.requests)}).toBe('dark-gold');
  await page.reload();
  await expect(page.locator('#reader-level')).toHaveText('Level 140');
  await expect(modal).toBeHidden();
