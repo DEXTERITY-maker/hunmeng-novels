@@ -45,9 +45,19 @@ Yanchuan called Zhou with her permission to ask about the process, not to invest
 
 “It was in my notebook,” she replied. “Nobody asked for the notebook until my desk was gone.”
 
+“Would you be willing to teach somebody what is in it?” Yanchuan asked.
+
+“During paid hours. And I want to decide which personal contacts stay private. A driver gave me his number so I could solve delivery problems, not so another company could turn it into a database.”
+
+“That's fair,” he said.
+
+“It isn't a favor,” Zhou answered. “It is the first condition of doing the work properly.”
+
 She did not want her private notes copied into a vendor's training database. She did want the company to understand the jobs it still needed someone to do.
 
-The factory eventually assigned a new worker to exception handling and invited Zhou to train the person during paid hours. Whether her transfer could be reversed was a matter between her and the employer. Henglan documented the process boundaries so future customers would not be sold an exaggerated claim of replacement.
+The factory eventually assigned a new worker to exception handling and invited Zhou to train the person during paid hours. Whether her transfer could be reversed was a matter between her and the employer.
+
+The new worker asked Zhou for the private numbers she used to call drivers. She refused to copy them into the shared system. One driver had given her his mobile number after a late-night breakdown, not for a vendor's database. The supervisor complained that the transfer would remain incomplete. Zhou offered to help request new business contacts through official channels. It would take longer. She had already been moved once without being asked. Henglan documented the process boundaries so future customers would not be sold an exaggerated claim of replacement.
 
 At home An listened to Yanchuan describe the empty space.
 
@@ -57,7 +67,7 @@ At home An listened to Yanchuan describe the empty space.
 
 “Then they thought the job was the desk.”
 
-He remembered how the family's first account of Yansheng had reduced his work to travelling and signing forms. Only after he disappeared had Yanchuan learned about maintenance tickets, acceptance boundaries and the people who relied on his questions.
+He remembered how the family's first account of Yansheng had reduced his work to traveling and signing forms. Only after he disappeared had Yanchuan learned about maintenance tickets, acceptance boundaries and the people who relied on his questions.
 
 A job could disappear from a chart long before its work disappeared from the world.
 
@@ -71,4 +81,4 @@ A month later Zhou wrote to say the new exception-handling process was working b
 
 Yanchuan didn't ask her to.
 
-The empty desk remained in his mind longer than the polished demonstration. He had seen machines complete tasks. He was learning how many tasks had never been named.
+Yanchuan asked whether Zhou had been paid for the notebook handover. Ning checked the invoice. The training hours were entered under her name, although her desk was still gone.

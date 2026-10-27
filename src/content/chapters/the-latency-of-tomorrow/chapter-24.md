@@ -67,7 +67,7 @@ He almost objected to being left out. Then she told him the operator had asked w
 
 He sent it through the review channel. Mei made him remove an illustration borrowed from a training manual because they had no right to redistribute it. Han signed the page describing the workshop's conditions and refused to sign a conclusion about another site.
 
-The following Wednesday Yanchuan returned to his own work. Chen had assigned him a client's cooling reserve calculation that had fallen behind while he was travelling. A draft optimization system suggested reducing a reserve because historical demand had never reached it. In the small print, its demand history excluded emergency exercises.
+The following Wednesday Yanchuan returned to his own work. Chen had assigned him a client's cooling reserve calculation that had fallen behind while he was traveling. A draft optimization system suggested reducing a reserve because historical demand had never reached it. In the small print, its demand history excluded emergency exercises.
 
 He restored the exercises as a separate scenario. The recommendation became less impressive. The client would have to choose which promise it needed to keep.
 
@@ -117,7 +117,7 @@ He closed them and opened the photograph of Yansheng beside the packing crate. H
 
 The review had not proved a crime. It had shown a technical question that deserved a complete answer and a handover that still lacked a named witness.
 
-No audience had needed to see the test for that to matter.
+Han had written the test conditions along the edge of the plots in pencil. Yanchuan kept the marked copy, not the cleaner one prepared for presentation.
 
 On his desk, beside the photograph, the case chronology remained open to Friday, October 30. The visitor's departure column was blank in the copy the family had received. Tomorrow Wanjiru expected an answer about that blank.
 

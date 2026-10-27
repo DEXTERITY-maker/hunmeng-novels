@@ -89,7 +89,11 @@ Yanchuan was on the video call and watched her label the columns before saying a
 
 He apologized. An worked through the figures with Rose, marking which amount had been paid, which was still described as pending, and where the statements disagreed. At the end Rose said she would take the reconciliation to the person helping with Daniel's employment case.
 
-Nothing in that work advanced the investigation into Yansheng. It made a difference to the person who had asked for it.
+When Rose ended the call, An kept the spreadsheet open. Yanchuan offered to help with the figures.
+
+“You were here when she asked,” An said. “What I needed was for you not to turn her accounts into an interview.”
+
+He had thought his apology settled the moment. It had only acknowledged it. He asked whether there were any invoices he could verify without speaking to Rose, and An sent him two.
 
 Later Yanchuan called Amina to ask whether he had misunderstood her warning.
 
@@ -117,4 +121,4 @@ After the call, the case summary was still open on the screen. A woman had remem
 
 The question of his brother's Friday visit was no longer empty.
 
-Nor did it belong to his family alone.
+He closed the summary before writing to Wanjiru. Whatever Faith had risked by remembering, he would not ask her to risk more to satisfy his impatience.

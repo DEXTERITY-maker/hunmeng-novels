@@ -55,6 +55,8 @@ He thought about that after the call. Their first paid pilot had depended on ove
 
 Guo's firm eventually secured the revised financing. It cost more on paper than the first proposal. The agreement retained a documented safety override, independent reporting of performance limits and a schedule of maintenance obligations whose costs could not simply be removed from the accounts.
 
+The bank's final schedule required a larger cash reserve. Guo canceled a planned recruitment round and told the applicants himself. One candidate had already declined another offer. She asked whether he expected her to thank him for the transparency. Guo said no. Later he told Ning he had defended the reporting conditions to the lender, but it was the call with the candidate that made the cost feel real.
+
 At the signing Guo asked Yanchuan whether the cautious arrangement would slow expansion.
 
 “Probably.”
@@ -69,4 +71,4 @@ The following week a prospective partner from India called. His factory had equi
 
 Guo forwarded the request to Chen with a note: Perhaps the capital is finally buying the work we know how to do.
 
-Yanchuan opened a new project folder. He left the family case folder beside it, still active and separate. There were things no funding agreement could settle. There were other things a careful agreement might allow people to build.
+Yanchuan opened a new project folder. He left the family case folder beside it, still active and separate. He placed Guo's corrected terms beside the prospective customer's note about maintenance time. The numbers were not yet the same story; a contract would have to make them answer to each other.

@@ -2,10 +2,11 @@
 novelSlug: the-latency-of-tomorrow
 slug: chapter-6
 number: 6
-title: A Message Is Not a Voice
+title: "A Message Is Not a Voice"
 publishedAt: "2026-10-26"
-description: A message arrives from Yansheng's account, offering precisely the reassurance his family wants.
+description: "A message arrives from Yansheng's account, offering precisely the reassurance his family wants."
 ---
+
 The message reached An while she was buying pears.
 
 I am safe. Need some time. Don't contact the site. I will explain.

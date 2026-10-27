@@ -2,10 +2,11 @@
 novelSlug: the-latency-of-tomorrow
 slug: chapter-3
 number: 3
-title: Fourteen Minutes
+title: "Fourteen Minutes"
 publishedAt: "2026-10-26"
-description: Du Mei finds how an untidy interval has disappeared from a reassuringly smooth report.
+description: "Du Mei finds how an untidy interval has disappeared from a reassuringly smooth report."
 ---
+
 Du Mei brought breakfast in a paper bag and refused to look at his conclusion.
 
 “Show me what you received.”

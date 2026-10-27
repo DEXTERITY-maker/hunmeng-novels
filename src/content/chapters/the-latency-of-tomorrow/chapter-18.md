@@ -2,10 +2,11 @@
 novelSlug: the-latency-of-tomorrow
 slug: chapter-18
 number: 18
-title: The Generator's Hour
+title: "The Generator's Hour"
 publishedAt: "2026-10-26"
-description: Back at work in Shenzhen, Yanchuan compares two maintenance records that seem to disagree about an idle machine.
+description: "Back at work in Shenzhen, Yanchuan compares two maintenance records that seem to disagree about an idle machine."
 ---
+
 The generator had been idle all afternoon, according to the summary.
 
 According to its meter, it had gained another hour.
@@ -34,7 +35,7 @@ Yanchuan wrote the possibilities down. He resented each one as it appeared.
 
 “Now ask what connected to it,” Han said.
 
-The authorized circuit list named the primary cold-storage loads and a service feeder. The witnessed demonstration had concerned a different supply arrangement. Yanchuan had almost treated every circuit at the site as part of the same test because he had travelled there for one question.
+The authorized circuit list named the primary cold-storage loads and a service feeder. The witnessed demonstration had concerned a different supply arrangement. Yanchuan had almost treated every circuit at the site as part of the same test because he had traveled there for one question.
 
 Amina answered the next morning during her break. She had asked the maintenance team about an unloaded run. Their retained work ticket described a loaded check of the service feeder. The date fell inside the period the contractor's summary called unavailable for operation.
 

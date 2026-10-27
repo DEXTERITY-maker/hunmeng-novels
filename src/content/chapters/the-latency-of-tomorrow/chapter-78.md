@@ -9,7 +9,7 @@ description: "As experienced workers move toward retirement, the factory discove
 
 The apprentice had never seen the fault before the software learned to flag it.
 
-At Arjun's factory a junior technician named Ravi was assigned to review images marked suspicious by the inspection model. Most warnings were routine. The system displayed the likely surface defect, and an experienced worker confirmed the result.
+At Arjun's factory Ravi, a junior technician involved in the pilot's early trials, was assigned to review images marked suspicious by the inspection model. Most warnings were routine. The system displayed the likely surface defect, and an experienced worker confirmed the result.
 
 Ravi had become good at following the suggested categories. He had not become good at noticing a problem the categories did not contain.
 
@@ -31,7 +31,9 @@ They redesigned Ravi's training schedule. Some inspections would be conducted wi
 
 Mei welcomed the comparison. She wanted to know whether the model's warnings were teaching workers useful patterns or encouraging them to stop looking.
 
-In the first exercise Ravi made several mistakes. Leela corrected them and explained why. The model had made different mistakes on the same batch. Both records were kept for learning, not employee ranking.
+In the first exercise Ravi made several mistakes. Leela corrected them and explained why.
+
+He laughed at the first correction, then stopped laughing when the same class of mark fooled him again. During the break he asked whether his earlier inspections would be reviewed. Leela said they would examine a sample together, not treat every accepted model label as his personal failure. The model had made different mistakes on the same batch. Both records were kept for learning, not employee ranking.
 
 Guo asked how the extra training would affect the factory's business case.
 
@@ -77,4 +79,4 @@ Leela wrote it in his training record as a correctly escalated observation.
 
 A system could make a worker more effective without making the work understandable. Arjun wanted both. The second required teachers, time and a willingness to leave questions open long enough for someone to learn.
 
-Yanchuan filed the lesson beside the pilot's next technical milestone. He had begun to think of the apprentices as part of the system's future maintenance plan, not a cost to be eliminated by its success.
+Yanchuan filed the lesson beside the pilot's next technical milestone. He asked Arjun to add supervised practice to the next maintenance budget. Ravi's name appeared as a trainee, not as a savings assumption.

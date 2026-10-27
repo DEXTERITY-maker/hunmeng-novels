@@ -2,10 +2,11 @@
 novelSlug: the-latency-of-tomorrow
 slug: chapter-5
 number: 5
-title: The Meter Outside the Model
+title: "The Meter Outside the Model"
 publishedAt: "2026-10-26"
-description: Han Rui arranges a modest test that changes what Yanchuan can honestly say about the reports.
+description: "Han Rui arranges a modest test that changes what Yanchuan can honestly say about the reports."
 ---
+
 Han Rui had written DO NOT BORROW on his clamp meter in ink that had survived four changes of employer. He handed it to Yanchuan and said, “Don’t touch anything.”
 
 They stood behind the safety line at a test workshop outside Shenzhen. Han supervised maintenance for a company that serviced industrial power equipment. He had known Yanchuan since a graduate placement, when the younger man had tried to diagnose a faulty pump from a dashboard whose sensor was disconnected.
@@ -68,7 +69,7 @@ When Yanchuan returned, Han had found an old photograph of Yansheng on his phone
 
 “You never told me you worked together.”
 
-“You never asked about his work. You said he travelled a lot.”
+“You never asked about his work. You said he traveled a lot.”
 
 The remark landed without emphasis. That made it harder to escape. Yanchuan knew his brother’s jokes, his old injuries, his preference for the corner seat. He knew almost nothing about the hours that paid for those train tickets home.
 

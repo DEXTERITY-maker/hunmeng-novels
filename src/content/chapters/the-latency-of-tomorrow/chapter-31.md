@@ -33,6 +33,12 @@ The driver remembered being delayed at a junction by roadworks. An searched the 
 
 “Of a delay, perhaps. It still doesn't tell us who gave him the envelope.”
 
+“Do you ever get tired of making a useful detail smaller?” Yanchuan asked.
+
+“Every day,” An replied. “I'm trying to keep it useful.”
+
+He heard a receipt printer start at her end of the call. She said she would send the reference when she was free, not before.
+
 They asked the investigator to compare the driver's description with the underlying dispatch order. The request could be made without telling Yanchuan the man's name or asking him to contact the driver.
 
 For several days Yanchuan found this infuriating. He had a witness who could describe a delivery, but not a face; an invoice with a route, but not a named passenger; a register bearing his brother's name, but no confirmed exit.
@@ -81,4 +87,4 @@ Before bed, An forwarded a message from the investigator. The courier had agreed
 
 Yanchuan saved the summary without trying to uncover the man's identity.
 
-The witness could not put a face in a vehicle. He could put a packet in the movement of a particular working day. It was a smaller service than Yanchuan wanted, and exactly the service the man could honestly give.
+The witness could not put a face in a vehicle. He could put a packet in the movement of a particular working day. The passenger field was empty in the original route note. It remained empty in the copy Yanchuan filed.

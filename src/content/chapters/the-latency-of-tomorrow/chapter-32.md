@@ -97,4 +97,4 @@ Yanchuan added a line of his own: A cause cannot be inferred solely because two 
 
 Then he closed both folders.
 
-Between the proofs was a distance he could not shorten by looking harder. It would take new evidence, and people other than him would have to obtain some of it.
+An called while he was still at the desk. He began to describe the two folders, then heard her son asking for help with a school bag. He said he could call again after dinner.

@@ -89,4 +89,4 @@ In his notebook he wrote: A margin can be a buffer, a price, or a way of moving 
 
 He closed the notebook and looked at the empty place on his calendar where another trip to Kenya might eventually fit. There was still no specific appointment requiring him there.
 
-For now, he stayed with the work whose boundaries he could actually inspect.
+The next morning Chen returned the draft with the fee formula highlighted. Yanchuan opened the spreadsheet again rather than answering the investor's congratulatory message.

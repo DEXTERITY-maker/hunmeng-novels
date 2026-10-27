@@ -1,17 +1,21 @@
 import { test, expect } from '@playwright/test';
-import { readdirSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 const slug = 'the-latency-of-tomorrow';
 const root = `/novel/${slug}/`;
 // New chapter publications should not leave the production smoke test pinned to launch day.
 const publishedCount = readdirSync(new URL(`../src/content/chapters/${slug}/`, import.meta.url))
   .filter(name => name.endsWith('.md')).length;
-const edition = { slug, total_chapters: 247, initial_chapters: 50, timezone: 'Europe/Moscow', launch_at: null };
+const plan = JSON.parse(readFileSync(new URL('../src/data/serials.json', import.meta.url), 'utf8'))
+  .find((serial: { slug: string }) => serial.slug === slug);
+const scheduledChapter = plan.initialChapters + 1;
+const edition = { slug, total_chapters: plan.totalChapters, initial_chapters: plan.initialChapters, timezone: plan.timezone, launch_at: null };
 test('original novel opens with its published English chapters and generated cover', async ({ page, request }) => {
   await page.route('**/rest/v1/serial_*', r => r.fulfill({ json: r.request().url().includes('serial_editions') ? [edition] : [] }));
   await page.goto(root);
   await expect(page.getByRole('heading', { name: 'The Latency of Tomorrow', exact: true })).toBeVisible();
   expect(publishedCount).toBeGreaterThan(0);
-  await expect(page.locator('.contents-section .chapter-list li')).toHaveCount(publishedCount);
+  await expect(page.locator('.contents-section .chapter-list li')).toHaveCount(Math.min(30, publishedCount));
+  await expect(page.getByRole('link', { name: 'Full contents' })).toBeVisible();
   expect(await page.locator('.detail-cover').evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth === 1024 && img.naturalHeight === 1536)).toBe(true);
   await page.getByRole('link', { name: 'Start reading', exact: true }).click();
   await expect(page.locator('#chapter-text')).toContainText('The rice cooker clicked off');
@@ -27,22 +31,22 @@ test('original novel opens with its published English chapters and generated cov
 test('the contents distinguish published chapters from 247 planned chapters', async ({ page }) => {
   await page.route('**/rest/v1/serial_*', r => r.fulfill({ json: r.request().url().includes('serial_editions') ? [edition] : [] }));
   await page.goto(root + 'releases/');
-  await expect(page.locator('[data-release-number]')).toHaveCount(247);
+  await expect(page.locator('[data-release-number]')).toHaveCount(plan.totalChapters);
   await expect(page.locator('[data-release-number] a:visible')).toHaveCount(publishedCount);
   await expect(page.locator('[data-release-status]')).toContainText('has not started yet');
-  await expect(page.locator('[data-release-number="51"] [data-release-date]')).toHaveText('Daily releases have not started yet.');
+  await expect(page.locator(`[data-release-number="${scheduledChapter}"] [data-release-date]`)).toHaveText('Daily releases have not started yet.');
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 test('a locked chapter contains no body and does not mark a future chapter as read', async ({ page, request }) => {
   await page.route('**/rest/v1/serial_*', r => r.fulfill({ json: r.request().url().includes('serial_editions') ? [{ ...edition, launch_at: '2026-10-26T10:00:00Z' }] : [] }));
   // A visitor changing their clock cannot make an empty server response disclose a body.
   await page.clock.setFixedTime(new Date('2040-01-01T00:00:00Z'));
-  await page.goto(root + 'chapter-51/');
+  await page.goto(root + `chapter-${scheduledChapter}/`);
   await expect(page.locator('#serial-status')).toContainText('27 Oct 2026 · 12:00 MSK');
   await expect(page.locator('#chapter-text')).toBeEmpty();
   await expect(page.locator('.reader-toolbar')).toBeHidden();
   expect(await page.locator('main[data-reader]').count()).toBe(0);
-  const source = await (await request.get(root + 'chapter-51/')).text();
+  const source = await (await request.get(root + `chapter-${scheduledChapter}/`)).text();
   expect(source).not.toContain('application/ld+json');
   expect(source).toContain('noindex');
   const progress = await page.evaluate(() => JSON.parse(localStorage.getItem('hunmeng-novels:v1') || '{}').progress || {});
@@ -52,8 +56,8 @@ test('the server release loads safe prose, then reader settings and progress wor
   let released = false;
   const body = '<img src=x onerror="window.injected=1">\n\n' + 'An ordinary paragraph of a test manuscript. '.repeat(100);
   await page.route('**/rest/v1/serial_*', r => r.fulfill({ json: r.request().url().includes('serial_editions') ? [{ ...edition, launch_at: '2026-10-26T10:00:00Z' }]
-    : released ? [{ number: 51, title: 'The Cost Outside the Chart', body }] : [] }));
-  await page.goto(root + 'chapter-51/');
+    : released ? [{ number: scheduledChapter, title: plan.chapters[scheduledChapter - 1].title, body }] : [] }));
+  await page.goto(root + `chapter-${scheduledChapter}/`);
   await expect(page.locator('#serial-status')).toContainText('locked');
   released = true;
   await page.getByRole('button', { name: 'Check availability' }).click();
@@ -63,7 +67,7 @@ test('the server release loads safe prose, then reader settings and progress wor
   await page.getByRole('button', { name: 'Settings', exact: true }).click();
   await expect(page.locator('#reader-settings')).toBeVisible();
   await page.getByRole('button', { name: 'Close settings', exact: true }).click();
-  await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem('hunmeng-novels:v1') || '{}').progress?.['the-latency-of-tomorrow']?.chapterNumber)).toBe(51);
+  await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem('hunmeng-novels:v1') || '{}').progress?.['the-latency-of-tomorrow']?.chapterNumber)).toBe(scheduledChapter);
 });
 test('release service errors show retry without exposing a body', async ({ page }) => {
   await page.route('**/rest/v1/serial_*', r => r.fulfill({ status: 503, body: '{}' }));

@@ -37,6 +37,14 @@ Henglan's first capital plan assumed revenue from the factory pilot, the Pune in
 
 The revised accounts showed how long Henglan could pay staff if its next two customers declined. The answer was shorter than Guo had hoped.
 
+Guo set the printout on the table. “If I show this version, they'll ask why I want to finance us at all.”
+
+“Then explain the contracts we have,” Ning said.
+
+“And if that's not enough?”
+
+“Then we hire fewer people,” Chen replied. Nobody liked how quickly the room agreed. Each vacant position was work someone else would have to carry.
+
 He reduced the first hiring plan and reserved funds for support obligations already promised. The company would not be large enough to boast about. It might be large enough to survive a difficult quarter without abandoning a customer.
 
 An read the governance summary at Yanchuan's request. She asked what would happen if an operator reported a danger and the company decided the complaint was bad for its reputation.
@@ -71,4 +79,4 @@ He signed his first advisory agreement with Henglan and asked them to include an
 
 Guo complained that the contract already contained too many pages about failure.
 
-“A company large enough to succeed,” Yanchuan said, “should be large enough to describe what happens when it doesn't.”
+“Then shorten the sales deck,” Yanchuan said. “But keep the exit plan in the contract. Someone will need it after we're gone.”

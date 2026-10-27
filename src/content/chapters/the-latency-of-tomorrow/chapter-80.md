@@ -97,4 +97,4 @@ Ning laughed. “You really are impossible.”
 
 “Only if the report asks me to sign.”
 
-She passed him the next paper.
+She passed him the next paper. This one had a beautifully drawn diagram and no source for the measurements. Ning watched him find the missing note before he reached for the pen.

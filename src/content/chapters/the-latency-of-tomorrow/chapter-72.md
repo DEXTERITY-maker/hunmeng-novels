@@ -85,4 +85,4 @@ She smiled at Yanchuan over the video call.
 
 “See? Sometimes the expensive software problem is asking the question.”
 
-He watched the boy lift the bridge away from the doorway so nobody would trip. Permission had been given, and responsibility had not disappeared with it.
+He watched the boy lift the bridge away from the doorway so nobody would trip. An asked her son to move the bridge before somebody tripped. He did it grudgingly, then made a sign reminding everyone where it belonged.

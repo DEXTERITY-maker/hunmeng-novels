@@ -87,4 +87,4 @@ In his office Yanchuan pinned a copy of the permitted photograph beside the pilo
 
 He thought of the months spent searching for a document that could explain his brother's last assignment. Waiting had sometimes been necessary and sometimes been an excuse. The work was to tell the difference without inventing certainty.
 
-He turned back to the calculations for the next, larger project.
+He checked the part number against Feng's commissioning note. Only then did he open the next project's budget, where the spare-parts allowance was still blank.

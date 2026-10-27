@@ -83,6 +83,8 @@ The client accepted a longer test with stricter data retention. The team was req
 
 Guo said this would make the models harder to compare with competing products.
 
+The sales team had already sent the original chart to a prospective customer. Nobody volunteered to call them. Chen asked who had approved the attachment; the analyst raised his hand. He had used the version marked final, and looked frightened enough that Yanchuan wanted to say it had been understandable. Chen asked him to draft the correction and offered to review it before it went out. The customer would see the difference between the two charts. They could lose the meeting.
+
 “Then compare the promises, too,” Yanchuan answered.
 
 On the train home he looked out at lights moving across fields. The past was full of events that now seemed inevitable because their outcomes were known. At the time, people had seen only fragments. His brother had sent a question about a report, not a map of his disappearance. The family had acted with the information they had, and sometimes they had been wrong.
@@ -95,4 +97,4 @@ At work the next morning, the team's first rule for historical testing was print
 
 Yanchuan added a second line beneath it: Keep the later corrections, but mark them as later.
 
-Neither sentence would bring anyone home. Both would help prevent an elegant story from pretending to be a faithful record.
+He checked the timestamp on the next training extract before showing it to Ning. The correction was small enough to miss; this time he did not let it pass.

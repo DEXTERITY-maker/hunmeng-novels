@@ -85,9 +85,11 @@ The boy considered the answers and asked whether he had to say what job his fath
 
 “Only if you want to,” An said. “You can write what you know.”
 
-The finished paragraph described a man who sometimes travelled with a suitcase and asked whether a paper bridge would hold a toy bus. It mentioned that he checked things carefully. There was no industrial report, no fourteen-minute gap, no theory of why he did not come home.
+The finished paragraph described a man who sometimes traveled with a suitcase and asked whether a paper bridge would hold a toy bus. It mentioned that he checked things carefully. There was no industrial report, no fourteen-minute gap, no theory of why he did not come home.
 
 An sent Yanchuan a photograph of the page. He sat with it longer than he had sat with the public notice.
+
+At the bottom his nephew had drawn the bridge in blue pencil. The description of his father took up only four lines. Yanchuan nearly suggested adding the man's engineering work, then remembered how carefully An had let the boy choose his own memories.
 
 Mei called later and asked whether he wanted to add a short line to the family's appeal acknowledging the technical finding.
 
@@ -109,4 +111,4 @@ That evening An called while washing dishes. The bathroom tap was no longer drip
 
 She told Yanchuan she had kept it.
 
-He said he understood, though he was not certain he did.
+He wanted to ask why she had kept the bowl if she no longer wanted it on the table. He recognized that the question would ask her to explain a grief he had no right to inspect.

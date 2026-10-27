@@ -85,6 +85,8 @@ He asked whether the police had stopped.
 
 “That's different.”
 
+The boy folded his drawing in half, then opened it again and tried to smooth the crease. An did not reach over to fix it. She asked whether he wanted more fruit.
+
 “Yes,” she said. “It is.”
 
 The three of them sat quietly. The boy picked up his drawing and explained the lower path again, this time making Yanchuan draw in a ramp.
@@ -113,6 +115,6 @@ That night Jianming sent a message to both his children. He had found the old cl
 
 Yanchuan wrote back that he would look at it on his next visit, if their father wanted.
 
-He understood that some dates belonged to a chronology and some belonged to the people who survived them. October twenty-ninth was both. It would remain both even if the inquiry one day reached a conclusion.
+His case chronology had an entry for October twenty-ninth. The family calendar held the same date in An's handwriting. He left both where they were.
 
 He placed his phone beside the bed and left the calendar open to the next ordinary day.

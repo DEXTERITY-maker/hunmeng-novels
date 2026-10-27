@@ -2,10 +2,11 @@
 novelSlug: the-latency-of-tomorrow
 slug: chapter-13
 number: 13
-title: What the Camera Cannot Know
+title: "What the Camera Cannot Know"
 publishedAt: "2026-10-26"
-description: An image offers the family the outline of an answer, and Mei asks them to look at what produced it.
+description: "An image offers the family the outline of an answer, and Mei asks them to look at what produced it."
 ---
+
 In the first frame, the passenger looked like Yansheng.
 
 In the second, when Yanchuan enlarged it, the face became six pale blocks beneath a roof reflection. He returned to the first. The resemblance came back.

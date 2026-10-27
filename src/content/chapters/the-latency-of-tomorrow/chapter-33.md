@@ -31,6 +31,12 @@ At work Chen found him standing beside an unused meeting room, staring through i
 
 “Then finish the capacity study. We have a client meeting tomorrow.”
 
+Yanchuan turned on him. “You think I don't know that?”
+
+“I think you've been here for half an hour and don't know what room you're in,” Chen replied. His voice stayed low. “Take ten minutes. Then tell me whether you can do the meeting or whether I should give it to someone else.”
+
+The offer made Yanchuan angrier than an order would have. He went back to his desk without thanking him.
+
 Yanchuan returned to his desk. The study was about ordinary industrial demand in Shenzhen. The model's first output proposed a smaller reserve than the maintenance team considered safe. He sat with the technician who had kept the manual log and asked how long the auxiliary chiller could be unavailable before the room became too hot for the process.
 
 “Depends on what else is running,” she said.
@@ -97,4 +103,4 @@ No photograph. No description of the shelves. No promise of an answer.
 
 Yanchuan put the phone face down and washed the bowl he had left in the sink.
 
-Somewhere, a door he had never seen had opened. He knew no more about what was behind it than the people authorized to enter were ready to say. He went to bed without imagining that their silence was a verdict.
+At eleven thirty he got up to check whether his phone had lost its connection. The signal was full. He went back to bed and left the message unread a second time, because there was nothing new in it.

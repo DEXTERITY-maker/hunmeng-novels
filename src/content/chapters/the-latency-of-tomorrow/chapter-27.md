@@ -91,8 +91,8 @@ When his father called that evening, Yanchuan described the new lead without des
 
 He was startled by how much that sounded like An. Perhaps they had always been saying it. Perhaps he had needed months to hear it.
 
-Afterward he opened the photograph of Yansheng in the equipment room. The folder at his brother's feet was grey. He had remembered it as blue when he first heard the account.
+Afterward he opened the photograph of Yansheng in the equipment room. The folder at his brother's feet was gray. He had remembered it as blue when he first heard the account.
 
-He sent no correction to the child's words. He corrected his own note.
+He changed blue folder to folder, color uncertain in his own notes. The child's account had not changed; only his reading of it had.
 
 Outside his Shenzhen window, a delivery cyclist waited beneath an awning for the traffic to move. Yanchuan watched him without trying to make the moment belong to the case.

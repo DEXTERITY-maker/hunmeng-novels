@@ -85,4 +85,4 @@ When the plane rose, the city disappeared beneath cloud. He had left before with
 
 He was still afraid of what he might find.
 
-He was also willing to return without inventing an answer.
+His talk was saved on the laptop, with one slide naming the limits of his own experience. He left it there when the flight attendant asked him to close the screen.

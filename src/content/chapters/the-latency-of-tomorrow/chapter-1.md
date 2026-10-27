@@ -2,10 +2,11 @@
 novelSlug: the-latency-of-tomorrow
 slug: chapter-1
 number: 1
-title: The File He Did Not Open
+title: "The File He Did Not Open"
 publishedAt: "2026-10-26"
-description: A call from his sister-in-law makes Lin Yanchuan open a file he has ignored for five days.
+description: "A call from his sister-in-law makes Lin Yanchuan open a file he has ignored for five days."
 ---
+
 The rice cooker clicked off while Xu An was asking when he had last heard his brother's voice.
 
 Yanchuan looked at the clock above the refrigerator. Eight seventeen. Below it, a delivery receipt curled away from a magnet. He would remember both things later, though neither could help.
@@ -40,7 +41,7 @@ Yanchuan sat down without taking off his work bag. He had a deadline in the morn
 
 The file was called coastal_acceptance_check.zip. Yansheng had worked as an industrial auditor long enough to name things without imagination. His accompanying message read: Can these two summaries both be right? Only if you have time. The supplier is arguing about the windows.
 
-Yanchuan had read that message in a lift. He remembered deciding it deserved a proper answer, which was how he had given it none.
+Yanchuan had read that message in a lift. He remembered deciding it deserved a proper answer. He had even marked the message unread again, as if the little blue dot could reserve a future hour. On Friday, when his brother asked a second time, he had been on the way to a meeting. He had not answered that either.
 
 He saved the original archive in two places, recorded the message dates, then made a working copy. Three spreadsheets, a short note, two photographs of instrument labels. A test of battery equipment and its controls at a coastal logistics site in Kenya. His brother's employer was a small Chinese consultancy; the equipment supplier was another company again. Yanchuan knew none of the people on the distribution list.
 
@@ -59,6 +60,12 @@ An had gone silent. He realized she was waiting on the line.
 “No.” The word felt brutal, but adding anything to it would be worse. “It tells us he had a question about his work.”
 
 “Then write that down exactly.”
+
+“An, I saw the message on Thursday. I meant to answer.”
+
+“I know you did.”
+
+It was worse than an accusation. She had no room for one, and he could not ask her to make room.
 
 He did. Not fraud. Not a threat. A question about two reports. He copied his brother's words into a document and left a blank line beneath them.
 

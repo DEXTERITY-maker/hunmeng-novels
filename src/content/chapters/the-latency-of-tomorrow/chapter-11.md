@@ -2,10 +2,11 @@
 novelSlug: the-latency-of-tomorrow
 slug: chapter-11
 number: 11
-title: The Driver's Receipt
+title: "The Driver's Receipt"
 publishedAt: "2026-10-26"
-description: A transport invoice gives An a new time to investigate and an expense the contractor cannot yet explain.
+description: "A transport invoice gives An a new time to investigate and an expense the contractor cannot yet explain."
 ---
+
 An found the second journey because the totals did not add up.
 
 The contractor had supplied a statement covering Yansheng's hotel and transport. Luo forwarded it as proof that his employee had completed the assignment. An printed it at work during her lunch break and put a ruler beneath each row.
@@ -14,7 +15,7 @@ There was a transfer to the airport. There was a transfer back.
 
 She called Yanchuan. In Kenya it was still morning. He was sitting on the hotel bed, drying a shirt with a hairdryer because he had packed for a shorter visit.
 
-“The return was cancelled,” he said.
+“The return was canceled,” he said.
 
 “The flight was missed. That doesn't explain a second fare.”
 
@@ -34,7 +35,7 @@ The transport company answered in the afternoon. Amina had helped find its publi
 
 “Same account.”
 
-“And who travelled?”
+“And who traveled?”
 
 “The driver fills the trip sheet. I have the invoice.”
 

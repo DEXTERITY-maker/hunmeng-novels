@@ -55,6 +55,12 @@ The analyst showed him the number. The project remained viable under a cautious 
 
 “Then the earlier sale depended on somebody working for free,” Ning answered.
 
+Guo turned the spreadsheet toward her. “The customer may walk. That means our technicians don't get this contract either.”
+
+“I know,” she said. “Don't mistake that for a reason to leave the workers' hours out.”
+
+He closed the laptop without replying. When he opened it again, he asked the analyst to show the training cost as a separate line, not to remove it.
+
 He did not reply immediately. He was looking at the revised cash flow. Two investors had recently asked Henglan to demonstrate that its projects could scale. A longer payback period was an inconvenient story.
 
 By the end of the day he approved the revised proposal for discussion. He asked that the report identify the negotiation as incomplete rather than calling the new employment terms agreed.
@@ -83,6 +89,8 @@ At the next project meeting, an older worker asked whether refusing a transfer w
 
 Ning had expected enthusiasm when the new schedule showed paid instruction. Instead she heard questions about qualifications, night transport, childcare and whether the new support role would disappear once the first year of warranty ended.
 
+The older worker who had requested written terms returned with a page of notes. She wanted to know whether passing the course guaranteed an interview or a job. The manager said an interview. She asked what happened if she failed the assessment after her old station had been removed. Nobody had prepared an answer. Ning put her pen down. A schedule could be revised; a promise made to someone risking her livelihood could not remain a blank cell.
+
 Those questions were not opposition to technology. They were questions about how a person could plan a life.
 
 Henglan completed the revised technical model with two scenarios. The first assumed a rapid launch after training that had yet to be staffed and scheduled. The second used the negotiated timetable, paid practice and a slower ramp-up with supervised operation.
@@ -107,4 +115,4 @@ He replied that ten minutes did not look important in a financing model.
 
 “Multiply it by every person who must learn,” she wrote back, “and then ask what happens if no one is paid to teach.”
 
-For once he did not ask her to shorten the explanation.
+Guo called the next morning to ask whether the training hours could be shown separately in the model. Ning said yes, as long as the total still included them.

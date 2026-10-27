@@ -2,10 +2,11 @@
 novelSlug: the-latency-of-tomorrow
 slug: chapter-2
 number: 2
-title: A Number for the Case
+title: "A Number for the Case"
 publishedAt: "2026-10-26"
-description: The family begins a chronology, and a reference number gives their uncertainty an official shape.
+description: "The family begins a chronology, and a reference number gives their uncertainty an official shape."
 ---
+
 By morning, the document had five columns: time, person, claim, source, and what remained unconfirmed. Yanchuan kept widening the last one.
 
 An called at seven forty. She had slept beside her phone, which meant she had barely slept. Her husband’s employer had finally sent the name of its local representative. The representative said a report had been made to the police. An wanted a copy, not another assurance.
@@ -16,7 +17,7 @@ An called at seven forty. She had slept beside her phone, which meant she had ba
 
 “I’ve asked three times.”
 
-Yanchuan wrote that down, then stopped. A slow response was frustrating; it did not establish why it was slow. He added the times of her requests instead of his opinion.
+Yanchuan wrote that down, then stopped. A slow response was frustrating; it did not establish why it was slow. He wanted the chronology to be an accusation because accusations had momentum. Dates merely sat there until someone checked them. He added the times of her requests instead of his opinion.
 
 At work, the cooling chart waited on his screen. His supervisor, Chen, stood behind him holding a mug with a chipped handle.
 
@@ -30,7 +31,7 @@ Yanchuan explained enough. Chen’s expression changed, then took on the trouble
 
 “Take today. Send me the assumptions first. Someone else needs to be able to finish.”
 
-The request stung because it was reasonable. Yanchuan spent twenty minutes putting warnings back into the notes he had simplified the day before. Then he went downstairs to call his father.
+The request stung because it was reasonable. For one absurd second he wanted Chen to insist that nothing at work mattered beside a missing man. Chen was offering him the opposite: a way to leave without making somebody else guess at his unfinished work. Yanchuan spent twenty minutes putting warnings back into the notes he had simplified the day before. Then he went downstairs to call his father.
 
 Lin Jianming listened without interrupting. Traffic moved past the office entrance in a shining, impatient line.
 

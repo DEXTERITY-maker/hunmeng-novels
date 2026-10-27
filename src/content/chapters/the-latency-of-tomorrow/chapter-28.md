@@ -39,7 +39,7 @@ The difference took up a single sentence in the report. It took Yanchuan half an
 
 At work, Chen asked him to examine a fault-classification product being proposed for the factory's maintenance team. The supplier's demonstration promised that an intelligent system would sort thousands of alerts and identify the most likely cause before a technician reached the machine.
 
-The sample looked impressive. An alert labelled pump vibration was matched to a bearing problem, with a probability printed to two decimal places. A second alert went to motor alignment. A third, drawn from an old training case, showed a temperature increase and suggested cooling failure.
+The sample looked impressive. An alert labeled pump vibration was matched to a bearing problem, with a probability printed to two decimal places. A second alert went to motor alignment. A third, drawn from an old training case, showed a temperature increase and suggested cooling failure.
 
 Yanchuan asked what information the model had not seen.
 
@@ -93,4 +93,4 @@ He wrote that conclusion for the reviewers, with the ticket references and three
 
 The identifier stayed at the top of the technical page. It gave the failure a name.
 
-Someone still had to show what actually happened.
+He checked that the request for the original handover record had reached the reviewer. The status column said pending. He did not change it.

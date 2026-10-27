@@ -67,6 +67,6 @@ The next morning the bakery opened on time. The sign had been removed. Yanchuan 
 
 He did not ask her to explain the reading.
 
-In the city beyond the glass, delivery carts crossed repaired intersections. Maintenance vans moved through traffic. A school bus waited while a child climbed aboard. Most of the people keeping those systems useful would never appear on the dashboards that praised them.
+Beyond the bakery window, a delivery cart crossed a repaired intersection. A school bus waited while a child climbed aboard. At the restored traffic signal, a maintenance van stopped and a worker climbed out with a toolbox. The lights continued changing while he opened the cabinet at their base.
 
 He finished breakfast and went to work.

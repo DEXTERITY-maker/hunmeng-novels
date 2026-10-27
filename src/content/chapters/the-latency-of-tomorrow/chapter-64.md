@@ -19,7 +19,7 @@ The supplier looked embarrassed. Arjun looked interested.
 
 “Who will tune it here after you leave?”
 
-The room went quiet. The demonstration had been organized around throughput, precision and labour saved. Nobody had prepared a maintenance plan for the factory's actual mix of parts and tools.
+The room went quiet. The demonstration had been organized around throughput, precision and labor saved. Nobody had prepared a maintenance plan for the factory's actual mix of parts and tools.
 
 Ning examined the proposed cell. It required a space cleared of other equipment and a dependable supply of compressed air. Both were available on the drawing. On the floor, the air line served several existing machines, and the proposed safety perimeter would obstruct a route used during shift changes.
 
@@ -37,9 +37,9 @@ Arjun told them that the task under consideration involved moving warm metal par
 
 They observed the shift with permission. The parts arrived at varying temperatures, and the operator sometimes waited for a batch to cool before handling it. The production schedule treated each cycle as identical. It was not.
 
-Leela explained that operators recognized certain unusual sounds and stopped the line before a part was handled. A robot could be given sensors and stop conditions, but those requirements had to be specified, tested and maintained. No one should assume a machine automatically inherited the judgement of the person whose motion it copied.
+Leela explained that operators recognized certain unusual sounds and stopped the line before a part was handled. A robot could be given sensors and stop conditions, but those requirements had to be specified, tested and maintained. No one should assume a machine automatically inherited the judgment of the person whose motion it copied.
 
-Back in Shenzhen Guo wanted a preliminary estimate of how quickly automation would pay for itself. The first calculation looked attractive when it counted the operator's handling time as fully replaceable labour. It looked different when it counted the operator's other tasks, the continued need for supervision, the new maintenance role and the space displaced by the cell.
+Back in Shenzhen Guo wanted a preliminary estimate of how quickly automation would pay for itself. The first calculation looked attractive when it counted the operator's handling time as fully replaceable labor. It looked different when it counted the operator's other tasks, the continued need for supervision, the new maintenance role and the space displaced by the cell.
 
 “Does that mean we shouldn't buy it?” Guo asked.
 
@@ -67,4 +67,4 @@ The robot waited in its demonstration enclosure. The mechanical aid had already 
 
 Yanchuan closed the comparison without declaring a winner. A machine could be clever, fast and expensive. It could not operate as a useful service without a place that could keep it working.
 
-A robot needed a workshop, and the workshop already belonged to people who understood what happened there.
+Arjun asked Leela to list which repairs the local team could perform without waiting for the supplier. The answer would decide whether the robot returned for another trial.

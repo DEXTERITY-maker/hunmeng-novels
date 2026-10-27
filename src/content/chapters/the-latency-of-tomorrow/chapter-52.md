@@ -9,7 +9,7 @@ description: "After months of evasive explanations, Luo sends corrected records 
 
 Luo's apology arrived as an attachment to an expense reconciliation.
 
-There was no fruit basket and no long statement about the company's concern. The document listed three movement claims that had been distributed during the first weeks of the search: that Yansheng had checked out of his hotel, that he had travelled to the airport, and that the service compound had recorded his departure.
+There was no fruit basket and no long statement about the company's concern. The document listed three movement claims that had been distributed during the first weeks of the search: that Yansheng had checked out of his hotel, that he had traveled to the airport, and that the service compound had recorded his departure.
 
 The corrected version explained the source of each claim. A settled hotel account did not establish an observed checkout. A booked vehicle did not identify a passenger after its route changed. A returned visitor badge did not establish that its holder had left the compound.
 
@@ -109,4 +109,4 @@ Neither tried to improve the sentence.
 
 After the call Yanchuan went back to work. A colleague had asked him to review a model that was being used outside its original test range. He marked the assumption, named the person who needed the result and sent a correction that did not require them to discover the problem again.
 
-It was not heroic. It mattered.
+The revised email carried the correction where the next reviewer would see it. He did not copy Luo or explain why he had thought of doing it.

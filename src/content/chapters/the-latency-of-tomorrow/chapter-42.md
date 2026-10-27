@@ -89,4 +89,4 @@ That evening Yanchuan walked past the bakery where the lights had failed during 
 
 “Enough to make some bread,” she said. “Not enough to know what everyone will buy.”
 
-He bought the last bun. The forecast for the factory sat in his work bag, wrapped in qualifications. It had become better when the team stopped asking it to predict the future perfectly and began asking what a person needed in order to act before the future arrived.
+He bought the last bun. The forecast for the factory sat in his work bag, wrapped in qualifications. Gao's revised operating sheet specified twenty minutes of usable warning. The next test would score that interval, not merely the closeness of two curves.

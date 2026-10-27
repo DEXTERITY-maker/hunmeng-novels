@@ -55,6 +55,8 @@ The hearing ended with assigned actions and dates. The operator would publish a 
 
 Yanchuan expected satisfaction. Instead he felt tired enough to sleep at his desk.
 
+He had imagined the disputed signature spoken aloud by someone with authority and thought the words would change how it felt to look at his brother's photograph. The hearing had established something important. His first impulse was still to call the investigators and ask whether the technical correction had produced a new lead. He put the phone down until the agreed update time.
+
 Wanjiru called when the session ended.
 
 “Was it useful?” he asked her.
@@ -83,4 +85,4 @@ Yanchuan did not know whether Yansheng had lived long enough to see any of it. T
 
 He put the hearing's official actions in one folder and the missing-person reference in another. The distinction was still necessary. It no longer felt like a refusal to acknowledge his brother.
 
-It felt like a way to leave both questions open to the evidence that could answer them.
+An called while he was putting the papers away. He told her which corrective actions had been assigned, and then, without prompting, said that the investigation had received no new movement evidence.

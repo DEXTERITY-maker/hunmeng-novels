@@ -2,10 +2,11 @@
 novelSlug: the-latency-of-tomorrow
 slug: chapter-19
 number: 19
-title: A Place the Report Excluded
+title: "A Place the Report Excluded"
 publishedAt: "2026-10-26"
-description: An ordinary service address connects records that were kept apart, giving the search a specific new question.
+description: "An ordinary service address connects records that were kept apart, giving the search a specific new question."
 ---
+
 The building first appeared as a delivery charge.
 
 An found it while reconciling the contractor's response to the transport inquiry. A service supplier had billed for replacement cooling parts delivered to an annex. The address differed from the logistics site's reception address. The account code matched the one on the envelope's return trip.
@@ -70,4 +71,4 @@ He turned toward her.
 
 He had no sentence that could help. They sat until the screen dimmed, then she touched it awake.
 
-Before bed he checked that the submitted packet contained no inference labelled as fact. The annex was the first place they had identified through several independent records. It belonged in the inquiry. What it might hold was still a picture his mind made when the room grew quiet.
+Before bed he checked that the submitted packet contained no inference labeled as fact. The annex was the first place they had identified through several independent records. It belonged in the inquiry. What it might hold was still a picture his mind made when the room grew quiet.

@@ -85,4 +85,4 @@ On his last evening in Pune, Leela invited the visitors to watch the shift hando
 
 When Yanchuan returned to Shenzhen, the pilot was already running under the factory's own routine. He had not brought home a miracle. He had helped build a small part of a process other people owned.
 
-He considered that a reliable beginning.
+In the next shift report, a junior technician named Ravi logged an uncertain part under his own name. The system recorded the question and left it for Leela's inspection rather than converting it into a confident label.

@@ -39,7 +39,7 @@ The supplier's representative asked why the second screen had not been accepted 
 
 “Because your proposal called it independent,” Arjun replied. “The signal isn't.”
 
-They revised the supply agreement without pretending the feature had never been useful. The duplicate display could remain as a visibility tool, labelled according to its function. The claimed independent measurement would not appear in the acceptance criteria until a genuinely separate source existed and had been tested.
+They revised the supply agreement without pretending the feature had never been useful. The duplicate display could remain as a visibility tool, labeled according to its function. The claimed independent measurement would not appear in the acceptance criteria until a genuinely separate source existed and had been tested.
 
 Mei visited remotely during the next review. She explained that two defect models trained on the same incorrect labels could agree for the wrong reason. Independent validation required a source of information that did not merely echo the same mistaken assumptions.
 
@@ -75,4 +75,4 @@ Yanchuan laughed. He thought of how often the industry sold two screens as certa
 
 He filed the commissioning record with the two original displays clearly named. The duplicated signal remained available for the task it could perform. The independent check had a different job.
 
-Both were useful once they stopped pretending to be each other.
+The commissioning sheet now listed one duplicated signal and one independent check. Arjun signed only after the technician showed him where each measurement originated.

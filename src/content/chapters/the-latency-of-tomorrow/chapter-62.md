@@ -33,6 +33,10 @@ She looked at him.
 
 He apologized. The distinction mattered. She could explain the record and correct it; a remote developer guessing from the marks could not.
 
+“How many hours do you want from me?” Leela asked.
+
+Yanchuan looked toward Arjun, who was watching them. No hours had been allotted for annotating the notebook. Arjun told Leela the scoping visit could use one paid session with her agreement, not her evenings. Only then did she open to the page she wanted them to see.
+
 Arjun said the last automation vendor had proposed replacing several manual inspection steps with cameras. The cameras were expensive, but not impossibly so. The difficult part was the claim that installing them would reduce the need for experienced workers.
 
 “Did the workers agree the inspections were repetitive?” Ning asked.
@@ -71,4 +75,4 @@ The prospect of a useful model seemed smaller. The practical job seemed clearer.
 
 As Yanchuan departed, Arjun handed him a photograph of the whole maintenance team with their permission. Leela stood at the center, refusing to move to the edge for the visitors.
 
-He put the photograph in the project folder, alongside their names and roles. The first task was not to teach a machine to make an unsupported claim. It was to make a record that would still mean something when the people who created it went home.
+He put the photograph in the project folder, alongside their names and roles. Leela had written the maintenance team's next shift on the back of the photograph. Yanchuan checked it before proposing the first test date.

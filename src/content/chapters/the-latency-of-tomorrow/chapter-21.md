@@ -9,7 +9,7 @@ description: "A visitor register seems to give the family a new sighting, until 
 
 The first useful answer in January came on a day Yanchuan had promised not to spend waiting for one.
 
-He was presenting a calculation of summer cooling demand. Outside the meeting room, rain had turned the windows grey. Chen had asked him to show the assumptions rather than only the result, and Yanchuan was halfway through the upper limit when his phone lit up beside the notebook.
+He was presenting a calculation of summer cooling demand. Outside the meeting room, rain had turned the windows gray. Chen had asked him to show the assumptions rather than only the result, and Yanchuan was halfway through the upper limit when his phone lit up beside the notebook.
 
 An: The annex has a visitor register.
 
@@ -79,6 +79,12 @@ Yanchuan had prepared six questions. An read them and crossed out the two that b
 
 “Then ask what happened, not why someone did it to us.”
 
+“You've had months to think that way,” he said.
+
+An looked at him over the school calendar. “I've had months to ask our son why his father isn't home. You don't get to tell me what thinking has cost.”
+
+He moved the two crossed-out questions to another sheet. She did not apologize for crossing them out, and he did not ask her to.
+
 He opened a blank page.
 
 They asked for the identity of the person making the entry, whether identification had been checked, whether a visitor pass was issued, and whether a departure had been recorded somewhere else. They asked whether the electronic summary was copied directly from the register. Wanjiru agreed to put the questions through the investigator, who could seek the original without exposing unrelated visitors.
@@ -109,6 +115,6 @@ The next morning Chen returned the summer-demand chart with one sentence circled
 
 He made the correction before opening the family document.
 
-For three months the last confirmed contact had remained Thursday, October 29. That date still stood. Friday now had a question with a time attached to it, and someone who might be able to answer.
+The last confirmed contact remained Thursday, October 29. That date still stood. Friday now had a question with a time attached to it, and someone who might be able to answer.
 
-It was a small thing. Yanchuan carried it carefully.
+He copied the entry into his notebook by hand, including the words presence not independently verified. The date looked no less precise for the warning beneath it.

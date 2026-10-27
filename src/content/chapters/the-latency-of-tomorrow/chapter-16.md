@@ -2,10 +2,11 @@
 novelSlug: the-latency-of-tomorrow
 slug: chapter-16
 number: 16
-title: The First Refusal
+title: "The First Refusal"
 publishedAt: "2026-10-26"
-description: An offer to cover the family's costs comes with a statement Yanchuan and An cannot sign.
+description: "An offer to cover the family's costs comes with a statement Yanchuan and An cannot sign."
 ---
+
 The money was enough to keep him in Kenya for another month.
 
 Yanchuan calculated that before reading the second page. Accommodation, meals, transport, calls. Enough to stop checking his balance before every journey. Enough to tell his father that he did not need to send anything else.

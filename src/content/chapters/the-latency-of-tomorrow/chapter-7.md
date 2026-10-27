@@ -2,10 +2,11 @@
 novelSlug: the-latency-of-tomorrow
 slug: chapter-7
 number: 7
-title: The Cost of a Ticket
+title: "The Cost of a Ticket"
 publishedAt: "2026-10-26"
-description: Yanchuan discovers that the distance to his brother is measured in leave, savings, and other people's risk.
+description: "Yanchuan discovers that the distance to his brother is measured in leave, savings, and other people's risk."
 ---
+
 The cheapest flight required two changes and arrived at a time that made every further arrangement harder. Yanchuan selected it, then spent half an hour pretending the price was his only reason.
 
 An looked at the itinerary on his screen.
@@ -26,7 +27,7 @@ He heard himself say that he could not stay here doing nothing. She was still we
 
 He closed the booking page.
 
-They spent the morning arranging what could be arranged before travel: contact with the local case handler, a meeting with the employer's representative, accommodation that could be cancelled, the entry paperwork for his circumstances, insurance, and someone to meet him after the final leg. Each item took money or waiting. Some took both.
+They spent the morning arranging what could be arranged before travel: contact with the local case handler, a meeting with the employer's representative, accommodation that could be canceled, the entry paperwork for his circumstances, insurance, and someone to meet him after the final leg. Each item took money or waiting. Some took both.
 
 At work, Chen approved the remaining paid leave and explained the limit of what he could promise after that. There were projects with named engineers on them. Other people had parents in hospital, children in examinations, plans of their own.
 

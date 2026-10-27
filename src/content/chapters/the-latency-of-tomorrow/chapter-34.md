@@ -19,7 +19,7 @@ Wanjiru sent the corrected analysis to An with a warning that it was not proof o
 
 “Because it came from another office,” An said. “No one checked what that office actually knew.”
 
-The inspection of the service compound's document office had found a printed copy of the contractor's travel summary in a folder labelled staff departure. The summary gave Yansheng an apparent sequence of checkout, van transfer, and departure from the service area. It cited account references but no direct witness.
+The inspection of the service compound's document office had found a printed copy of the contractor's travel summary in a folder labeled staff departure. The summary gave Yansheng an apparent sequence of checkout, van transfer, and departure from the service area. It cited account references but no direct witness.
 
 The folder had been made after the missing-person report. Its label was administrative, not evidence that the traveller had left.
 
@@ -97,4 +97,4 @@ The corrected documents had taken away an easy explanation. They had not supplie
 
 Yanchuan filed the letter from Luo and closed the spreadsheet. A machine could arrange honest entries into a persuasive story. When that story became someone's account of a missing man, the error could outlive every individual who had made it.
 
-For once, he did not ask the next system to tell him what happened. He asked for the person, the observation, and the record behind the words.
+He wrote one more question for Wanjiru: Was there an individual who actually saw the visitor leave? He resisted adding what he thought the answer would be.

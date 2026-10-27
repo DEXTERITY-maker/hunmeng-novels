@@ -25,6 +25,10 @@ She wrote the distinction in an email, then read it to Yanchuan before sending.
 
 “We still need their help. I don't want them to define what counts as a completed search.”
 
+“And if they stop paying the expenses?” he asked.
+
+“Then I will ask why they stopped. I won't exchange the word completed for another month of assistance.” She looked at the sheet of reimbursements. “I'm frightened of having to say that. Don't make me say it alone.”
+
 The email requested an updated account of support offered, reimbursements still owed, travel records corrected, and company files preserved. It also asked for a named person to handle practical assistance without making the family repeat the disappearance to each new manager.
 
 The missing-person case remained with the established investigators and counsel. No company declaration about an employee's plans would decide whether that inquiry ended.
@@ -79,7 +83,7 @@ After the call, Yanchuan added one final item to the family protocol. If he had 
 
 The employer replied with a named coordinator and a schedule for the outstanding expense review. It did not promise to find Yansheng. The official case contact acknowledged the corrected movement records and the technical finding. It did not promise an answer either.
 
-For a while Yanchuan was angry at how little those two messages contained. Then he looked at the documents they had already obtained, the claims corrected, and the people who no longer had to explain themselves to him at midnight.
+For a while Yanchuan was angry at how little those two messages contained. He wanted to reply to both, but neither required another question.
 
 A company had responsibilities. An investigation had authority. A family had a life that both could help or damage, but neither could take over.
 
@@ -89,4 +93,4 @@ On the train to Shenzhen, Yanchuan opened the new pilot specification. It began 
 
 He read it slowly. Something about the order felt right.
 
-The search for his brother remained unfinished. The work in front of him did not pretend otherwise. It asked what could be built when the limit of one's knowledge was kept visible from the start.
+Before leaving, he sent An the project schedule and asked whether the next family call conflicted with her work. Her reply arrived first: Thursday, eight. Don't be late.

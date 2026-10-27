@@ -109,6 +109,6 @@ At the pilot's signing, Gao asked whether everyone had read the conditions, not 
 
 Guo watched them and said that the agreement looked less ambitious on paper than the first proposal.
 
-“Perhaps,” Yanchuan answered. “Now we know which ambition can be paid for.”
+“Perhaps,” Yanchuan answered. “Ask me again after the first hot week. The numbers are honest now, but the equipment still has to perform.”
 
 Outside, the afternoon was cooling. In the equipment room, the fans kept running, carrying away heat that no contract could make disappear.
