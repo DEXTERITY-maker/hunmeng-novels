@@ -24,6 +24,6 @@ test('XP progression is strictly increasing and stops at level 500', () => {
   expect(progressionFromXp(totalXpForLevel(500))).toMatchObject({level:500,maxLevel:true,nextLevelXp:0,rank:{id:'mythical'}});
 });
 test('default title is independent of rank and additional titles have requirements', () => {
-  expect(TITLES[0]).toMatchObject({id:'novice-reader',threshold:0});
+  expect(TITLES[0]).toMatchObject({id:'novice',threshold:0});
   expect(TITLES.slice(1).every(title => title.threshold > 0)).toBe(true);
 });
