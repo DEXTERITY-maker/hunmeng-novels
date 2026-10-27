@@ -113,6 +113,4 @@ That night Jianming sent a message to both his children. He had found the old cl
 
 Yanchuan wrote back that he would look at it on his next visit, if their father wanted.
 
-He understood that some dates belonged to a chronology and some belonged to the people who survived them. October twenty-ninth was both. It would remain both even if the inquiry one day reached a conclusion.
-
-He placed his phone beside the bed and left the calendar open to the next ordinary day.
+Yanchuan put down the phone and found the date of his next visit to Wuhan. He wrote to Jianming that he would look at the broken clock if his father still wanted him to. Then he switched off the bedside light. The calendar was open to Friday, October thirtieth.
