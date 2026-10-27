@@ -85,6 +85,4 @@ The following week Asha sent a photograph of the newly stocked spare, its record
 
 In his office Yanchuan pinned a copy of the permitted photograph beside the pilot report. One available component would not solve a whole network's problems. It might shorten one outage. The local engineers knew that better than anyone.
 
-He thought of the months spent searching for a document that could explain his brother's last assignment. Waiting had sometimes been necessary and sometimes been an excuse. The work was to tell the difference without inventing certainty.
-
-He turned back to the calculations for the next, larger project.
+The supplier's six-day delay still sat in the financial forecast as zero. Yanchuan corrected the cell and asked Feng to confirm the next inspection date before updating the income estimate. No one would recover those six days by leaving them out of the model.
