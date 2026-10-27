@@ -252,7 +252,7 @@ test('расширенный каталог: категории, автор, к�
 });
 test('ссылки категории и тегов открывают каталог с предустановленными фильтрами', async ({ page }) => {
   await page.goto('/novel/sad-zimy/');
-  await page.getByRole('link', { name: 'Slice of life' }).first().click();
+  await page.locator('.work-categories').getByRole('link', { name: 'Slice of life' }).click();
   await expect(page).toHaveURL(/category=/);
   await expect(page.locator('select[name=category]')).toHaveValue('Slice of life');
   await expect(page.locator('[data-novel]:visible')).toHaveCount(1);

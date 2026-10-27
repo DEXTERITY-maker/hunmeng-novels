@@ -49,7 +49,7 @@ const usesPlaceholder = n.cover === placeholderCover;
         fetchpriority="high"
       />
       <div class="detail-copy">
-        <p class="genre-line">{n.genres.join(' · ')}</p>
+        <p class="genre-line genre-links" aria-label="Genres">{n.genres.map(genre => <a href={`/catalog/?genre=${encodeURIComponent(genre)}`}>{genre}</a>)}</p>
         <div class="work-categories" aria-label="Categories">
           {n.categories.map((category) => (
             <a href={`/catalog/?category=${encodeURIComponent(category)}`}>{category}</a>

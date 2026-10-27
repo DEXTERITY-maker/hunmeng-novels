@@ -1,6 +1,9 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { originalStatusLabels, translationStatusLabels, termTypeLabels } from '../lib/labels';
+import { getLibrary } from '../lib/content';
+import { getTaxonomy } from '../lib/taxonomy';
+const taxonomy = getTaxonomy(await getLibrary());
 ---
 <Layout title="Editorial dashboard" noindex description="Manage sources, terminology, translations, and permissions.">
   <main id="main" class="page-shell admin-page">
@@ -35,11 +38,14 @@ import { originalStatusLabels, translationStatusLabels, termTypeLabels } from '.
               <input name="author_name" maxlength="150" />
             </label>
             <label>Genres, separated by commas
-              <input name="genres" value="Fantasy" required />
+              <input name="genres" value="Fantasy" list="genre-suggestions" required />
             </label>
             <label>Tags, separated by commas
-              <input name="tags" placeholder="Adventure, Cultivation" />
+              <input name="tags" placeholder="Transmigration, Cultivation" list="tag-suggestions" />
             </label>
+            <datalist id="genre-suggestions">{taxonomy.genres.map(term => <option value={term.label} />)}</datalist>
+            <datalist id="tag-suggestions">{taxonomy.tags.map(term => <option value={term.label} />)}</datalist>
+            <p class="fine">Use consistent labels from <a href="/genres/" target="_blank" rel="noopener">Genres</a> and <a href="/tags/" target="_blank" rel="noopener">Tags</a>. Enter multiple labels separated by commas.</p>
             <label>Original status
               <select name="original_status">
                 {Object.entries(originalStatusLabels).map(([value, label]) => <option value={value}>{label}</option>)}

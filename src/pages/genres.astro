@@ -1,0 +1,15 @@
+---
+import Layout from '../layouts/Layout.astro';
+import TaxonomyDirectory from '../components/TaxonomyDirectory.astro';
+import { getLibrary } from '../lib/content';
+import { getTaxonomy } from '../lib/taxonomy';
+const { genres } = getTaxonomy(await getLibrary());
+---
+<Layout title="Browse novel genres" description="Explore Hunmeng novel genres and find books by the kind of story you enjoy.">
+  <main id="main" class="page-shell">
+    <header class="page-heading"><h1>Genres</h1><p>Choose a broad type of story, from science fiction to xianxia.</p></header>
+    <nav class="taxonomy-nav" aria-label="Browse novels"><a href="/catalog/">Novel catalog</a><a href="/genres/" aria-current="page">Genres</a><a href="/tags/">Tags</a></nav>
+    <p class="notice">Counts show novels published on Hunmeng. Genres with 0 novels are available for future stories.</p>
+    <TaxonomyDirectory kind="genres" terms={genres} />
+  </main>
+</Layout>
