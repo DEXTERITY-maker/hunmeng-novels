@@ -38,7 +38,7 @@ async function stage(){
       String(j.chapter_description||'').trim().length<10||!safeText(j.translated_text)){
       console.log('SKIP missing rights/review/QA: '+j.id);continue;
     }
-    const terms=await api('novel_terms','?source_id=eq.'+source.id+'&select=*');
+    const terms=await api('novel_terms','?source_id=eq.'+source.id+'&select=*&order=original_term.asc');
     if(terms.some(t=>j.original_text.toLowerCase().includes(t.original_term.toLowerCase())&&
       !j.translated_text.toLowerCase().includes(t.translated_term.toLowerCase()))){
       console.log('SKIP glossary mismatch: '+j.id);continue;
@@ -106,7 +106,7 @@ async function verify(){
     const source=sourceRows[0];
     if(!rightsOK(source)||source.updated_at!==item.sourceUpdatedAt)
       throw new Error('Staged publication rights or source changed. Aborting publication.');
-    const terms=await api('novel_terms','?source_id=eq.'+encodeURIComponent(source.id)+'&select=*');
+    const terms=await api('novel_terms','?source_id=eq.'+encodeURIComponent(source.id)+'&select=*&order=original_term.asc');
     if(hash(terms)!==item.termsHash)
       throw new Error('Glossary changed after staging. Aborting publication.');
   }
