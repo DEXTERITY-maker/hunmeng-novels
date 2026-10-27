@@ -5,7 +5,7 @@ import ReaderPreferences from '../components/ReaderPreferences.astro';
 ---
 <Layout title="Sign in or register" noindex description="Sign in to Hunmeng or create a reader account with your email and password.">
   <main id="main" class="page-shell account-page reader-account-page">
-    <header class="page-heading">
+    <header class="page-heading landscape-banner">
       <h1 id="account-title">Sign in or register</h1>
       <p id="account-subtitle">You can read novels without an account.</p>
     </header>
@@ -37,7 +37,7 @@ import ReaderPreferences from '../components/ReaderPreferences.astro';
         <div id="auth-logged-in" class="profile-layout" hidden>
           <aside class="profile-sidebar" aria-label="Profile sections">
             <div class="profile-identity"><span id="profile-avatar" class="profile-avatar" data-avatar="sage" aria-hidden="true">R</span><strong id="profile-name">Reader</strong></div>
-            <nav aria-label="Profile settings"><a href="#profile-details">Profile <span aria-hidden="true">↗</span></a><a href="#profile-reading">Reading <span aria-hidden="true">↗</span></a><a href="#profile-account">Account <span aria-hidden="true">↗</span></a></nav>
+            <nav aria-label="Profile settings"><a href="#profile-details" aria-current="location">Profile <span aria-hidden="true">↗</span></a><a href="#profile-reading">Reading <span aria-hidden="true">↗</span></a><a href="#profile-account">Account <span aria-hidden="true">↗</span></a></nav>
             <a class="profile-library-link" href="/library/">My library <span aria-hidden="true">→</span></a>
             <a class="profile-library-link" href="/studio/">Writing studio <span aria-hidden="true">→</span></a>
           </aside>
@@ -72,6 +72,13 @@ import ReaderPreferences from '../components/ReaderPreferences.astro';
   </main>
   <script>
     import { site } from '../config/site';
+    const sectionLinks = document.querySelectorAll<HTMLAnchorElement>('.profile-sidebar nav a');
+    const highlightSection = () => sectionLinks.forEach(link => {
+      if (link.hash === (location.hash || '#profile-details')) link.setAttribute('aria-current', 'location');
+      else link.removeAttribute('aria-current');
+    });
+    window.addEventListener('hashchange', highlightSection);
+    highlightSection();
     if (site.features.accounts) void import('../scripts/account').then(({ initAccount }) => initAccount());
   </script>
 </Layout>

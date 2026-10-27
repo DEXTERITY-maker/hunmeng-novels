@@ -1,11 +1,12 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import Icon from '../components/Icon.astro';
 import { shelves, site } from '../config/site';
 ---
 
 <Layout title="My library" noindex>
   <main id="main" class="page-shell library-page">
-    <div class="page-heading">
+    <div class="page-heading landscape-banner">
       <h1>Library</h1>
       <p>Your stories and reading progress are saved on this device.</p>
     </div>
@@ -17,18 +18,20 @@ import { shelves, site } from '../config/site';
           data-shelf-tab={value}
           aria-pressed={i === 0 ? 'true' : 'false'}
         >
-          {label}
+          <Icon name={(["book", "clock", "check", "ban"] as const)[i]} size={26} />
+          <strong>{label}</strong>
           <span data-shelf-count={value}>0</span>
+          <Icon name="chevron" size={18} />
         </button>
       ))}
     </div>
     <p id="library-count" role="status" aria-live="polite"></p>
     <div id="library-list" class="library-list"></div>
-    <p id="library-empty" class="empty-state">
-      This shelf is empty.
-      <br />
-      <a href="/catalog/">Find a novel in the catalog →</a>
-    </p>
+    <div id="library-empty" class="empty-state library-empty">
+      <img src="/images/library-empty.webp" width="300" height="200" alt="" loading="lazy" />
+      <h2>This shelf is empty.</h2>
+      <a class="button" href="/catalog/">Find a novel in the catalog <Icon name="arrow" size={18} /></a>
+    </div>
     <p class="fine storage-explanation">
       Your library and reading progress are saved only in this browser, without being sent to a server.
       Cross-device sync is disabled, including after signing in. Keep this site's browser data to preserve your library.
