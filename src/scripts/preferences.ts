@@ -5,14 +5,16 @@ export async function initPreferences() {
   const preview = document.getElementById('preferences-preview')!;
   const status = document.getElementById('preferences-status')!;
   const input = (name: string) => form.elements.namedItem(name) as HTMLInputElement | HTMLSelectElement;
-  const value = (): Settings => normalizeSettings(Object.fromEntries([...new FormData(form)].map(([k,v])=>[k,['size','lineHeight','width'].includes(k)?Number(v):v])), defaults);
+  const value = (): Settings => normalizeSettings(Object.fromEntries([...new FormData(form)].map(([k,v])=>[k,['size','lineHeight','width','paragraphSpacing'].includes(k)?Number(v):v])), defaults);
   const renderPreview = () => {
     const s = value();
     document.getElementById('pref-size-value')!.textContent = `${s.size} px`;
     document.getElementById('pref-leading-value')!.textContent = String(s.lineHeight);
     document.getElementById('pref-width-value')!.textContent = `${s.width} px`;
+    document.getElementById('pref-paragraph-value')!.textContent = `${s.paragraphSpacing.toFixed(2).replace(/0$/, '').replace(/\.$/, '')} em`;
     preview.style.fontSize = `${s.size}px`; preview.style.lineHeight = String(s.lineHeight);
     preview.style.maxWidth = `${s.width}px`;
+    preview.style.setProperty('--reader-paragraph-space', `${s.paragraphSpacing}em`);
     preview.dataset.font = s.font;
     preview.dataset.previewTheme = s.theme;
   };

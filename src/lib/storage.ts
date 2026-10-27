@@ -4,6 +4,7 @@ export interface Settings {
   font: 'serif' | 'sans' | 'system';
   size: number;
   lineHeight: number;
+  paragraphSpacing: number;
   width: number;
   theme: Theme;
 }
@@ -34,6 +35,7 @@ export const defaults: Settings = {
   font: 'serif',
   size: 20,
   lineHeight: 1.85,
+  paragraphSpacing: 1.35,
   width: 720,
   theme: 'system',
 };
@@ -53,6 +55,7 @@ export function normalizeSettings(value: unknown, fallback: Settings): Settings 
         : fallback.theme,
     size: number(s.size, 16, 32, fallback.size),
     lineHeight: number(s.lineHeight, 1.4, 2.4, fallback.lineHeight),
+    paragraphSpacing: number(s.paragraphSpacing, 0.65, 2.2, fallback.paragraphSpacing),
     width: number(s.width, 480, 960, fallback.width),
   };
 }
@@ -68,6 +71,7 @@ export function applySettings(s: Settings) {
   root.dataset.readerFont = s.font;
   root.style.setProperty('--reader-size', `${s.size}px`);
   root.style.setProperty('--reader-leading', String(s.lineHeight));
+  root.style.setProperty('--reader-paragraph-space', `${s.paragraphSpacing}em`);
   root.style.setProperty('--reader-width', `${s.width}px`);
 }
 // Apply settings before the first frame; unavailable or corrupt storage leaves CSS defaults.

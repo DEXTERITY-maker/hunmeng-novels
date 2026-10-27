@@ -1,7 +1,8 @@
 ---
 import { render } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
-import { chapterUrl, chapterCount, type Novel } from '../lib/content';
+import { chapterUrl, chapterCount, dateLabel, type Novel } from '../lib/content';
+import Icon from './Icon.astro';
 import { CHAPTERS_PER_PAGE, chapterListUrl } from '../lib/pagination';
 import { chapterReportUrl, chapterStructuredData, placeholderCover, socialCover } from '../lib/seo';
 import { site } from '../config/site';
@@ -36,15 +37,26 @@ const usesPlaceholder = n.cover === placeholderCover;
   reader
 >
   <header class="reader-header reader-chrome">
-    <a href={n.url} class="reader-back" aria-label="Back to novel">
-      ←
+    <a href={n.url} class="reader-back" aria-label="Back to novel" title="Back to novel">
+      <span aria-hidden="true">←</span>
     </a>
-    <a href={n.url} class="reader-novel-title">
-      {n.title}
+    <a href={n.url} class="reader-novel-title" title={n.title}>
+      <span class="reader-brand-label">Hunmeng <small>reading room</small></span>
+      <span class="reader-book-label">{n.title}</span>
     </a>
-    <button type="button" class="icon-button" data-open="toc" aria-label="Open contents" hidden={remote} data-release-unlock>
-      ☰
-    </button>
+    <div class="reader-header-actions">
+      <button type="button" class="icon-button" data-open="settings-header" aria-label="Reading settings" title="Reading settings" hidden={remote} data-release-unlock><Icon name="sliders" size={21} /></button>
+      <button type="button" class="icon-button reader-save-action" id="reader-save-later" aria-label="Save novel to Read later" aria-pressed="false" title="Save novel to Read later" hidden={remote} data-release-unlock><Icon name="bookmark" size={21} /></button>
+      <button type="button" class="icon-button" data-open="toc" aria-label="Open contents" title="Contents" hidden={remote} data-release-unlock><Icon name="book" size={21} /></button>
+      <details class="reader-more" hidden={remote} data-release-unlock>
+        <summary class="icon-button" aria-label="More reading options" title="More reading options"><span aria-hidden="true">⋯</span></summary>
+        <div class="reader-more-panel">
+          <a href={n.url}>Back to novel</a>
+          <button type="button" data-reader-focus aria-pressed="false">Focus mode</button>
+          {reportHref && <a href={reportHref} target="_blank" rel="noopener noreferrer">Report an error ↗</a>}
+        </div>
+      </details>
+    </div>
   </header>
   <div class="reading-progress">
     <progress
@@ -64,11 +76,14 @@ const usesPlaceholder = n.cover === placeholderCover;
     data-number={c.data.number}
   >
     <div class="reader-heading">
-      <a href={n.url}>{n.title}</a>
-      <p class="fine">
-        Chapter {c.data.number} of {remote ? serial?.totalChapters : n.chapterCount}
-      </p>
+      <a class="reader-heading-novel" href={n.url}>{n.title}</a>
+      <p class="reader-heading-eyebrow">Chapter {c.data.number} <span aria-hidden="true">·</span> {remote ? serial?.totalChapters : n.chapterCount} {remote ? 'planned' : 'published'} chapters</p>
       <h1>{c.data.title}</h1>
+      <p class="reader-heading-meta">
+        {c.data.publishedAt && <time datetime={c.data.publishedAt}>{dateLabel(c.data.publishedAt)}</time>}
+        <span data-reader-words hidden></span>
+      </p>
+      <div class="reader-heading-ornament" aria-hidden="true"><span>✦</span></div>
     </div>
     {remote && <div id="serial-gate" class="notice">
       <p id="serial-status" role="status">Checking chapter availability…</p>
@@ -84,23 +99,16 @@ const usesPlaceholder = n.cover === placeholderCover;
     </article>
     <nav class="chapter-end-nav" aria-label="Chapter navigation" hidden={remote} data-release-unlock>
       {prev ? (
-        <a class="button secondary" href={chapterUrl(n.slug, prev.data.slug)}>
-          ← Previous
-        </a>
+        <a class="button secondary chapter-previous" href={chapterUrl(n.slug, prev.data.slug)}>← Previous chapter</a>
       ) : (
-        <a class="button secondary" href={n.url}>
-          Back to novel
-        </a>
+        <span class="button secondary chapter-unavailable" aria-disabled="true">← First chapter</span>
       )}
       {next ? (
-        <a class="button" href={chapterUrl(n.slug, next.data.slug)}>
-          Next →
-        </a>
+        <a class="button chapter-next" href={chapterUrl(n.slug, next.data.slug)}>Next chapter →</a>
       ) : (
-        <a class="button" href={n.url}>
-          Back to contents →
-        </a>
+        <span class="button chapter-unavailable" aria-disabled="true">Last published chapter</span>
       )}
+      <a class="chapter-back-to-novel" href={n.url}><Icon name="book" size={17} /> Back to novel</a>
     </nav>
     {!next && !remote && <p class="end-note">You have read all published chapters.</p>}
     {serial && <p class="end-note"><a href={`${n.url}releases/`}>Complete release schedule →</a></p>}
@@ -115,7 +123,7 @@ const usesPlaceholder = n.cover === placeholderCover;
   </main>
   <nav class="reader-toolbar reader-chrome" aria-label="Reading controls" hidden={remote} data-release-unlock>
     <button type="button" data-open="toc">
-      <span aria-hidden="true">☰</span> Contents
+      <Icon name="book" size={18} /> Contents
     </button>
     <button type="button" data-open="settings">
       <span aria-hidden="true">Aa</span> Settings
@@ -151,11 +159,11 @@ const usesPlaceholder = n.cover === placeholderCover;
     aria-label="Show reading controls"
     hidden
   >
-    Aa
+    <Icon name="book" size={22} />
   </button>
   <dialog id="reader-settings" class="reader-dialog" aria-labelledby="settings-title">
     <div class="dialog-heading">
-      <h2 id="settings-title">Reading settings</h2>
+      <div><p class="reader-dialog-eyebrow">Make this story yours</p><h2 id="settings-title">Reading settings</h2><p class="reader-dialog-description">Changes apply instantly and stay on this device.</p></div>
       <button type="button" class="icon-button" data-close aria-label="Close settings">
         ×
       </button>
@@ -191,6 +199,10 @@ const usesPlaceholder = n.cover === placeholderCover;
         <input name="width" type="range" min="480" max="960" step="40" value="720" />
         <small>On mobile, the width is limited to your screen.</small>
       </label>
+      <label>
+        Paragraph spacing <output data-output="paragraphSpacing">1.35 em</output>
+        <input name="paragraphSpacing" type="range" min="0.65" max="2.2" step="0.05" value="1.35" />
+      </label>
       <fieldset>
         <legend>Theme</legend>
         <div class="theme-choices">
@@ -212,6 +224,7 @@ const usesPlaceholder = n.cover === placeholderCover;
           </label>
         </div>
       </fieldset>
+      <div class="reader-settings-preview" aria-label="Reading settings preview"><p>Every story begins with a new horizon. Turn the page, and a world unfolds.</p><p>The next chapter is yours to discover.</p></div>
       <button type="button" id="reset-settings" class="text-button">
         Reset to default
       </button>

@@ -12,12 +12,45 @@ export async function initReader() {
   });
   const state = await repository.getState();
   let settings = state.settings;
-  if (!state.library[slug] || state.library[slug] === 'later')
-    await repository.setShelf(slug, 'reading');
+  // Keep an intentional Read later shelf selection intact when the user opens a chapter.
+  if (!state.library[slug]) await repository.setShelf(slug, 'reading');
   applySettings(settings);
   const form = document.getElementById('settings-form') as HTMLFormElement;
   const settingsDialog = document.getElementById('reader-settings') as HTMLDialogElement;
   const tocDialog = document.getElementById('reader-toc') as HTMLDialogElement;
+  const bookmark = document.getElementById('reader-save-later') as HTMLButtonElement;
+  const moreMenu = document.querySelector<HTMLDetailsElement>('.reader-more');
+  const focusToggle = moreMenu?.querySelector<HTMLButtonElement>('[data-reader-focus]');
+  const wordCount = document.querySelector<HTMLElement>('[data-reader-words]');
+  if (wordCount) {
+    const count = (article.textContent ?? '').trim().split(/\s+/u).filter(Boolean).length;
+    if (count > 0) { wordCount.textContent = `${new Intl.NumberFormat('en-US').format(count)} words`; wordCount.hidden = false; }
+  }
+  let shelf = (await repository.getState()).library[slug] ?? 'reading';
+  const paintBookmark = () => {
+    const saved = shelf === 'later';
+    bookmark.setAttribute('aria-pressed', String(saved));
+    bookmark.setAttribute('aria-label', saved ? 'Remove from Read later' : 'Save novel to Read later');
+    bookmark.title = saved ? 'Remove from Read later' : 'Save novel to Read later';
+  };
+  paintBookmark();
+  bookmark.addEventListener('click', async () => {
+    shelf = shelf === 'later' ? 'reading' : 'later';
+    await repository.setShelf(slug, shelf);
+    paintBookmark();
+  });
+  let focusMode = false;
+  focusToggle?.addEventListener('click', () => {
+    focusMode = !focusMode;
+    focusToggle.setAttribute('aria-pressed', String(focusMode));
+    focusToggle.textContent = focusMode ? 'Exit focus mode' : 'Focus mode';
+    document.body.classList.toggle('reader-focus-mode', focusMode);
+    if (moreMenu) moreMenu.open = false;
+    show(!focusMode);
+  });
+  document.addEventListener('click', (event) => {
+    if (moreMenu?.open && !(event.target as Element).closest('.reader-more')) moreMenu.open = false;
+  });
   const fill = () => {
     for (const [key, value] of Object.entries(settings)) {
       const field = form.elements.namedItem(key);
@@ -29,6 +62,9 @@ export async function initReader() {
       settings.lineHeight,
     ).replace('.', ',');
     form.querySelector<HTMLOutputElement>('[data-output="width"]')!.value = `${settings.width} px`;
+    form.querySelector<HTMLOutputElement>('[data-output="paragraphSpacing"]')!.value = `${Number(settings.paragraphSpacing.toFixed(2))} em`;
+    const preview = document.querySelector<HTMLElement>('.reader-settings-preview');
+    if (preview) preview.dataset.font = settings.font;
   };
   fill();
   let restoring = true,
@@ -101,7 +137,7 @@ export async function initReader() {
       if (restoring) return;
       const y = window.scrollY,
         delta = y - lastY;
-      if (!settingsDialog.open && !tocDialog.open) {
+      if (!settingsDialog.open && !tocDialog.open && !focusMode) {
         if (y < 120 || delta < -7) show(true);
         else if (delta > 7) show(false);
       }
@@ -117,13 +153,13 @@ export async function initReader() {
   });
   toggler.addEventListener('click', () => show(true));
   article.addEventListener('click', (e) => {
-    if ((e.target as HTMLElement).closest('a,button') || window.getSelection()?.toString()) return;
+    if ((e.target as HTMLElement).closest('a,button,input,label') || window.getSelection()?.toString()) return;
     show(!shown);
   });
   document.querySelectorAll<HTMLButtonElement>('[data-open]').forEach((button) =>
     button.addEventListener('click', () => {
       show(true);
-      (button.dataset.open === 'settings' ? settingsDialog : tocDialog).showModal();
+      (button.dataset.open?.startsWith('settings') ? settingsDialog : tocDialog).showModal();
     }),
   );
   for (const dialog of [settingsDialog, tocDialog]) {
@@ -171,6 +207,7 @@ export async function initReader() {
       size: Number(f.get('size')),
       lineHeight: Number(f.get('lineHeight')),
       width: Number(f.get('width')),
+      paragraphSpacing: Number(f.get('paragraphSpacing')),
     });
   });
   document
