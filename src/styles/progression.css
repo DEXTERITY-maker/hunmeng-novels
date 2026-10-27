@@ -1,0 +1,81 @@
+/* Reader progression: scoped to the signed-in profile. All values are real RPC data. */
+.progression-space{margin:20px 0 26px;min-width:0}
+.progression-space [hidden]{display:none!important}
+.progression-section-heading{display:flex;align-items:end;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:0 0 17px}
+.progression-space h3,.progression-space h4,.progression-space h5{margin:0;color:var(--ink)}
+.progression-space h3{font-family:'Lora Variable',Georgia,serif;font-size:clamp(1.28rem,2.8vw,1.65rem)}
+.progression-space h4{font-family:'Lora Variable',Georgia,serif;font-size:clamp(1.1rem,2.3vw,1.38rem)}
+.progression-space h5{font-size:1rem}
+.progression-server-label{font-size:.7rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);background:var(--soft);padding:8px 11px;border-radius:99px}
+.progression-identity{background:linear-gradient(122deg,color-mix(in srgb,var(--soft) 77%,var(--surface)),var(--surface) 75%);border:1px solid var(--line);border-radius:20px;display:grid;grid-template-columns:132px minmax(0,1fr);align-items:center;gap:20px;padding:clamp(16px,3vw,26px);min-width:0;box-shadow:0 12px 30px rgb(30 52 46 / .06)}
+.progression-identity img{width:100%;max-width:132px;height:auto;aspect-ratio:1;object-fit:contain;filter:drop-shadow(0 5px 8px rgb(17 41 49 / .18))}
+.progression-identity-copy{min-width:0}
+.progression-eyebrow{color:var(--accent);font-size:.66rem;letter-spacing:.2em;font-weight:800;margin:0 0 4px}
+.progression-identity h4{font-size:clamp(1.55rem,3.5vw,2.2rem)}
+.progression-identity-meta{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0 20px}
+.progression-identity-meta span{border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:5px 11px;font-size:.75rem;font-weight:750;color:var(--ink)}
+.progression-bar-label{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;font-size:.77rem;margin-bottom:9px;font-weight:650}
+.progression-bar-label span:last-child{color:var(--muted)}
+.progression-space progress{display:block;width:100%;height:9px;accent-color:var(--accent);border:0;border-radius:99px;overflow:hidden;background:var(--line)}
+.progression-space progress::-webkit-progress-bar{background:var(--line);border-radius:99px}
+.progression-space progress::-webkit-progress-value{background:linear-gradient(90deg,#4b8a71,#b3b982);border-radius:99px}
+.progression-space progress::-moz-progress-bar{background:var(--accent);border-radius:99px}
+.progression-stat-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:13px 0 27px}
+.progression-stat-grid>div{border:1px solid var(--line);background:var(--surface);border-radius:13px;padding:14px;display:grid;align-content:center;gap:5px;min-width:0}
+.progression-stat-grid strong{font-family:'Lora Variable',Georgia,serif;color:var(--ink);font-size:1.6rem}
+.progression-stat-grid span{font-size:.75rem;line-height:1.4;color:var(--muted)}
+.progression-subsection{padding-top:24px;border-top:1px solid var(--line);margin-top:24px;min-width:0}
+.progression-subsection .eyebrow{margin:0 0 5px}
+.progression-subsection .fine{margin:0;color:var(--muted)}
+.progression-rank-gallery{list-style:none;display:grid;grid-auto-columns:minmax(172px,1fr);grid-auto-flow:column;gap:12px;overflow-x:auto;overscroll-behavior-inline:contain;scroll-snap-type:x proximity;scrollbar-width:thin;padding:4px 2px 16px;margin:0;max-width:100%}
+.progression-rank-card{--rank-glow:#799291;position:relative;scroll-snap-align:start;display:flex;flex-direction:column;align-items:center;text-align:center;gap:5px;border:1px solid var(--line);border-radius:16px;padding:14px 12px 17px;background:var(--surface);min-width:0;min-height:255px;box-sizing:border-box}
+.progression-rank-card img{width:clamp(90px,13vw,116px);height:116px;object-fit:contain;filter:drop-shadow(0 4px 7px color-mix(in srgb,var(--rank-glow) 32%,transparent))}
+.progression-rank-card strong{font-size:1rem;color:var(--ink)}
+.progression-rank-ru{font-size:.75rem;color:var(--muted)}
+.progression-rank-card .fine{font-size:.72rem}
+.progression-rank-card p{font-size:.7rem;line-height:1.4;margin:4px 0 0;color:var(--muted)}
+.progression-rank-state{font-size:.68rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;border-radius:99px;background:var(--soft);color:var(--muted);padding:4px 10px}
+.progression-rank-card[data-state='current']{border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 18%,transparent);background:color-mix(in srgb,var(--surface) 80%,var(--soft))}
+.progression-rank-card[data-state='current'] .progression-rank-state,.progression-rank-card[data-state='achieved'] .progression-rank-state{color:var(--accent)}
+.progression-rank-card[data-state='locked'] img{opacity:.8}
+.progression-rank-card[data-rank-card='bronze']{--rank-glow:#bc794b}.progression-rank-card[data-rank-card='silver']{--rank-glow:#74c3f3}.progression-rank-card[data-rank-card='gold']{--rank-glow:#d5a941}.progression-rank-card[data-rank-card='dark-gold']{--rank-glow:#bc8a2a}.progression-rank-card[data-rank-card='platinum']{--rank-glow:#b5b4dc}.progression-rank-card[data-rank-card='diamond']{--rank-glow:#4ba9fa}.progression-rank-card[data-rank-card='legendary']{--rank-glow:#d6ac3a}.progression-rank-card[data-rank-card='mythical']{--rank-glow:#9b68ed}
+.progression-title-list{display:grid;gap:8px}
+.progression-title-card{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:13px;border-radius:12px;border:1px solid var(--line);background:var(--surface);min-width:0}
+.progression-title-card>div{min-width:0}
+.progression-title-card strong{display:inline-block;font-size:.93rem;color:var(--ink)}
+.progression-title-card p{margin:4px 0 0;line-height:1.4}
+.progression-title-card button{min-width:98px;min-height:42px;padding:7px 11px;font-size:.8rem;flex:none}
+.progression-title-card[data-unlocked='false'] button{opacity:.62}
+.progression-achievement-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.progression-achievement{border:1px solid var(--line);border-radius:14px;padding:16px;min-width:0;background:var(--surface)}
+.progression-achievement-symbol{font-size:1.7rem;color:var(--accent);margin-bottom:5px}
+.progression-achievement[data-unlocked='true']{border-color:color-mix(in srgb,var(--accent) 65%,var(--line));background:color-mix(in srgb,var(--surface) 85%,var(--soft))}
+.progression-achievement progress{margin:10px 0 8px}
+.progression-achievement .fine{font-size:.73rem;line-height:1.4}
+.progression-explanation{margin-top:20px!important;line-height:1.65}
+.reader-account-page #profile-avatar[data-reader-rank]{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 17%,transparent)}
+.reader-account-page #profile-avatar[data-reader-rank='gold'],.reader-account-page #profile-avatar[data-reader-rank='dark-gold']{border-color:#b18a40}
+.reader-account-page #profile-avatar[data-reader-rank='diamond']{border-color:#4ba9fa}
+.reader-account-page #profile-avatar[data-reader-rank='legendary']{border-color:#d6ac3a}
+.reader-account-page #profile-avatar[data-reader-rank='mythical']{border-color:#ac79e8}
+.progression-rank-dialog{border:1px solid var(--line);border-radius:20px;background:var(--surface);color:var(--ink);padding:0;max-width:min(410px,calc(100vw - 30px));box-shadow:0 20px 70px rgb(9 24 28 / .23)}
+.progression-rank-dialog::backdrop{background:rgb(8 20 32 / .58)}
+.progression-rank-dialog-body{text-align:center;padding:25px;display:grid;justify-items:center;gap:15px}
+.progression-rank-dialog-body p,.progression-rank-dialog-body h3{margin:0}
+.progression-rank-dialog-body img{width:145px;height:145px;object-fit:contain}
+@media(max-width:760px){
+ .progression-identity{grid-template-columns:93px minmax(0,1fr);gap:10px;padding:12px}
+ .progression-identity img{max-width:90px}
+ .progression-identity-meta{margin:6px 0 12px}
+ .progression-stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .progression-rank-gallery{grid-auto-columns:170px}
+ .progression-title-card{align-items:flex-start}
+ .progression-title-card button{min-width:86px;padding:6px}
+}
+@media(max-width:360px){
+ .progression-identity{grid-template-columns:1fr;text-align:center;justify-items:center}
+ .progression-identity-meta{justify-content:center}
+ .progression-achievement-grid{grid-template-columns:1fr}
+ .progression-title-card .progression-rank-ru{display:block}
+}
+@media(prefers-reduced-motion:reduce){.progression-space *, .progression-rank-dialog *{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
