@@ -1034,7 +1034,7 @@ html[data-theme='sepia'] body:has([data-reader]) {
   width:100%;
   padding:12px 14px;
   border-radius:11px;
-  font:700 .93rem/1.35 'Manrope Variable',sans-serif;
+  font:700 .97rem/1.35 'Manrope Variable',sans-serif;
   text-align:center;
   text-decoration:none;
 }
@@ -1220,7 +1220,7 @@ html[data-theme='sepia'] body:has([data-reader]) {
     padding:5px 8px;
     border-radius:12px;
   }
-  .reader-toolbar button {font-size:.8rem;padding:8px 6px;gap:5px;}
+  .reader-toolbar button {font-size:.83rem;padding:8px 6px;gap:5px;}
   .reader-toolbar #progress-label {padding:0 3px;font-size:.82rem;text-align:center;}
   .toolbar-arrows {border-left:1px solid var(--line);padding-left:5px;display:flex;gap:0;}
   .toolbar-arrows a,.toolbar-arrows > span {width:44px;min-width:44px;height:44px;}
