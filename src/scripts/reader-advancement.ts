@@ -1,6 +1,6 @@
 import type { SupabaseClient,User } from '@supabase/supabase-js';
 import { repository } from '../lib/storage';
-import { ranks,titles,achievements,getRank,levelFromTotalXp,rankImage,titleStatus,emptyVerifiedStats,type VerifiedStats } from '../lib/reader-progression';
+import { ranks,titles,achievements,levelFromTotalXp,rankImage,titleStatus,emptyVerifiedStats,type VerifiedStats } from '../lib/reader-progression';
 
 let activeUser: string | null=null;
 let requestCount=0;
