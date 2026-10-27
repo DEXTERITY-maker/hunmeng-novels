@@ -2,6 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import { site } from '../config/site';
 import ReaderPreferences from '../components/ReaderPreferences.astro';
+import ReaderAdvancement from '../components/ReaderAdvancement.astro';
 import Icon from '../components/Icon.astro';
 ---
 <Layout title="Sign in or register" noindex description="Sign in to Hunmeng or create a reader account with your email and password.">
@@ -37,7 +38,7 @@ import Icon from '../components/Icon.astro';
         </section>
         <div id="auth-logged-in" class="profile-layout" hidden>
           <aside class="profile-sidebar" aria-label="Profile sections">
-            <div class="profile-identity"><span id="profile-avatar" class="profile-avatar" data-avatar="sage" aria-hidden="true">R</span><div class="profile-identity-copy"><strong id="profile-name">Reader</strong><span>My reading corner</span></div></div>
+            <div class="profile-identity"><span id="profile-avatar" class="profile-avatar" data-avatar="sage" aria-hidden="true">R</span><img id="profile-sidebar-rank" class="profile-sidebar-rank" src="/images/ranks/iron.svg" width="44" height="49" alt="Rank emblem" hidden /><div class="profile-identity-copy"><strong id="profile-name">Reader</strong><span>My reading corner</span></div></div>
             <nav aria-label="Profile settings"><a href="#profile-details" aria-current="location" aria-controls="profile-details" data-profile-section="profile-details">Profile</a><a href="#profile-reading" aria-controls="profile-reading" data-profile-section="profile-reading">Reading</a><a href="#profile-account" aria-controls="profile-account" data-profile-section="profile-account">Account</a></nav>
             <div class="profile-quicklinks"><a class="profile-library-link" href="/library/"><Icon name="book" size={19} /> My library <span aria-hidden="true">→</span></a>
             <a class="profile-library-link" href="/studio/"><Icon name="pen" size={19} /> Writing studio <span aria-hidden="true">→</span></a></div>
@@ -45,6 +46,7 @@ import Icon from '../components/Icon.astro';
           <div class="profile-content">
             <section id="profile-details" class="profile-panel" aria-labelledby="profile-title">
               <p class="eyebrow">Personal space</p><h2 id="profile-title">Profile</h2><p class="profile-intro">Your name and a little about you.</p>
+              <ReaderAdvancement />
               <form id="profile-form">
                 <fieldset id="profile-fields" disabled>
                   <label>Nickname<input name="nickname" aria-label="Nickname" autocomplete="nickname" minlength="3" maxlength="24" required aria-describedby="nickname-help" /><small id="nickname-help">Use 3–24 characters: letters, numbers, spaces, hyphens, or underscores. Nicknames do not need to be unique.</small></label>

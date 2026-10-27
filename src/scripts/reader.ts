@@ -243,4 +243,7 @@ export async function initReader() {
     paint();
   });
   await restore();
+  // Reward network activity is isolated from local progress and reading controls.
+  void import('./reader-rewards').then(({ initReaderRewards }) =>
+    initReaderRewards(slug, chapterSlug, article)).catch(() => {});
 }
