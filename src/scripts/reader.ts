@@ -219,7 +219,10 @@ export async function initReader() {
     }
     if (novelSpecific) fill();
   });
-  form.addEventListener('input', () => {
+  form.addEventListener('input', (event) => {
+    // The scope checkbox is not a reading preference. Its change handler
+    // switches repositories, so never overwrite global settings on toggle.
+    if (event.target === novelToggle) return;
     const f = new FormData(form);
     void update({
       font: f.get('font') as Settings['font'],
