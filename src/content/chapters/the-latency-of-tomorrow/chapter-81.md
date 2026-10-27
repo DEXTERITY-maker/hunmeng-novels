@@ -79,6 +79,8 @@ Two days later the site's union representative requested a meeting. Lihua had no
 
 The employer agreed to revise the pilot rules. The first revised dashboard showed valid trials, rejected trials with verified reasons, and proposals awaiting information. It did not rank operators by willingness to click approve.
 
+Lihua told the staff representative that two colleagues had stopped discussing scheduling decisions in her presence. She could not tell whether they were annoyed or simply afraid of being quoted. The representative offered to record the concern without naming anyone. She accepted that, and went back to work the following day. The dashboard did not measure the silence.
+
 That weekend Ning taught another class at the technical college. She gave the students the old and new dashboards without names or workplace details and asked them which one offered more useful evidence.
 
 A young man chose the old version.
