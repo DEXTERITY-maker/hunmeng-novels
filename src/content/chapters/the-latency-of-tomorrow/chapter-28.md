@@ -91,4 +91,4 @@ For the first time, Yanchuan could give a more precise answer. Under different a
 
 He wrote that conclusion for the reviewers, with the ticket references and three possible explanations. He did not write that the fault had caused a disappearance.
 
-Yanchuan wrote AUX-RETURN-04 at the top of the request to the reviewer, then added the dates of the three tickets that mentioned it. Han checked the list and returned one correction: an observed relay fault was not yet an observed failure on the acceptance day.
+Yanchuan wrote AUX-RETURN-04 at the top of the request to the reviewer, then added the dates of the two tickets that mentioned it. Han checked the list and returned one correction: an observed relay fault was not yet an observed failure on the acceptance day.
