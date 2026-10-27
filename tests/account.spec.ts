@@ -289,3 +289,34 @@ test('недоступный сервер проверки сессии не в�
  await expect(page.locator('#auth-logged-in')).toBeVisible();expect(state.profileCalls).toBe(0);
  state.verifyError=0;await page.getByRole('button',{name:'Save profile',exact:true}).click();await expect(page.locator('#profile-status')).toHaveText('Profile saved.');
 });
+
+
+for (const width of [320, 1440]) {
+ test(`профиль: XP, девять уникальных эмблем и достижения адаптивны при ${width}px`, async ({page}, testInfo) => {
+  await page.setViewportSize({width,height:850});
+  const state = await mockAuth(page);
+  await loginFixture(page);
+  await expect(page.locator('#progression-content')).toBeVisible();
+  await expect(page.locator('#progression-rank-name')).toHaveText('Iron');
+  await expect(page.locator('#progression-level')).toHaveText('Level 1');
+  await expect(page.locator('#progression-title')).toHaveText('Novice Reader');
+  await expect(page.locator('#progression-xp')).toHaveText('0 / 500 XP');
+  await expect(page.locator('[data-rank-card]')).toHaveCount(9);
+  await expect(page.locator('[data-rank-card="dark-gold"]')).toContainText('Level 140–174');
+  await expect(page.locator('[data-rank-card="mythical"]')).toContainText('Level 420–500');
+  await expect(page.locator('[data-title-card="novice"] button')).toHaveText('Equipped');
+  await expect(page.locator('[data-title-card="collector"] button')).toBeDisabled();
+  await expect(page.locator('[data-achievement]')).toHaveCount(5);
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
+  for (const badge of await page.locator('[data-rank-card] img').all()) {
+    const response = await page.request.get(await badge.getAttribute('src') || '');
+    expect(response.ok()).toBeTruthy();
+    expect(await response.text()).toContain('<svg');
+  }
+  await page.locator('#profile-details').screenshot({
+    path:testInfo.outputPath(`hunmeng-reader-ranks-${width}.png`),animations:'disabled',
+  });
+  expect(state.requests.every(path=>path.startsWith('/auth/v1/')||
+    path==='/rest/v1/rpc/reader_my_progress')).toBe(true);
+ });
+}
