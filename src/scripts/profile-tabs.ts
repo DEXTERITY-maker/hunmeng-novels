@@ -16,10 +16,15 @@ export function initProfileTabs() {
     });
   };
   links.forEach(link => link.addEventListener('click', () => {
+    root.dataset.profileTabbed = 'true';
     // Hashchange will also run for a different destination; handle same-hash clicks.
     if (link.hash === location.hash) select();
   }));
-  window.addEventListener('hashchange', select);
+  window.addEventListener('hashchange', () => {
+    if (sections.includes(location.hash.slice(1) as (typeof sections)[number])) root.dataset.profileTabbed = 'true';
+    select();
+  });
+  if (sections.includes(location.hash.slice(1) as (typeof sections)[number])) root.dataset.profileTabbed = 'true';
   select();
   root.dataset.profileTabsReady = 'true';
 }
