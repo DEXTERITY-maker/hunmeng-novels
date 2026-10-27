@@ -67,7 +67,9 @@ When he told An about the contract, she asked whether it would take him away fro
 
 “I don't think so. The team has other people. And we've stopped making every request depend on me.”
 
-“That was the point.”
+An was quiet. Her client invoices still needed attention, and nobody at work had offered to separate the hours she spent being a bookkeeper from the hours she spent being a missing man's wife.
+
+“That was the point,” she said.
 
 She did not congratulate him. She told him their son wanted to speak about his bridge project.
 
