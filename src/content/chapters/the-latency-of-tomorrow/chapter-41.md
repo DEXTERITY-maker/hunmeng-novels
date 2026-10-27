@@ -85,6 +85,4 @@ At bedtime An put the printed bus list in a folder, ready for the next day. The 
 
 Yanchuan had spent months arguing that a report's attractive number must not erase the conditions beneath it. Here the conditions had names and small school bags. The cost of checking them belonged in the plan.
 
-He wrote one final line beneath the pilot's handover section: A system without a responsible keeper is an unfinished system.
-
-The sentence was plain enough to defend without an explanation.
+He added the caretaker's name and an escalation number to the school's handover sheet. At the next pickup, An checked that the contact was still current. The school secretary corrected a digit before the paper went back on the cupboard door.
