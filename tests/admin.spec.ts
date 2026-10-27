@@ -238,3 +238,97 @@ test('saving a partial editorial draft does not mark it ready for review', async
   await expect.poll(() => submitted.length).toBe(2);
   expect(submitted[1].status).toBe('review');
 });
+
+
+test('existing draft keeps its status and uses conditional updates', async ({ page }) => {
+  await mockBackend(page);
+  const source = { id: '00000000-0000-4000-8000-000000000055', slug: 'draft-source',
+    original_title: 'Draft source', rights_status: 'pending', permission_publish: false,
+    permission_translate: false };
+  const version = '2026-10-27T11:00:00.123456+00:00';
+  const job = { id: '00000000-0000-4000-8000-000000000056', source_id: source.id,
+    chapter_number: 1, chapter_slug: 'chapter-1', chapter_title: 'Draft chapter',
+    chapter_description: '', original_text: 'Partial source', translated_text: 'Partial translation',
+    qa_notes: '', status: 'draft', updated_at: version };
+  const patches: { query: string; body: Record<string, unknown> }[] = [];
+  await page.route('https://*.supabase.co/rest/v1/novel_sources?**', route =>
+    route.fulfill({ contentType: 'application/json', body: JSON.stringify([source]) }));
+  await page.route('https://*.supabase.co/rest/v1/novel_translation_jobs**', route => {
+    if (route.request().method() === 'PATCH') {
+      patches.push({query: new URL(route.request().url()).search, body: route.request().postDataJSON()});
+      Object.assign(job, route.request().postDataJSON(), {updated_at: '2026-10-27T11:00:02.123456+00:00'});
+    }
+    return route.fulfill({contentType:'application/json',body:JSON.stringify([job])});
+  });
+  await seededSession(page);
+  await page.getByRole('button', {name:'Open in editor'}).click();
+  const form = page.locator('#job-form');
+  await form.locator('[name=translated_text]').fill('Improved but unfinished translation');
+  await form.getByRole('button',{name:'Save draft'}).click();
+  await expect.poll(()=>patches.length).toBe(1);
+  expect(patches[0].body.status).toBe('draft');
+  expect(new URLSearchParams(patches[0].query).get('updated_at')).toBe('eq.'+version);
+  await expect(page.locator('#admin-status')).toHaveText('Draft saved privately.');
+});
+
+test('saving a review cannot silently downgrade it to draft', async ({ page }) => {
+  await mockBackend(page);
+  const source = { id:'00000000-0000-4000-8000-000000000055',slug:'draft-source',
+    original_title:'Source',rights_status:'pending',permission_publish:false,permission_translate:false };
+  const job = { id:'00000000-0000-4000-8000-000000000056',source_id:source.id,
+    chapter_number:1,chapter_slug:'chapter-1',chapter_title:'Reviewed chapter',
+    chapter_description:'A complete chapter description.',original_text:'A'.repeat(100),
+    translated_text:'B'.repeat(100),qa_notes:'',status:'review',
+    updated_at:'2026-10-27T11:00:00.123456+00:00' };
+  const patches: Record<string, unknown>[] = [];
+  await page.route('https://*.supabase.co/rest/v1/novel_sources?**', route =>
+    route.fulfill({ contentType:'application/json',body:JSON.stringify([source]) }));
+  await page.route('https://*.supabase.co/rest/v1/novel_translation_jobs**', route => {
+    if(route.request().method()==='PATCH') patches.push(route.request().postDataJSON());
+    return route.fulfill({contentType:'application/json',body:JSON.stringify([job])});
+  });
+  await seededSession(page);
+  await page.getByRole('button',{name:'Open in editor'}).click();
+  await expect(page.getByRole('button',{name:'Save draft'})).toBeDisabled();
+  await page.getByRole('button',{name:'Send for review'}).click();
+  await expect.poll(()=>patches.length).toBe(1);
+  expect(patches[0].status).toBe('review');
+});
+
+test('empty PATCH result detects a competing editor and never confirms success', async ({ page }) => {
+  await mockBackend(page);
+  const source = {id:'00000000-0000-4000-8000-000000000055',slug:'draft-source',
+    original_title:'Source',rights_status:'pending',permission_publish:false,permission_translate:false};
+  const job = {id:'00000000-0000-4000-8000-000000000056',source_id:source.id,
+    chapter_number:1,chapter_slug:'chapter-1',chapter_title:'Concurrent draft',
+    chapter_description:'',original_text:'',translated_text:'',qa_notes:'',
+    status:'draft',updated_at:'2026-10-27T11:00:00.123456+00:00'};
+  await page.route('https://*.supabase.co/rest/v1/novel_sources?**', route =>
+    route.fulfill({contentType:'application/json',body:JSON.stringify([source])}));
+  await page.route('https://*.supabase.co/rest/v1/novel_translation_jobs**', route =>
+    route.fulfill({contentType:'application/json',body:route.request().method()==='PATCH' ? '[]' : JSON.stringify([job])}));
+  await seededSession(page);
+  await page.getByRole('button',{name:'Open in editor'}).click();
+  await page.getByRole('button',{name:'Save draft'}).click();
+  await expect(page.locator('#admin-status')).toContainText('changed in another session');
+  await expect(page.locator('#admin-status')).not.toContainText('Draft saved');
+  await expect(page.locator('#job-form')).toHaveAttribute('data-edit-id',job.id);
+});
+
+test('empty POST result never shows a false draft-save confirmation', async ({ page }) => {
+  await mockBackend(page);
+  const source={id:'00000000-0000-4000-8000-000000000055',slug:'draft-source',
+    original_title:'Source',rights_status:'pending',permission_publish:false,permission_translate:false};
+  await page.route('https://*.supabase.co/rest/v1/novel_sources?**',route=>
+    route.fulfill({contentType:'application/json',body:JSON.stringify([source])}));
+  await page.route('https://*.supabase.co/rest/v1/novel_translation_jobs**',route=>
+    route.fulfill({contentType:'application/json',body:'[]'}));
+  await seededSession(page);
+  const form=page.locator('#job-form');
+  await form.locator('[name=chapter_number]').fill('1');
+  await form.locator('[name=chapter_slug]').fill('chapter-1');
+  await form.locator('[name=chapter_title]').fill('Incomplete but valid draft title');
+  await form.getByRole('button',{name:'Save draft'}).click();
+  await expect(page.locator('#admin-status')).toContainText('Server did not confirm creation');
+  await expect(page.locator('#admin-status')).not.toContainText('Draft saved');
+});
