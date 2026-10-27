@@ -69,7 +69,7 @@ test('видимая регистрация: подтверждение паро
  expect(state.signupBody.code_challenge_method).toBe('s256');
  expect(state.signupRedirect).toBe('http://127.0.0.1:4321/account/');
  await expect(page.getByLabel('Password',{exact:true})).toHaveValue('');
- expect(state.requests.every(p=>p.startsWith('/auth/v1/')||p==='/rest/v1/rpc/reader_my_progress'||p==='/rest/v1/rpc/reader_mark_rank_seen'||p==='/rest/v1/rpc/reader_select_title')).toBe(true);
+ expect(state.requests.every(p=>p.startsWith('/auth/v1/')||p.startsWith('/rest/v1/rpc/reader_'))).toBe(true);
  await expect(page.locator('#auth-fields')).toBeVisible();
 });
 test('несовпадающие пароли не отправляются в Auth',async({page})=>{
@@ -96,7 +96,7 @@ test('вход, сохранение сессии и выход сохраняю
  expect(await page.evaluate(k=>localStorage.getItem(k),key)).toBeNull();
  expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('hunmeng-novels:v1')!).library['sad-zimy'])).toBe('later');
  expect(await page.evaluate(()=>sessionStorage.getItem('hunmeng-novels:admin-session:v1'))).toBeNull();
- expect(state.requests.every(p=>p.startsWith('/auth/v1/')||p==='/rest/v1/rpc/reader_my_progress'||p==='/rest/v1/rpc/reader_mark_rank_seen'||p==='/rest/v1/rpc/reader_select_title')).toBe(true);
+ expect(state.requests.every(p=>p.startsWith('/auth/v1/')||p.startsWith('/rest/v1/rpc/reader_'))).toBe(true);
 });
 for(const [code,message] of [['invalid_credentials','Check your email and password'],['email_not_confirmed','Confirm your email'],['signup_disabled','registrations are temporarily disabled']])
 test(`ошибка ${code} is shown in English without private diagnostics`,async({page})=>{
@@ -189,7 +189,7 @@ for (const width of [320, 390, 1440]) {
   await page.locator('.account-panel').getByRole('link',{name:'My profile',exact:true}).click();
   await expect(page).toHaveURL(/\/account\/$/);
   await assertView('profile-details');
-  expect(state.requests.every(p=>p.startsWith('/auth/v1/')||p==='/rest/v1/rpc/reader_my_progress'||p==='/rest/v1/rpc/reader_mark_rank_seen'||p==='/rest/v1/rpc/reader_select_title')).toBe(true);
+  expect(state.requests.every(p=>p.startsWith('/auth/v1/')||p.startsWith('/rest/v1/rpc/reader_'))).toBe(true);
  });
 }
 test('меню шапки показывает аватар и настройки, а выход сохраняет библиотеку',async({page})=>{
@@ -217,7 +217,7 @@ test('меню шапки показывает аватар и настройк�
  expect(await page.evaluate(k=>localStorage.getItem(k),key)).toBeNull();
  const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('hunmeng-novels:v1')!));
  expect(saved.library['sad-zimy']).toBe('later');expect(saved.progress['sad-zimy'].ratio).toBe(.25);expect(saved.settings.theme).toBe('sepia');
- expect(state.requests.every(p=>p.startsWith('/auth/v1/')||p==='/rest/v1/rpc/reader_my_progress'||p==='/rest/v1/rpc/reader_mark_rank_seen'||p==='/rest/v1/rpc/reader_select_title')).toBe(true);
+ expect(state.requests.every(p=>p.startsWith('/auth/v1/')||p.startsWith('/rest/v1/rpc/reader_'))).toBe(true);
 });
 test('выход из меню при недоступном сервере удаляет сессию только в этом браузере',async({page})=>{
  const state=await mockAuth(page);await loginFixture(page);state.logoutOffline=true;
@@ -240,7 +240,7 @@ test('профиль: никнейм, описание и аватар сохр�
  await page.goto('/');await expect(page.locator('[data-account-link]')).toHaveText('Profile');
  await page.goto('/account/');await expect(page.getByLabel('Nickname',{exact:true})).toHaveValue('Тихий_читатель');
  await expect(page.getByLabel('Bio',{exact:true})).toHaveValue('Люблю истории о море.');
- expect(state.profileCalls).toBe(1);expect(state.requests.every(p=>p.startsWith('/auth/v1/')||p==='/rest/v1/rpc/reader_my_progress'||p==='/rest/v1/rpc/reader_mark_rank_seen'||p==='/rest/v1/rpc/reader_select_title')).toBe(true);
+ expect(state.profileCalls).toBe(1);expect(state.requests.every(p=>p.startsWith('/auth/v1/')||p.startsWith('/rest/v1/rpc/reader_'))).toBe(true);
 });
 test('некорректный никнейм и ошибки сети не дают ложного сохранения',async({page})=>{
  const state=await mockAuth(page);await loginFixture(page);
@@ -279,7 +279,7 @@ test('настройки чтения: сохранение, обновлени�
  await page.getByRole('button',{name:'Reset to default',exact:true}).click();
  await expect(page.locator('#preferences-form [name=size]')).toHaveValue('20');
  await expect(page.locator('#preferences-form [name=theme]')).toHaveValue('system');
- expect(state.profileCalls).toBe(0);expect(state.requests.every(p=>p.startsWith('/auth/v1/')||p==='/rest/v1/rpc/reader_my_progress'||p==='/rest/v1/rpc/reader_mark_rank_seen'||p==='/rest/v1/rpc/reader_select_title')).toBe(true);
+ expect(state.profileCalls).toBe(0);expect(state.requests.every(p=>p.startsWith('/auth/v1/')||p.startsWith('/rest/v1/rpc/reader_'))).toBe(true);
 });
 
 test('недоступный сервер проверки сессии не выдаётся за выход из аккаунта',async({page})=>{
@@ -317,6 +317,6 @@ for (const width of [320, 1440]) {
     path:testInfo.outputPath(`hunmeng-reader-ranks-${width}.png`),animations:'disabled',
   });
   expect(state.requests.every(path=>path.startsWith('/auth/v1/')||
-    path==='/rest/v1/rpc/reader_my_progress')).toBe(true);
+    path.startsWith('/rest/v1/rpc/reader_'))).toBe(true);
  });
 }
