@@ -70,4 +70,4 @@ His father called before he shut down. Jianming was repairing a neighbour's lamp
 
 “For a lamp that doesn't need to work.”
 
-Yanchuan smiled for the first time that day. After the call, he sent the half-page explanation and put the generator record away. A machine had run when a report seemed to say nothing had. He had found a question about the report's boundary, not an hour he could place inside his brother's life.
+Yanchuan smiled. After the call, he sent the half-page explanation to Han with the source table attached. Han replied that the generator could have run for several reasons and asked for the switching record before anyone named one. Yanchuan added it to the next formal request.
