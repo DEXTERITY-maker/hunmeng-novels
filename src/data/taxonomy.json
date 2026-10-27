@@ -4,7 +4,21 @@
     "genresUrl": "https://wtr-lab.com/en/novel-list",
     "tagsUrl": "https://wtr-lab.com/en/tags",
     "referenceTagEntries": 888,
-    "note": "Names only; duplicate names merged. Descriptions, book counts, and novel assignments are not imported."
+    "note": "Names only; ambiguous source names disambiguated. Descriptions, book counts, and novel assignments are not imported.",
+    "normalizations": [
+      {
+        "sourceId": 778,
+        "sourceTitle": "Comic Universe",
+        "label": "DC Universe",
+        "evidenceUrl": "https://wtr-lab.com/en/tags/dc-universe"
+      },
+      {
+        "sourceId": 767,
+        "sourceTitle": "Pirates",
+        "label": "Pirates (adaptation)",
+        "reason": "Keep the adaptation separate from the general pirate tag (source ID 529)."
+      }
+    ]
   },
   "genres": [
     "Action",
@@ -275,6 +289,7 @@
         "Collapse World: Star Rails",
         "Comic Universe",
         "Cosmic Star World",
+        "DC Universe",
         "Demon Hunting World",
         "Detective World",
         "Digital Monster World",
@@ -311,7 +326,7 @@
         "Neon Future World",
         "Ninja World",
         "Operator World",
-        "Pirates",
+        "Pirates (adaptation)",
         "Pirates of Caribbean",
         "Pocket Monsters",
         "Project Moon",
@@ -496,6 +511,7 @@
         "Military",
         "Money Grubber",
         "Nobles",
+        "Pirates",
         "Politics",
         "Poor to Rich",
         "Religions",

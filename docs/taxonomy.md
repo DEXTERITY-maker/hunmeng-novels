@@ -20,7 +20,7 @@ Reference checked on 27 October 2026:
 | Tone & Atmosphere | 27 |
 | Miscellaneous Narrative Elements | 40 |
 
-`src/data/taxonomy.json` stores genre and tag names, group membership, and provenance. The 888 reference records reduce to 886 distinct names: “Pirates” and “Comic Universe” each occur twice. One local filter per name avoids duplicate checkboxes. This is a vocabulary, not a copy of WTR-LAB novel metadata: no descriptions, cover art, assignments, popularity counts, or tag definitions are imported. Genre spelling follows Hunmeng's existing English edition (for example, “Science fiction” and “Slice of life”).
+`src/data/taxonomy.json` stores genre and tag names, group membership, and provenance. The source payload repeats two names for different records. All 888 concepts are retained with unique labels: the DC record (ID 778) uses the verified rendered label “DC Universe”; the adaptation-specific pirate record (ID 767) is labeled “Pirates (adaptation)” to distinguish it from the general pirate tag (ID 529). These corrections are recorded in the provenance metadata. This is a vocabulary, not a copy of WTR-LAB novel metadata: no descriptions, cover art, assignments, popularity counts, or tag definitions are imported. Genre spelling follows Hunmeng's existing English edition (for example, “Science fiction” and “Slice of life”).
 
 `getTaxonomy()` merges the vocabulary with published Hunmeng metadata at build time. It retains site-specific labels such as “Urban fantasy”, “Exceptional comprehension”, and “New York”, preserves existing filter URLs, and calculates counts from distinct local books. Case variants share a single term. Existing novels are not automatically assigned tags: editors must check the story before adding a label.
 

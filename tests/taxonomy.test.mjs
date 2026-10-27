@@ -8,8 +8,11 @@ test('reference vocabulary has unique names and complete group totals', () => {
   assert.equal(reference.genres.length, 40);
   assert.equal(reference.tagGroups.length, 11);
   assert.equal(reference.source.referenceTagEntries, 888);
-  assert.equal(labels.length, 886);
+  assert.equal(labels.length, 888);
   assert.equal(new Set(labels).size, labels.length);
+  assert.ok(labels.includes('dc universe'));
+  assert.ok(labels.includes('pirates (adaptation)'));
+  assert.ok(labels.includes('pirates'));
 });
 
 test('counts are local books, case variants merge, and custom labels survive', () => {
