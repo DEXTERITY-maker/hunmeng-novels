@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { site } from '../config/site';
+import Icon from '../components/Icon.astro';
 import ReaderPreferences from '../components/ReaderPreferences.astro';
 ---
 <Layout title="Sign in or register" noindex description="Sign in to Hunmeng or create a reader account with your email and password.">
@@ -37,7 +38,7 @@ import ReaderPreferences from '../components/ReaderPreferences.astro';
         <div id="auth-logged-in" class="profile-layout" hidden>
           <aside class="profile-sidebar" aria-label="Profile sections">
             <div class="profile-identity"><span id="profile-avatar" class="profile-avatar" data-avatar="sage" aria-hidden="true">R</span><strong id="profile-name">Reader</strong></div>
-            <nav aria-label="Profile settings"><a href="#profile-details" aria-current="location">Profile <span aria-hidden="true">↗</span></a><a href="#profile-reading">Reading <span aria-hidden="true">↗</span></a><a href="#profile-account">Account <span aria-hidden="true">↗</span></a></nav>
+            <nav aria-label="Profile settings"><a href="#profile-details"><Icon name="user" size={19} /> Profile</a><a href="#profile-reading"><Icon name="book" size={19} /> Reading</a><a href="#profile-account"><Icon name="user" size={19} /> Account</a></nav>
             <a class="profile-library-link" href="/library/">My library <span aria-hidden="true">→</span></a>
             <a class="profile-library-link" href="/studio/">Writing studio <span aria-hidden="true">→</span></a>
           </aside>
@@ -72,13 +73,15 @@ import ReaderPreferences from '../components/ReaderPreferences.astro';
   </main>
   <script>
     import { site } from '../config/site';
-    const sectionLinks = document.querySelectorAll<HTMLAnchorElement>('.profile-sidebar nav a');
-    const highlightSection = () => sectionLinks.forEach(link => {
-      if (link.hash === (location.hash || '#profile-details')) link.setAttribute('aria-current', 'location');
-      else link.removeAttribute('aria-current');
-    });
-    window.addEventListener('hashchange', highlightSection);
-    highlightSection();
     if (site.features.accounts) void import('../scripts/account').then(({ initAccount }) => initAccount());
+    const updateProfileNavigation = () => {
+      const target = location.hash || '#profile-details';
+      document.querySelectorAll<HTMLAnchorElement>('.profile-sidebar nav a').forEach(link => {
+        if (link.hash === target) link.setAttribute('aria-current', 'location');
+        else link.removeAttribute('aria-current');
+      });
+    };
+    updateProfileNavigation();
+    window.addEventListener('hashchange', updateProfileNavigation);
   </script>
 </Layout>

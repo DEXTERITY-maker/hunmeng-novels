@@ -16,7 +16,7 @@ export const site = {
     surface: '#ffffff',
     text: '#19384a',
     muted: '#606d73',
-    accent: '#476d5f',
+    accent: '#326956',
     accentSoft: '#e7ede7',
     border: '#dce1db',
     darkBackground: '#151f26',

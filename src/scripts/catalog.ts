@@ -53,7 +53,14 @@ function card(n: CatalogIndexNovel) {
   time.dateTime = n.updatedAt;
   meta.append(time);
   body.append(meta);
-  const link = make('a', 'Read novel →', 'text-link catalog-read-action');
+  const link = make('a', 'Read novel', 'text-link catalog-read-action');
+  const arrow = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  arrow.setAttribute('viewBox', '0 0 24 24');
+  arrow.setAttribute('width', '18'); arrow.setAttribute('height', '18');
+  arrow.setAttribute('fill', 'none'); arrow.setAttribute('stroke', 'currentColor');
+  arrow.setAttribute('stroke-width', '1.7'); arrow.setAttribute('aria-hidden', 'true');
+  const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  path.setAttribute('d', 'M4 12h15m-6-6 6 6-6 6'); arrow.append(path); link.append(arrow);
   link.href = n.url;
   body.append(link);
   article.append(cover, body);

@@ -1,6 +1,6 @@
 ---
-import Layout from '../layouts/Layout.astro';
 import Icon from '../components/Icon.astro';
+import Layout from '../layouts/Layout.astro';
 import { shelves, site } from '../config/site';
 ---
 
@@ -18,17 +18,16 @@ import { shelves, site } from '../config/site';
           data-shelf-tab={value}
           aria-pressed={i === 0 ? 'true' : 'false'}
         >
-          <Icon name={(["book", "clock", "check", "ban"] as const)[i]} size={26} />
-          <strong>{label}</strong>
-          <span data-shelf-count={value}>0</span>
-          <Icon name="chevron" size={18} />
+          <span class="shelf-icon"><Icon name={value === 'reading' ? 'book' : value === 'later' ? 'clock' : value === 'completed' ? 'check' : 'ban'} size={25} /></span>
+          <span class="shelf-label">{label}</span>
+          <span class="shelf-count" data-shelf-count={value}>0</span>
         </button>
       ))}
     </div>
     <p id="library-count" role="status" aria-live="polite"></p>
     <div id="library-list" class="library-list"></div>
     <div id="library-empty" class="empty-state library-empty">
-      <img src="/images/library-empty.webp" width="300" height="200" alt="" loading="lazy" />
+      <img src="/images/empty-library.webp" alt="" width="260" height="173" />
       <h2>This shelf is empty.</h2>
       <a class="button" href="/catalog/">Find a novel in the catalog <Icon name="arrow" size={18} /></a>
     </div>

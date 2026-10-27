@@ -126,8 +126,15 @@ test('covers and text do not overlap and the header stays compact', async ({ pag
   await expect(page.locator('#result-count')).toHaveText('Novels found: 2');
   for (const card of await page.locator('.catalog-novel-card').all()) {
     const cover = (await card.locator('.cover-link').boundingBox())!;
-    const copy = (await card.locator('.novel-copy').boundingBox())!;
-    expect(cover.x + cover.width + 12).toBeLessThanOrEqual(copy.x);
+    // The mobile description spans the whole card; the title and author stay beside the cover.
+    for (const selector of ['.genre-line', '.novel-copy h2', '.original-title']) {
+      const text = (await card.locator(selector).boundingBox())!;
+      expect(cover.x + cover.width + 12, selector).toBeLessThanOrEqual(text.x);
+    }
+    if (page.viewportSize()!.width <= 760) {
+      const description = (await card.locator('.card-description').boundingBox())!;
+      expect(description.y).toBeGreaterThanOrEqual(cover.y + cover.height);
+    }
   }
   const header = (await page.locator('.site-header').boundingBox())!;
   expect(header.height).toBeLessThan(page.viewportSize()!.width > 760 ? 101 : 131);
