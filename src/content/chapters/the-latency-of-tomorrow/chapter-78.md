@@ -75,6 +75,4 @@ Nobody called it proof that people were better than algorithms.
 
 Leela wrote it in his training record as a correctly escalated observation.
 
-A system could make a worker more effective without making the work understandable. Arjun wanted both. The second required teachers, time and a willingness to leave questions open long enough for someone to learn.
-
-Yanchuan filed the lesson beside the pilot's next technical milestone. He had begun to think of the apprentices as part of the system's future maintenance plan, not a cost to be eliminated by its success.
+Arjun signed the revised apprenticeship schedule, including the supervised inspections that did not use the model's labels. Ravi would spend part of each week explaining his observations to Leela, who would record corrections as training rather than production failures. The hours appeared in the factory's staffing plan.
