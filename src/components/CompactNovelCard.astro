@@ -15,9 +15,10 @@ const { novel: n } = Astro.props;
     <span class="home-book-copy">
     <span class="home-book-genre">{n.genres.join(' · ')}</span>
     <h3 class="home-book-title">{n.title}</h3>
+    <span class="home-book-author">By {n.author}</span>
     <span class="home-book-description">{n.description}</span>
     <span class="home-book-meta">{chapterCount(n.chapterCount)} · {n.translationStatus}</span>
-    <span class="home-book-read">Read <Icon name="arrow" size={17} /></span>
+    <span class="home-book-read">Read novel <Icon name="arrow" size={17} /></span>
     </span>
   </a>
 </article>
