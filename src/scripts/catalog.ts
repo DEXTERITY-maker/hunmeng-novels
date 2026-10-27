@@ -53,7 +53,7 @@ function card(n: CatalogIndexNovel) {
   time.dateTime = n.updatedAt;
   meta.append(time);
   body.append(meta);
-  const link = make('a', 'View novel →', 'text-link');
+  const link = make('a', 'Read novel →', 'text-link catalog-read-action');
   link.href = n.url;
   body.append(link);
   article.append(cover, body);
