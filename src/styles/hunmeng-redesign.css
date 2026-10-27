@@ -1248,3 +1248,56 @@ html[data-theme='sepia'] body:has([data-reader]) {
   .reader-main {width:100%;max-width:none;padding:0;}
   .reader-heading {background:transparent;padding:0 0 12px;border-radius:0;}
 }
+
+
+/* An optional literary face uses the bundled Lora font—no extra network request. */
+html[data-reader-font='literary'] .chapter-text,
+.reader-settings-preview[data-font='literary'] {
+  font-family:'Lora Variable', Georgia, serif;
+  font-weight:400;
+}
+.reader-dialog .reader-book-specific {
+  display:flex;
+  gap:11px;
+  align-items:center;
+  min-height:46px;
+  padding:12px 14px;
+  border:1px solid var(--hm-edge);
+  border-radius:11px;
+  background:var(--soft);
+  color:var(--ink);
+  font-size:.9rem;
+  line-height:1.4;
+  cursor:pointer;
+}
+.reader-dialog .reader-book-specific input {
+  flex:none;
+  width:20px;
+  height:20px;
+  accent-color:var(--hm-forest);
+}
+.reader-dialog .reader-book-specific:focus-within {
+  outline:2px solid var(--hm-forest);
+  outline-offset:2px;
+}
+.library-chapter-progress {
+  display:block;
+  width:min(260px,100%);
+  height:6px;
+  margin-block:7px 9px;
+  accent-color:var(--hm-forest);
+  border-radius:8px;
+  overflow:hidden;
+}
+.library-chapter-progress::-webkit-progress-bar {
+  background:var(--soft);
+  border-radius:8px;
+}
+.library-chapter-progress::-webkit-progress-value {
+  background:var(--hm-forest);
+  border-radius:8px;
+}
+.library-chapter-progress::-moz-progress-bar {
+  background:var(--hm-forest);
+  border-radius:8px;
+}
