@@ -15,7 +15,9 @@ export function readingAction(novel: ClientNovel, progress?: Progress) {
       ratio: 0,
     };
   }
-  if (progress.ratio >= 0.995) {
+  // New saves require confirmed human interaction at the chapter end. Legacy saves
+  // made before this feature had no completion flag; honor those bookmarks.
+  if (progress.completed === true || (progress.completed === undefined && progress.ratio >= 0.995)) {
     const next = novel.chapters[index + 1];
     if (next)
       return {
