@@ -69,6 +69,4 @@ He asked whether he could quote the idea in the engineering documentation. She a
 
 At the next shift change the tool identified a possible surface mark. The operator inspected the part, confirmed the defect and noted a tool condition worth checking. The maintenance team reviewed the observation. The system had helped a decision occur earlier, without replacing the people who understood its consequences.
 
-The report did not claim the machine had learned to be a worker.
-
-It had learned a narrower pattern, under conditions workers had helped define. That was enough to make it useful.
+Mei asked Ravi to repeat the evaluation after the night-shift light was replaced. The classification score moved again. She added the lighting change to the model's release notes and left the alert threshold under review instead of announcing a permanent result.
