@@ -26,6 +26,6 @@ const { novel: n } = Astro.props;
       {chapterCount(n.chapterCount)} · {n.translationStatus} ·{' '}
       <time datetime={n.updatedAt}>{dateLabel(n.updatedAt)}</time>
     </p>
-    <a class="text-link" href={n.url}>View novel <span aria-hidden="true">→</span></a>
+    <a class="text-link catalog-read-action" href={n.url}>Read novel <span aria-hidden="true">→</span></a>
   </div>
 </article>
