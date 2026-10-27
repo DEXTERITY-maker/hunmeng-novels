@@ -81,6 +81,4 @@ He imagined Yansheng at the counter in October, asking for the maintenance ticke
 
 Yanchuan did not know whether Yansheng had lived long enough to see any of it. The thought stayed with him through the evening.
 
-He put the hearing's official actions in one folder and the missing-person reference in another. The distinction was still necessary. It no longer felt like a refusal to acknowledge his brother.
-
-It felt like a way to leave both questions open to the evidence that could answer them.
+He filed the hearing actions with their deadlines and returned the missing-person reference to its own folder. An called to say her son had finally found his raincoat, under the paper bridge. Yanchuan listened to the boy insist that the bridge had been keeping it safe. He could not bring himself to correct him.
