@@ -99,6 +99,4 @@ He smiled.
 
 After the call he opened the family protocol and reread the line about emergencies. He still wished that a stranger would ring tomorrow with his brother's location. If someone did, the call would have a route that did not run through an engineer's lunch break.
 
-The search had not become less urgent.
-
-It had become possible for more people to survive helping with it.
+When Yanchuan's phone lit up again, the message was from Amina's office address and concerned a scheduled review, not an emergency. He answered the next morning within the agreed hours. He knew she might not reply that day.
