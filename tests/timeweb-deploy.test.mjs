@@ -10,6 +10,7 @@ const json = value => new Response(JSON.stringify(value), { headers: { 'Content-
 function fixture(overrides = {}) {
   const calls = [], logs = [];
   let posted = false;
+  let deploymentPolls = 0;
   const fetchImpl = async (url, options = {}) => {
     calls.push({ url, ...options });
     if (url.startsWith('https://' + productionHost)) {
@@ -20,7 +21,10 @@ function fixture(overrides = {}) {
     assert.equal(options.redirect, 'error');
     assert.equal(options.headers.Authorization, 'Bearer ' + token);
     if (url.endsWith('/apps')) return json({ apps: overrides.apps ?? [app] });
-    if (url.includes('/deploys?')) return json({ deploys: overrides.existing ?? (posted ? [{ ...deployment, status: overrides.status ?? 'success' }] : []) });
+    if (url.includes('/deploys?')) {
+      const status = overrides.statusSequence?.[Math.min(deploymentPolls++, overrides.statusSequence.length - 1)] ?? overrides.status ?? 'success';
+      return json({ deploys: overrides.existing ?? (posted ? [{ ...deployment, status }] : []) });
+    }
     if (url.endsWith('/deploy')) {
       posted = true;
       assert.equal(options.method, 'POST');
@@ -67,6 +71,14 @@ test('a lost POST response is not retried and upstream errors never include the 
   await assert.rejects(deployTimeweb(f.args), error => !error.message.includes(token) && error.message.includes('no second POST'));
   assert.equal(f.calls.filter(call => call.method === 'POST').length, 1);
 });
+test('unknown intermediate statuses are safely polled until success without another deploy', async () => {
+  const f = fixture({ statusSequence: ['prewarming', 'success'] });
+  const result = await deployTimeweb(f.args);
+  assert.equal(result.commit, sha);
+  assert.equal(f.calls.filter(call => call.method === 'POST').length, 1);
+  assert.ok(f.logs.some(message => message.includes('unknown')));
+});
+
 test('a failed deployment stops without starting another deployment', async () => {
   const f = fixture({ status: 'failure' });
   await assert.rejects(deployTimeweb(f.args), /finished with status failure/);
