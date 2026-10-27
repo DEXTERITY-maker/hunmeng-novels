@@ -89,4 +89,4 @@ On the train to Shenzhen, Yanchuan opened the new pilot specification. It began 
 
 He read it slowly. Something about the order felt right.
 
-The search for his brother remained unfinished. The work in front of him did not pretend otherwise. It asked what could be built when the limit of one's knowledge was kept visible from the start.
+He sent Chen the draft scope with the exclusion clause still highlighted. The next morning a prospective customer asked if the pilot could guarantee savings. Yanchuan forwarded the question to Ning, with a note to calculate the cost before promising a number.
