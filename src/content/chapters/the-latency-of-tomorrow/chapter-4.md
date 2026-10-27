@@ -12,7 +12,7 @@ An had kept the packaging for the bathroom tap because Yansheng said he would re
 
 “I know.”
 
-He heard the rebuke only after saying it. She was showing him the room because they were looking for dates, not asking him to solve her plumbing.
+An held the camera on the dripping tap for another second. Then she turned it toward the calendar. She was showing him what Yansheng had left unfinished, not asking for advice about repairs.
 
 She turned the camera toward the calendar. Thursday, October 29: a school meeting reminder, a delivery slot, nothing about her husband. His visit had been too ordinary to write down. He had been away for work before. She bought enough fruit for four people when he returned, although there were only three of them, because he always forgot to eat it abroad.
 
