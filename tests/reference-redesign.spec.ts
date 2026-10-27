@@ -48,10 +48,13 @@ test('profile and reading settings are navigable and captured with synthetic Aut
   await expect(page.locator('#auth-logged-in')).toBeVisible();
   await expect(page.locator('#profile-details')).toBeVisible();
   await page.evaluate(()=>document.fonts.ready);
+  await page.evaluate(() => { window.scrollTo(0,0); (document.activeElement as HTMLElement | null)?.blur(); });
   await page.screenshot({path:info.outputPath('hunmeng-profile-'+info.project.name+'.png'),fullPage:true,animations:'disabled'});
   await page.locator('.profile-sidebar nav a[href="#profile-reading"]').click();
   await expect(page.locator('#profile-reading')).toBeVisible();
+  await page.evaluate(() => { window.scrollTo(0,0); (document.activeElement as HTMLElement | null)?.blur(); });
   await page.screenshot({path:info.outputPath('hunmeng-reading-'+info.project.name+'.png'),fullPage:true,animations:'disabled'});
+  await page.evaluate(() => window.scrollTo(0,0));
   await page.getByRole('button',{name:'Reader account',exact:true}).click();
   await expect(page.locator('.header-account .account-panel')).toBeVisible();
   await page.screenshot({path:info.outputPath('hunmeng-account-menu-'+info.project.name+'.png'),fullPage:false,animations:'disabled'});
