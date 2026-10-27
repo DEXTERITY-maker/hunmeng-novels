@@ -79,7 +79,7 @@ export async function initAdmin() {
   let jobs: Job[] = [];
 
   const notify = (error: unknown) => {
-    const text = error instanceof BackendError ? error.message : 'The server rejected the request. Please try again.';
+    const text = error instanceof Error ? error.message : 'The server rejected the request. Please try again.';
     if (error instanceof BackendError && (error.status === 401 || error.status === 403)) lock(text);
     else message.textContent = text;
   };
@@ -182,7 +182,7 @@ export async function initAdmin() {
         jobForm.scrollIntoView({block:'start'});
       };
       actions.append(edit);
-      if (role === 'admin' && job.status !== 'published') {
+      if (role === 'admin' && job.status === 'review') {
         const approve = el('button','Approve for publication');
         approve.type = 'button';
         approve.className = 'button';
