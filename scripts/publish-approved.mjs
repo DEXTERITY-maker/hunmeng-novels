@@ -95,9 +95,9 @@ async function finalize(){
   const sha=process.env.GITHUB_SHA_PUBLISHED;
   if(batch.length&&!/^[0-9a-f]{40}$/.test(sha||''))throw new Error('Invalid commit SHA');
   for(const id of batch){
-    const rows=await api('novel_translation_jobs','?id=eq.'+id,'PATCH',
+    const rows=await api('novel_translation_jobs','?id=eq.'+id+'&status=eq.approved','PATCH',
       {status:'published',published_at:new Date().toISOString(),publish_commit:sha});
-    if(!rows.length)throw new Error('Failed to confirm '+id);
+    if(rows.length!==1)throw new Error('Failed to confirm '+id);
     await api('novel_publication_events','','POST',{job_id:id,commit_sha:sha});
   }
 }
