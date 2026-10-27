@@ -87,7 +87,8 @@ export function parseServerProgress(value: unknown): ServerProgress | null {
   const raw = value as Record<string, unknown>;
   const numbers = ['total_xp','level','chapters','completedNovels','readingDays','scifiNovels','completedGenres'] as const;
   for (const key of numbers) {
-    if (!Number.isSafeInteger(raw[key]) || (raw[key] as number) < 0) return null;
+    const entry = raw[key];
+    if (typeof entry !== 'number' || !Number.isSafeInteger(entry) || entry < 0) return null;
   }
   const xp = raw.total_xp as number;
   const expected = progressionFromXp(xp);
