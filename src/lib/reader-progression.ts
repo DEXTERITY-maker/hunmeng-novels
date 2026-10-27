@@ -57,6 +57,7 @@ export type ProgressMetric = (typeof titles)[number]['metric'] | (typeof achieve
 export interface VerifiedStats {
   total_xp:number;chapters:number;completedNovels:number;readingDays:number;scifiNovels:number;completedGenres:number;
   selected_title:string;last_rank_notified:string | null;
+  achievement_dates?: Record<string,string | null>;
 }
 export const emptyVerifiedStats = (): VerifiedStats => ({
   total_xp:0,chapters:0,completedNovels:0,readingDays:0,scifiNovels:0,completedGenres:0,
