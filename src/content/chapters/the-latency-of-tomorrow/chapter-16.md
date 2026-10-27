@@ -80,4 +80,4 @@ He described the witnessed test and the document versions. His father asked whet
 
 After the call, he counted his remaining cash and set aside the cost of breakfast. The refusal had changed nothing about the size of his bank balance. It had changed which promises he would have had to make in order to enlarge it.
 
-He packed the spare adapter last. There might be another journey. If there was, he would need a way to pay for it that did not depend on pretending this one had finished the search.
+He packed the spare adapter last. The fare estimate for another journey remained open on his phone. He closed it without deleting it, and emailed Chen the date on which he could return to work.
