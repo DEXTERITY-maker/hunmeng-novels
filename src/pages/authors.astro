@@ -1,0 +1,44 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { getLibrary, chapterCount } from '../lib/content';
+
+const novels = await getLibrary();
+const byAuthor = new Map<string, typeof novels>();
+for (const novel of novels) {
+  const list = byAuthor.get(novel.author) ?? [];
+  list.push(novel);
+  byAuthor.set(novel.author, list);
+}
+const authors = [...byAuthor.entries()]
+  .sort(([a], [b]) => a.localeCompare(b, 'en'))
+  .map(([name, books]) => ({ name, books }));
+---
+<Layout title="Authors" description="Discover the authors and their stories in the Hunmeng library.">
+  <main id="main" class="page-shell authors-page">
+    <header class="page-heading">
+      <p class="home-section-kicker">HUNMENG LIBRARY</p>
+      <h1>Our authors</h1>
+      <p>Meet the voices behind the worlds in our collection.</p>
+    </header>
+    {authors.length ? (
+      <div class="authors-directory">
+        {authors.map(({ name, books }) => (
+          <article class="author-directory-card">
+            <div class="author-directory-mark" aria-hidden="true">{name.charAt(0).toUpperCase()}</div>
+            <div>
+              <h2><a href={`/catalog/?search=${encodeURIComponent(name)}`}>{name}</a></h2>
+              <p class="fine">{books.length === 1 ? '1 novel' : `${books.length} novels`}</p>
+              <ul>
+                {books.map(book => (
+                  <li><a href={book.url}>{book.title}</a><span>{chapterCount(book.chapterCount)}</span></li>
+                ))}
+              </ul>
+            </div>
+          </article>
+        ))}
+      </div>
+    ) : (
+      <p class="home-section-empty">Authors will appear here when novels are added to the library.</p>
+    )}
+  </main>
+</Layout>
