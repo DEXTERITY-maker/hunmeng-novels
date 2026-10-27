@@ -83,7 +83,7 @@ Yanchuan looked at Chen. His supervisor had remained quiet, making notes about t
 
 Guo agreed. He proposed an ordinary paid feasibility study for a different, unnamed project once the parties could document that it had no connection to the missing-person investigation. The assignment would examine demand profiles, auxiliary load, and the cost of reserve capacity. Yanchuan would not be named as the sole independent reviewer.
 
-There was no offer to buy his silence. That did not make the invitation uncomplicated.
+Guo was not buying his silence. The invitation was still complicated.
 
 On the train home, Yanchuan told Mei about the meeting.
 
@@ -113,6 +113,12 @@ He smiled despite himself.
 
 “I think you should find out whether the work is separate. We need your salary. We also need you not to become useful to someone because they know how worried you are.”
 
+“Would you rather I stayed away from it?”
+
+“I would rather I didn't have to decide for you,” she said. “Every month I look at the costs of searching for him. I don't want that number to become the reason you sign something you can't take back.”
+
+He waited for reassurance. She returned to her receipts.
+
 After the call, he opened the family's expense sheet. The line for a possible second journey to Kenya was still empty. He could not fill it with a business opportunity whose terms did not exist.
 
 Guo's assistant sent a proposed scope the next morning. It excluded the disputed site and any records obtained through the family inquiry. The payment was for time spent on a generic feasibility model. It also contained a clause allowing the client to circulate selected findings without the underlying assumptions.
@@ -123,12 +129,12 @@ He asked Chen whether they could insist that any released result include its sta
 
 We will not deliver a figure that may be quoted independently of the range in which it is valid.
 
-There were other negotiations to have before anyone could accept the work. Yanchuan closed the draft and returned to his cooling calculations.
+The terms remained unsigned. Yanchuan closed the draft.
 
 By evening Amina had forwarded the latest authorized response about the October maintenance ticket. The contractor could identify which document office received it. The parent ticket had been marked administratively complete, but the restoration acknowledgment required by the service schedule had still not been located.
 
-Guo had been asking what an investor ought to pay for a promise about available power. Somewhere else, a worker was being asked to prove that a change had been undone, and a missing auditor had once wanted that proof.
+Guo was pricing an industrial promise while the contractor still could not produce the restoration acknowledgment Yansheng had sought.
 
 Yanchuan put the two questions in separate folders.
 
-He understood, for the first time, how they could belong to the same century without belonging to the same case.
+Guo's unsigned scope remained on his desk when he went to bed. He left Chen's question about the conflict of interest unanswered until they could discuss it at work.

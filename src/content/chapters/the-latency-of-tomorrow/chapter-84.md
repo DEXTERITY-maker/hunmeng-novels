@@ -55,7 +55,7 @@ One team approved the restart because the dashboard was green. Another asked for
 
 Ning changed the task. Each team had to distinguish what the software optimized from what the operating procedure authorized. The two answers were not always the same.
 
-Yanchuan recognized the distinction. Years earlier, the acceptance summary from Kenya had shown a persuasive number within a selected measurement boundary. His brother had wanted to know whether the boundary described the service actually promised. The family still lacked answers about his final movements. Yet his questions had travelled farther than the documents themselves.
+Yanchuan recognized the distinction. In October 2026, the acceptance summary from Kenya had shown a persuasive number within a selected measurement boundary. His brother had wanted to know whether the boundary described the service actually promised. The family still lacked answers about his final movements. Yet his questions had traveled farther than the documents themselves.
 
 At lunch Jianming pointed to a photograph in a training handout. The pictured apprentice wore gloves unsuited to the fine adjustment being demonstrated. Ning checked with the safety instructor and replaced the photograph in the next printing.
 
@@ -89,6 +89,8 @@ During the break Yanchuan walked with his father along the corridor overlooking 
 
 Yanchuan had expected to explain the new systems to his father. Instead Jianming had spent the day asking what the systems left out. The discovery made Yanchuan ashamed of the smallness of his expectations.
 
+As they reached the stairs, Jianming paused to adjust the strap of his bag. Yanchuan offered to carry it. His father refused once, then let him take it without turning the exchange into a conversation about age.
+
 On the train home Jianming opened his notebook. Three lines filled the page: inspect before restart; pay for learning; check who can say no. Beneath them he had drawn a rectangle and an arrow pointing to an empty signature field.
 
 “What is that?” Yanchuan asked.
@@ -113,6 +115,6 @@ After the call Ning sent Yanchuan a message asking whether Jianming would return
 
 “I'll come,” Jianming said. “But next time she must show me a real checklist before she shows me a clever screen.”
 
-The day had brought no news of Yansheng. It had not needed to. His father had been useful to people who were learning, and those people had been allowed to question a finished-looking answer.
+The day had brought no news of Yansheng. Jianming had spent it asking questions the students could not answer from a screen. His son had watched them listen.
 
-On the ticket home, the destination was printed clearly. This time Yanchuan knew exactly who had made the journey.
+Jianming fell asleep on the train with his notebook open on his knees. Yanchuan moved it before it slipped to the floor, careful not to crease the page with the three instructions.

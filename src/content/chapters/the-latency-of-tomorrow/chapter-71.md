@@ -63,7 +63,9 @@ He thought of the family's missing-person search and the stranger who had offere
 
 The project ledger now contained successful pilots, incomplete trials and declined proposals. Guo instructed the analyst not to remove the last category from a portfolio presentation.
 
-“We are buying judgement,” he said. “Not only a count of signatures.”
+The analyst showed him a slide with three gray bars. The rejected project occupied almost as much space as the signed work. Guo moved the slide toward the front. On the train to the investor meeting he rehearsed an answer about market readiness, then crossed out the phrase. It made Priya's factory sound deficient for knowing what it needed.
+
+“We are buying judgment,” he said. “Not only a count of signatures.”
 
 Yanchuan did not mistake the sentence for a transformation of Guo's character. The man still pushed for growth. He still asked impatient questions about margin and time to market. But he had begun to see that a contract signed under the wrong assumptions could be a more expensive failure than a proposal rejected honestly.
 
@@ -73,4 +75,4 @@ Yanchuan archived the message without writing a follow-up pitch.
 
 The absent project left an empty line in next quarter's revenue forecast. It also kept the company from selling a guarantee nobody on the customer's floor could confidently use.
 
-Both facts belonged in the accounts.
+Guo entered the lost revenue in the forecast himself. The spreadsheet did not offer a column for relief.

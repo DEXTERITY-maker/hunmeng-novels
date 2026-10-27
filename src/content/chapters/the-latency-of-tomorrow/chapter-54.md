@@ -97,4 +97,4 @@ Outside the gate a mechanic was washing his hands at a standpipe. He asked wheth
 
 The mechanic shrugged. “Then don't tell anyone it's fixed.”
 
-Yanchuan thought of the paper flag Yansheng had once attached to a toy missing its wheel: awaiting part. He had not understood then how much dignity there was in refusing to call unfinished work complete.
+Yanchuan thought of the paper flag Yansheng had once attached to a toy missing its wheel: awaiting part. He copied awaiting part into the maintenance status field. Feng would not have to explain to another caller why an installed battery was still unavailable.

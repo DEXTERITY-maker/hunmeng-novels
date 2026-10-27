@@ -71,4 +71,4 @@ At the next shift change the tool identified a possible surface mark. The operat
 
 The report did not claim the machine had learned to be a worker.
 
-It had learned a narrower pattern, under conditions workers had helped define. That was enough to make it useful.
+Ravi turned the next part under the work light before opening the screen. The model's warning waited until he was ready to compare it with what he could see.

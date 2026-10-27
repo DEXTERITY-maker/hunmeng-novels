@@ -13,7 +13,7 @@ Arjun had agreed to pay for a system that reduced unplanned inspection delays. T
 
 A production supervisor proposed increasing the output target accordingly.
 
-Leela asked whether the workers who performed the extra work would receive additional training, staffing or compensation. The supervisor said the contract with the model provider did not cover labour arrangements.
+Leela asked whether the workers who performed the extra work would receive additional training, staffing or compensation. The supervisor said the contract with the model provider did not cover labor arrangements.
 
 “Then I'm asking the factory,” she replied.
 
@@ -34,6 +34,10 @@ At lunch Leela told Yanchuan she did not oppose the model. She had helped make i
 He asked whether she had discussed it with Arjun before.
 
 “Yes. He's listening. That's more than nothing.”
+
+She turned her cup in her hands. “Last year we stayed late for a rush order and they thanked us with a speech. Then the extra hours became the starting schedule. I don't intend to watch that happen twice.”
+
+Yanchuan had come expecting to measure minutes saved. He asked what the old rush order had cost in overtime. Leela said the payroll office would have the records, and she wanted the workers to see any comparison before it appeared in an investor's presentation.
 
 The next month the factory agreed to a limited productivity trial with clear workload and safety measures. Staff representatives were included in deciding how the changed process would work. Training time was counted. The result would be reviewed rather than made permanent on the strength of a single favorable quarter.
 
@@ -77,4 +81,4 @@ They had. The model's value was not simply the count of warnings accepted. It wa
 
 The commercial contract had purchased a tool. The workshop still had to decide what kind of workplace that tool would help create.
 
-Yanchuan added the distinction to the report, where no one could later say the discussion had been omitted because it did not fit a spreadsheet.
+Leela asked for the staffing discussion to be attached to the technical sign-off. Arjun agreed, though it meant the pilot could not be called complete that afternoon.

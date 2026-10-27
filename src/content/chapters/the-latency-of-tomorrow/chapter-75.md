@@ -57,7 +57,9 @@ An revised the contact diagram to show where information could properly cross be
 
 Yanchuan looked at the drawing afterward. It reminded him of a scheduling problem in which each department had to retain its own authority while still contributing to a useful outcome.
 
-At the factory the next combined schedule was tested over a bounded period. Gao's team accepted it after checking the maintenance window and the staffing conditions. The model proposed several options, not a single optimum presented as a command. Operators could see which limits made an option unavailable.
+At the factory the next combined schedule was tested over a bounded period. Gao's team accepted it after checking the maintenance window and the staffing conditions.
+
+The trial did not recover all the projected savings. One production order waited until morning, and the customer complained. Gao took the call because the order had been his responsibility to schedule. He did not refer the complaint to the model. The customer accepted a revised delivery time but asked for a discount. Gao forwarded the request to the commercial team with his name attached. The model proposed several options, not a single optimum presented as a command. Operators could see which limits made an option unavailable.
 
 Guo wanted the report to describe an optimized schedule.
 
@@ -71,4 +73,4 @@ The result looked unremarkable. No one had to rush to prevent an impossible comb
 
 Yanchuan wrote three headings at the top of his report: energy, maintenance, people. None could erase the others. A useful model had to carry them together or admit it could not yet propose a plan.
 
-He sent the document to Chen and went home while the shift was still running as intended.
+He sent the document to Chen, then called Gao once to confirm the revised schedule had reached the night team. Gao sounded tired and said it had. Only then did Yanchuan leave.

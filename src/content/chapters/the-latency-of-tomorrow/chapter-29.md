@@ -107,4 +107,4 @@ In Shenzhen, Yanchuan closed the feeder plot. It showed a line above zero while 
 
 He had once hoped every such line would point to his brother. Now he could see it for what it was: evidence that a machine had continued supplying something the acceptance story left outside its frame.
 
-The people who maintained that supply were becoming visible as names and records. The man they were looking for was not yet among them.
+The people who maintained that supply were becoming visible as names and records. He searched the list of operators once more, although he knew Yansheng would not appear there. Then he closed it and called An without pretending he had news.

@@ -27,7 +27,7 @@ He looked at the final column. On the following working day it had been marked c
 
 They sent the question through Wanjiru. Four days later the answer arrived. The maintenance office had transmitted a copy of the ticket to a contractor's document controller, not to the visitor. There was a transmission receipt and a named recipient. There was no recorded collection by Yansheng.
 
-The chain looked neat on paper: Daniel's note, the maintenance ticket, the visitor's request, the transfer to document control. Yanchuan could almost see his brother walking along it. He reminded himself that documents were very good at travelling without people.
+The chain looked neat on paper: Daniel's note, the maintenance ticket, the visitor's request, the transfer to document control. Yanchuan could almost see his brother walking along it. He reminded himself that documents were very good at traveling without people.
 
 Amina called after her shift.
 
@@ -143,4 +143,4 @@ On a table covered in pencil marks and splinters, the children gathered the piec
 
 In his bag, Yanchuan's phone held two contracts describing where a record ought to travel. Somewhere beyond them were people who could say where it actually went. And somewhere beyond that was the question the contracts could not answer.
 
-He stayed to help the children rebuild.
+The next span fell sooner than the first. His nephew frowned at the weights; Yanchuan fetched a pencil and let the boy decide which joint to test next.

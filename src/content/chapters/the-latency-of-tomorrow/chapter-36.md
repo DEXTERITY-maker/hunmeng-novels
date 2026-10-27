@@ -101,4 +101,4 @@ A finding was not an answer. It was the part of an answer they had earned.
 
 The next morning the corrected acceptance claim moved through the operator's document system. The case reference remained unchanged. Yanchuan went to work, where another client had asked him for a single figure and an assurance that it would hold in every summer.
 
-He prepared the conditions first.
+He typed the operating temperature range, selected the tested period, and left the guarantee field blank. Then he called the client to ask which summer they meant.

@@ -23,7 +23,7 @@ Gao looked at the ranking and shook his head.
 
 “The office unit can stop before the rest-area fan,” he said.
 
-The commercial manager explained that the office unit served a room with network equipment. The air conditioner had been labelled office because that was where its breaker was located.
+The commercial manager explained that the office unit served a room with network equipment. The air conditioner had been labeled office because that was where its breaker was located.
 
 “Then the label is wrong,” Gao said.
 
@@ -101,4 +101,4 @@ After the meeting Gao walked Yanchuan to the gate. Workers were changing shifts.
 
 Yanchuan promised to propose the change. He had already learned that decisions survived their makers when the record preserved only the result.
 
-He added a column for authority, and another for the reason it had been exercised. The table grew wider. For the first time that week, he was not sorry.
+He added a column for authority, and another for the reason it had been exercised. The table no longer fit on one screen. Gao asked for a printout large enough to read at the shift briefing; Yanchuan sent it before anybody reduced the font.

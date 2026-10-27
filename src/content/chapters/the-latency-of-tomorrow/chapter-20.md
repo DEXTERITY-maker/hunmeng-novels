@@ -2,17 +2,18 @@
 novelSlug: the-latency-of-tomorrow
 slug: chapter-20
 number: 20
-title: January Without News
+title: "January Without News"
 publishedAt: "2026-10-26"
-description: The new year brings no answer, and Yanchuan is offered a shortcut that could damage the search.
+description: "The new year brings no answer, and Yanchuan is offered a shortcut that could damage the search."
 ---
+
 On the first working day of 2027, Yanchuan received a photograph of the service compound's gate.
 
 It came from a man who said a mutual acquaintance had mentioned the family. He offered to visit, ask around, perhaps find someone willing to let him look inside. His fee would depend on what the visit produced.
 
 Yanchuan read the message in a stairwell at work. The stairwell smelled of wet cement. He had been waiting there for an agreed call that had been postponed twice.
 
-The photograph showed a grey gate, a partly painted wall, and a faded delivery sign. It was current, the man said. He could go again that afternoon.
+The photograph showed a gray gate, a partly painted wall, and a faded delivery sign. It was current, the man said. He could go again that afternoon.
 
 How much? Yanchuan typed.
 
@@ -76,4 +77,4 @@ When he did, she had made a list. One named contact for new material. One shared
 
 After the call, he checked his father's messages. Jianming had sent a photograph of a new fitting on the repaired lamp. Yanchuan replied and asked about the wrist, then waited for the answer instead of returning to the gate photograph.
 
-Before bed, he wrote the date at the top of the chronology. January had arrived without news of Yansheng. The new line beneath the date did not say no progress. It named a proposed action they had chosen not to take, and the people whose safety had finally made that choice possible.
+Before bed, he wrote the date at the top of the chronology. January had arrived without news of Yansheng. The new line recorded an action he had decided not to take. He sent An the updated chronology without adding another apology.

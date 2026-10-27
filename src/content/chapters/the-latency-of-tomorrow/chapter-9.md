@@ -2,10 +2,11 @@
 novelSlug: the-latency-of-tomorrow
 slug: chapter-9
 number: 9
-title: The Narrow Permission
+title: "The Narrow Permission"
 publishedAt: "2026-10-26"
-description: A limited authorization gives Yanchuan less access than he wants and a better question than he expects.
+description: "A limited authorization gives Yanchuan less access than he wants and a better question than he expects."
 ---
+
 The permission arrived in a document longer than the data it allowed him to see.
 
 Luo had arranged an independent technical review of the disputed extracts, with the site operator's agreement. Yanchuan could examine a named set of files, ask questions through the designated engineer, and return a written comparison. He could not inspect customer records, download unrelated logs, or present himself as an employee of any company involved.

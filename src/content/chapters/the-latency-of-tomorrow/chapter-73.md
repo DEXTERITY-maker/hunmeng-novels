@@ -63,7 +63,7 @@ His father was silent for several moments.
 
 “He would come home with a paper and say it proved less than everyone wanted.”
 
-Yanchuan looked at the archive window on his screen. He had spent years thinking of his brother as the older son who travelled too much and brought little gifts for his nephew. More of the man's working life had become visible since he went missing than Yanchuan had known when he was home.
+Yanchuan looked at the archive window on his screen. He had spent years thinking of his brother as the older son who traveled too much and brought little gifts for his nephew. More of the man's working life had become visible since he went missing than Yanchuan had known when he was home.
 
 The awareness brought pride and anger in equal measure.
 
@@ -77,6 +77,6 @@ An held it for a moment.
 
 “Not today,” she said.
 
-The ticket told them where a family had once travelled together. It was not a clue to a missing auditor's last movements. She placed it in a box of things their son might want to keep.
+The ticket told them where a family had once traveled together. It was not a clue to a missing auditor's last movements. She placed it in a box of things their son might want to keep.
 
-Yanchuan, listening on the call, did not ask to scan it into the case file. He had finally learned that a family's archive held more than evidence.
+Yanchuan, listening on the call, did not ask to scan it into the case file. She closed the box before he could suggest a digital copy. He asked whether her son wanted a label for it; An said he could choose one himself.

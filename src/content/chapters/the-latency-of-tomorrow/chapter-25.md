@@ -95,7 +95,7 @@ Yanchuan realized his case had trained him to listen to another family's progres
 
 Later, Wanjiru received the next official clarification. The pass clerk remembered a small bundle of badges being returned near the end of the afternoon. She had not recorded who carried the bundle. The security team was checking which badges were issued that day and whether any entry had been closed automatically during the shift reconciliation.
 
-There was no reason to call the clerk dishonest. The visitor software had asked its operators to record equipment returning to a cupboard, then presented the result in a column labelled departure. Yanchuan had built enough reporting systems to know how easily a field name could become a claim.
+There was no reason to call the clerk dishonest. The visitor software had asked its operators to record equipment returning to a cupboard, then presented the result in a column labeled departure. Yanchuan had built enough reporting systems to know how easily a field name could become a claim.
 
 He told Chen, without mentioning the case, about the design error.
 
@@ -135,6 +135,6 @@ At midnight, before turning out the light, he noticed a detail he had not copied
 
 It did not tell him the visitor had reached it.
 
-It gave the investigator a specific doorway to ask about.
+He circled the destination field, then stopped before drawing a line from the receiving counter to a doorway nobody had witnessed his brother entering.
 
 He sent the field reference through the agreed channel and put the phone down.

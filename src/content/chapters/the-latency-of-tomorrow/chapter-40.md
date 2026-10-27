@@ -89,4 +89,4 @@ A week later Qiao sent another photograph of the blank night-list form. A new ca
 
 “No,” she answered. “We fixed the form. The software can catch up.”
 
-He kept the photograph beside the pilot's next revision plan. For once, the evidence of improvement was not an impressive chart. It was a little more room in a box for the fact that a person's life extended beyond the system's view.
+He kept the photograph beside the pilot's next revision plan. The new box was barely wide enough for Qiao's handwriting. She filled it in on her next shift and asked the ward clerk to make the space larger.

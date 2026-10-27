@@ -41,6 +41,10 @@ An joined him by video. Behind her, their son was trying to make a paper airplan
 
 Her admission relieved him. He had been ashamed of expecting a room to return a person.
 
+“I hated that it looked ordinary,” he said.
+
+“I hated that I was hoping it wouldn't,” An replied. She turned the photograph away so the boy could show her his airplane without seeing it on the screen.
+
 Amina did not attend the inspection. Under the conditions she had set, she could answer technical questions about the equipment but would not become the family's guide through the case file. When she spoke to Yanchuan at their scheduled time, he asked about the archival code.
 
 She checked the document index shared with authorized reviewers.
@@ -91,10 +95,10 @@ In Guangzhou, An's son finally made an airplane that curved toward the sofa. He 
 
 He watched it twice. This time he was content to believe the boy had seen what he said he had seen.
 
-At midnight Yanchuan printed the photograph of the office and placed it in the case folder. No belongings identified as Yansheng's had been reported from the inspection. No confirmed exit had been established. A packet had travelled through the room on a working day, and the documentation for that journey had survived.
+At midnight Yanchuan printed the photograph of the office and placed it in the case folder. No belongings identified as Yansheng's had been reported from the inspection. No confirmed exit had been established. A packet had traveled through the room on a working day, and the documentation for that journey had survived.
 
-He labelled the photograph with the room's actual function and the date the investigators had examined it.
+He labeled the photograph with the room's actual function and the date the investigators had examined it.
 
 The room had not proved what happened to his brother.
 
-It had proved how much of a search could be spent learning what a place was, instead of letting fear decide what it had to contain.
+On the screen the office still looked like an office: three desks, one cabinet, a water stain on the ceiling. He closed the image before An's next call.

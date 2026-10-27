@@ -17,7 +17,9 @@ Arjun's legal and engineering teams approved a narrower arrangement. The product
 
 Leela and the local engineer selected a permitted set of aggregate error counts, example characteristics without identifiers and a small number of explicitly cleared reference images. They performed the first training revision on a local machine. Mei reviewed the method, not the entire underlying dataset.
 
-The first week was frustrating. A summary table did not show why one particular reflection had fooled the classifier. Instead of demanding every image, Mei wrote a question describing the pattern she needed to understand. Leela tested it against local examples and replied with the conditions under which the false warning occurred.
+The first week was frustrating. A summary table did not show why one particular reflection had fooled the classifier.
+
+Mei drafted a request for the original image, deleted it, and drafted it again. She had built the earlier prototype by looking at failed examples herself. Waiting for another engineer to answer a question she could usually resolve in minutes felt like losing control of her own work. She called Leela and asked whether they could agree on a faster local review process rather than an exception to the data rules. Instead of demanding every image, Mei wrote a question describing the pattern she needed to understand. Leela tested it against local examples and replied with the conditions under which the false warning occurred.
 
 They changed the lighting setup.
 
@@ -69,4 +71,4 @@ Yanchuan did not know whether Guo entirely believed the statement or had learned
 
 Some knowledge crossed borders as a method, a carefully limited example or a question. Some stayed with the people whose lives and work gave it meaning.
 
-The model was becoming useful without pretending those were the same thing.
+Mei closed the request for raw-image export. The next improvement report would contain only the measures Arjun's team had authorized for release.

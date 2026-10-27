@@ -2,10 +2,11 @@
 novelSlug: the-latency-of-tomorrow
 slug: chapter-8
 number: 8
-title: Amina's Shift
+title: "Amina's Shift"
 publishedAt: "2026-10-26"
-description: Amina Yusuf agrees to help, on terms that force Yanchuan to see more than his family's loss.
+description: "Amina Yusuf agrees to help, on terms that force Yanchuan to see more than his family's loss."
 ---
+
 The first thing Amina asked him was whether he was recording the call.
 
 “No.”

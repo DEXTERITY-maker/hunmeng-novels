@@ -19,6 +19,12 @@ Yanchuan looked for the battery dispatch schedule.
 
 “Which battery?” Mutiso asked.
 
+Yanchuan looked at the map again. The symbol he had assumed meant storage marked a switching point, and the nearest service road crossed an area Mutiso had noted as seasonally impassable.
+
+“I've prepared the wrong example,” he admitted.
+
+“Then show us that,” Mutiso said. “We can tell you why it is wrong without pretending the problem is simple.”
+
 He was embarrassed. Not every point on the map had storage equipment, and some that did were maintained under contracts with limits he did not yet understand.
 
 In the morning session a technician described a cold-storage facility that could tolerate a short power transfer but not an unplanned maintenance gap of several hours. Another speaker explained that a clinic's refrigeration load was small in energy terms and enormous in consequence if it failed at the wrong time. A supplier described the difficulty of keeping spare parts nearby when equipment types changed faster than training and procurement systems.
@@ -93,4 +99,4 @@ On the flight back later that week, Yanchuan opened his original pilot model. It
 
 He wrote a new requirement for the next project: begin with a map made by the people who operate the network, not a map inferred from the investor's brochure.
 
-It was a small beginning to a different kind of work.
+Asha asked to review the draft before anyone showed it to investors. Yanchuan gave her the first copy, including the assumptions he was least sure of.

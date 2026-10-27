@@ -85,6 +85,6 @@ At bedtime An put the printed bus list in a folder, ready for the next day. The 
 
 Yanchuan had spent months arguing that a report's attractive number must not erase the conditions beneath it. Here the conditions had names and small school bags. The cost of checking them belonged in the plan.
 
-He wrote one final line beneath the pilot's handover section: A system without a responsible keeper is an unfinished system.
+He added a final requirement to the pilot's handover section: name the person responsible for the system, a trained substitute, and a schedule for checking that the fallback still worked. In his note to the school he left a blank for the administrator assigned to verify the backup each Friday.
 
-The sentence was plain enough to defend without an explanation.
+Neither document would keep a server running by itself. Someone would have to accept the responsibility written on the page.

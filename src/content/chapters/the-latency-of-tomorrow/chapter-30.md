@@ -35,6 +35,14 @@ She had prepared conditions and sent them to An and Wanjiru as well. Technical d
 
 “And my time,” she added. “We need to talk about that too.”
 
+“I thought you could tell me when you were busy.”
+
+“I did. Sometimes you wrote again ten minutes later because it was important to you.”
+
+He began to explain that he had not expected an immediate reply, but she was still speaking.
+
+“If I have to keep deciding whether to answer, I am still working on your case.”
+
 She had given evenings, breaks, and Saturdays to people she had not known in October. She had a mother whose medication she collected, a younger cousin preparing for examinations, and a shift schedule that did not move because Yanchuan was awake in China.
 
 “I can give two set times a week for coordination,” she said. “Emergencies go through the investigator. If an equipment-safety issue arises at work, I handle it through my employer's safety procedures. Your family does not become the authority for that.”
@@ -75,7 +83,7 @@ Meanwhile at work Chen brought Yanchuan to a site visit for Guo's feasibility st
 
 “Then put my name on the observation. I want them to know who told you.”
 
-He did. He also asked permission before taking a photograph of the meter. It was an easy act in a bright workshop, with no missing person and no rumour travelling through strangers' phones. He wondered why ease had made him forget to do it so often before.
+He did. He also asked permission before taking a photograph of the meter. It was an easy act in a bright workshop, with no missing person and no rumour traveling through strangers' phones. He wondered why ease had made him forget to do it so often before.
 
 Amina's next scheduled call began at the agreed time. She sounded less tired. They discussed the source and recipient of the feeder clarification, then ended when her allotted half hour was up.
 
@@ -101,4 +109,4 @@ After the call he opened the family protocol and reread the line about emergenci
 
 The search had not become less urgent.
 
-It had become possible for more people to survive helping with it.
+The next morning he waited until Amina's agreed contact window before forwarding a nonurgent correction. She answered two hours later. He did not count the delay.

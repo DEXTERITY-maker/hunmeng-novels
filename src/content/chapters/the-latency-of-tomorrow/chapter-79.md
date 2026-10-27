@@ -25,6 +25,8 @@ Yanchuan asked them to draw the tasks as actions rather than job titles. The fir
 
 A warehouse worker pointed to a place where everyone thought someone else would send the release message. They assigned a named step in the system, with an acknowledgment from dispatch. The delay disappeared in the next measured cycle.
 
+On the following shift the acknowledgment arrived late again. The named worker had been sent to cover a loading absence, and nobody had reassigned the handoff. Leela asked the manager not to describe one successful cycle as proof of a permanent fix. They added a backup role and a check at the shift briefing. The next measurement showed less delay, but the warehouse worker still had to interrupt her own work to send the notice.
+
 Guo wanted to add the recovered time to the success metric.
 
 “Only after we count the work required to do it,” Ning said.
@@ -33,7 +35,7 @@ The software could carry the message reliably once its content and authority wer
 
 It was a small technical change and a large improvement in the usefulness of the workflow.
 
-At Henglan the product team began mapping tasks that were routinely bundled together by experienced employees. Some could be automated without harm. Others needed a human judgement, a physical act or a relationship with another team. Still others were not essential and could be stopped openly instead of being silently lost.
+At Henglan the product team began mapping tasks that were routinely bundled together by experienced employees. Some could be automated without harm. Others needed a human judgment, a physical act or a relationship with another team. Still others were not essential and could be stopped openly instead of being silently lost.
 
 The employment-impact reviews became more interesting when workers were asked what they actually did rather than which part of the software they used.
 
@@ -71,8 +73,8 @@ He photographed it for his own reference and asked the team to prepare a smaller
 
 Yanchuan wrote at the bottom: A task can end without ending the work around it.
 
-Leela read the sentence and crossed out can.
+Leela underlined the word work and wrote whose? above it.
 
-“Sometimes,” she wrote instead.
+“Who will be doing it now?” she asked.
 
 He kept her correction.

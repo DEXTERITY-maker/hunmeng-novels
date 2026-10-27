@@ -83,6 +83,6 @@ Yanchuan watched him solve the problem without pretending it was complicated eno
 
 The next factory revision included the maintenance reserve, the cost of human review and a separate table of costs the model could not justify assigning to itself. A project could be valuable without claiming credit for everything good that happened around it.
 
-It could also be expensive without every expense appearing in the most beautiful chart.
+He folded Gao's handwritten correction inside the printed summary before the next client meeting, where the second page would be harder to ignore.
 
 Yanchuan saved both pages together.

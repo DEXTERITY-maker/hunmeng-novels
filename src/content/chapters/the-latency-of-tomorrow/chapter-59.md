@@ -85,4 +85,4 @@ They spoke for a while without trying to change the answer.
 
 Asha's map remained in Kenya, where it could be corrected by someone who knew when a road washed out or a spare was moved. Yanchuan held only the part she had chosen to share.
 
-He had finally learned that a useful collaboration could begin without owning every fact the other person knew.
+When the next planning meeting began, he asked Asha to walk the team through her own version of the map. His copy remained closed.

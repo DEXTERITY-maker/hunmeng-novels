@@ -2,10 +2,11 @@
 novelSlug: the-latency-of-tomorrow
 slug: chapter-17
 number: 17
-title: No One Searches Alone
+title: "No One Searches Alone"
 publishedAt: "2026-10-26"
-description: Before leaving Kenya, Yanchuan has to entrust the search to people whose work he cannot direct.
+description: "Before leaving Kenya, Yanchuan has to entrust the search to people whose work he cannot direct."
 ---
+
 Wanjiru crossed out the first sentence of his summary.
 
 “You have written that your brother disappeared after discovering a falsified report.”
@@ -34,7 +35,7 @@ She asked him to describe the envelope again. He recited the invoice reference. 
 
 “Please send that correction with the summary.”
 
-Yanchuan sat back. He had travelled thousands of kilometres to become the man at the table with the least complete answer.
+Yanchuan sat back. He had traveled thousands of kilometres to become the man at the table with the least complete answer.
 
 Outside, Amina found him studying a bus route on his phone.
 
@@ -78,4 +79,4 @@ At the airport the next morning, he called An before boarding. She asked who wou
 
 Through the glass he could see workers loading bags, each person moving around another person's task. A suitcase slipped on the conveyor. Someone stopped the belt, shifted it, and signalled to start again.
 
-When boarding began, Yanchuan put the document index in the same pocket as his passport. The search now had people in it who could continue while he crossed the sky. He had not trusted that arrangement enough to imagine being grateful for it. He called Amina once more, simply to say thank you, before he switched off his phone.
+When boarding began, Yanchuan put the document index in the same pocket as his passport. The others could continue the search while he crossed the sky. He was almost grateful for that, and ashamed that he had ever thought he needed to be indispensable. He called Amina once more, simply to say thank you, before he switched off his phone.

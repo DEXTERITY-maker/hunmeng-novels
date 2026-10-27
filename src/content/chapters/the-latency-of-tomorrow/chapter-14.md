@@ -2,10 +2,11 @@
 novelSlug: the-latency-of-tomorrow
 slug: chapter-14
 number: 14
-title: The Other Injured Man
+title: "The Other Injured Man"
 publishedAt: "2026-10-26"
-description: A visit to an injured technician's home changes what Yanchuan thinks he has come to ask.
+description: "A visit to an injured technician's home changes what Yanchuan thinks he has come to ask."
 ---
+
 The crutch fell before Yanchuan reached the doorway.
 
 He bent to pick it up, then almost knocked over the cup balanced on the arm of the chair. The man in the chair caught the cup. Amina took the crutch from Yanchuan and set it where it had been leaning.

@@ -29,7 +29,9 @@ The engineer said the document normally confirmed installation to specification.
 
 “Then write a delivery acknowledgment,” Arjun said. “Don't call it full acceptance.”
 
-The correction delayed payment of the installation milestone. It did not cancel the legitimate work already completed. The parties agreed to record delivered components, incomplete installation and the remaining conditions separately.
+The correction delayed payment of the installation milestone. It did not cancel the legitimate work already completed.
+
+The supplier's engineer called his manager before signing the revised document. He returned looking tired and asked that the completed assembly work be listed separately from the missing guard. Arjun agreed. The engineer had made an error, but a truthful record did not require pretending he had done nothing useful. The parties agreed to record delivered components, incomplete installation and the remaining conditions separately.
 
 Guo heard about the delay on a call. His first question was whether the supplier had misrepresented the work intentionally.
 
@@ -79,6 +81,6 @@ At the next review Guo praised the team's ability to recover from a difficult ac
 
 He thought of his brother, still missing, and the technical record whose misuse had finally been acknowledged through formal review. A corrected document could not restore everything lost in the time it had been wrong.
 
-It could make the next decision less dangerous.
+Arjun asked the supplier to photograph the guard after installation and inspection, with the pipe support visible in the same frame. The record would have to describe this cell, not the standard one.
 
 Outside the meeting room the factory's ordinary work continued. Machines moved, operators watched, and maintenance staff kept checking the parts that had not yet earned the word complete.

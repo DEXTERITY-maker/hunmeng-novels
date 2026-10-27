@@ -2,10 +2,11 @@
 novelSlug: the-latency-of-tomorrow
 slug: chapter-12
 number: 12
-title: An Easy Explanation
+title: "An Easy Explanation"
 publishedAt: "2026-10-26"
-description: Luo brings the family a plausible account of exhaustion and a question that account cannot answer.
+description: "Luo brings the family a plausible account of exhaustion and a question that account cannot answer."
 ---
+
 Luo arrived with fruit and a statement prepared by someone else.
 
 They met in Yanchuan's hotel lobby. A television above the reception desk showed a chef folding dough while Luo arranged three pages on a low table. He had flown in to meet the local partner and, he said, to support the family directly.

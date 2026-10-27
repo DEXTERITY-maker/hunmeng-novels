@@ -23,6 +23,8 @@ Ning asked him to show the projected operating costs for the next year. They inc
 
 The analyst added the work. It reduced the apparent margin.
 
+He asked Leela for an estimate of annual inspection hours. She could provide six months of recorded maintenance, not a confident annual average. The analyst wanted one number before the quarterly review. He used the measured hours and marked the remainder unestimated. Guo asked whether the blank field was a spreadsheet error. The analyst said it was a question they had not paid anyone to answer.
+
 Arjun was unimpressed by the reduction.
 
 “If a service requires maintenance, it requires maintenance. I don't want a profitable report and an idle machine.”
@@ -73,4 +75,4 @@ He thought again of the last message from his brother. Yansheng had wanted recor
 
 Here was the opposite: ordinary work completed with an unremarkable, accurate record.
 
-Nobody would frame the photograph. The factory would keep operating.
+Leela filed the repair photograph with the maintenance ticket. By the next shift the cable support had disappeared from everyone's attention, which was what she had wanted.

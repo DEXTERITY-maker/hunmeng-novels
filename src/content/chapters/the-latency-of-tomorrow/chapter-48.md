@@ -23,6 +23,8 @@ The coordinator asked whether the patient could wait in the corridor while the n
 
 “No,” she said. “Not as a way to make the computer true.”
 
+The coordinator began to describe the waiting queue. Qiao interrupted only to give the patient's actual location and the name of the nurse staying with her. She had no empty bed to offer; she could offer a verifiable state of the ward.
+
 The charge nurse joined the conversation and arranged a different safe placement for the new arrival. It took calls, a person walking to another ward, and twenty minutes that the schedule had not allowed. Nobody had invented a bed. They had found a way to care for two people while the original transfer remained unfinished.
 
 By evening Qiao was exhausted. She sent Yanchuan a photograph of the empty schedule grid, without names or hospital details.
@@ -97,6 +99,6 @@ At An's apartment their nephew had laid out his bridge in the living room. One s
 
 Yanchuan watched the boy lift a cardboard barrier after placing the final support. There was no shortcut between writing ready and making something ready.
 
-The ward would not gain a spare bed merely because the software said one existed. A waiting patient was not an error in a forecast. She was a person whose next safe place had not yet been prepared.
+The ward would not gain a spare bed merely because the software said one existed. Qiao kept the bed marked occupied until the receiving team confirmed that everything the patient needed was actually in the room. The software's free-bed count changed only afterward.
 
 That night, before sleep, Yanchuan sent Qiao a thank-you for the dinner. She replied that he had paid for it. He answered that he meant the lesson, and she sent back a single word: Good.

@@ -25,6 +25,8 @@ Two of the six had been moved to emergency repair work. A third had requested le
 
 She pressed decline on the trial screen and selected insufficient verified coverage. There was a blank field for explanation. She wrote the three absences and the task that would be left without an assigned person.
 
+The screen asked her to confirm the reason would be visible to the project review group. She checked the roster a second time before submitting it. She had complained informally about staffing before; a recorded refusal would be harder for her supervisor to forget and harder for her to disown.
+
 The screen accepted the entry. Her supervisor did not.
 
 By lunchtime he had asked why she was obstructing a study that would improve the department's budget. He reminded her that no machinery would be changed without a final approval. She answered that the approval meeting was at three, and by then the proposed roster would be copied into the handover instructions. A trial that trained people to expect an unsafe arrangement could become an operating decision before anybody called it one.
@@ -73,7 +75,9 @@ He asked Yanchuan whether Henglan could keep measuring uptake.
 
 “Yes,” Yanchuan said, “if we also measure whether a refusal was resolved correctly and whether people were pressured not to record one. An acceptance percentage alone can't tell you those things.”
 
-Guo requested a costed proposal rather than another principle. The extra review would require staff time and an external contact for complaints that could not safely be raised through a supervisor. Ning prepared the estimate with the customer's safety office. They proposed a limited trial and a clear route for appealing retaliation.
+Guo requested a costed proposal rather than another principle. The extra review would require staff time and an external contact for complaints that could not safely be raised through a supervisor. Ning prepared the estimate with the customer's safety office.
+
+The purchasing officer rejected the first estimate. They had budgeted for software evaluation, not a process for complaints. Ning asked whether the trial would still be voluntary if the only way to refuse was to persuade the person assigning the shift. The officer did not answer. Two days later she approved a smaller review with a fixed end date. Ning accepted it after the safety representative agreed to record unresolved complaints beyond that date. They proposed a limited trial and a clear route for appealing retaliation.
 
 Two days later the site's union representative requested a meeting. Lihua had not asked for publicity, but other workers had seen the original acceptance metric and wanted assurances about how it would be used. The representative asked for a written prohibition on treating an individual refusal as a performance score.
 
@@ -113,4 +117,4 @@ On Monday Lihua signed a revised shift handover. It listed six available operato
 
 The software accepted that reason too.
 
-No one told her to erase it.
+Her supervisor asked for the updated roster and signed it. Lihua returned to her station without mentioning the argument to the rest of the shift.

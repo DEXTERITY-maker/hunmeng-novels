@@ -33,7 +33,7 @@ The analyst objected that a rare failure should be averaged across years.
 
 “Average the cost of an event if you need a budget,” Gao said. “But an average pump will not appear when this one stops.”
 
-They agreed to represent two separate quantities: expected expenditure over time and the minimum reserve required for the factory's agreed service. One could support a financial decision. The other could not be cancelled because an average looked small.
+They agreed to represent two separate quantities: expected expenditure over time and the minimum reserve required for the factory's agreed service. One could support a financial decision. The other could not be canceled because an average looked small.
 
 On Friday Chen presented the revised analysis. The forecast-driven schedule offered genuine savings, but less than the first estimate suggested once reserve inspections and operating constraints were included. A sales director asked whether they could publish the earlier figure and note the other costs elsewhere.
 
@@ -65,11 +65,13 @@ Jianming asked about the investigation. Yanchuan said that the technical record 
 
 His father was quiet. Then he said that he had put aside a small sum anyway. He would not empty his emergency savings. Qiao had made him promise.
 
-Later An sent her monthly household account. She had included a line for sudden travel and another for ordinary things their son would need whether his father came home tomorrow or not. Yanchuan noticed she had not labelled the first line rescue. It was money held ready, without a guarantee it would be used.
+Later An sent her monthly household account. She had included a line for sudden travel and another for ordinary things their son would need whether his father came home tomorrow or not. Yanchuan noticed she had not labeled the first line rescue. It was money held ready, without a guarantee it would be used.
 
 He thought of the pump.
 
 At the next pilot review Guo approved the smaller savings claim and the separate reserve estimate. His analyst asked whether this would make their business less competitive.
+
+“It might,” Guo said. “Don't tell the customer otherwise.” The analyst had spent three evenings preparing the first figure. He left with both versions of the spreadsheet and no permission to use the better-looking one. Gao caught up with him by the lift and invited him to the next pump inspection. The analyst said he had another meeting. Gao gave him the date anyway.
 
 “Only if our competitors are promising the same service without paying to keep it available,” Guo said.
 
@@ -89,4 +91,4 @@ Yanchuan changed the wording.
 
 On the way home he passed a fire station. The vehicles were parked, gleaming beneath bright lights. The station did not look productive in the way a factory line did. He could imagine a spreadsheet treating its silence as waste.
 
-He hoped anyone pricing its readiness would first ask what the silence was for.
+A firefighter stood at the entrance rolling a hose back onto its rack. From the street the station looked idle. The firefighter did not.

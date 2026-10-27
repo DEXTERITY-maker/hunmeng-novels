@@ -2,10 +2,11 @@
 novelSlug: the-latency-of-tomorrow
 slug: chapter-15
 number: 15
-title: A Signature in Two Versions
+title: "A Signature in Two Versions"
 publishedAt: "2026-10-26"
-description: Two authorized copies contain the same signature under different claims, and the family asks how it got there.
+description: "Two authorized copies contain the same signature under different claims, and the family asks how it got there."
 ---
+
 The mark beneath Yansheng's name had a hook like a fishing line.
 
 Yanchuan remembered teasing him about it. Their father wrote each character squarely, as if a loose stroke might let the current escape. Yansheng signed as if the pen were already trying to leave.
@@ -20,6 +21,8 @@ Yanchuan called Amina before finishing the comparison.
 
 “They copied his signature.”
 
+The words came out too quickly. He had been ready to say them before he had examined the transmission history.
+
 “Send the page numbers through the review channel.”
 
 “Look at it.”
@@ -28,7 +31,7 @@ Yanchuan called Amina before finishing the comparison.
 
 He heard his own insistence and let her finish. She asked the operator for the approval record associated with the final copy, rather than a third scan of its pages. The request included both document identifiers. It did not describe a crime.
 
-Mei joined the review that evening. On Yanchuan's laptop she aligned the signature images. They matched closely, including a faint grey speck beneath the first stroke.
+Mei joined the review that evening. On Yanchuan's laptop she aligned the signature images. They matched closely, including a faint gray speck beneath the first stroke.
 
 “That's the scanning dust,” he said.
 
@@ -54,7 +57,7 @@ He wrote the distinction down and signed it in front of them. His signature was 
 
 The missing attachment would be requested from its sender. The document versions and their transmission dates would be preserved. Someone with the appropriate remit could examine whether the change was a clerical mistake, an unauthorized assembly, or something more deliberate.
 
-Outside, Yanchuan tried to call An. She sent a message saying she was at the swimming pool with her son. He nearly replied, Important. Instead he asked her to call when she could.
+Outside, Yanchuan tried to call An. She sent a message saying she was at the swimming pool with her son. He nearly replied, Important. He looked at the word until it seemed to mean that the swimming lesson was not important, that her son should surrender another hour to the case. He deleted it and asked her to call when she could.
 
 He waited on a bench. A man beside him unwrapped a new phone and struggled to transfer his contacts. Yanchuan helped him find the setting. The man thanked him with the uncomplicated gratitude of someone whose problem had ended.
 
@@ -70,4 +73,4 @@ She shut her eyes briefly. Her son called from another room, asking where his to
 
 Yanchuan returned to his hotel and looked once more at the hook in his brother's signature. He could recognize a habit, a joke, the movement of a hand. None of that could tell him who had assembled the final file.
 
-He closed the image and opened the expense sheet. His return ticket was for Tuesday. Under the approved days of leave, there were no blank rows left.
+He closed the image and opened the expense sheet. He had not told An how often he counted the money before calling her, afraid she would hear the calculation as a measure of how long her husband deserved to be searched for. His return ticket was for Tuesday. Under the approved days of leave, there were no blank rows left.

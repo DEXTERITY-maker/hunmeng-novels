@@ -29,6 +29,8 @@ Their first day went badly in an ordinary way. A temperature sensor reported a r
 
 The manager wanted the first week's dashboard by Friday. Ning said he could have a dashboard that showed incomplete data. He could not have a credible savings estimate based on a known bad measurement.
 
+“Friday is when the board reviews the purchase,” the manager said. “If the dashboard has no savings number, the board may cancel the pilot.” Ning glanced at Guo. He did not intervene. She considered supplying the estimate with a warning beneath it, then offered a signed record of the failed measurement instead. The manager accepted it without thanks. Outside, the technician was still on the ladder, trying to reach a bracket hidden by a ventilation duct.
+
 Yanchuan watched the exchange without adding a speech. The technician who climbed the ladder to inspect the sensor knew more about its location than anyone at the meeting. They asked her to mark the mounting point on the drawing.
 
 In the second week the model predicted a demand peak at four. A production shift had been moved because a machine needed repair. The model had no record of the change and recommended delaying a load that was already off.
@@ -49,7 +51,7 @@ Guo visited at the end of the week. He watched the operator decline two suggesti
 
 “Yes,” Ning said. “But they also tell us whether the system understands the workplace.”
 
-Guo studied the audit log. One refusal was labelled insufficient maintenance margin. Another said production schedule changed. He asked whether those reasons could train future recommendations.
+Guo studied the audit log. One refusal was labeled insufficient maintenance margin. Another said production schedule changed. He asked whether those reasons could train future recommendations.
 
 “Possibly,” Ning replied, “with permission and a review of what they mean. A refusal isn't always proof the recommendation was wrong. Sometimes it says the operator knows something the system doesn't.”
 
@@ -83,6 +85,12 @@ Guo looked at the finished page.
 
 “It will be harder to sell,” he said.
 
+“Then tell the next customer exactly what a refusal means,” Ning replied.
+
+Guo tapped the page with one finger. “I'm not asking to erase it. I'm asking whether we can stay in business long enough to improve it.”
+
+For once they left the disagreement unresolved in the meeting minutes. Chen asked both of them for a version they could defend at the same price.
+
 “It will be easier to defend,” Chen replied.
 
 Guo allowed the page to remain.
@@ -101,6 +109,6 @@ He did.
 
 The missing-person case remained open in its separate folder. The pilot was not an answer to it, a memorial, or a promise that technology would spare anyone uncertainty.
 
-It was the first time Yanchuan had been paid to build a system whose limitations were part of what the customer was buying.
+The first milestone bought a modest service, with its limits written where the customer could see them.
 
-He considered that a beginning.
+He checked the invoice number once more before sending it to the accounts team. For the first time the work had a price, and someone outside his family would be entitled to question the result.

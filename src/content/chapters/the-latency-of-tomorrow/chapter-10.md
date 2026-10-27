@@ -2,11 +2,12 @@
 novelSlug: the-latency-of-tomorrow
 slug: chapter-10
 number: 10
-title: Heat Has to Go Somewhere
+title: "Heat Has to Go Somewhere"
 publishedAt: "2026-10-26"
-description: A witnessed demonstration brings the omitted load back into the picture, at a cost nobody wants to pay.
+description: "A witnessed demonstration brings the omitted load back into the picture, at a cost nobody wants to pay."
 ---
-The hotel manager remembered Yansheng asking to print a page. She did not remember seeing him leave.
+
+The hotel manager remembered Yansheng asking to print a page. She did not remember seeing him leave. Yanchuan heard the second sentence as a refusal of hope, though she had offered neither hope nor its opposite.
 
 Her staff had supplied the booking and checkout information through the case inquiry. The account had been settled through the local contractor. That was the source of Luo's confident statement that his employee had checked out. It was a payment event, not a pair of eyes at the door.
 

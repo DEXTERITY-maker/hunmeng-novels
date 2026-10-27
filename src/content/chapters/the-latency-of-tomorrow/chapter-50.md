@@ -25,6 +25,10 @@ Guo arrived for the review that afternoon.
 
 “Did the system catch the problem?” he asked.
 
+Gao glanced toward the operators waiting to return to the floor. “Before we discuss who gets credit, could we make sure the night shift knows that the valve hasn't been cleared?”
+
+Ning asked the maintenance lead to confirm the handover. The commercial manager checked his watch but said nothing. Only then did the review resume.
+
 “The plant alarms did,” Gao said. “The pilot recommended something else. We declined it.”
 
 “Would it have known not to recommend that if the valve information had been in the model?”
@@ -105,6 +109,4 @@ The factory's first-phase report lay on his desk. It contained a human refusal, 
 
 He signed the engineering section and sent it to Chen.
 
-The manual decision was not a failure to automate.
-
-It was the condition under which the rest of the work could begin.
+The signed report went out while Gao was beginning another shift. The alarm log still showed fourteen minutes of interruption. This time those minutes were included in the result.

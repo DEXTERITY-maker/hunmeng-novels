@@ -2,10 +2,11 @@
 novelSlug: the-latency-of-tomorrow
 slug: chapter-4
 number: 4
-title: His Ordinary Thursday
+title: "His Ordinary Thursday"
 publishedAt: "2026-10-26"
-description: Xu An reconstructs her husband's unfinished plans, without turning familiar habits into certainty.
+description: "Xu An reconstructs her husband's unfinished plans, without turning familiar habits into certainty."
 ---
+
 An had kept the packaging for the bathroom tap because Yansheng said he would replace it when he came home. In her Guangzhou apartment, the tap dripped into a blue bowl while she spoke to Yanchuan on video.
 
 “You can get someone to do that,” he said.

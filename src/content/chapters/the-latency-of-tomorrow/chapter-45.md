@@ -33,7 +33,7 @@ Guo's analyst wanted a numeric threshold simple enough for the software.
 
 “Different work creates different exposure,” the officer said. “And a number doesn't excuse someone from looking.”
 
-Yanchuan wrote that down. He had once wanted every useful judgement to fit a column. He now found himself adding columns to record when the table should stop being used.
+Yanchuan wrote that down. He had once wanted every useful judgment to fit a column. He now found himself adding columns to record when the table should stop being used.
 
 That night Qiao called from the hospital. A patient transport van had arrived later than planned, leaving an older man waiting in a hot reception area. The staff moved him into a cooler room and found water. No one had lost the paperwork. The schedule simply assumed the vehicle would be there.
 
@@ -81,4 +81,4 @@ They argued briefly about the chair, and Yanchuan felt the old comfort of being 
 
 Before sleep he returned to the factory figures. The temperature curves were legible; their boundaries now included an explicit account of where people stood. Energy efficiency remained a genuine engineering problem. It was not the only one.
 
-He closed the report with the memory of Liu sitting beside a fan, drinking water before returning to his station. Nothing in the day's final total showed that pause. The pause had mattered anyway.
+He closed the report with the memory of Liu sitting beside a fan, drinking water before returning to his station. Nothing in the day's final total showed that pause. The following day's shift plan made room for a second rest break if the packing floor stayed hot. Liu initialed the notice without looking at the energy chart.
