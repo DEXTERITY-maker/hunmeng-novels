@@ -13,7 +13,7 @@ test('главная: разделы с реальным контентом, о�
   // Пока нет подтверждённыхviews — рейтинг не показывается.
   await expect(page.locator('#recommended-novels .home-recommendation-card')).toHaveCount(2);
   await page.getByRole('searchbox', { name: 'Search novels' }).fill('winter');
-  await page.getByRole('button', { name: 'Search' }).click();
+  await page.locator('.home-search').getByRole('button', { name: 'Search', exact: true }).click();
   await expect(page).toHaveURL(/search=winter/);
   expect(new URL(page.url()).pathname).toBe('/catalog/');
   await expect(page.locator('#result-count')).toHaveText('Novels found: 1');
