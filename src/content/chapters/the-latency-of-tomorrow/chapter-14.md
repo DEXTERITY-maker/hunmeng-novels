@@ -80,4 +80,4 @@ He looked down at the bag, its frayed strap repaired with white thread.
 
 “So did I,” Amina added. “Eventually.”
 
-That night he told An about the note. Then, before she could ask, he told her the family's conditions. She wrote them above the new lead. For once the last thing they discussed was somebody else's payment, and what help they could offer without asking that family to earn it by being useful to them.
+That night Yanchuan told An about Daniel's note and Rose's conditions. An added the employment-payment question to a separate page, then asked him to send Rose her number only if Rose agreed. He had wanted to bring home a clue. Instead he found himself checking whether a family he had just met could afford another appointment.
