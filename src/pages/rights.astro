@@ -1,34 +1,53 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import Icon from '../components/Icon.astro';
 import { site } from '../config/site';
 import { contactChannels } from '../lib/contacts';
 const channels = contactChannels(site.contacts, true);
+const requiredDetails = [
+  { title: "The work's title and page addresses", description: 'Provide the title of the work and the addresses of the pages in question.' },
+  { title: 'Your contact information', description: 'Include your name or organization and a way to contact you.' },
+  { title: 'Proof of authorship or authority', description: 'Share information verifying your authorship or your authority to act for the rights holder.' },
+  { title: 'The issue and requested action', description: 'Describe the issue and the action you request, such as attribution, correction, or removal.' },
+];
 ---
 
 <Layout title="Rights holders" description="Translation publishing requirements and information for authors and rights holders.">
-  <main id="main" class="page-shell prose-page">
-    <a class="back-link" href="/">
-      ← Home
-    </a>
-    <h1>Rights holders</h1>
-    <p>
-      Publishing a translation on Hunmeng requires verified permission to translate and publish the text. Cover permissions are checked separately. Public availability does not replace permission from the rights holder.
-    </p>
-    <h2>Rights requests</h2>
-    {channels.length ? (
-      <ul class="contact-channels">{channels.map(channel => (
-        <li>{channel.label}: <a href={channel.href} rel="noopener noreferrer">{channel.value}</a></li>
-      ))}</ul>
-    ) : (
-      <p class="notice">A contact channel for rights holders has not been published yet. This page cannot receive or send requests.</p>
-    )}
-    <p>Please include the following:</p>
-    <ul>
-      <li>The work's title and the addresses of the pages in question.</li>
-      <li>Your name or organization and a way to contact you.</li>
-      <li>Information verifying your authorship or authority to act for the rights holder.</li>
-      <li>A description of the issue and requested action: attribution, correction, or removal.</li>
-    </ul>
-    <p>Do not post documents containing personal information in comments or public discussions. New translations may be published only after permissions are verified and editorial approval is given.</p>
+  <main id="main" class="page-shell rights-page">
+    <header class="rights-hero landscape-banner">
+      <a class="back-link" href="/">← Home</a>
+      <p class="eyebrow">Permission &amp; attribution</p>
+      <h1>Rights holders</h1>
+      <p>
+        Publishing a translation on Hunmeng requires verified permission to translate and publish the text.
+        Cover permissions are checked separately. Public availability does not replace permission from the rights holder.
+      </p>
+    </header>
+    <div class="rights-content">
+      <section class="rights-card" aria-labelledby="rights-requests-title">
+        <h2 id="rights-requests-title">Rights requests</h2>
+        {channels.length ? (
+          <ul class="contact-channels">{channels.map(channel => (
+            <li>{channel.label}: <a href={channel.href} rel="noopener noreferrer">{channel.value}</a></li>
+          ))}</ul>
+        ) : (
+          <p class="notice rights-notice"><Icon name="info" size={22} /> <span>A contact channel for rights holders has not been published yet. This page cannot receive or send requests.</span></p>
+        )}
+        <h3>Please include the following in your request:</h3>
+        <ol class="rights-steps">
+          {requiredDetails.map((step, index) => (
+            <li>
+              <span class="rights-step-number" aria-hidden="true">{index + 1}</span>
+              <div>
+                <h4>{step.title}</h4>
+                <p>{step.description}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+        <p class="rights-privacy"><Icon name="shield" size={24} /> <span>Do not post documents containing personal information in comments or public discussions.</span></p>
+        <p class="rights-footnote">New translations may be published only after permissions are verified and editorial approval is given.</p>
+      </section>
+    </div>
   </main>
 </Layout>
