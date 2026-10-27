@@ -102,7 +102,7 @@ export function initReaderAdvancement(client: SupabaseClient) {
     const rank=modal.dataset.pendingRank;
     if(!rank || !activeUser || !clientRef)return;
     delete modal.dataset.pendingRank;
-    void clientRef.rpc('reader_mark_rank_seen',{p_rank:rank});
+    void clientRef.rpc('reader_mark_rank_seen',{p_rank:rank}).then(()=>{});
   };
   acknowledge.addEventListener('click',()=>{
     markSeen();
@@ -145,7 +145,7 @@ async function loadVerified(userId:string,seq:number) {
   // display the modal, and acknowledgement persists server-side.
   if(values.last_rank_notified===rank.id)return;
   if(!values.last_rank_notified||ranks.findIndex(r=>r.id===values.last_rank_notified)<0){
-    void clientRef.rpc('reader_mark_rank_seen',{p_rank:rank.id});
+    void clientRef.rpc('reader_mark_rank_seen',{p_rank:rank.id}).then(()=>{});
     return;
   }
   const before=ranks.findIndex(r=>r.id===values.last_rank_notified);
