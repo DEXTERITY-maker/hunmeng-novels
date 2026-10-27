@@ -82,4 +82,4 @@ He wanted to tell her he would not. Instead he looked at the broken line on his 
 
 “Tell me when I do,” he said.
 
-After she left, he renamed the plot. Not evidence_of_fraud. Not last_clue. He called it comparison_with_gaps, put the date after it, and sent it to An.
+After she left, he renamed the plot comparison_with_gaps and added the date. He hovered over the message to An, wanting to write that Mei had found something important. He sent the file without the extra sentence.
