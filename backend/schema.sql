@@ -180,6 +180,9 @@ begin
   ) then
     raise exception 'Server-managed approval/publication fields cannot be changed';
   end if;
+  if tg_op = 'UPDATE' and old.status = 'approved' and new.status <> 'approved' and current_user <> 'service_role' then
+    raise exception 'Approved chapters can only be returned to review by an administrator workflow';
+  end if;
   if tg_op = 'UPDATE' and old.status = 'approved' and new.status = 'approved'
      and (new.source_id, new.chapter_number, new.chapter_slug, new.chapter_title,
        new.chapter_description, new.original_text, new.translated_text, new.qa_notes)
@@ -192,6 +195,9 @@ begin
     raise exception 'Published chapter is immutable';
   end if;
   if new.status = 'approved' and (tg_op = 'INSERT' or old.status <> 'approved') then
+    if tg_op = 'INSERT' or old.status <> 'review' then
+      raise exception 'Approval requires a chapter in review';
+    end if;
     if not exists (select 1 from public.novel_staff
       where user_id = auth.uid() and role = 'admin') then
       raise exception 'Only administrators approve translations';
