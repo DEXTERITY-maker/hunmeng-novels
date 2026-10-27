@@ -69,7 +69,9 @@ Later An sent her monthly household account. She had included a line for sudden 
 
 He thought of the pump.
 
-At the next pilot review Guo approved the smaller savings claim and the separate reserve estimate. His analyst asked whether this would make their business less competitive.
+At the next pilot review Guo approved the smaller savings claim and the separate reserve estimate. Before signing, he asked whether the first, larger number had already been shown to a prospective investor. The analyst admitted that it had appeared in a preliminary slide. Guo asked for a correction to go out with the revised cost, although he did not conceal his anger at having to explain it.
+
+His analyst asked whether this would make their business less competitive.
 
 “Only if our competitors are promising the same service without paying to keep it available,” Guo said.
 
