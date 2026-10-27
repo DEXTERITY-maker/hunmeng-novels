@@ -95,7 +95,8 @@ export function initReaderAdvancement(client: SupabaseClient) {
     });
   });
   const modal=document.getElementById('reader-rank-unlocked') as HTMLDialogElement;
-  document.getElementById('reader-rank-acknowledge')?.addEventListener('click',()=>modal.close());
+  const acknowledge=document.getElementById('reader-rank-acknowledge')!;
+  acknowledge.addEventListener('click',()=>modal.close());
   modal.addEventListener('cancel',()=>{});
   return (user:User|null)=>{
     activeUser=user?.id??null;
@@ -149,7 +150,9 @@ async function loadVerified(userId:string,seq:number) {
     marked=true;
     modal.removeEventListener('close',mark);
     acknowledge.removeEventListener('click',mark);
-    if(userId===activeUser)void clientRef?.rpc('reader_mark_rank_seen',{p_rank:rank.id});
+    // The database independently checks identity and refuses other ranks.
+    // Do not gate this request on an async auth refresh after showing the dialog.
+    void clientRef?.rpc('reader_mark_rank_seen',{p_rank:rank.id});
   };
   // A click must persist the acknowledgement immediately; close also covers
   // Escape, native dialog dismissal and assistive-technology interactions.
