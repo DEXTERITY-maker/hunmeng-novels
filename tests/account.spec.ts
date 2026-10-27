@@ -83,6 +83,7 @@ test('вход, сохранение сессии и выход сохраняю
  await expect(page.locator('#admin-workspace')).toBeHidden();
  await expect(page.locator('#admin-login-link')).toBeVisible();
  await page.goto('/account/');await expect(page.locator('#auth-logged-in')).toBeVisible();
+ await page.locator('.profile-sidebar nav a[href="#profile-account"]').click();
  await page.getByRole('button',{name:'Sign out',exact:true}).click();
  await expect(page.locator('#auth-fields')).toBeVisible();
  expect(await page.evaluate(k=>localStorage.getItem(k),key)).toBeNull();
@@ -112,6 +113,7 @@ test('callback на главной доходит до аккаунта, ток�
  await expect(page.locator('#auth-logged-in')).toBeVisible();
  await expect(page).toHaveURL(/\/account\/$/);
  expect(state.codeCalls).toBe(1);
+ await page.locator('.profile-sidebar nav a[href="#profile-account"]').click();
  await page.getByRole('button',{name:'Sign out',exact:true}).click();
  await page.goto('/account/#access_token=fixture&refresh_token=fixture');
  await expect(page).toHaveURL(/\/account\/$/);
@@ -121,6 +123,7 @@ test('выход при сетевой ошибке очищает читате�
  const state=await mockAuth(page);await open(page);await fill(page);
  await page.locator('#reader-auth-submit').click();await expect(page.locator('#auth-logged-in')).toBeVisible();
  state.logoutOffline=true;
+ await page.locator('.profile-sidebar nav a[href="#profile-account"]').click();
  await page.getByRole('button',{name:'Sign out',exact:true}).click();
  await expect(page.locator('#account-status')).toContainText('The server could not confirm');
  expect(await page.evaluate(k=>localStorage.getItem(k),key)).toBeNull();
@@ -204,6 +207,7 @@ test('истёкшая сессия закрывает профиль и не о
 });
 test('настройки чтения: сохранение, обновление страницы и сброс без отправки на сервер',async({page})=>{
  const state=await mockAuth(page);await loginFixture(page);
+ await page.locator('.profile-sidebar nav a[href="#profile-reading"]').click();
  await page.getByLabel('Appearance',{exact:true}).selectOption('sepia');
  await page.getByLabel('Reading font',{exact:true}).selectOption('sans');
  await page.locator('#preferences-form [name=size]').fill('24');
@@ -212,10 +216,12 @@ test('настройки чтения: сохранение, обновлени�
  await page.getByRole('button',{name:'Save settings',exact:true}).click();
  await expect(page.locator('html')).toHaveAttribute('data-theme','sepia');
  await page.reload();await expect(page.locator('#auth-logged-in')).toBeVisible();
+ await expect(page.locator('#profile-reading')).toBeVisible();
  await expect(page.locator('#preferences-form [name=size]')).toHaveValue('24');
  await page.goto('/novel/sad-zimy/glava-1/');
  await expect(page.locator('#chapter-text')).toHaveCSS('font-size','24px');await expect(page.locator('html')).toHaveAttribute('data-reader-font','sans');
  await page.goto('/account/');await expect(page.locator('#auth-logged-in')).toBeVisible();
+ await page.locator('.profile-sidebar nav a[href="#profile-reading"]').click();
  await page.getByRole('button',{name:'Reset to default',exact:true}).click();
  await expect(page.locator('#preferences-form [name=size]')).toHaveValue('20');
  await expect(page.locator('#preferences-form [name=theme]')).toHaveValue('system');
