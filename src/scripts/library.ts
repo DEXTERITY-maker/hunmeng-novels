@@ -45,6 +45,25 @@ export async function initLibrary() {
             'fine',
           ),
         );
+        if (p && c) {
+          const progress = element('div', undefined, 'library-reading-progress');
+          const percent = Math.max(0, Math.min(100, Math.round(p.ratio * 100)));
+          const finished = Object.keys(state.completedChapters[n.slug] ?? {}).length;
+          const line = element('span', 'Current chapter: ' + percent + '%' +
+            (p.completed ? ' · Chapter finished' : '') +
+            (finished ? ' · ' + finished + ' chapter' + (finished === 1 ? '' : 's') + ' read' : ''));
+          const bar = element('progress');
+          bar.max = 100;
+          bar.value = percent;
+          bar.setAttribute('aria-label', 'Current chapter progress for ' + n.title);
+          progress.append(line, bar);
+          if (p.updatedAt > 0) {
+            const lastRead = element('span', 'Last read: ' +
+              new Intl.DateTimeFormat('en', { dateStyle: 'medium' }).format(new Date(p.updatedAt)));
+            progress.append(lastRead);
+          }
+          body.append(progress);
+        }
         const read = element('a', action.label + ' →', 'text-link');
         read.href = action.url;
         body.append(read);
