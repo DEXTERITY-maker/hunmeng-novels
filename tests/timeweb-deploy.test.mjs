@@ -22,7 +22,7 @@ function fixture(overrides = {}) {
     assert.equal(options.headers.Authorization, 'Bearer ' + token);
     if (url.endsWith('/apps')) return json({ apps: overrides.apps ?? [app] });
     if (url.includes('/deploys?')) {
-      const status = overrides.statusSequence?.[Math.min(deploymentPolls++, overrides.statusSequence.length - 1)] ?? overrides.status ?? 'success';
+      const status = (posted && overrides.statusSequence ? overrides.statusSequence[Math.min(deploymentPolls++, overrides.statusSequence.length - 1)] : undefined) ?? overrides.status ?? 'success';
       return json({ deploys: overrides.existing ?? (posted ? [{ ...deployment, status }] : []) });
     }
     if (url.endsWith('/deploy')) {
