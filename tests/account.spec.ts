@@ -7,9 +7,12 @@ const user={id:'00000000-0000-4000-8000-000000000023',aud:'authenticated',role:'
 const session=()=>({access_token:[Buffer.from('{"alg":"HS256","typ":"JWT"}').toString('base64url'),
   Buffer.from(JSON.stringify({sub:user.id,exp:Math.floor(Date.now()/1000)+3600,role:'authenticated'})).toString('base64url'),'fixture-signature'].join('.'),
   refresh_token:'fixture-reader-refresh',expires_in:3600,expires_at:Math.floor(Date.now()/1000)+3600,token_type:'bearer',user});
+const readerSafeRequests = (requests: string[]) => requests.every(p =>
+  p.startsWith('/auth/v1/') || p.startsWith('/rest/v1/rpc/reader_'));
 async function mockAuth(page: Page) {
   const state={requests:[] as string[],signupBody:{} as Record<string,unknown>,signupRedirect:'',signupCalls:0,
-    passwordCalls:0,codeCalls:0,errorCode:'',logoutOffline:false,profileUser:structuredClone(user),profileCalls:0,profileBody:{} as Record<string,unknown>,profileError:0,verifyError:0,sessionExpired:false};
+    passwordCalls:0,codeCalls:0,errorCode:'',logoutOffline:false,profileUser:structuredClone(user),profileCalls:0,profileBody:{} as Record<string,unknown>,profileError:0,verifyError:0,sessionExpired:false,
+    rankStats:{total_xp:0,chapters:0,completedNovels:0,readingDays:0,scifiNovels:0,completedGenres:0,selected_title:'novice',last_rank_notified:null as string|null}};
   await page.route('https://*.supabase.co/**',async route=>{
     const address=new URL(route.request().url());state.requests.push(address.pathname);
     const json=(body:unknown,status=200)=>route.fulfill({status,contentType:'application/json',
@@ -37,6 +40,17 @@ async function mockAuth(page: Page) {
       return json(state.profileUser);
     }
     if(address.pathname.endsWith('/logout'))return state.logoutOffline?route.abort('failed'):json({});
+    if(address.pathname==='/rest/v1/rpc/reader_my_progress')return json(state.rankStats);
+    if(address.pathname==='/rest/v1/rpc/reader_mark_rank_seen'){
+      state.rankStats.last_rank_notified=route.request().postDataJSON().p_rank;
+      return json(true);
+    }
+    if(address.pathname==='/rest/v1/rpc/reader_select_title'){
+      const title=route.request().postDataJSON().p_title;
+      if(title!=='novice'&&!(title==='regular'&&state.rankStats.readingDays>=30))return json({message:'Title locked'},403);
+      state.rankStats.selected_title=title;
+      return json(true);
+    }
     return json({message:'No editorial access'},403);
   });
   return state;
@@ -62,7 +76,7 @@ test('видимая регистрация: подтверждение паро
  expect(state.signupBody.code_challenge_method).toBe('s256');
  expect(state.signupRedirect).toBe('http://127.0.0.1:4321/account/');
  await expect(page.getByLabel('Password',{exact:true})).toHaveValue('');
- expect(state.requests.every(p=>p.startsWith('/auth/v1/'))).toBe(true);
+ expect(readerSafeRequests(state.requests)).toBe(true);
  await expect(page.locator('#auth-fields')).toBeVisible();
 });
 test('несовпадающие пароли не отправляются в Auth',async({page})=>{
@@ -89,7 +103,7 @@ test('вход, сохранение сессии и выход сохраняю
  expect(await page.evaluate(k=>localStorage.getItem(k),key)).toBeNull();
  expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('hunmeng-novels:v1')!).library['sad-zimy'])).toBe('later');
  expect(await page.evaluate(()=>sessionStorage.getItem('hunmeng-novels:admin-session:v1'))).toBeNull();
- expect(state.requests.every(p=>p.startsWith('/auth/v1/'))).toBe(true);
+ expect(readerSafeRequests(state.requests)).toBe(true);
 });
 for(const [code,message] of [['invalid_credentials','Check your email and password'],['email_not_confirmed','Confirm your email'],['signup_disabled','registrations are temporarily disabled']])
 test(`ошибка ${code} is shown in English without private diagnostics`,async({page})=>{
@@ -182,7 +196,7 @@ for (const width of [320, 390, 1440]) {
   await page.locator('.account-panel').getByRole('link',{name:'My profile',exact:true}).click();
   await expect(page).toHaveURL(/\/account\/$/);
   await assertView('profile-details');
-  expect(state.requests.every(p=>p.startsWith('/auth/v1/'))).toBe(true);
+  expect(readerSafeRequests(state.requests)).toBe(true);
  });
 }
 test('меню шапки показывает аватар и настройки, а выход сохраняет библиотеку',async({page})=>{
@@ -210,7 +224,7 @@ test('меню шапки показывает аватар и настройк�
  expect(await page.evaluate(k=>localStorage.getItem(k),key)).toBeNull();
  const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('hunmeng-novels:v1')!));
  expect(saved.library['sad-zimy']).toBe('later');expect(saved.progress['sad-zimy'].ratio).toBe(.25);expect(saved.settings.theme).toBe('sepia');
- expect(state.requests.every(p=>p.startsWith('/auth/v1/'))).toBe(true);
+ expect(readerSafeRequests(state.requests)).toBe(true);
 });
 test('выход из меню при недоступном сервере удаляет сессию только в этом браузере',async({page})=>{
  const state=await mockAuth(page);await loginFixture(page);state.logoutOffline=true;
@@ -233,7 +247,7 @@ test('профиль: никнейм, описание и аватар сохр�
  await page.goto('/');await expect(page.locator('[data-account-link]')).toHaveText('Profile');
  await page.goto('/account/');await expect(page.getByLabel('Nickname',{exact:true})).toHaveValue('Тихий_читатель');
  await expect(page.getByLabel('Bio',{exact:true})).toHaveValue('Люблю истории о море.');
- expect(state.profileCalls).toBe(1);expect(state.requests.every(p=>p.startsWith('/auth/v1/'))).toBe(true);
+ expect(state.profileCalls).toBe(1);expect(readerSafeRequests(state.requests)).toBe(true);
 });
 test('некорректный никнейм и ошибки сети не дают ложного сохранения',async({page})=>{
  const state=await mockAuth(page);await loginFixture(page);
@@ -272,7 +286,7 @@ test('настройки чтения: сохранение, обновлени�
  await page.getByRole('button',{name:'Reset to default',exact:true}).click();
  await expect(page.locator('#preferences-form [name=size]')).toHaveValue('20');
  await expect(page.locator('#preferences-form [name=theme]')).toHaveValue('system');
- expect(state.profileCalls).toBe(0);expect(state.requests.every(p=>p.startsWith('/auth/v1/'))).toBe(true);
+ expect(state.profileCalls).toBe(0);expect(readerSafeRequests(state.requests)).toBe(true);
 });
 
 test('недоступный сервер проверки сессии не выдаётся за выход из аккаунта',async({page})=>{
@@ -281,4 +295,39 @@ test('недоступный сервер проверки сессии не в�
  await expect(page.locator('#profile-status')).toContainText('Unable to verify your session');
  await expect(page.locator('#auth-logged-in')).toBeVisible();expect(state.profileCalls).toBe(0);
  state.verifyError=0;await page.getByRole('button',{name:'Save profile',exact:true}).click();await expect(page.locator('#profile-status')).toHaveText('Profile saved.');
+});
+
+
+test('authenticated reader sees nine accurate ranks and independent novice title', async ({page})=>{
+ const state=await mockAuth(page);
+ await loginFixture(page);
+ await expect(page.locator('#reader-advancement')).toHaveAttribute('data-status','ready');
+ await expect(page.locator('#reader-level')).toHaveText('Level 1');
+ await expect(page.locator('#reader-rank')).toHaveText('Iron');
+ await expect(page.locator('#reader-equipped-title')).toHaveText('Novice Reader');
+ await expect(page.locator('#reader-xp-numbers')).toHaveText('0 / 500 XP');
+ await expect(page.locator('[data-rank-id]')).toHaveCount(9);
+ await expect(page.locator('[data-rank-id]').evaluateAll(els=>els.map(el=>el.getAttribute('data-rank-id'))))
+  .resolves.toEqual(['iron','bronze','silver','gold','dark-gold','platinum','diamond','legendary','mythical']);
+ await expect(page.locator('[data-rank-id=dark-gold] .rank-tile-levels')).toHaveText('Levels 140–174');
+ await expect(page.locator('[data-title-id=novice] .award-select')).toHaveText('Equipped');
+ await expect(page.locator('[data-title-id=reviewer] .award-select')).toBeDisabled();
+ expect(readerSafeRequests(state.requests)).toBe(true);
+});
+
+test('verified title can be equipped, display survives reload, and cards fit mobile',async({page})=>{
+ const state=await mockAuth(page);
+ state.rankStats.readingDays=30;
+ await page.setViewportSize({width:320,height:800});
+ await loginFixture(page);
+ await expect(page.locator('#reader-advancement')).toHaveAttribute('data-status','ready');
+ await page.locator('[data-equip-title=regular]').click();
+ await expect(page.locator('#reader-equipped-title')).toHaveText('Regular Reader');
+ await page.reload();
+ await expect(page.locator('#reader-equipped-title')).toHaveText('Regular Reader');
+ const scroll=await page.evaluate(()=>document.documentElement.scrollWidth);
+ expect(scroll).toBeLessThanOrEqual(321);
+ await page.screenshot({path:'test-results/hunmeng-rank-profile-mobile.png',fullPage:true});
+ await page.setViewportSize({width:1440,height:900});
+ await page.screenshot({path:'test-results/hunmeng-rank-profile-desktop.png',fullPage:true});
 });
