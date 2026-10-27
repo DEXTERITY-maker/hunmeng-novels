@@ -11,8 +11,9 @@ export async function initReader() {
     b.id = `block-${i}`;
   });
   const state = await repository.getState();
+  let globalSettings = { ...state.settings };
   let perNovel = !!state.novelSettings[slug];
-  let settings = perNovel ? state.novelSettings[slug] : state.settings;
+  let settings = perNovel ? state.novelSettings[slug] : globalSettings;
   // Keep an intentional Read later shelf selection intact when the user opens a chapter.
   if (!state.library[slug]) await repository.setShelf(slug, 'reading');
   applySettings(settings);
@@ -259,6 +260,7 @@ export async function initReader() {
     if (perNovel) await repository.setNovelSettings(slug, settings);
     else {
       await repository.setNovelSettings(slug, null);
+      globalSettings = { ...settings };
       await repository.setSettings(settings);
     }
     paint();
@@ -269,7 +271,7 @@ export async function initReader() {
     const scope = event.target as HTMLInputElement;
     if (scope.name === 'novelOverride') {
       if (scope.checked) void update({ ...settings }, true);
-      else void update({ ...state.settings }, false);
+      else void update({ ...globalSettings }, false);
       return;
     }
     const f = new FormData(form);
