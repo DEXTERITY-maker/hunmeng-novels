@@ -95,6 +95,4 @@ On Monday Mei sent him the revised evidence chart. She had added a narrow column
 
 Yanchuan added a line of his own: A cause cannot be inferred solely because two events happen near each other.
 
-Then he closed both folders.
-
-Between the proofs was a distance he could not shorten by looking harder. It would take new evidence, and people other than him would have to obtain some of it.
+He closed both folders, but left their indexes on the desk. The technical review had an authorized next step; the missing-person inquiry had a different one. An called and asked which contact should receive tomorrow's update. He gave her the case officer's name, not the contractor's.
