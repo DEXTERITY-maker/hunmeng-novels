@@ -89,4 +89,4 @@ A week later Qiao sent another photograph of the blank night-list form. A new ca
 
 “No,” she answered. “We fixed the form. The software can catch up.”
 
-Yanchuan saved Qiao's new form alongside the earlier version. In the space marked care arrangement pending, someone had written a name and a time for the next call. He asked Qiao whether the ward could still change the entry after a transfer was postponed. She said that was the point.
+Yanchuan saved Qiao's new form alongside the earlier version. There was space for a staff contact, a next-call time and a correction if the transfer was postponed. He asked Qiao whether the ward could change an entry after the list had been printed. She said that was the point.
