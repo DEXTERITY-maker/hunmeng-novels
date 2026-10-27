@@ -81,4 +81,4 @@ Before bed, An forwarded a message from the investigator. The courier had agreed
 
 Yanchuan saved the summary without trying to uncover the man's identity.
 
-The witness could not put a face in a vehicle. He could put a packet in the movement of a particular working day. It was a smaller service than Yanchuan wanted, and exactly the service the man could honestly give.
+Yanchuan added the seal description to the courier record and left the driver unnamed in the family copy. An asked whether the packet's contents had been verified. He wrote no in the relevant field and saved it before calling her back.
