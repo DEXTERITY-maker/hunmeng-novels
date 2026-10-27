@@ -71,6 +71,4 @@ On Friday Priya sent a final note. Their team had begun improving the maintenanc
 
 Yanchuan archived the message without writing a follow-up pitch.
 
-The absent project left an empty line in next quarter's revenue forecast. It also kept the company from selling a guarantee nobody on the customer's floor could confidently use.
-
-Both facts belonged in the accounts.
+Guo left the rejected proposal in the forecast with its expected revenue set to zero. At the next investor call he had to explain why a promising opportunity had been declined. He did not enjoy the conversation, and he did not ask Ning to change the technical finding afterward.
