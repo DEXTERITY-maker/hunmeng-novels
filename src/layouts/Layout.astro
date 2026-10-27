@@ -7,6 +7,7 @@ import '../styles/global.css';
 import '../styles/design.css';
 import '../styles/discovery.css';
 import '../styles/header.css';
+import '../styles/refinement.css';
 import '@fontsource-variable/lora/wght.css';
 import '@fontsource-variable/manrope/wght.css';
 import '@fontsource-variable/noto-serif/wght.css';
@@ -123,18 +124,38 @@ const tokens = `:root{--bg:${c.background};--surface:${c.surface};--ink:${c.text
     <slot />
     {!reader && (
       <footer class="site-footer">
-        <Brand />
-        <p>Stories to enjoy at your own pace.</p>
-        <nav aria-label="Information">
-          <a href="/genres/">Genres</a>
-          <a href="/tags/">Tags</a>
-          <a href="/news/">News</a>
-          {site.features.accounts && <a href="/account/">Account</a>}
-          <a href="/about/">About</a>
-          <a href="/rules/">Terms and privacy</a>
-          <a href="/contacts/">Contact</a>
-          <a href="/rights/">Rights holders</a>
-        </nav>
+        <div class="site-footer-inner">
+          <div class="site-footer-identity">
+            <Brand />
+            <p>A calmer corner of the internet for immersive worlds and the next great chapter.</p>
+          </div>
+          <div class="footer-link-group">
+            <h2 id="footer-discover">Discover</h2>
+            <nav aria-labelledby="footer-discover">
+              <a href="/catalog/">Catalog</a>
+              <a href="/genres/">Genres</a>
+              <a href="/tags/">Tags</a>
+              <a href="/authors/">Authors</a>
+              <a href="/updates/">Latest chapters</a>
+              <a href="/news/">News</a>
+            </nav>
+          </div>
+          <div class="footer-link-group">
+            <h2 id="footer-info">Hunmeng</h2>
+            <nav aria-labelledby="footer-info">
+              <a href="/library/">My library</a>
+              {site.features.accounts && <a href="/account/">Account</a>}
+              <a href="/about/">About</a>
+              <a href="/rules/">Terms and privacy</a>
+              <a href="/contacts/">Contact</a>
+              <a href="/rights/">Rights holders</a>
+            </nav>
+          </div>
+        </div>
+        <div class="site-footer-bottom">
+          <span>© 2026 Hunmeng.</span>
+          <span>Read at your own pace.</span>
+        </div>
       </footer>
     )}
     <p id="storage-notice" class="storage-notice" role="status" hidden>
