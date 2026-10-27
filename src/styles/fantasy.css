@@ -388,3 +388,15 @@ h1,h2,h3 { text-wrap: pretty; }
  .catalog-card-tags a { font-size: .8125rem; }
  .news-category { font-size: .8125rem; }
 }
+@media (max-width:760px) {
+ .home-page .home-discover { align-items: stretch; }
+}
+.header-inner > nav a[aria-current],.profile-sidebar nav a[aria-current='location'] {
+ background: color-mix(in srgb,var(--accent) 14%,var(--surface));
+}
+@media (max-width:760px) {
+ .profile-sidebar { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px 12px; }
+ .profile-identity { grid-column: 1/-1; }
+ .profile-sidebar nav { grid-column: 1/-1; grid-row: 2; order: initial; }
+ .profile-sidebar .profile-library-link { grid-row: 3; margin: 0; padding-inline: 3px; font-size: .8rem; min-height: 44px; }
+}
