@@ -1193,7 +1193,7 @@ html[data-theme='sepia'] body:has([data-reader]) {
   .reader-brand-label small {display:none;}
   .reader-book-label {font-size:.68rem;}
   .reader-header-actions {gap:0;}
-  .reader-header .icon-button,.reader-more summary.icon-button {width:44px;min-width:44px;}
+  .reader-header .icon-button,.reader-more summary.icon-button {width:44px;min-width:44px;min-height:46px;height:46px;}
   .reader-main {
     width:calc(100% - 36px);
     max-width:var(--reader-width);
