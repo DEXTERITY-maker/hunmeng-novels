@@ -87,6 +87,4 @@ He replied that the distinction was understood.
 
 In his notebook he wrote: A margin can be a buffer, a price, or a way of moving a cost out of view. The word alone doesn't tell you which.
 
-He closed the notebook and looked at the empty place on his calendar where another trip to Kenya might eventually fit. There was still no specific appointment requiring him there.
-
-For now, he stayed with the work whose boundaries he could actually inspect.
+He closed the notebook and looked at the empty space on his calendar where another trip to Kenya might fit. Wanjiru had not requested an appointment. He left the dates blank, then sent Chen the hours he could commit to the next pilot review.
