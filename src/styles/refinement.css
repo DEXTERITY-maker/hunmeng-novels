@@ -542,3 +542,45 @@ a, button, summary { -webkit-tap-highlight-color: transparent; }
   .home-feature-cover,.button,.home-book-card,.catalog-novel-card,.home-recommendation-card { transition: none !important; }
   .button:hover { transform: none; }
 }
+
+/* Footer navigation must override the legacy global single-row nav rules. */
+.site-footer .footer-link-group nav {
+  display: flex; flex-direction: column; align-items: flex-start;
+  grid-column: auto; grid-row: auto;
+  flex-wrap: nowrap; margin: 0; gap: 5px;
+}
+.authors-page { padding-bottom: 66px; }
+.authors-page .page-heading { padding-top: 36px; }
+.authors-page .page-heading h1 { margin: 6px 0 5px; }
+.authors-directory { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 16px; }
+.author-directory-card {
+  display: grid; grid-template-columns: 58px minmax(0,1fr); gap: 16px;
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: 15px; padding: 20px; box-shadow: var(--editorial-shadow);
+}
+.author-directory-mark {
+  display: grid; place-items: center; width: 58px; height: 58px;
+  font: 550 1.65rem/1 'Lora Variable',Georgia,serif;
+  color: var(--accent); background: var(--soft);
+  border: 1px solid var(--line); border-radius: 15px;
+}
+.author-directory-card h2 { font-size: 1.35rem; }
+.author-directory-card .fine { margin-top: 2px; }
+.author-directory-card ul { padding: 11px 0 0; list-style: none; margin: 10px 0 0; border-top: 1px solid var(--line); }
+.author-directory-card li { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 4px 0; font-size: .84rem; }
+.author-directory-card li a { color: var(--ink); font-weight: 650; }
+.author-directory-card li span { color: var(--muted); font-size: .72rem; white-space: nowrap; }
+.author-directory-card li a:hover { color: var(--accent); }
+@media(max-width:760px) {
+  .header-panel,.header-search .search-panel { left: 16px; right: 16px; }
+  .appearance-panel,.account-panel { left: auto; right: 16px; }
+  .authors-directory { grid-template-columns: 1fr; gap: 11px; }
+}
+@media(max-width:390px) {
+  .header-inner .brand-title { font-size: 1.19rem; }
+  .header-inner .brand-emblem { width: 34px; height: 34px; }
+  .header-inner .brand-emblem svg { width: 34px; height: 34px; }
+  .header-inner .header-icon-button { width: 40px; height: 40px; }
+  .author-directory-card { padding: 13px; gap: 11px; grid-template-columns: 48px minmax(0,1fr); }
+  .author-directory-mark { width: 48px; height: 48px; }
+}
