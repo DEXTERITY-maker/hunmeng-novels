@@ -1,0 +1,156 @@
+/* Reader preferences: tuned for long-form reading, with no extra font downloads. */
+html[data-reader-font="literary"] .chapter-text,
+.reader-settings-preview[data-font="literary"],
+.preferences-preview[data-font="literary"] {
+  font-family: 'Lora Variable', Georgia, 'Noto Serif Variable', serif;
+}
+.reader-main {
+  width: min(calc(100% - (2 * var(--reader-side-padding, 18px))), var(--reader-width, 720px));
+  max-width: var(--reader-width, 720px);
+  box-sizing: border-box;
+}
+.chapter-text {
+  -webkit-font-smoothing: auto;
+  max-width: 100%;
+}
+.chapter-text :is(p, li, blockquote, h2, h3) {
+  overflow-wrap: break-word;
+}
+.reader-settings-scope {
+  padding: 14px 15px;
+  border: 1px solid var(--hm-edge, var(--line));
+  border-radius: 12px;
+  background: var(--soft);
+}
+.reader-settings-scope label {
+  display: flex;
+  gap: 11px;
+  align-items: center;
+  font-weight: 750;
+  font-size: .9rem;
+  cursor: pointer;
+  color: var(--hm-navy, var(--ink));
+}
+.reader-settings-scope input {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 auto;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+.reader-settings-scope .fine {
+  margin: 7px 0 0 31px;
+  font-size: .78rem;
+  line-height: 1.5;
+}
+.reader-dialog .font-choices label:has(input:checked),
+.reader-dialog .theme-choices label:has(input:checked) {
+  border-color: var(--accent);
+  background: var(--soft);
+  color: var(--hm-navy, var(--ink));
+}
+.reader-dialog :is(.font-choices, .theme-choices) label:focus-within {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.reader-settings-preview {
+  font-size: clamp(14px, var(--reader-size), 28px);
+}
+.preferences-preview p {
+  margin: 0 0 var(--reader-paragraph-space, 1.35em);
+}
+.preferences-preview p:last-child {
+  margin-bottom: 0;
+}
+.reader-dialog {
+  box-sizing: border-box;
+  max-height: min(86dvh, 880px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.reader-dialog::backdrop {
+  background: rgb(10 28 35 / .52);
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+}
+/* Concrete progress from saved chapter state, not estimated book progress. */
+.library-reading-progress {
+  display: grid;
+  gap: 6px;
+  max-width: 400px;
+  margin: 10px 0 12px;
+}
+.library-reading-progress > span {
+  color: var(--muted);
+  font-size: .79rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.45;
+}
+.library-reading-progress progress,
+.novel-reading-progress progress {
+  width: 100%;
+  height: 6px;
+  border: 0;
+  border-radius: 10px;
+  overflow: hidden;
+  color: var(--accent);
+  accent-color: var(--accent);
+  background: var(--line);
+}
+.library-reading-progress progress::-webkit-progress-bar,
+.novel-reading-progress progress::-webkit-progress-bar {
+  background: var(--line);
+  border-radius: 10px;
+}
+.library-reading-progress progress::-webkit-progress-value,
+.novel-reading-progress progress::-webkit-progress-value {
+  background: var(--accent);
+  border-radius: 10px;
+}
+.library-reading-progress progress::-moz-progress-bar,
+.novel-reading-progress progress::-moz-progress-bar {
+  background: var(--accent);
+  border-radius: 10px;
+}
+.novel-reading-progress {
+  display: grid;
+  max-width: 360px;
+  gap: 7px;
+  margin: 10px 0 16px;
+  color: var(--muted);
+  font-size: .83rem;
+}
+.novel-reading-progress[hidden] { display: none !important; }
+@media (max-width: 760px) {
+  .reader-dialog {
+    position: fixed;
+    inset: auto 0 0;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    max-height: calc(89dvh - env(safe-area-inset-top));
+    margin: auto 0 0;
+    padding-bottom: max(22px, env(safe-area-inset-bottom));
+    border-radius: 20px 20px 0 0;
+  }
+  .reader-main {
+    width: calc(100% - (2 * var(--reader-side-padding, 18px)));
+    max-width: var(--reader-width, 720px);
+  }
+  .reader-dialog .font-choices,
+  .reader-dialog .theme-choices {
+    gap: 8px;
+  }
+  .reader-dialog :is(.font-choices,.theme-choices) label {
+    min-height: 64px;
+    padding-inline: 6px;
+  }
+}
+@media (max-width: 350px) {
+  .reader-dialog {padding-inline: 14px;}
+  .reader-dialog .dialog-heading h2 {font-size: 1.3rem;}
+}
+@media (prefers-reduced-motion: reduce) {
+  .reader-dialog,
+  .reader-main {scroll-behavior: auto;}
+}
