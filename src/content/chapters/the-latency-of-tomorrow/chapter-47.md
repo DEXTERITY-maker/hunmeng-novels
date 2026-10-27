@@ -111,4 +111,4 @@ Guo watched them and said that the agreement looked less ambitious on paper than
 
 “Perhaps,” Yanchuan answered. “Now we know which ambition can be paid for.”
 
-Outside, the afternoon was cooling. In the equipment room, the fans kept running, carrying away heat that no contract could make disappear.
+Outside, the afternoon cooled. In the equipment room the fans continued to run. Their measured consumption had its own line in the revised contract calculation, and the customer could now see who would pay for it.
