@@ -3,10 +3,10 @@ import assert from 'node:assert/strict';
 import { inspectTimeweb } from '../scripts/timeweb-status.mjs';
 
 const sha = 'a'.repeat(40);
-const host = 'https://dexterity-maker-hunmeng-novels-364c.twc1.net';
+const host = 'https://dexterity-maker-hunmeng-novels-f1c8.twc1.net';
 const app = { id: 1234, branch_name: 'main', commit_sha: sha,
   repository: { full_name: 'DEXTERITY-maker/hunmeng-novels' },
-  domains: [{ fqdn: 'dexterity-maker-hunmeng-novels-364c.twc1.net' }] };
+  domains: [{ fqdn: 'dexterity-maker-hunmeng-novels-f1c8.twc1.net' }] };
 
 function mockFetch(url, options) {
   assert.equal(options.method, 'GET');
