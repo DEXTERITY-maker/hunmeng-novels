@@ -118,8 +118,9 @@ const taxonomy = getTaxonomy(await getLibrary());
             <label>Source text <textarea name="original_text" rows="8"></textarea></label>
             <label>Translation draft (Markdown) <textarea name="translated_text" rows="12"></textarea></label>
             <div class="admin-actions">
-              <button class="button secondary" type="submit" data-job-status="draft">Save draft</button>
+              <button class="button secondary" type="submit" data-job-status="save">Save draft</button>
               <button class="button" type="submit" data-job-status="review">Send for review</button>
+              <button class="button secondary" type="submit" data-job-status="draft" hidden>Return to draft</button>
             </div>
           </form>
           <p class="fine">Drafts are never published automatically. Machine translations from n8n or another service must be reviewed by an editor.</p>
