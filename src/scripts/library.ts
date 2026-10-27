@@ -1,5 +1,5 @@
 import { repository, onStorageChange } from '../lib/storage';
-import { getCatalog, element } from '../lib/client-data';
+import { getCatalog, element, catalogUpdatedEvent } from '../lib/client-data';
 import { shelves, type Shelf } from '../config/site';
 import { chapterCount } from '../lib/format';
 import { readingAction } from '../lib/reading-action';
@@ -84,6 +84,7 @@ export async function initLibrary() {
     );
     await render();
     onStorageChange(() => void render());
+    window.addEventListener(catalogUpdatedEvent, () => void render());
   } catch {
     document.getElementById('library-empty')!.textContent =
       'Unable to load your library. Refresh the page.';

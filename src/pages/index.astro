@@ -1,5 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import Icon from '../components/Icon.astro';
 import CompactNovelCard from '../components/CompactNovelCard.astro';
 import ContinueReading from '../components/ContinueReading.astro';
 import { getLibrary, dateLabel, chapterCount } from '../lib/content';
@@ -32,12 +33,16 @@ const viewsLabel = new Intl.NumberFormat('en-US');
     <section class="home-hero" aria-labelledby="home-title">
       <div class="home-hero-copy">
         <h1 id="home-title">Stories worth<br /> coming back to</h1>
-        <p class="home-hero-description">
-          Read web novels in English, at your own pace.
-        </p>
+        <div class="home-hero-intro">
+          <p class="home-hero-description">Read web novels in English, at your own pace.</p>
+          <nav class="home-discover" aria-label="Explore the library">
+            <a href="/genres/">Browse genres <Icon name="arrow" /></a>
+            <a href="/tags/">Browse tags <Icon name="arrow" /></a>
+          </nav>
+        </div>
         <form class="home-search" role="search" action="/catalog/" method="get">
           <label class="home-sr-only" for="home-search-input">Search novels</label>
-          <span class="home-search-symbol" aria-hidden="true">⌕</span>
+          <span class="home-search-symbol"><Icon name="search" size={21} /></span>
           <input
             id="home-search-input"
             type="search"

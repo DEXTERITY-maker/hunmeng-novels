@@ -6,10 +6,10 @@ import { getTaxonomy } from '../lib/taxonomy';
 const { tags, groups } = getTaxonomy(await getLibrary());
 ---
 <Layout title="Browse novel tags" description="Find Hunmeng novels by protagonist, abilities, world, relationships, and other story details.">
-  <main id="main" class="page-shell">
+  <main id="main" class="page-shell taxonomy-page">
     <header class="page-heading"><h1>Tags</h1><p>Explore the characters, worlds, abilities, and themes inside a story.</p></header>
     <nav class="taxonomy-nav" aria-label="Browse novels"><a href="/catalog/">Novel catalog</a><a href="/genres/">Genres</a><a href="/tags/" aria-current="page">Tags</a></nav>
-    <p class="notice">Counts show novels published on Hunmeng. A tag with 0 novels has no matching books here yet. Tags can reveal plot details or mature themes.</p>
+    <p class="notice">Start with tags that have novels on Hunmeng. Choose All tags to explore the complete vocabulary. Tags can reveal plot details.</p>
     <TaxonomyDirectory kind="tags" terms={tags} groups={groups} />
   </main>
 </Layout>

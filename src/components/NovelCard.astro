@@ -11,10 +11,13 @@ const { novel: n } = Astro.props;
     <img src={n.cover} alt="" width="260" height="380" loading="lazy" />
   </a>
   <div class="novel-copy">
-    <p class="genre-line">{n.categories.length ? n.categories.join(' · ') : n.genres.join(' · ')}</p>
+    <p class="genre-line">{n.genres.join(' · ')}</p>
     <h2><a href={n.url}>{n.title}</a></h2>
     <p class="original-title">{n.originalTitle === n.title ? n.author : `${n.originalTitle} · ${n.author}`}</p>
     <p class="card-description">{n.description}</p>
+    {n.tags.length > 0 && <div class="catalog-card-tags" aria-label="Story tags">
+      {n.tags.slice(0, 3).map(tag => <a href={`/catalog/?include=${encodeURIComponent(tag)}`}>{tag}</a>)}
+    </div>}
     {(n.rating || typeof n.views === 'number') && <p class="catalog-card-stats">
       {n.rating && <span>★ {n.rating.average.toFixed(1)} / 5 · {n.rating.count} ratings</span>}
       {typeof n.views === 'number' && <span>◉ {new Intl.NumberFormat('en-US').format(n.views)} views</span>}

@@ -1,5 +1,5 @@
 import { repository, onStorageChange } from '../lib/storage';
-import { getCatalog, element } from '../lib/client-data';
+import { getCatalog, element, catalogUpdatedEvent } from '../lib/client-data';
 import { type Shelf } from '../config/site';
 import { readingAction } from '../lib/reading-action';
 export async function initPersonal() {
@@ -74,4 +74,5 @@ export async function initPersonal() {
   });
   await refresh();
   onStorageChange(() => void refresh());
+  window.addEventListener(catalogUpdatedEvent, () => void refresh());
 }

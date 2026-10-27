@@ -1,9 +1,11 @@
 ---
 import { site } from '../config/site';
 import Brand from '../components/Brand.astro';
+import AppearanceControl from '../components/AppearanceControl.astro';
 import { settingsBootstrap } from '../lib/storage';
 import '../styles/global.css';
 import '../styles/design.css';
+import '../styles/discovery.css';
 import '@fontsource-variable/lora/wght.css';
 import '@fontsource-variable/manrope/wght.css';
 import '@fontsource-variable/noto-serif/wght.css';
@@ -114,6 +116,7 @@ const tokens = `:root{--bg:${c.background};--surface:${c.surface};--ink:${c.text
               </a>
             ))}
           </nav>
+          <AppearanceControl />
         </div>
       </header>
     )}
@@ -146,6 +149,8 @@ const tokens = `:root{--bg:${c.background};--surface:${c.surface};--ink:${c.text
         document.getElementById('storage-notice')!.hidden = false;
       });
       void apply();
+      import { initAppearance } from '../scripts/appearance';
+      void initAppearance();
       onStorageChange(() => void apply());
       import { site } from '../config/site';
       if (site.features.accounts) {
