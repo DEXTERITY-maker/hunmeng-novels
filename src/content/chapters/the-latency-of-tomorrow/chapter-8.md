@@ -98,4 +98,4 @@ After the call, he sent An his notes. She added Amina to the correspondence with
 
 Please correct the summary, Amina wrote. One signature was absent from the version I saw. I do not know whether it was absent from the original.
 
-Yanchuan corrected it. Then he read the whole page again, looking for the places where his brother had crowded everyone else out.
+Yanchuan corrected the line and sent the new version back. Amina replied with a brief thanks before returning to her shift. He started to type another question about Yansheng, saw the time, and left her to work.
