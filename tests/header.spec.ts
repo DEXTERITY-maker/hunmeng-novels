@@ -34,7 +34,7 @@ test('panels are exclusive, close outside and restore keyboard focus with Escape
   await page.getByRole('button', { name: 'Search novels', exact: true }).click();
   await expect(page.locator('.appearance-control')).not.toHaveAttribute('open');
   await expect(page.locator('.header-search')).toHaveAttribute('open', '');
-  await page.getByRole('heading', { level: 1 }).click();
+  await page.locator('.site-header').click({ position: { x: 2, y: 2 } });
   await expect(page.locator('.header-popover[open]')).toHaveCount(0);
 });
 

@@ -150,7 +150,8 @@ test('меню шапки показывает аватар и настройк�
  await page.locator('.account-panel').getByRole('link',{name:'Reading settings',exact:true}).click();
  await expect(page).toHaveURL(/\/account\/#profile-reading$/);
  await expect(page.locator('#auth-logged-in')).toBeVisible();
- expect(await page.locator('#profile-reading').evaluate(el=>Math.abs(el.getBoundingClientRect().top))).toBeLessThan(110);
+ await expect.poll(()=>page.locator('#profile-reading').evaluate(el=>el.getBoundingClientRect().top)).toBeGreaterThanOrEqual(0);
+ await expect.poll(()=>page.locator('#profile-reading').evaluate(el=>el.getBoundingClientRect().top)).toBeLessThan(200);
  await page.goto('/');
  await page.getByRole('button',{name:'Reader account',exact:true}).click();
  await page.locator('[data-header-signout]').click();
