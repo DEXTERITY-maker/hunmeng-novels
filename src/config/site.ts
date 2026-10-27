@@ -3,7 +3,7 @@ export const site = {
   tagline: 'novels',
   latinName: 'Hunmeng Novels',
   description: 'Hunmeng — web novels in English. Stories to enjoy at your own pace.',
-  url: 'https://dexterity-maker-hunmeng-novels-364c.twc1.net',
+  url: 'https://dexterity-maker-hunmeng-novels-f1c8.twc1.net',
   reportUrl: '',
   contacts: { email: '', telegram: '', rightsEmail: '' },
   features: { accounts: true, readerSync: false },

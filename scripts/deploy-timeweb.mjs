@@ -4,9 +4,9 @@
 import { pathToFileURL } from 'node:url';
 
 const API = 'https://api.timeweb.cloud/api/v1';
-export const productionHost = 'dexterity-maker-hunmeng-novels-364c.twc1.net';
+export const productionHost = 'dexterity-maker-hunmeng-novels-f1c8.twc1.net';
 const repositoryName = 'dexterity-maker/hunmeng-novels';
-const pending = new Set(['created', 'started', 'preparing_environment', 'cloning_code',
+const pending = new Set(['created', 'started', 'building', 'deploying', 'preparing_environment', 'cloning_code',
   'installing_dependencies', 'building_code', 'checking_ssl_certs', 'cleaning_up',
   'running_container', 'stopping']);
 const terminal = new Set(['failure', 'access_error', 'stopped']);
@@ -68,6 +68,10 @@ export async function deployTimeweb({ token, sha, fetchImpl = fetch, sleep = pau
   log(`Hunmeng app ${app.id}; deploying commit ${sha}; site ${origin}/.`);
   const deployments = (await request(path + '/deploys?limit=100')).deploys;
   if (!Array.isArray(deployments)) throw new Error('Timeweb returned an invalid deployment list.');
+  // The app endpoint identifies the application by a numeric ID, while individual
+  // deployment records contain an internal UUID in app_id. Compare UUIDs only
+  // with other deployments returned by this scoped endpoint, never with app.id.
+  const internalAppId = deployments.find(d => typeof d.app_id === 'string')?.app_id;
   const current = deployments.filter(d => d.commit_sha === sha)
     .sort((a, b) => String(b.started_at).localeCompare(String(a.started_at)))[0];
   let deployment;
@@ -78,7 +82,8 @@ export async function deployTimeweb({ token, sha, fetchImpl = fetch, sleep = pau
     // One and only one mutating request; no app settings, tariffs or environment changes.
     deployment = (await request(path + '/deploy', { commit_sha: sha })).deploy;
   }
-  if (!deployment?.id || deployment.commit_sha !== sha || String(deployment.app_id) !== String(app.id)) {
+  if (!deployment?.id || deployment.commit_sha !== sha ||
+      (internalAppId && deployment.app_id !== internalAppId)) {
     throw new Error('The deployment response did not match the selected app and commit.');
   }
   const started = Date.now();
@@ -95,7 +100,8 @@ export async function deployTimeweb({ token, sha, fetchImpl = fetch, sleep = pau
     await sleep(10000);
     const latest = (await request(path + '/deploys?limit=100')).deploys;
     deployment = latest?.find(d => d.id === deployment.id);
-    if (!deployment || deployment.commit_sha !== sha || String(deployment.app_id) !== String(app.id)) {
+    if (!deployment || deployment.commit_sha !== sha ||
+        (internalAppId && deployment.app_id !== internalAppId)) {
       throw new Error('The monitored deployment could not be verified.');
     }
   }

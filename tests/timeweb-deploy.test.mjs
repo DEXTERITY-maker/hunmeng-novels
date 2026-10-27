@@ -5,7 +5,7 @@ const sha = 'a'.repeat(40);
 const token = 'synthetic-timeweb-token-for-tests';
 const app = { id: 42, branch_name: 'main', repository: { url: 'https://github.com/DEXTERITY-maker/hunmeng-novels.git' },
   domains: [{ fqdn: productionHost }], commit_sha: 'b'.repeat(40), envs: { PRIVATE_VALUE: 'synthetic-private-value' } };
-const deployment = { id: 'deploy-1', app_id: '42', commit_sha: sha, status: 'created' };
+const deployment = { id: 'deploy-1', app_id: 'd614e370-9c43-4134-9655-13d7dbdbc520', commit_sha: sha, status: 'created' };
 const json = value => new Response(JSON.stringify(value), { headers: { 'Content-Type': 'application/json' } });
 function fixture(overrides = {}) {
   const calls = [], logs = [];
@@ -54,6 +54,13 @@ test('reuses the successful current deployment without a duplicate POST', async 
   const existing = { ...deployment, status: 'success' };
   const f = fixture({ apps: [{ ...app, commit_sha: sha }], existing: [existing] });
   await deployTimeweb(f.args); assert.equal(f.calls.some(call => call.method === 'POST'), false);
+});
+test('reuses an in-progress Timeweb building deployment with UUID app_id without a second POST', async () => {
+  const existing = { ...deployment, status: 'building' };
+  const f = fixture({ apps: [{ ...app, commit_sha: sha }], existing: [existing] });
+  // This fixture presents the real API's numeric app.id and UUID deployment.app_id.
+  await assert.rejects(deployTimeweb({ ...f.args, timeoutMs: 0 }), /monitoring timeout/);
+  assert.equal(f.calls.some(call => call.method === 'POST'), false);
 });
 test('a lost POST response is not retried and upstream errors never include the token', async () => {
   const f = fixture({ postError: true });
