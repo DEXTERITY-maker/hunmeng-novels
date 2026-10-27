@@ -21,6 +21,14 @@ test('responsive layout keeps covers, featured shelf, footer and menus inside th
     await page.setViewportSize({ width, height: 900 });
     await page.goto('/');
     await expect(page.locator('.home-hero-feature')).toBeVisible();
+    const heroBounds = (await page.locator('.home-hero-content').boundingBox())!;
+    for (const selector of ['.home-search button[type=submit]', '.home-discover a']) {
+      for (const element of await page.locator(selector).all()) {
+        const box = (await element.boundingBox())!;
+        expect(box.x, selector + ' left in hero').toBeGreaterThanOrEqual(heroBounds.x - 1);
+        expect(box.x + box.width, selector + ' right in hero').toBeLessThanOrEqual(heroBounds.x + heroBounds.width + 1);
+      }
+    }
     for (const selector of ['.home-hero-content', '.home-hero-feature', '.home-book-card', '.home-chapter-link', '.home-recommendation-card']) {
       for (const box of await page.locator(selector).all()) {
         const rect = (await box.boundingBox())!;
