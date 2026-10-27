@@ -331,3 +331,21 @@ test('verified title can be equipped, display survives reload, and cards fit mob
  await page.setViewportSize({width:1440,height:900});
  await page.screenshot({path:'test-results/hunmeng-rank-profile-desktop.png',fullPage:true});
 });
+
+test('Dark Gold promotion at level 140 is announced once and survives refresh', async ({page})=>{
+ const state=await mockAuth(page);
+ state.rankStats.total_xp=Array.from({length:139},(_,i)=>500+4*i+Math.floor(26*Math.sqrt(i))).reduce((a,b)=>a+b,0);
+ state.rankStats.last_rank_notified='gold';
+ await loginFixture(page);
+ await expect(page.locator('#reader-level')).toHaveText('Level 140');
+ await expect(page.locator('#reader-rank')).toHaveText('Dark Gold');
+ const modal=page.locator('#reader-rank-unlocked');
+ await expect(modal).toBeVisible();
+ await expect(modal).toContainText('Dark Gold');
+ await page.screenshot({path:'test-results/hunmeng-dark-gold-upgrade.png',fullPage:false});
+ await modal.getByRole('button',{name:'Continue reading'}).click();
+ await expect.poll(()=>state.rankStats.last_rank_notified).toBe('dark-gold');
+ await page.reload();
+ await expect(page.locator('#reader-level')).toHaveText('Level 140');
+ await expect(modal).toBeHidden();
+});
