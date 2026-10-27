@@ -28,7 +28,18 @@ test('responsive layout keeps covers, featured shelf, footer and menus inside th
         expect(rect.x + rect.width, selector + ' fits screen').toBeLessThanOrEqual(width + 1);
       }
     }
-    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+    const overflow = await page.evaluate(() => ({
+      pageWidth: document.documentElement.scrollWidth,
+      viewport: innerWidth,
+      offenders: [...document.querySelectorAll<HTMLElement>('body *')]
+        .filter(el => {
+          const box = el.getBoundingClientRect();
+          return box.width > 0 && box.right > innerWidth + 1 && getComputedStyle(el).position !== 'fixed';
+        })
+        .slice(0, 10)
+        .map(el => ({ tag: el.tagName, className: el.className?.toString(), right: Math.round(el.getBoundingClientRect().right) })),
+    }));
+    expect(overflow.pageWidth, JSON.stringify(overflow)).toBeLessThanOrEqual(width + 1);
     await page.goto('/catalog/');
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
     await page.goto('/authors/');
