@@ -275,7 +275,42 @@ begin
        or new.reviewed_by is null or new.approved_at is null
        or length(trim(new.qa_notes)) < 20
        or new.published_at is null
-       or new.publish_commit !~ '^[0-9a-f]{40}$' then
+       or coalesce(new.publish_commit,'') !~ '^[0-9a-f]{40} then
+      raise exception 'Publication is not authorized or complete';
+    end if;
+  end if;
+  return new;
+end;
+$$;
+create trigger novel_job_guard before insert or update on public.novel_translation_jobs
+for each row execute function public.novel_guard_job();
+revoke all on function public.novel_guard_job() from public, anon;
+
+-- При верификации правообладателя поле verified_by заполняется админом, а не клиентом.
+create or replace function public.novel_guard_source()
+returns trigger language plpgsql set search_path = ''
+as $$
+begin
+  new.updated_at := now();
+  if new.rights_status = 'verified'
+     and (tg_op = 'INSERT' or old.rights_status <> 'verified') then
+    if not exists (select 1 from public.novel_staff
+      where user_id = auth.uid() and role = 'admin') then
+      raise exception 'Only administrator can verify rights';
+    end if;
+    new.verified_by := auth.uid();
+    new.verified_at := now();
+  end if;
+  return new;
+end;
+$$;
+create trigger novel_source_guard before insert or update on public.novel_sources
+for each row execute function public.novel_guard_source();
+revoke all on function public.novel_guard_source() from public, anon;
+
+-- Установка первого админа: ТОЛЬКО В SQL-редакторе проекта, с реальным auth.users.id:
+-- insert into public.novel_staff (user_id, role) values ('<REAL_AUTH_USER_UUID>', 'admin');
+ then
       raise exception 'Publication is not authorized or complete';
     end if;
   end if;
