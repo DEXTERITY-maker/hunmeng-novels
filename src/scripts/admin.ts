@@ -70,6 +70,8 @@ export async function initAdmin() {
   const sourcesDiv = document.getElementById('admin-source-list')!;
   const termsDiv = document.getElementById('admin-term-list')!;
   const jobsDiv = document.getElementById('admin-job-list')!;
+  const draftButton = jobForm.querySelector<HTMLButtonElement>('[data-job-status="draft"]')!;
+  const reviewButton = jobForm.querySelector<HTMLButtonElement>('[data-job-status="review"]')!;
   if (role !== 'admin') {
     rightsForm.hidden = true;
     sourceForm.hidden = true;
@@ -120,7 +122,7 @@ export async function initAdmin() {
     terms = await rest<Term[]>('novel_terms','GET',
       'select=id,source_id,original_term,translated_term&order=original_term.asc');
     jobs = await rest<Job[]>('novel_translation_jobs','GET',
-      'select=id,source_id,chapter_number,chapter_title,chapter_slug,status,qa_notes,original_text,translated_text,chapter_description&order=updated_at.desc&limit=100');
+      'select=id,source_id,chapter_number,chapter_title,chapter_slug,status,qa_notes,original_text,translated_text,chapter_description,updated_at&order=updated_at.desc&limit=100');
     if (workspace.hidden) return;
     sourceOptions();
     sourcesDiv.replaceChildren();
@@ -136,7 +138,7 @@ export async function initAdmin() {
       remove.className = 'text-button';
       remove.onclick = async () => {
         try {
-          await rest('novel_terms','DELETE','id=eq.' + term.id);
+          await confirmedMutation('novel_terms','DELETE','id=eq.' + encodeURIComponent(term.id));
           await load();
         } catch (error) { notify(error); }
       };
@@ -175,6 +177,8 @@ export async function initAdmin() {
         (jobForm as HTMLFormElement).dataset.editId = job.id;
         editingVersion = job.updated_at;
         editingStatus = job.status;
+        draftButton.disabled = job.status !== 'draft';
+        reviewButton.disabled = job.status === 'approved' || job.status === 'published';
         jobForm.scrollIntoView({block:'start'});
       };
       actions.append(edit);
@@ -187,29 +191,72 @@ export async function initAdmin() {
             const changed = await rest<Job[]>('novel_translation_jobs','PATCH',
               'id=eq.'+encodeURIComponent(job.id)+'&status=eq.review&updated_at=eq.'+encodeURIComponent(job.updated_at),
               {status:'approved',qa_notes:note.value});
-            if (!Array.isArray(changed) || changed.length !== 1) throw new Error('Chapter changed in another session. Refresh the queue.');
-            message.textContent = 'Chapter approved. A server job will publish it.';
+            if (!Array.isArray(changed) || changed.length !== 1) throw new BackendError('Chapter changed in another session. Refresh the queue.',409);
             await load();
+            message.textContent = 'Chapter approved. A server job will publish it.';
           } catch(error) { notify(error); }
         };
         actions.append(approve);
+      }
+      if (role === 'admin' && job.status === 'approved') {
+        const revoke = el('button', 'Return approval to review');
+        revoke.type = 'button';
+        revoke.className = 'button secondary';
+        revoke.onclick = async () => {
+          revoke.disabled = true;
+          try {
+            const changed = await rest<Job[]>('novel_translation_jobs', 'PATCH',
+              'id=eq.' + encodeURIComponent(job.id) + '&status=eq.approved&updated_at=eq.' + encodeURIComponent(job.updated_at),
+              { status: 'review' });
+            if (!Array.isArray(changed) || changed.length !== 1)
+              throw new BackendError('Chapter changed in another session. Refresh the queue.', 409);
+            await load();
+            message.textContent = 'Approval revoked. Chapter returned to review.';
+          } catch (error) { notify(error); }
+          finally { revoke.disabled = false; }
+        };
+        actions.append(revoke);
       }
       wrapper.append(actions); jobsDiv.append(wrapper);
     }
   }
   function onSubmit(form: HTMLFormElement, fn: (f: HTMLFormElement, submitter: HTMLElement | null) => Promise<void | string>) {
+    let busy = false;
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
+      if (busy) return;
+      busy = true;
+      const buttons = Array.from(form.querySelectorAll<HTMLButtonElement>('button[type="submit"]'));
+      const disabled = buttons.map(button => button.disabled);
+      buttons.forEach(button => { button.disabled = true; });
       try {
         const result = await fn(form, e instanceof SubmitEvent ? e.submitter as HTMLElement | null : null);
         await load();
         message.textContent = result || 'Saved.';
         form.reset();
+        if (form === jobForm) {
+          delete form.dataset.editId;
+          editingVersion = '';
+          editingStatus = '';
+        }
       } catch (error) { notify(error); }
+      finally {
+        busy = false;
+        buttons.forEach((button,index) => {button.disabled = disabled[index];});
+        if (form === jobForm && !form.dataset.editId) {
+          draftButton.disabled = false;
+          reviewButton.disabled = false;
+        }
+      }
     });
   }
+  async function confirmedMutation(table: string, method: string, query: string, body?: ApiRecord) {
+    const rows = await rest<ApiRecord[]>(table, method, query, body);
+    if (!Array.isArray(rows) || rows.length !== 1) throw new BackendError('Server did not confirm the change. Refresh before retrying.', 409);
+    return rows[0];
+  }
   onSubmit(sourceForm, async f => {
-    await rest('novel_sources','POST','',{
+    await confirmedMutation('novel_sources','POST','',{
       slug:value(f,'slug'),original_title:value(f,'original_title'),
       original_url:value(f,'original_url'),author_name:value(f,'author_name'),
       title_ru:value(f,'title_ru'),description_ru:value(f,'description_ru'),
@@ -220,7 +267,7 @@ export async function initAdmin() {
     });
   });
   onSubmit(rightsForm, async f => {
-    await rest('novel_sources','PATCH','id=eq.'+encodeURIComponent(value(f,'source_id')),{
+    await confirmedMutation('novel_sources','PATCH','id=eq.'+encodeURIComponent(value(f,'source_id')),{
       rights_status:value(f,'rights_status'),
       rights_evidence:value(f,'rights_evidence') || null,
       rights_valid_until:value(f,'rights_valid_until') || null,
@@ -229,7 +276,7 @@ export async function initAdmin() {
     });
   });
   onSubmit(termForm, async f => {
-    await rest('novel_terms','POST','',{
+    await confirmedMutation('novel_terms','POST','',{
       source_id:value(f,'source_id'),original_term:value(f,'original_term'),
       translated_term:value(f,'translated_term'),term_type:value(f,'term_type'),note:value(f,'note'),
     });
@@ -237,13 +284,13 @@ export async function initAdmin() {
   onSubmit(jobForm, async (f, submitter) => {
     const requestedStatus = submitter?.dataset.jobStatus === 'review' ? 'review' : 'draft';
     if (f.dataset.editId && (editingStatus === 'approved' || editingStatus === 'published'))
-      throw new Error('Approved or published chapters cannot be edited here. Request an administrator review.');
+      throw new BackendError('Approved or published chapters cannot be edited here. Request an administrator review.',409);
     if (f.dataset.editId && editingStatus === 'review' && requestedStatus === 'draft')
-      throw new Error('This chapter is in review. Use Send for review to save it without downgrading.');
+      throw new BackendError('This chapter is in review. Use Send for review to save it without downgrading.',409);
     if (requestedStatus === 'review' &&
         (value(f, 'original_text').length < 80 || value(f, 'translated_text').length < 80 ||
          value(f, 'chapter_description').length < 10)) {
-      throw new Error('Complete the source, translation, and description before sending for review.');
+      throw new BackendError('Complete the source, translation, and description before sending for review.',400);
     }
     const body: ApiRecord = {
       source_id:value(f,'source_id'),chapter_number:Number(value(f,'chapter_number')),
@@ -252,15 +299,17 @@ export async function initAdmin() {
       translated_text:value(f,'translated_text'),status:requestedStatus,
     };
     if (f.dataset.editId) {
+      if (!editingVersion || !['draft','review'].includes(editingStatus))
+        throw new BackendError('The editor must reload the current chapter before saving.',409);
       const changed = await rest<Job[]>('novel_translation_jobs','PATCH',
-        'id=eq.'+encodeURIComponent(f.dataset.editId)+'&updated_at=eq.'+encodeURIComponent(editingVersion),body);
-      if (!Array.isArray(changed) || changed.length !== 1) throw new Error('Chapter was changed in another session. Reload before saving.');
+        'id=eq.'+encodeURIComponent(f.dataset.editId)+'&status=eq.'+encodeURIComponent(editingStatus)+'&updated_at=eq.'+encodeURIComponent(editingVersion),body);
+      if (!Array.isArray(changed) || changed.length !== 1) throw new BackendError('Chapter was changed in another session. Reload before saving.',409);
       delete f.dataset.editId;
       editingVersion = '';
       editingStatus = '';
     } else {
       const created = await rest<Job[]>('novel_translation_jobs','POST','',body);
-      if (!Array.isArray(created) || created.length !== 1) throw new Error('Server did not confirm creation.');
+      if (!Array.isArray(created) || created.length !== 1) throw new BackendError('Server did not confirm creation.',409);
     }
     return requestedStatus === 'review' ? 'Sent for editorial review.' : 'Draft saved privately.';
   });
