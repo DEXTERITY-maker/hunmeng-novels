@@ -223,10 +223,15 @@ export async function initAdmin() {
   function onSubmit(form: HTMLFormElement, fn: (f: HTMLFormElement, submitter: HTMLElement | null) => Promise<void | string>) {
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
+      // Evaluate form values synchronously, then lock the controls until the
+      // server confirms the mutation and the refreshed list is rendered.
+      const operation = fn(form, e instanceof SubmitEvent ? e.submitter as HTMLElement | null : null);
+      const controls = Array.from(form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement | HTMLButtonElement>(
+        'input, select, textarea, button'));
+      const priorDisabled = controls.map(control => control.disabled);
+      controls.forEach(control => { control.disabled = true; });
       try {
-        const result = await fn(form, e instanceof SubmitEvent ? e.submitter as HTMLElement | null : null);
-        await load();
-        message.textContent = result || 'Saved.';
+        const result = await operation;
         form.reset();
         if (form === jobForm) {
           delete jobForm.dataset.editId;
@@ -235,7 +240,10 @@ export async function initAdmin() {
           jobForm.querySelector<HTMLButtonElement>('[data-job-status="save"]')!.textContent = 'Save draft';
           jobForm.querySelector<HTMLButtonElement>('[data-job-status="draft"]')!.hidden = true;
         }
+        await load();
+        message.textContent = result || 'Saved.';
       } catch (error) { notify(error); }
+      finally { controls.forEach((control, index) => { control.disabled = priorDisabled[index]; }); }
     });
   }
   onSubmit(sourceForm, async f => {
