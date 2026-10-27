@@ -89,4 +89,4 @@ That evening Yanchuan walked past the bakery where the lights had failed during 
 
 “Enough to make some bread,” she said. “Not enough to know what everyone will buy.”
 
-He bought the last bun. The forecast for the factory sat in his work bag, wrapped in qualifications. It had become better when the team stopped asking it to predict the future perfectly and began asking what a person needed in order to act before the future arrived.
+He bought the last bun. The baker had held back a tray because she knew the school crowd would arrive after four. Yanchuan asked how often she changed her plan. “Whenever the children surprise me,” she said. He thought of Gao asking for a forecast early enough to make a different choice.
