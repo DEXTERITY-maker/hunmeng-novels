@@ -95,6 +95,4 @@ At midnight Yanchuan printed the photograph of the office and placed it in the c
 
 He labelled the photograph with the room's actual function and the date the investigators had examined it.
 
-The room had not proved what happened to his brother.
-
-It had proved how much of a search could be spent learning what a place was, instead of letting fear decide what it had to contain.
+Yanchuan looked once more at the water stain above the cabinet, a detail too ordinary to support any of the stories he had imagined. He put the photograph behind the inventory sheet, where it would be easier to find when the investigator's next answer arrived.
