@@ -81,4 +81,4 @@ They argued briefly about the chair, and Yanchuan felt the old comfort of being 
 
 Before sleep he returned to the factory figures. The temperature curves were legible; their boundaries now included an explicit account of where people stood. Energy efficiency remained a genuine engineering problem. It was not the only one.
 
-He closed the report with the memory of Liu sitting beside a fan, drinking water before returning to his station. Nothing in the day's final total showed that pause. The pause had mattered anyway.
+He asked Gao to confirm that the revised heat procedure had been posted in the packing area, not merely attached to the engineering report. The reply included the rest-break schedule and a photograph of the water station. Liu was not in the photograph; the station was there for the next shift too.
