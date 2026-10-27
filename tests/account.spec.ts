@@ -157,11 +157,13 @@ for (const width of [320, 390, 1440]) {
   };
   await assertView('profile-details');
   await expect(page.locator('#profile-details .profile-local-note')).toBeVisible();
+  await page.evaluate(() => { window.scrollTo(0,0); (document.activeElement as HTMLElement | null)?.blur(); });
   await page.screenshot({path:testInfo.outputPath(`hunmeng-account-tabs-profile-${width}.png`),fullPage:true,animations:'disabled'});
   await page.locator('.profile-sidebar nav a[href="#profile-reading"]').click();
   await expect(page).toHaveURL(/#profile-reading$/);
   await assertView('profile-reading');
   await expect(page.getByLabel('Reading font',{exact:true})).toBeVisible();
+  await page.evaluate(() => { window.scrollTo(0,0); (document.activeElement as HTMLElement | null)?.blur(); });
   await page.screenshot({path:testInfo.outputPath(`hunmeng-account-tabs-reading-${width}.png`),fullPage:true,animations:'disabled'});
   await page.locator('.profile-sidebar nav a[href="#profile-account"]').click();
   await assertView('profile-account');
