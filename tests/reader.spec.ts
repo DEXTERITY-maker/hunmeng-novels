@@ -413,12 +413,14 @@ test('системная тема по умолчанию: смена схемы
   await page.emulateMedia({ colorScheme: 'light' });
   await page.goto('/');
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
-  await expect(page.locator('.brand-logo-light').first()).toBeVisible();
-  await expect(page.locator('.brand-logo-dark').first()).toBeHidden();
+  const emblem = page.locator('.site-header .brand-emblem svg');
+  await expect(emblem).toBeVisible();
+  const lightStroke = await emblem.locator('.brand-emblem-book').evaluate(el => getComputedStyle(el).stroke);
   await page.emulateMedia({ colorScheme: 'dark' });
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
-  await expect(page.locator('.brand-logo-dark').first()).toBeVisible();
-  await expect(page.locator('.brand-logo-light').first()).toBeHidden();
+  await expect(emblem).toBeVisible();
+  const darkStroke = await emblem.locator('.brand-emblem-book').evaluate(el => getComputedStyle(el).stroke);
+  expect(darkStroke).not.toBe(lightStroke);
   await page.goto(chapter);
   await page.locator('[data-open=settings]').click();
   await expect(page.locator('input[name=theme][value=system]')).toBeChecked();
