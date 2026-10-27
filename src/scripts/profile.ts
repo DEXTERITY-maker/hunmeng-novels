@@ -2,12 +2,14 @@ import type { SupabaseClient, User } from '@supabase/supabase-js';
 import { readProfile, validateNickname } from '../lib/profile';
 import { readerAuthMessage } from '../lib/reader-auth';
 import { initPreferences } from './preferences';
+import { initProgression } from './progression';
 export function initProfile(client: SupabaseClient, onExpired: () => void) {
   const form = document.querySelector<HTMLFormElement>('#profile-form')!;
   const fields = document.querySelector<HTMLFieldSetElement>('#profile-fields')!;
   const status = document.getElementById('profile-status')!;
   const nickname = form.elements.namedItem('nickname') as HTMLInputElement;
   const bio = form.elements.namedItem('bio') as HTMLTextAreaElement;
+  const updateProgression = initProgression(client);
   let current: User | null = null;
   let saving = false;
   const paint = (user: User, fill: boolean) => {
@@ -57,6 +59,7 @@ export function initProfile(client: SupabaseClient, onExpired: () => void) {
   return (user: User | null) => {
     const changed = current?.id !== user?.id;
     current=user; fields.disabled=!user || saving;
+    updateProgression(user);
     if (user) paint(user,changed);
     else { form.reset(); status.textContent=''; }
   };
