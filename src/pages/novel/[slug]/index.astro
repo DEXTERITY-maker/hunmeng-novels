@@ -133,7 +133,7 @@ const usesPlaceholder = n.cover === placeholderCover;
       {glossaryGroups.length > 0 && <a href="#glossary-title">Glossary</a>}
     </nav>
     <section class="section contents-section" aria-labelledby="contents-title">
-      {serial && <p class="notice" data-serial-summary={n.slug} data-published={n.chapterCount}><span data-serial-summary-text>The novel is being written. The daily schedule has not started yet. Once the complete manuscript is ready: 50 chapters at launch, then one daily at 12:00 Moscow time. </span><a href={`${n.url}releases/`}>Check chapter availability →</a></p>}
+      {serial && <p class="notice" data-serial-summary={n.slug} data-published={n.chapterCount}><span data-serial-summary-text>The novel is being written. The daily schedule has not started yet. Once the complete manuscript is ready: {serial.initialChapters} chapters at launch, then one daily at 12:00 Moscow time. </span><a href={`${n.url}releases/`}>Check chapter availability →</a></p>}
       <div class="section-heading">
         <h2 id="contents-title">Contents</h2>
         <span class="fine">{chapterCount(n.chapterCount)}</span>
