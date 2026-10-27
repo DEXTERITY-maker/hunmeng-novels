@@ -101,6 +101,4 @@ He did.
 
 The missing-person case remained open in its separate folder. The pilot was not an answer to it, a memorial, or a promise that technology would spare anyone uncertainty.
 
-It was the first time Yanchuan had been paid to build a system whose limitations were part of what the customer was buying.
-
-He considered that a beginning.
+Yanchuan filed the invoice beside the pilot's list of exclusions. The payment would barely cover the first round of tests. Ning reminded him that the customer had bought those tests, not a demonstration that the future was already solved.
