@@ -59,7 +59,7 @@ test('reuses an in-progress Timeweb building deployment with UUID app_id without
   const existing = { ...deployment, status: 'building' };
   const f = fixture({ apps: [{ ...app, commit_sha: sha }], existing: [existing] });
   // This fixture presents the real API's numeric app.id and UUID deployment.app_id.
-  await assert.rejects(deployTimeweb(f.args, ), /Deployment is still pending|Unknown Timeweb deployment status/).catch(() => {});
+  await assert.rejects(deployTimeweb({ ...f.args, timeoutMs: 0 }), /monitoring timeout/);
   assert.equal(f.calls.some(call => call.method === 'POST'), false);
 });
 test('a lost POST response is not retried and upstream errors never include the token', async () => {
