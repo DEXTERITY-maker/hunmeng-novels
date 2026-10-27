@@ -23,7 +23,7 @@ jobs:
           }).catch(() => { throw new Error('Timeweb API connection failed'); });
           if (!response.ok) throw new Error(`Timeweb HTTP ${response.status}`);
           const data = await response.json();
-          const host = 'dexterity-maker-hunmeng-novels-364c.twc1.net';
+          const host = 'dexterity-maker-hunmeng-novels-f1c8.twc1.net';
           const repo = 'dexterity-maker/hunmeng-novels';
           const shape = value => ({ type: Array.isArray(value) ? 'array' : typeof value,
             keys: value && typeof value === 'object' && !Array.isArray(value) ? Object.keys(value) : [] });
