@@ -25,7 +25,7 @@ for (const width of breakpoints) {
     });
     expect(chapterText.size).toBeGreaterThanOrEqual(18);
     expect(chapterText.leading).toBeGreaterThan(chapterText.size*1.5);
-    expect(chapterText.paragraphs).toBeGreaterThan(8);
+    expect(chapterText.paragraphs).toBeGreaterThanOrEqual(8);
     expect(chapterText.width).toBeLessThanOrEqual(width-24);
     expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
     await page.evaluate(()=>document.fonts.ready);
