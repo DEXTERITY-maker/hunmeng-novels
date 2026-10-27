@@ -129,6 +129,4 @@ By evening Amina had forwarded the latest authorized response about the October 
 
 Guo had been asking what an investor ought to pay for a promise about available power. Somewhere else, a worker was being asked to prove that a change had been undone, and a missing auditor had once wanted that proof.
 
-Yanchuan put the two questions in separate folders.
-
-He understood, for the first time, how they could belong to the same century without belonging to the same case.
+Yanchuan put the two questions in separate folders. In Guo's file, the draft fee and disclosure clause were still unresolved. In the family file, the missing restoration acknowledgment was still being requested. He closed the commercial proposal without forwarding a word of the case correspondence.
