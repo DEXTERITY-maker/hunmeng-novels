@@ -71,6 +71,4 @@ The useful work had already been recorded where it mattered.
 
 He thought again of the last message from his brother. Yansheng had wanted records that survived a meeting and could be checked when the people who had attended were no longer there. The family had found how easily a beautiful completed document could conceal unfinished work.
 
-Here was the opposite: ordinary work completed with an unremarkable, accurate record.
-
-Nobody would frame the photograph. The factory would keep operating.
+Leela signed the repair record after the cable path was checked under normal movement. She set the next inspection date in the maintenance system. The photograph went into the equipment history, where the next technician could find it without needing to know who had taken it.
