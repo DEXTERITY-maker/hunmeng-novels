@@ -30,5 +30,5 @@ export default defineConfig({
     ...(demoContent ? [demoAssets] : []),
   ],
   // Keep even small font subsets as local files: CSP deliberately disallows data: fonts.
-  vite: { build: { sourcemap: false, assetsInlineLimit: 0 } },
+  vite: { server: { allowedHosts: ['terminal.local'] }, build: { sourcemap: false, assetsInlineLimit: 0 } },
 });

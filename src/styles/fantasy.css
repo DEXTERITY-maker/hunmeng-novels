@@ -400,3 +400,13 @@ h1,h2,h3 { text-wrap: pretty; }
  .profile-sidebar nav { grid-column: 1/-1; grid-row: 2; order: initial; }
  .profile-sidebar .profile-library-link { grid-row: 3; margin: 0; padding-inline: 3px; font-size: .8rem; min-height: 44px; }
 }
+
+/* Keep the standalone synopsis and ten-chapter preview from the concurrent main update. */
+.synopsis-panel { background:var(--surface); border:1px solid var(--line); border-radius:var(--panel-radius); padding:24px 28px; margin-top:22px; box-shadow:var(--panel-shadow); }
+.synopsis-panel h2 { font-size:1.5rem; margin-bottom:12px; }
+.synopsis-panel .detail-description { max-width:85ch; }
+.synopsis-panel .tag-list { margin-top:18px; }
+.preference-grid label:has(output) { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:10px; }
+.preference-grid label:has(output) output { grid-column:2; grid-row:1; font-size:.875rem; }
+.preference-grid label:has(output) input { grid-column:1/-1; width:100%; }
+@media(max-width:760px) { .synopsis-panel { padding:20px 18px; margin-top:14px; } }

@@ -14,7 +14,7 @@ test('original novel opens with its published English chapters and generated cov
   await page.goto(root);
   await expect(page.getByRole('heading', { name: 'The Latency of Tomorrow', exact: true })).toBeVisible();
   expect(publishedCount).toBeGreaterThan(0);
-  await expect(page.locator('.contents-section .chapter-list li')).toHaveCount(Math.min(30, publishedCount));
+  await expect(page.locator('.contents-section .chapter-list li')).toHaveCount(Math.min(10, publishedCount));
   await expect(page.getByRole('link', { name: 'Full contents' })).toBeVisible();
   expect(await page.locator('.detail-cover').evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth === 1024 && img.naturalHeight === 1536)).toBe(true);
   await page.getByRole('link', { name: 'Start reading', exact: true }).click();

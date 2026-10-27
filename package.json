@@ -9,7 +9,7 @@
   "scripts": {
     "predev": "node scripts/prepare-social-images.mjs",
     "prebuild": "node scripts/prepare-social-images.mjs && node scripts/validate-serials.mjs",
-    "dev": "node scripts/astro.mjs dev --host 127.0.0.1",
+    "dev": "node scripts/astro.mjs dev",
     "check": "node scripts/astro.mjs check",
     "build": "node scripts/astro.mjs check && node scripts/astro.mjs build && node scripts/audit-build.mjs",
     "build:demo": "node scripts/build-demo.mjs",
