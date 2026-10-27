@@ -62,9 +62,9 @@ for (const width of widths) {
     expect(geometry.footerRight).toBeLessThanOrEqual(width - 8);
     expect(geometry.outside, JSON.stringify(geometry)).toEqual([]);
     expect(geometry.groupsSideBySide, JSON.stringify(geometry)).toBe(true);
-    expect(geometry.minLinkHeight, JSON.stringify(geometry)).toBeGreaterThanOrEqual(32);
+    expect(geometry.minLinkHeight, JSON.stringify(geometry)).toBeGreaterThanOrEqual(44);
     expect(geometry.maxLinkHeight, JSON.stringify(geometry)).toBeLessThan(60);
-    expect(geometry.footerHeight, JSON.stringify(geometry)).toBeLessThan(width <= 760 ? 530 : 380);
+    expect(geometry.footerHeight, JSON.stringify(geometry)).toBeLessThan(width <= 760 ? 620 : 420);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
     await expect(footer.locator('.site-footer-identity .brand')).toBeVisible();
     await expect(footer.locator('.site-footer-identity > p')).toContainText('A calmer corner of the internet');
