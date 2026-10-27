@@ -224,7 +224,7 @@ end $$;
 create or replace function public.reader_finish_chapter(p_session uuid)
 returns boolean language plpgsql security definer set search_path=''
 as $$
-declare v_user uuid := auth.uid(); s public.reader_chapter_sessions%rowtype; v_awarded boolean:=false;
+declare v_user uuid := auth.uid(); s public.reader_chapter_sessions%rowtype; v_awarded boolean:=false; v_rows integer:=0;
 begin
   if v_user is null then raise exception 'Authentication required' using errcode='42501'; end if;
   select * into s from public.reader_chapter_sessions
@@ -239,7 +239,8 @@ begin
   insert into public.reader_xp_events(user_id,event_kind,novel_slug,chapter_slug,xp)
     values (v_user,'chapter_finished',s.novel_slug,s.chapter_slug,80)
     on conflict (user_id,event_kind,novel_slug,chapter_slug) do nothing;
-  get diagnostics v_awarded = row_count;
+  get diagnostics v_rows = row_count;
+  v_awarded := v_rows > 0;
   -- Book awards require a finished edition AND all its registered chapters.
   if v_awarded and exists (
     select 1 from public.reader_chapter_registry r
