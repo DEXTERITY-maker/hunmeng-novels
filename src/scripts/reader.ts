@@ -1,4 +1,5 @@
 import { repository, defaults, applySettings, type Settings } from '../lib/storage';
+import { READER_AUTH_KEY } from '../lib/auth-constants';
 export async function initReader() {
   const main = document.querySelector<HTMLElement>('[data-reader]');
   if (!main) return;
@@ -243,4 +244,12 @@ export async function initReader() {
     paint();
   });
   await restore();
+  // Guests incur no authentication calls or SDK download; verified readers use
+  // server-owned deduplication and time-gated chapter completion rewards.
+  try {
+    if (localStorage.getItem(READER_AUTH_KEY)) {
+      void import('./reader-rewards').then(({ startReaderRewardTracking }) =>
+        startReaderRewardTracking(slug, chapterSlug, article)).catch(() => {});
+    }
+  } catch { /* Reading remains available when storage or network is blocked. */ }
 }
