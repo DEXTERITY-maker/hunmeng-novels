@@ -96,8 +96,19 @@ export function initReaderAdvancement(client: SupabaseClient) {
   });
   const modal=document.getElementById('reader-rank-unlocked') as HTMLDialogElement;
   const acknowledge=document.getElementById('reader-rank-acknowledge')!;
-  acknowledge.addEventListener('click',()=>modal.close());
-  modal.addEventListener('cancel',()=>{});
+  // Acknowledge before closing: relying only on the asynchronous dialog
+  // close event may lose the update during navigation or component teardown.
+  const markSeen=()=>{
+    const rank=modal.dataset.pendingRank;
+    if(!rank || !activeUser || !clientRef)return;
+    delete modal.dataset.pendingRank;
+    void clientRef.rpc('reader_mark_rank_seen',{p_rank:rank});
+  };
+  acknowledge.addEventListener('click',()=>{
+    markSeen();
+    if(modal.open)modal.close();
+  });
+  modal.addEventListener('close',markSeen);
   return (user:User|null)=>{
     activeUser=user?.id??null;
     const seq=++requestCount;
@@ -107,6 +118,7 @@ export function initReaderAdvancement(client: SupabaseClient) {
       document.querySelector<HTMLElement>('.advancement-hero')!.hidden=true;
       document.querySelectorAll<HTMLElement>('#reader-advancement .advancement-stats, #reader-advancement .advancement-section').forEach(n=>n.hidden=true);
       stat('reader-advancement-status','Sign in to view your verified level and achievements.');
+      delete modal.dataset.pendingRank;
       if(modal.open)modal.close();
       return;
     }
@@ -142,20 +154,6 @@ async function loadVerified(userId:string,seq:number) {
   const modal=document.getElementById('reader-rank-unlocked') as HTMLDialogElement;
   (document.getElementById('reader-new-rank-image') as HTMLImageElement).src=rankImage(rank.id);
   stat('reader-new-rank-detail',`New rank: ${rank.en} · Level ${levelFromTotalXp(values.total_xp).level}. You've unlocked a new rank emblem!`);
+  modal.dataset.pendingRank=rank.id;
   if(!modal.open)modal.showModal();
-  const acknowledge=document.getElementById('reader-rank-acknowledge')!;
-  let marked=false;
-  const mark=()=>{
-    if(marked)return;
-    marked=true;
-    modal.removeEventListener('close',mark);
-    acknowledge.removeEventListener('click',mark);
-    // The database independently checks identity and refuses other ranks.
-    // Do not gate this request on an async auth refresh after showing the dialog.
-    void clientRef?.rpc('reader_mark_rank_seen',{p_rank:rank.id});
-  };
-  // A click must persist the acknowledgement immediately; close also covers
-  // Escape, native dialog dismissal and assistive-technology interactions.
-  acknowledge.addEventListener('click',mark);
-  modal.addEventListener('close',mark);
 }
