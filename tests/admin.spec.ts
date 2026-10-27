@@ -196,3 +196,45 @@ test('English editorial labels preserve existing database enum values', async ({
   expect(submitted?.title_ru).toBe('English Demo');
   expect(submitted?.genres).toEqual(['Fantasy']);
 });
+
+
+test('saving a partial editorial draft does not mark it ready for review', async ({ page }) => {
+  await mockBackend(page);
+  const source = { id: '00000000-0000-4000-8000-000000000055', slug: 'draft-source',
+    original_title: 'Draft source', rights_status: 'pending', permission_publish: false,
+    permission_translate: false };
+  const submitted: Record<string, unknown>[] = [];
+  await page.route('https://*.supabase.co/rest/v1/novel_sources?**', route =>
+    route.fulfill({ headers: { 'Access-Control-Allow-Origin': '*' }, contentType: 'application/json',
+      body: JSON.stringify([source]) }));
+  await page.route('https://*.supabase.co/rest/v1/novel_translation_jobs**', async route => {
+    if (route.request().method() === 'OPTIONS') return route.fulfill({
+      status: 204, headers: { 'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': '*', 'Access-Control-Allow-Methods': 'GET, POST, OPTIONS' } });
+    if (route.request().method() === 'POST') {
+      submitted.push(route.request().postDataJSON());
+      return route.fulfill({ headers: { 'Access-Control-Allow-Origin': '*' },
+        contentType: 'application/json', body: JSON.stringify([{ id: 'created-job', ...submitted.at(-1) }]) });
+    }
+    return route.fulfill({ headers: { 'Access-Control-Allow-Origin': '*' },
+      contentType: 'application/json', body: '[]' });
+  });
+  await seededSession(page);
+  const form = page.locator('#job-form');
+  await form.locator('[name=chapter_number]').fill('1');
+  await form.locator('[name=chapter_slug]').fill('chapter-1');
+  await form.locator('[name=chapter_title]').fill('Unfinished chapter');
+  await form.getByRole('button', { name: 'Save draft' }).click();
+  await expect.poll(() => submitted.length).toBe(1);
+  expect(submitted[0].status).toBe('draft');
+  expect(submitted[0].translated_text).toBe('');
+  await form.locator('[name=chapter_number]').fill('2');
+  await form.locator('[name=chapter_slug]').fill('chapter-2');
+  await form.locator('[name=chapter_title]').fill('Reviewed chapter');
+  await form.locator('[name=chapter_description]').fill('A complete chapter description.');
+  await form.locator('[name=original_text]').fill('A'.repeat(100));
+  await form.locator('[name=translated_text]').fill('B'.repeat(100));
+  await form.getByRole('button', { name: 'Send for review' }).click();
+  await expect.poll(() => submitted.length).toBe(2);
+  expect(submitted[1].status).toBe('review');
+});
