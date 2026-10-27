@@ -75,6 +75,4 @@ One afternoon Arjun stood beside Yanchuan and watched a warning appear on the sc
 
 They had. The model's value was not simply the count of warnings accepted. It was the way it helped the factory direct attention while keeping decisions with the people responsible for the work.
 
-The commercial contract had purchased a tool. The workshop still had to decide what kind of workplace that tool would help create.
-
-Yanchuan added the distinction to the report, where no one could later say the discussion had been omitted because it did not fit a spreadsheet.
+Yanchuan added Leela's workload question to the report under decisions pending with the factory. Arjun confirmed the trial date but declined to sign a permanent increase in output targets. The warning system continued its narrower job while the people using it negotiated what would happen to the time it saved.
