@@ -76,4 +76,4 @@ When he did, she had made a list. One named contact for new material. One shared
 
 After the call, he checked his father's messages. Jianming had sent a photograph of a new fitting on the repaired lamp. Yanchuan replied and asked about the wrist, then waited for the answer instead of returning to the gate photograph.
 
-Before bed, he wrote the date at the top of the chronology. January had arrived without news of Yansheng. The new line beneath the date did not say no progress. It named a proposed action they had chosen not to take, and the people whose safety had finally made that choice possible.
+Before bed, he dated the chronology and entered the man's proposal under contacts not authorized. He preserved the photographs and the message asking what should be found, without replying to either. An checked the wording in the shared file. Neither of them added an imagined result.
