@@ -208,16 +208,19 @@ export async function initReader() {
     save();
   };
   form.addEventListener('submit', (e) => e.preventDefault());
-  novelToggle.addEventListener('change', async () => {
+  novelToggle.addEventListener('change', () => {
     novelSpecific = novelToggle.checked;
-    const latest = await repository.getState();
-    // Enabling copies the current appearance; disabling restores the shared settings.
-    if (novelSpecific) await repository.setNovelSettings(slug, settings);
-    else {
-      await repository.setNovelSettings(slug, null);
-      await update(latest.settings);
+    if (novelSpecific) {
+      // The current appearance is already visible; do not refill the form
+      // asynchronously while the user is adjusting other controls.
+      void repository.setNovelSettings(slug, settings);
+    } else {
+      void (async () => {
+        const shared = await repository.getSettings();
+        await repository.setNovelSettings(slug, null);
+        await update(shared);
+      })();
     }
-    if (novelSpecific) fill();
   });
   form.addEventListener('input', (event) => {
     // The scope checkbox is not a reading preference. Its change handler
