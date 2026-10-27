@@ -82,4 +82,4 @@ Yanchuan answered that he had bought another. Then he added, Thank you, Baba.
 
 He booked a less exhausting route within the budget. The confirmation arrived immediately. Permission to enter, confirmation of meetings, and a credible reason to stand in each doorway would take longer.
 
-He put the travel dates into the family document. Beside the return date he typed a question mark, considered it, and removed it.
+He entered the travel dates in the family document. The return field accepted only a date. He entered the one on his ticket, then wrote to An separately that he had no idea whether the trip would be enough.
