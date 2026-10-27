@@ -69,8 +69,11 @@ function renderStats(s:VerifiedStats) {
     if(unlocked) unlockedAchievements++;
     tile.dataset.unlocked=String(unlocked);
     tile.querySelector<HTMLProgressElement>('progress')!.value=Math.min(value,item.target);
+    const verifiedDate=s.achievement_dates?.[item.id];
+    const date=verifiedDate&&Number.isFinite(Date.parse(verifiedDate))
+      ?new Date(verifiedDate).toLocaleDateString():null;
     tile.querySelector<HTMLElement>('[data-achievement-status]')!.textContent=unlocked?
-      'Unlocked':`${value} / ${item.target}`;
+      (date?`Unlocked · ${date}`:'Unlocked'):`${value} / ${item.target}`;
   });
   stat('reader-stat-achievements',unlockedAchievements);
   void paintLocalStats();
