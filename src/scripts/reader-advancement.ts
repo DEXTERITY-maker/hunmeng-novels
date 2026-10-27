@@ -142,9 +142,17 @@ async function loadVerified(userId:string,seq:number) {
   (document.getElementById('reader-new-rank-image') as HTMLImageElement).src=rankImage(rank.id);
   stat('reader-new-rank-detail',`New rank: ${rank.en} · Level ${levelFromTotalXp(values.total_xp).level}. You've unlocked a new rank emblem!`);
   if(!modal.open)modal.showModal();
+  const acknowledge=document.getElementById('reader-rank-acknowledge')!;
+  let marked=false;
   const mark=()=>{
+    if(marked)return;
+    marked=true;
     modal.removeEventListener('close',mark);
+    acknowledge.removeEventListener('click',mark);
     if(userId===activeUser)void clientRef?.rpc('reader_mark_rank_seen',{p_rank:rank.id});
   };
+  // A click must persist the acknowledgement immediately; close also covers
+  // Escape, native dialog dismissal and assistive-technology interactions.
+  acknowledge.addEventListener('click',mark);
   modal.addEventListener('close',mark);
 }
