@@ -1,11 +1,12 @@
 import type { Shelf } from '../config/site';
 export type Theme = 'system' | 'light' | 'dark' | 'sepia';
 export interface Settings {
-  font: 'serif' | 'sans' | 'system';
+  font: 'serif' | 'sans' | 'literary' | 'system';
   size: number;
   lineHeight: number;
   paragraphSpacing: number;
   width: number;
+  sidePadding: number;
   theme: Theme;
 }
 export interface Progress {
@@ -15,16 +16,24 @@ export interface Progress {
   offset: number;
   ratio: number;
   updatedAt: number;
+  blockSignature?: string;
+  blockFraction?: number;
+  completed?: boolean;
 }
 export interface ReaderState {
   version: 1;
   settings: Settings;
+  novelSettings: Record<string, Settings>;
+  completedChapters: Record<string, Record<string, number>>;
   library: Record<string, Shelf>;
   progress: Record<string, Progress>;
 }
 export interface ReaderRepository {
   getState(): Promise<ReaderState>;
   getSettings(): Promise<Settings>;
+  getNovelSettings(slug: string): Promise<Settings | null>;
+  setNovelSettings(slug: string, settings: Settings | null): Promise<void>;
+  markChapterRead(slug: string, chapterSlug: string, at: number): Promise<void>;
   restoreState(state: ReaderState): Promise<void>;
   setSettings(settings: Settings): Promise<void>;
   setShelf(slug: string, shelf: Shelf | null): Promise<void>;
@@ -37,6 +46,7 @@ export const defaults: Settings = {
   lineHeight: 1.85,
   paragraphSpacing: 1.35,
   width: 720,
+  sidePadding: 18,
   theme: 'system',
 };
 // Self-contained helpers are shared by the early head script and client module.
@@ -48,15 +58,16 @@ export function normalizeSettings(value: unknown, fallback: Settings): Settings 
   const number = (v: unknown, min: number, max: number, otherwise: number) =>
     typeof v === 'number' && Number.isFinite(v) ? Math.min(max, Math.max(min, v)) : otherwise;
   return {
-    font: s.font === 'serif' || s.font === 'sans' || s.font === 'system' ? s.font : fallback.font,
+    font: s.font === 'serif' || s.font === 'sans' || s.font === 'literary' || s.font === 'system' ? s.font : fallback.font,
     theme:
       s.theme === 'system' || s.theme === 'light' || s.theme === 'dark' || s.theme === 'sepia'
         ? s.theme
         : fallback.theme,
-    size: number(s.size, 16, 32, fallback.size),
-    lineHeight: number(s.lineHeight, 1.4, 2.4, fallback.lineHeight),
+    size: number(s.size, 14, 28, fallback.size),
+    lineHeight: number(s.lineHeight, 1.3, 2.2, fallback.lineHeight),
     paragraphSpacing: number(s.paragraphSpacing, 0.65, 2.2, fallback.paragraphSpacing),
     width: number(s.width, 480, 960, fallback.width),
+    sidePadding: number(s.sidePadding, 12, 40, fallback.sidePadding),
   };
 }
 export function applySettings(s: Settings) {
@@ -73,6 +84,7 @@ export function applySettings(s: Settings) {
   root.style.setProperty('--reader-leading', String(s.lineHeight));
   root.style.setProperty('--reader-paragraph-space', `${s.paragraphSpacing}em`);
   root.style.setProperty('--reader-width', `${s.width}px`);
+  root.style.setProperty('--reader-side-padding', `${s.sidePadding}px`);
 }
 // Apply settings before the first frame; unavailable or corrupt storage leaves CSS defaults.
 export const settingsBootstrap = `(() => {
@@ -81,12 +93,20 @@ export const settingsBootstrap = `(() => {
     const settings = (${normalizeSettings.toString()})(
       state?.version === 1 ? state.settings : null, ${JSON.stringify(defaults)}
     );
-    (${applySettings.toString()})(settings);
+    const chapter = location.pathname.match(/^\/novel\/([a-z0-9]+(?:-[a-z0-9]+)*)\/([a-z0-9]+(?:-[a-z0-9]+)*)\/$/);
+    const perNovel = chapter && chapter[2] !== 'chapters' && chapter[2] !== 'releases'
+      ? state?.novelSettings?.[chapter[1]]
+      : null;
+    (${applySettings.toString()})(perNovel
+      ? (${normalizeSettings.toString()})(perNovel, settings)
+      : settings);
   } catch {}
 })();`;
 const empty = (): ReaderState => ({
   version: 1,
   settings: { ...defaults },
+  novelSettings: {},
+  completedChapters: {},
   library: {},
   progress: {},
 });
@@ -102,6 +122,18 @@ export function sanitizeState(value: unknown): ReaderState {
   if (object(value.settings)) {
     clean.settings = normalizeSettings(value.settings, defaults);
   }
+  if (object(value.novelSettings))
+    for (const [slug, settings] of Object.entries(value.novelSettings).slice(0, 200))
+      if (validSlug(slug) && object(settings))
+        clean.novelSettings[slug] = normalizeSettings(settings, clean.settings);
+  if (object(value.completedChapters))
+    for (const [slug, history] of Object.entries(value.completedChapters).slice(0, 200)) {
+      if (!validSlug(slug) || !object(history)) continue;
+      clean.completedChapters[slug] = {};
+      for (const [chapter, at] of Object.entries(history).slice(0, 2000))
+        if (validSlug(chapter) && typeof at === 'number' && Number.isFinite(at) && at > 0)
+          clean.completedChapters[slug][chapter] = Math.min(at, Number.MAX_SAFE_INTEGER);
+    }
   if (object(value.library))
     for (const [slug, shelf] of Object.entries(value.library))
       if (validSlug(slug) && ['reading', 'later', 'completed', 'dropped'].includes(String(shelf)))
@@ -124,6 +156,9 @@ export function sanitizeState(value: unknown): ReaderState {
         offset: bounded(p.offset, -2000, 2000, 0),
         ratio: bounded(p.ratio, 0, 1, 0),
         updatedAt: bounded(p.updatedAt, 0, Number.MAX_SAFE_INTEGER, 0),
+        ...(typeof p.blockSignature === 'string' && /^[a-z0-9]{1,16}$/.test(p.blockSignature) ? { blockSignature: p.blockSignature } : {}),
+        ...(typeof p.blockFraction === 'number' && Number.isFinite(p.blockFraction) ? { blockFraction: bounded(p.blockFraction, 0, 1, 0) } : {}),
+        ...(p.completed === true || p.completed === false ? { completed: p.completed } : {}),
       };
     }
   return clean;
@@ -162,6 +197,23 @@ export const repository: ReaderRepository = {
   async getSettings() {
     return read().settings;
   },
+  async getNovelSettings(slug) {
+    return validSlug(slug) ? read().novelSettings[slug] ?? null : null;
+  },
+  async setNovelSettings(slug, settings) {
+    if (!validSlug(slug)) return;
+    const state = read();
+    if (settings) state.novelSettings[slug] = normalizeSettings(settings, state.settings);
+    else delete state.novelSettings[slug];
+    write(state);
+  },
+  async markChapterRead(slug, chapterSlug, at) {
+    if (!validSlug(slug) || !validSlug(chapterSlug) || !Number.isFinite(at) || at <= 0) return;
+    const state = read();
+    state.completedChapters[slug] ??= {};
+    state.completedChapters[slug][chapterSlug] ??= at;
+    write(state);
+  },
   async restoreState(state) { write(sanitizeState(state)); },
   async setSettings(settings) {
     const state = read();
@@ -178,8 +230,10 @@ export const repository: ReaderRepository = {
   async saveProgress(slug, progress) {
     if (!validSlug(slug)) return;
     const state = read();
-    state.progress[slug] = progress;
-    write(state);
+    if (!state.progress[slug] || state.progress[slug].updatedAt <= progress.updatedAt) {
+      state.progress[slug] = progress;
+      write(state);
+    }
   },
 };
 export function onStorageChange(callback: () => void) {
