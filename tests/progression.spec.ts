@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { MAX_LEVEL, RANKS, TITLES, levelFromXp, progressionFromXp, rankForLevel, totalXpForLevel, xpForNextLevel } from '../src/config/progression';
+import { MAX_LEVEL, RANKS, TITLES, levelFromXp, progressionFromXp, rankForLevel, totalXpForLevel, xpForNextLevel, parseServerProgress } from '../src/config/progression';
 
 test('all nine rank boundaries are contiguous and correctly ordered', () => {
   expect(RANKS.map(rank => rank.id)).toEqual(['iron','bronze','silver','gold','dark-gold','platinum','diamond','legendary','mythical']);
@@ -26,4 +26,23 @@ test('XP progression is strictly increasing and stops at level 500', () => {
 test('default title is independent of rank and additional titles have requirements', () => {
   expect(TITLES[0]).toMatchObject({id:'novice',threshold:0});
   expect(TITLES.slice(1).every(title => title.threshold > 0)).toBe(true);
+});
+
+test('XP uses the deployed server formula and never exceeds 500', () => {
+  expect(xpForNextLevel(1)).toBe(500);
+  expect(xpForNextLevel(2)).toBe(530);
+  expect(xpForNextLevel(500)).toBe(0);
+  expect(levelFromXp(Number.MAX_SAFE_INTEGER)).toBe(500);
+});
+test('RPC payload validation rejects fabricated rank and incomplete XP data', () => {
+  const data = {
+    total_xp:500,level:2,rank:'iron',selected_title:'novice',
+    last_rank_notified:null,chapters:1,completedNovels:0,readingDays:1,
+    scifiNovels:0,completedGenres:0,
+    achievement_dates:{'first-chapter':'2026-10-27T12:00:00Z'},
+  };
+  expect(parseServerProgress(data)?.level).toBe(2);
+  expect(parseServerProgress({...data,level:430,rank:'mythical'})).toBeNull();
+  expect(parseServerProgress({...data,total_xp:-1})).toBeNull();
+  expect(parseServerProgress({...data,completedNovels:NaN})).toBeNull();
 });
