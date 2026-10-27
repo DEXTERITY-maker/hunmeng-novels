@@ -134,7 +134,8 @@ export async function initAdmin() {
       remove.className = 'text-button';
       remove.onclick = async () => {
         try {
-          await rest('novel_terms','DELETE','id=eq.' + term.id);
+          const removed = await rest<ApiRecord[]>('novel_terms','DELETE','id=eq.' + encodeURIComponent(term.id));
+          if (removed.length !== 1) throw new Error('The term was already removed. Refresh the list.');
           await load();
         } catch (error) { notify(error); }
       };
@@ -238,7 +239,7 @@ export async function initAdmin() {
     });
   }
   onSubmit(sourceForm, async f => {
-    await rest('novel_sources','POST','',{
+    const saved = await rest<ApiRecord[]>('novel_sources','POST','',{
       slug:value(f,'slug'),original_title:value(f,'original_title'),
       original_url:value(f,'original_url'),author_name:value(f,'author_name'),
       title_ru:value(f,'title_ru'),description_ru:value(f,'description_ru'),
@@ -247,21 +248,24 @@ export async function initAdmin() {
       original_status:value(f,'original_status'),
       translation_status:value(f,'translation_status'),
     });
+    if (saved.length !== 1) throw new Error('The server did not confirm the new source.');
   });
   onSubmit(rightsForm, async f => {
-    await rest('novel_sources','PATCH','id=eq.'+encodeURIComponent(value(f,'source_id')),{
+    const saved = await rest<ApiRecord[]>('novel_sources','PATCH','id=eq.'+encodeURIComponent(value(f,'source_id')),{
       rights_status:value(f,'rights_status'),
       rights_evidence:value(f,'rights_evidence') || null,
       rights_valid_until:value(f,'rights_valid_until') || null,
       permission_translate:new FormData(f).has('permission_translate'),
       permission_publish:new FormData(f).has('permission_publish'),
     });
+    if (saved.length !== 1) throw new Error('The server did not confirm the permissions update.');
   });
   onSubmit(termForm, async f => {
-    await rest('novel_terms','POST','',{
+    const saved = await rest<ApiRecord[]>('novel_terms','POST','',{
       source_id:value(f,'source_id'),original_term:value(f,'original_term'),
       translated_term:value(f,'translated_term'),term_type:value(f,'term_type'),note:value(f,'note'),
     });
+    if (saved.length !== 1) throw new Error('The server did not confirm the glossary entry.');
   });
   onSubmit(jobForm, async (f, submitter) => {
     const action = submitter?.dataset.jobStatus ?? 'save';
