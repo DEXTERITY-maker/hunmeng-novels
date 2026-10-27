@@ -76,4 +76,4 @@ He added the dispatcher's order to the chronology. An corrected the column headi
 
 After the call, a hotel employee knocked to ask whether he needed fresh towels. Yanchuan had left his damp shirt over both of the old ones. He apologized and gathered it up. Outside his window, a minibus sounded its horn, taking people home from jobs whose endings nobody would have to reconstruct.
 
-Before sleeping, he looked at the two fares again. The second no longer promised to show where his brother had gone. It showed where someone had wanted a package to go, and who had been willing to pay for it.
+Before sleeping, he copied the second fare's account code into the case chronology. He had spent half the evening imagining Yansheng in the vehicle. Now he put the passenger field down as unverified and asked who had authorized the package's delivery.
