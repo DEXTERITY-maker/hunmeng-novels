@@ -24,6 +24,10 @@ function renderStats(s:VerifiedStats) {
   const current=document.getElementById('reader-current-emblem') as HTMLImageElement;
   current.src=rankImage(level.rank.id);
   current.alt=`${level.rank.en} rank emblem`;
+  const avatar=document.getElementById('profile-avatar');
+  if (avatar) avatar.dataset.readerRank=level.rank.id;
+  const sidebar=document.getElementById('profile-sidebar-rank') as HTMLImageElement | null;
+  if(sidebar){sidebar.src=rankImage(level.rank.id);sidebar.alt=`${level.rank.en} rank emblem`;sidebar.hidden=false;}
   const selected=titles.find(t=>t.id===s.selected_title&&titleStatus(t.id,s).unlocked)??titles[0];
   stat('reader-equipped-title',selected.en);
   const maxed=level.maxed;
