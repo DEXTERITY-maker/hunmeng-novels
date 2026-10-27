@@ -9,7 +9,7 @@ type Term = { id: string; source_id: string; original_term: string; translated_t
 type Job = {
   id: string; source_id: string; chapter_number: number; chapter_title: string;
   chapter_slug: string; status: string; qa_notes: string; original_text: string;
-  translated_text: string; chapter_description: string;
+  translated_text: string; chapter_description: string; updated_at: string;
 };
 const el = <K extends keyof HTMLElementTagNameMap>(tag: K, content = '') => {
   const node = document.createElement(tag);
@@ -77,6 +77,8 @@ export async function initAdmin() {
   let sources: Source[] = [];
   let terms: Term[] = [];
   let jobs: Job[] = [];
+  let editingVersion = '';
+  let editingStatus = '';
 
   const notify = (error: unknown) => {
     const text = error instanceof BackendError ? error.message : 'The server rejected the request. Please try again.';
@@ -171,17 +173,21 @@ export async function initAdmin() {
             input.value = String(data);
         }
         (jobForm as HTMLFormElement).dataset.editId = job.id;
+        editingVersion = job.updated_at;
+        editingStatus = job.status;
         jobForm.scrollIntoView({block:'start'});
       };
       actions.append(edit);
-      if (role === 'admin' && job.status !== 'published') {
+      if (role === 'admin' && job.status === 'review') {
         const approve = el('button','Approve for publication');
         approve.type = 'button';
         approve.className = 'button';
         approve.onclick = async () => {
           try {
-            await rest('novel_translation_jobs','PATCH','id=eq.'+job.id,
+            const changed = await rest<Job[]>('novel_translation_jobs','PATCH',
+              'id=eq.'+encodeURIComponent(job.id)+'&status=eq.review&updated_at=eq.'+encodeURIComponent(job.updated_at),
               {status:'approved',qa_notes:note.value});
+            if (!Array.isArray(changed) || changed.length !== 1) throw new Error('Chapter changed in another session. Refresh the queue.');
             message.textContent = 'Chapter approved. A server job will publish it.';
             await load();
           } catch(error) { notify(error); }
@@ -196,9 +202,9 @@ export async function initAdmin() {
       e.preventDefault();
       try {
         const result = await fn(form, e instanceof SubmitEvent ? e.submitter as HTMLElement | null : null);
+        await load();
         message.textContent = result || 'Saved.';
         form.reset();
-        await load();
       } catch (error) { notify(error); }
     });
   }
@@ -230,6 +236,10 @@ export async function initAdmin() {
   });
   onSubmit(jobForm, async (f, submitter) => {
     const requestedStatus = submitter?.dataset.jobStatus === 'review' ? 'review' : 'draft';
+    if (f.dataset.editId && (editingStatus === 'approved' || editingStatus === 'published'))
+      throw new Error('Approved or published chapters cannot be edited here. Request an administrator review.');
+    if (f.dataset.editId && editingStatus === 'review' && requestedStatus === 'draft')
+      throw new Error('This chapter is in review. Use Send for review to save it without downgrading.');
     if (requestedStatus === 'review' &&
         (value(f, 'original_text').length < 80 || value(f, 'translated_text').length < 80 ||
          value(f, 'chapter_description').length < 10)) {
@@ -242,9 +252,16 @@ export async function initAdmin() {
       translated_text:value(f,'translated_text'),status:requestedStatus,
     };
     if (f.dataset.editId) {
-      await rest('novel_translation_jobs','PATCH','id=eq.'+encodeURIComponent(f.dataset.editId),body);
+      const changed = await rest<Job[]>('novel_translation_jobs','PATCH',
+        'id=eq.'+encodeURIComponent(f.dataset.editId)+'&updated_at=eq.'+encodeURIComponent(editingVersion),body);
+      if (!Array.isArray(changed) || changed.length !== 1) throw new Error('Chapter was changed in another session. Reload before saving.');
       delete f.dataset.editId;
-    } else await rest('novel_translation_jobs','POST','',body);
+      editingVersion = '';
+      editingStatus = '';
+    } else {
+      const created = await rest<Job[]>('novel_translation_jobs','POST','',body);
+      if (!Array.isArray(created) || created.length !== 1) throw new Error('Server did not confirm creation.');
+    }
     return requestedStatus === 'review' ? 'Sent for editorial review.' : 'Draft saved privately.';
   });
   document.getElementById('admin-refresh')?.addEventListener('click',()=> {
