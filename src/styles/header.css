@@ -1,0 +1,51 @@
+/* Compact navigation shares the existing brand, theme and focus tokens. */
+.header-inner { position: relative; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; padding-block: 14px; min-height: 80px; gap: 24px; }
+.header-inner > nav { justify-content: flex-end; gap: 26px; }
+.header-actions { display: flex; align-items: center; gap: 4px; padding-left: 16px; border-left: 1px solid var(--line); }
+.header-popover { position: relative; margin: 0; padding: 0; border: 0; }
+.header-popover > summary { list-style: none; }
+.header-popover > summary::-webkit-details-marker { display: none; }
+.header-icon-button { display: flex; justify-content: center; align-items: center; width: 44px; height: 44px; border: 0; border-radius: 50%; color: var(--muted); cursor: pointer; }
+.header-icon-button:hover, .header-popover[open] > summary { color: var(--accent); background: var(--soft); }
+.header-panel { position: absolute; z-index: 30; top: calc(100% + 12px); right: 0; width: 240px; padding: 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 12px 32px #00000014; color: var(--ink); font-size: .875rem; white-space: normal; }
+.header-panel-title { margin: 0 0 10px; font-size: .75rem; font-weight: 700; color: var(--muted); overflow-wrap: anywhere; }
+.header-search .search-panel { width: 360px; }
+.search-panel label { font-weight: 650; display: block; margin-bottom: 10px; }
+.header-search-row { display: flex; align-items: center; gap: 8px; }
+.header-search-row input { min-width: 0; width: 100%; min-height: 44px; padding: 10px 12px; font-size: .875rem; }
+.header-search-row .button { min-height: 44px; padding: 8px 14px; font-size: .8125rem; }
+.header-discover { display: flex; gap: 24px; margin-top: 8px; }
+.header-discover a { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; color: var(--accent); font-weight: 600; }
+.appearance-control { display: block; }
+.theme-options { border: 0; padding: 0; margin: 0; min-width: 0; display: grid; gap: 2px; }
+.theme-option { position: relative; display: flex; flex-direction: row; align-items: center; gap: 12px; padding: 10px; margin: 0; min-height: 44px; border-radius: 6px; cursor: pointer; font-size: .875rem; }
+.theme-option:hover, .theme-option:has(input:checked) { background: var(--soft); color: var(--accent); }
+.theme-option:has(input:focus-visible) { outline: 3px solid var(--accent); outline-offset: 2px; }
+.theme-option input[type='radio'] { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; }
+.theme-option input:focus-visible { outline: none; }
+.theme-check { margin-left: auto; visibility: hidden; }
+.theme-option input:checked ~ .theme-check { visibility: visible; }
+.header-avatar { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; font-weight: 700; font-size: .875rem; }
+.header-avatar[data-avatar]:not([data-avatar='']) { background: var(--avatar-color); color: #fff; }
+.header-avatar svg[hidden] { display: none; }
+.account-panel a, .account-panel button { display: flex; align-items: center; min-height: 44px; width: 100%; padding: 8px 10px; border: 0; border-radius: 6px; background: none; color: var(--ink); text-align: left; font-size: .875rem; }
+.account-panel a:hover, .account-panel button:hover { background: var(--soft); color: var(--accent); }
+.account-panel [data-header-signout] { margin-top: 6px; border-top: 1px solid var(--line); border-radius: 0; }
+@media (max-width: 1000px) and (min-width: 761px) {
+  .header-inner { gap: 16px; padding-inline: 24px; }
+  .header-inner > nav { gap: 18px; }
+  .header-actions { padding-left: 12px; gap: 0; }
+}
+@media (max-width: 760px) {
+  .header-inner { grid-template-columns: minmax(0, 1fr) auto; gap: 4px 8px; padding: 10px 16px 0; min-height: initial; }
+  .header-inner > .brand { grid-column: 1; grid-row: 1; gap: 8px; }
+  .header-inner .brand-emblem img { width: 30px; height: 30px; }
+  .header-inner .brand-title { font-size: 1.375rem; }
+  .header-inner .brand-subtitle { font-size: .5625rem; letter-spacing: .18em; }
+  .header-actions { grid-column: 2; grid-row: 1; padding: 0; border: 0; gap: 0; }
+  .header-inner > nav { grid-column: 1 / -1; grid-row: 2; justify-content: space-between; gap: 12px; width: 100%; font-size: .875rem; overflow: visible; }
+  .header-inner > nav a { justify-content: center; min-height: 44px; }
+  .header-popover { position: static; }
+  .header-panel, .header-search .search-panel { top: 60px; left: 16px; right: 16px; width: auto; }
+  .appearance-panel, .account-panel { left: auto; width: 232px; max-width: calc(100% - 32px); }
+}

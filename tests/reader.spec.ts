@@ -13,7 +13,7 @@ test('главная: разделы с реальным контентом, о�
   // Пока нет подтверждённыхviews — рейтинг не показывается.
   await expect(page.locator('#recommended-novels .home-recommendation-card')).toHaveCount(2);
   await page.getByRole('searchbox', { name: 'Search novels' }).fill('winter');
-  await page.getByRole('button', { name: 'Search' }).click();
+  await page.locator('.home-search').getByRole('button', { name: 'Search', exact: true }).click();
   await expect(page).toHaveURL(/search=winter/);
   expect(new URL(page.url()).pathname).toBe('/catalog/');
   await expect(page.locator('#result-count')).toHaveText('Novels found: 1');
@@ -123,7 +123,8 @@ test('мобильная страница новостей без горизон
 test('аккаунты читателей: видимый вход без публичной ссылки в редакцию', async ({ page }) => {
   for (const url of ['/', '/catalog/', '/library/', '/news/']) {
     await page.goto(url);
-    await expect(page.locator('header a[href="/account/"]')).toBeVisible();
+    await page.getByRole('button', { name: 'Reader account', exact: true }).click();
+    await expect(page.locator('[data-account-guest] a[href="/account/"]')).toBeVisible();
   }
   await page.goto('/account/');
   await expect(page.getByRole('heading', { name: 'Sign in or register' })).toBeVisible();

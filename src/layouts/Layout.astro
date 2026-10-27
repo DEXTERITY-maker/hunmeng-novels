@@ -1,11 +1,12 @@
 ---
 import { site } from '../config/site';
 import Brand from '../components/Brand.astro';
-import AppearanceControl from '../components/AppearanceControl.astro';
+import HeaderActions from '../components/HeaderActions.astro';
 import { settingsBootstrap } from '../lib/storage';
 import '../styles/global.css';
 import '../styles/design.css';
 import '../styles/discovery.css';
+import '../styles/header.css';
 import '@fontsource-variable/lora/wght.css';
 import '@fontsource-variable/manrope/wght.css';
 import '@fontsource-variable/noto-serif/wght.css';
@@ -109,14 +110,13 @@ const tokens = `:root{--bg:${c.background};--surface:${c.surface};--ink:${c.text
               ['/catalog/', 'Catalog'],
               ['/library/', 'Library'],
               ['/news/', 'News'],
-              ...(site.features.accounts ? [['/account/', 'Sign in']] : []),
             ].map(([url, label]) => (
-              <a href={url} data-account-link={url === "/account/" || undefined} aria-current={Astro.url.pathname === url ? 'page' : undefined}>
+              <a href={url} aria-current={(url === '/' ? Astro.url.pathname === '/' : Astro.url.pathname.startsWith(url)) ? 'page' : undefined}>
                 {label}
               </a>
             ))}
           </nav>
-          <AppearanceControl />
+          <HeaderActions showAccount={!administrative} />
         </div>
       </header>
     )}
@@ -151,6 +151,8 @@ const tokens = `:root{--bg:${c.background};--surface:${c.surface};--ink:${c.text
       void apply();
       import { initAppearance } from '../scripts/appearance';
       void initAppearance();
+      import { initHeader } from '../scripts/header';
+      initHeader();
       onStorageChange(() => void apply());
       import { site } from '../config/site';
       if (site.features.accounts) {

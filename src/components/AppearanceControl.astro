@@ -1,13 +1,26 @@
 ---
 import Icon from './Icon.astro';
+const themes = [
+  { value: 'system', label: 'System', icon: 'system' },
+  { value: 'light', label: 'Light', icon: 'sun' },
+  { value: 'dark', label: 'Dark', icon: 'moon' },
+  { value: 'sepia', label: 'Sepia', icon: 'sepia' },
+] as const;
 ---
-<label class="appearance-control">
-  <Icon name="sun" />
-  <span class="appearance-label">Appearance</span>
-  <select id="site-theme" aria-label="Site appearance">
-    <option value="system">System</option>
-    <option value="light">Light</option>
-    <option value="dark">Dark</option>
-    <option value="sepia">Sepia</option>
-  </select>
-</label>
+<details class="header-popover appearance-control">
+  <summary class="header-icon-button" role="button" aria-label="Site appearance" title="Change appearance">
+    <Icon name="sun" size={20} />
+  </summary>
+  <div class="header-panel appearance-panel">
+    <p class="header-panel-title">Appearance</p>
+    <fieldset class="theme-options">
+      <legend class="sr-only">Color theme</legend>
+      {themes.map(theme => <label class="theme-option">
+        <input type="radio" name="site-theme" value={theme.value} checked={theme.value === 'system'} />
+        <Icon name={theme.icon} size={18} />
+        <span>{theme.label}</span>
+        <span class="theme-check" aria-hidden="true">✓</span>
+      </label>)}
+    </fieldset>
+  </div>
+</details>
