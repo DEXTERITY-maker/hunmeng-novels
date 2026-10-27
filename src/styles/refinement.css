@@ -584,3 +584,29 @@ a, button, summary { -webkit-tap-highlight-color: transparent; }
   .author-directory-card { padding: 13px; gap: 11px; grid-template-columns: 48px minmax(0,1fr); }
   .author-directory-mark { width: 48px; height: 48px; }
 }
+
+/* Mobile reading comfort: never shrink metadata or touch targets below useful sizes. */
+@media(max-width:760px) {
+  .home-page .home-book-genre,
+  .home-page .home-book-meta,
+  .home-page .home-chapter-novel,
+  .home-page .home-chapter-info time,
+  .home-page .home-recommendation-description,
+  .home-page .home-section-heading > a,
+  .header-inner > nav a { font-size: .875rem; }
+  .home-page .home-section-heading > a {
+    display: inline-flex; align-items: center;
+    min-height: 44px; line-height: 1.4; text-align: right;
+  }
+  .header-inner > nav a { min-height: 44px; }
+  .site-footer .footer-link-group nav a {
+    font-size: .875rem; min-height: 44px; line-height: 1.4;
+  }
+  .home-page .home-news-list .news-read-more,
+  .news-read-more { font-size: .875rem; min-height: 44px; }
+  .home-page .home-book-author { font-size: .83rem; }
+}
+@media(max-width:390px) {
+  .home-page .home-book-description { display: none; }
+  .home-page .home-book-meta { font-size: .875rem; line-height: 1.45; }
+}
