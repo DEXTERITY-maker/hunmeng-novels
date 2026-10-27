@@ -21,7 +21,7 @@ test('appearance follows the reader settings without losing library or progress'
   await expect(page.getByRole('radio', { name: 'Dark', exact: true })).toBeChecked();
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
   const state = await page.evaluate(() => JSON.parse(localStorage.getItem('hunmeng-novels:v1')!));
-  expect(state.settings).toEqual({ font: 'sans', size: 24, lineHeight: 1.9, width: 800, theme: 'dark' });
+  expect(state.settings).toEqual({ font: 'sans', size: 24, lineHeight: 1.9, width: 800, theme: 'dark', paragraphSpacing: 1.35 });
   expect(state.library).toEqual({ 'khranitel-mayaka': 'reading' });
   expect(state.progress['khranitel-mayaka'].ratio).toBe(.25);
   await page.goto('/novel/khranitel-mayaka/glava-1/');
