@@ -11,12 +11,12 @@ test('appearance follows the reader settings without losing library or progress'
   })));
   await page.reload();
   for (const theme of ['dark', 'sepia', 'light']) {
-    await page.getByLabel('Appearance', { exact: true }).selectOption(theme);
+    await page.getByLabel('Site appearance', { exact: true }).selectOption(theme);
     await expect(page.locator('html')).toHaveAttribute('data-theme', theme);
   }
-  await page.getByLabel('Appearance', { exact: true }).selectOption('dark');
+  await page.getByLabel('Site appearance', { exact: true }).selectOption('dark');
   await page.goto('/catalog/');
-  await expect(page.getByLabel('Appearance', { exact: true })).toHaveValue('dark');
+  await expect(page.getByLabel('Site appearance', { exact: true })).toHaveValue('dark');
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
   const state = await page.evaluate(() => JSON.parse(localStorage.getItem('hunmeng-novels:v1')!));
   expect(state.settings).toEqual({ font: 'sans', size: 24, lineHeight: 1.9, width: 800, theme: 'dark' });
