@@ -2,6 +2,7 @@ import type { SupabaseClient, User } from '@supabase/supabase-js';
 import { readProfile, validateNickname } from '../lib/profile';
 import { readerAuthMessage } from '../lib/reader-auth';
 import { initPreferences } from './preferences';
+import { initReaderAdvancement } from './reader-advancement';
 export function initProfile(client: SupabaseClient, onExpired: () => void) {
   const form = document.querySelector<HTMLFormElement>('#profile-form')!;
   const fields = document.querySelector<HTMLFieldSetElement>('#profile-fields')!;
@@ -54,9 +55,11 @@ export function initProfile(client: SupabaseClient, onExpired: () => void) {
     finally { saving=false; fields.disabled=!current; }
   });
   void initPreferences();
+  const updateAdvancement = initReaderAdvancement(client);
   return (user: User | null) => {
     const changed = current?.id !== user?.id;
     current=user; fields.disabled=!user || saving;
+    if (changed) updateAdvancement(user);
     if (user) paint(user,changed);
     else { form.reset(); status.textContent=''; }
   };
