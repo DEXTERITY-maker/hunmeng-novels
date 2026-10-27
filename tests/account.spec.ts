@@ -83,6 +83,7 @@ test('вход, сохранение сессии и выход сохраняю
  await expect(page.locator('#admin-workspace')).toBeHidden();
  await expect(page.locator('#admin-login-link')).toBeVisible();
  await page.goto('/account/');await expect(page.locator('#auth-logged-in')).toBeVisible();
+ await page.locator('.profile-sidebar nav a[href="#profile-account"]').click();
  await page.getByRole('button',{name:'Sign out',exact:true}).click();
  await expect(page.locator('#auth-fields')).toBeVisible();
  expect(await page.evaluate(k=>localStorage.getItem(k),key)).toBeNull();
@@ -112,6 +113,7 @@ test('callback на главной доходит до аккаунта, ток�
  await expect(page.locator('#auth-logged-in')).toBeVisible();
  await expect(page).toHaveURL(/\/account\/$/);
  expect(state.codeCalls).toBe(1);
+ await page.locator('.profile-sidebar nav a[href="#profile-account"]').click();
  await page.getByRole('button',{name:'Sign out',exact:true}).click();
  await page.goto('/account/#access_token=fixture&refresh_token=fixture');
  await expect(page).toHaveURL(/\/account\/$/);
@@ -121,6 +123,7 @@ test('выход при сетевой ошибке очищает читате�
  const state=await mockAuth(page);await open(page);await fill(page);
  await page.locator('#reader-auth-submit').click();await expect(page.locator('#auth-logged-in')).toBeVisible();
  state.logoutOffline=true;
+ await page.locator('.profile-sidebar nav a[href="#profile-account"]').click();
  await page.getByRole('button',{name:'Sign out',exact:true}).click();
  await expect(page.locator('#account-status')).toContainText('The server could not confirm');
  expect(await page.evaluate(k=>localStorage.getItem(k),key)).toBeNull();
@@ -135,6 +138,53 @@ test('запрещённое хранилище не отправляет дан
 });
 
 async function loginFixture(page:Page) { await open(page);await fill(page);await page.locator('#reader-auth-submit').click();await expect(page.locator('#auth-logged-in')).toBeVisible(); }
+for (const width of [320, 390, 1440]) {
+ test(`профиль показывает одну вкладку, а ссылки меню открывают нужную при ${width}px`,async({page},testInfo)=>{
+  await page.setViewportSize({width,height:850});
+  const state=await mockAuth(page);
+  await loginFixture(page);
+  const panels=['profile-details','profile-reading','profile-account'] as const;
+  const assertView=async(id:(typeof panels)[number])=>{
+    await expect(page.locator('#account-title')).toHaveText(
+      id==='profile-details'?'My profile':id==='profile-reading'?'Reading settings':'My account');
+    for(const panel of panels){
+      if(panel===id)await expect(page.locator('#'+panel)).toBeVisible();
+      else await expect(page.locator('#'+panel)).toBeHidden();
+    }
+    await expect(page.locator('.profile-sidebar nav a[href="#'+id+'"]')).toHaveAttribute('aria-current','location');
+    await expect(page.locator('.profile-sidebar nav a[aria-current="location"]')).toHaveCount(1);
+    expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
+  };
+  await assertView('profile-details');
+  await expect(page.locator('#profile-details .profile-local-note')).toBeVisible();
+  await page.evaluate(() => { window.scrollTo(0,0); (document.activeElement as HTMLElement | null)?.blur(); });
+  await page.screenshot({path:testInfo.outputPath(`hunmeng-account-tabs-profile-${width}.png`),fullPage:true,animations:'disabled'});
+  await page.locator('.profile-sidebar nav a[href="#profile-reading"]').click();
+  await expect(page).toHaveURL(/#profile-reading$/);
+  await assertView('profile-reading');
+  await expect(page.getByLabel('Reading font',{exact:true})).toBeVisible();
+  await page.evaluate(() => { window.scrollTo(0,0); (document.activeElement as HTMLElement | null)?.blur(); });
+  await page.screenshot({path:testInfo.outputPath(`hunmeng-account-tabs-reading-${width}.png`),fullPage:true,animations:'disabled'});
+  await page.locator('.profile-sidebar nav a[href="#profile-account"]').click();
+  await assertView('profile-account');
+  await expect(page.locator('#account-signout')).toBeVisible();
+  await page.goBack();
+  await assertView('profile-reading');
+  await page.goBack();
+  await assertView('profile-details');
+  await page.goto('/');
+  await page.getByRole('button',{name:'Reader account',exact:true}).click();
+  await page.locator('.account-panel').getByRole('link',{name:'Reading settings',exact:true}).click();
+  await expect(page).toHaveURL(/\/account\/#profile-reading$/);
+  await assertView('profile-reading');
+  await page.goto('/');
+  await page.getByRole('button',{name:'Reader account',exact:true}).click();
+  await page.locator('.account-panel').getByRole('link',{name:'My profile',exact:true}).click();
+  await expect(page).toHaveURL(/\/account\/$/);
+  await assertView('profile-details');
+  expect(state.requests.every(p=>p.startsWith('/auth/v1/'))).toBe(true);
+ });
+}
 test('меню шапки показывает аватар и настройки, а выход сохраняет библиотеку',async({page})=>{
  const state=await mockAuth(page);await loginFixture(page);
  await page.getByLabel('Nickname',{exact:true}).fill('Моряк');
@@ -204,6 +254,7 @@ test('истёкшая сессия закрывает профиль и не о
 });
 test('настройки чтения: сохранение, обновление страницы и сброс без отправки на сервер',async({page})=>{
  const state=await mockAuth(page);await loginFixture(page);
+ await page.locator('.profile-sidebar nav a[href="#profile-reading"]').click();
  await page.getByLabel('Appearance',{exact:true}).selectOption('sepia');
  await page.getByLabel('Reading font',{exact:true}).selectOption('sans');
  await page.locator('#preferences-form [name=size]').fill('24');
@@ -212,10 +263,12 @@ test('настройки чтения: сохранение, обновлени�
  await page.getByRole('button',{name:'Save settings',exact:true}).click();
  await expect(page.locator('html')).toHaveAttribute('data-theme','sepia');
  await page.reload();await expect(page.locator('#auth-logged-in')).toBeVisible();
+ await expect(page.locator('#profile-reading')).toBeVisible();
  await expect(page.locator('#preferences-form [name=size]')).toHaveValue('24');
  await page.goto('/novel/sad-zimy/glava-1/');
  await expect(page.locator('#chapter-text')).toHaveCSS('font-size','24px');await expect(page.locator('html')).toHaveAttribute('data-reader-font','sans');
  await page.goto('/account/');await expect(page.locator('#auth-logged-in')).toBeVisible();
+ await page.locator('.profile-sidebar nav a[href="#profile-reading"]').click();
  await page.getByRole('button',{name:'Reset to default',exact:true}).click();
  await expect(page.locator('#preferences-form [name=size]')).toHaveValue('20');
  await expect(page.locator('#preferences-form [name=theme]')).toHaveValue('system');
