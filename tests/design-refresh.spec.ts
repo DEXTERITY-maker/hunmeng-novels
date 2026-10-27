@@ -42,7 +42,9 @@ test('editorial surfaces work in light, dark and sepia modes', async ({ page }) 
   await page.goto('/');
   const backgrounds = [];
   for (const theme of ['light', 'dark', 'sepia']) {
-    await page.getByRole('button', { name: 'Site appearance', exact: true }).click();
+    if (!(await page.locator('.appearance-control').evaluate(el => (el as HTMLDetailsElement).open))) {
+      await page.getByRole('button', { name: 'Site appearance', exact: true }).click();
+    }
     await page.getByRole('radio', { name: theme[0].toUpperCase() + theme.slice(1), exact: true }).check();
     await expect(page.locator('html')).toHaveAttribute('data-theme', theme);
     const visual = await page.locator('.home-hero-content').evaluate(element => {
