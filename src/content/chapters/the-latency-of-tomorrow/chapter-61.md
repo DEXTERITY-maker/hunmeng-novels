@@ -69,4 +69,4 @@ The following week a prospective partner from India called. His factory had equi
 
 Guo forwarded the request to Chen with a note: Perhaps the capital is finally buying the work we know how to do.
 
-Yanchuan opened a new project folder. He left the family case folder beside it, still active and separate. There were things no funding agreement could settle. There were other things a careful agreement might allow people to build.
+Yanchuan opened a folder for the Indian factory's inquiry. Chen asked for a list of people who would maintain the system after the demonstration, before authorizing a price. Guo forwarded the request without deleting that line. The family's case file stayed where it had been, open to its own next response.
