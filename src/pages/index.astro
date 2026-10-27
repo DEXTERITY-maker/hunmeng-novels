@@ -180,6 +180,7 @@ const viewsLabel = new Intl.NumberFormat('en-US');
                 <h3><a href={n.url}>{n.title}</a></h3>
                 <p class="home-recommendation-description">{n.description}</p>
                 <span class="fine">{chapterCount(n.chapterCount)} · {n.translationStatus}</span>
+                <a class="home-recommendation-action" href={n.url}>Read novel <Icon name="arrow" size={16} /></a>
               </div>
             </article>
           ))}
