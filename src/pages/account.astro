@@ -47,7 +47,6 @@ import Icon from '../components/Icon.astro';
           <div class="profile-content">
             <section id="profile-details" class="profile-panel" aria-labelledby="profile-title">
               <p class="eyebrow">Personal space</p><h2 id="profile-title">Profile</h2><p class="profile-intro">Your reading journey, achievements and personal details.</p>
-              <ReaderProgression />
               <form id="profile-form">
                 <fieldset id="profile-fields" disabled>
                   <label>Nickname<input name="nickname" aria-label="Nickname" autocomplete="nickname" minlength="3" maxlength="24" required aria-describedby="nickname-help" /><small id="nickname-help">Use 3–24 characters: letters, numbers, spaces, hyphens, or underscores. Nicknames do not need to be unique.</small></label>
@@ -58,6 +57,7 @@ import Icon from '../components/Icon.astro';
                 <p id="profile-status" class="fine" role="status" aria-live="polite"></p>
               </form>
               <p class="profile-local-note"><Icon name="info" size={20} /><span>Your library and progress stay on this device. Your nickname and bio are saved to your account.</span></p>
+              <ReaderProgression />
             </section>
             <ReaderPreferences />
             <section id="profile-account" class="profile-panel" aria-labelledby="profile-account-title">
