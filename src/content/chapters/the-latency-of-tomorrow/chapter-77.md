@@ -47,6 +47,10 @@ Yanchuan called Zhou with her permission to ask about the process, not to invest
 
 She did not want her private notes copied into a vendor's training database. She did want the company to understand the jobs it still needed someone to do.
 
+“What bothered me most,” Zhou said, “was coming to work and finding that someone had already decided where I belonged. The system wasn't the one who moved my chair.”
+
+Yanchuan did not write that into the technical specification. He asked permission to raise the process failure with the customer's project owner, without presenting her words as consent to a personnel investigation. Zhou agreed to a limited description.
+
 The factory eventually assigned a new worker to exception handling and invited Zhou to train the person during paid hours. Whether her transfer could be reversed was a matter between her and the employer. Henglan documented the process boundaries so future customers would not be sold an exaggerated claim of replacement.
 
 At home An listened to Yanchuan describe the empty space.
