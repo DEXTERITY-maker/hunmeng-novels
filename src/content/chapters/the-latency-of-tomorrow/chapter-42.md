@@ -89,4 +89,4 @@ That evening Yanchuan walked past the bakery where the lights had failed during 
 
 “Enough to make some bread,” she said. “Not enough to know what everyone will buy.”
 
-He bought the last bun. The baker had held back a tray because she knew the school crowd would arrive after four. Yanchuan asked how often she changed her plan. “Whenever the children surprise me,” she said. He thought of Gao asking for a forecast early enough to make a different choice.
+He bought the last bun from the display while the baker labelled a tray of unsold bread for the morning discount. “Some evenings this tray is empty,” she told him. Yanchuan thought of Gao asking for a warning early enough to change the shift, even when the warning sometimes proved unnecessary.
