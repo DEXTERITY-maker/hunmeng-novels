@@ -360,10 +360,10 @@ img {color:transparent;}
  .home-page .home-chapter-grid {border-radius:13px;}
  .home-page .home-news-list .news-card {min-height:0;padding:13px;}
  .home-page .home-recommendation-card {padding:12px;}
- .catalog-page .catalog-heading {min-height:198px;}
- .catalog-page .catalog-filter-panel {padding:17px;}
+ .catalog-page .catalog-heading {min-height:176px;padding:19px 18px;margin-bottom:12px;}
+ .catalog-page .catalog-filter-panel {padding:13px 15px;}
  .catalog-filter-header h2 {font-size:1.36rem;}
- .catalog-filter-header > p {font-size:.82rem;}
+ .catalog-filter-header > p {display:none;}
  .catalog-novel-card {padding:14px;gap:14px;border-radius:14px;}
  .catalog-novel-card .cover-link img {border-radius:7px;}
  .catalog-novel-card .novel-copy h2 {font-size:1.14rem;}
@@ -395,14 +395,9 @@ img {color:transparent;}
  .reader-account-page .profile-library-link svg {width:17px;}
  .reader-account-page .profile-sidebar nav {margin-top:12px;padding-top:11px;}
  .reader-account-page .profile-sidebar nav a {min-height:46px;}
- .reader-account-page #auth-logged-in[data-profile-tabs-ready='true'][data-profile-active='profile-details'] #profile-reading,
- .reader-account-page #auth-logged-in[data-profile-tabs-ready='true'][data-profile-active='profile-details'] #profile-account,
- .reader-account-page #auth-logged-in[data-profile-tabs-ready='true'][data-profile-active='profile-reading'] #profile-details,
- .reader-account-page #auth-logged-in[data-profile-tabs-ready='true'][data-profile-active='profile-reading'] #profile-account,
- .reader-account-page #auth-logged-in[data-profile-tabs-ready='true'][data-profile-active='profile-account'] #profile-details,
- .reader-account-page #auth-logged-in[data-profile-tabs-ready='true'][data-profile-active='profile-account'] #profile-reading {display:none;}
- .reader-account-page #auth-logged-in[data-profile-tabs-ready='true'][data-profile-active='profile-reading'] .profile-local-note,
- .reader-account-page #auth-logged-in[data-profile-tabs-ready='true'][data-profile-active='profile-account'] .profile-local-note {display:none;}
+ /* All profile panels remain accessible until the user chooses a section.
+    Anchor navigation and focus preserve existing sign-out/settings workflows. */
+ .reader-account-page .profile-sidebar nav a {scroll-margin-top:18px;}
  .reader-account-page .profile-panel {padding:20px 17px;scroll-margin-top:16px;}
  .reader-account-page .profile-panel h2 {font-size:1.55rem;}
  .reader-account-page .preference-grid {gap:14px;}
