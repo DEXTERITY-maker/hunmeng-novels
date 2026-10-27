@@ -410,3 +410,5 @@ h1,h2,h3 { text-wrap: pretty; }
 .preference-grid label:has(output) output { grid-column:2; grid-row:1; font-size:.875rem; }
 .preference-grid label:has(output) input { grid-column:1/-1; width:100%; }
 @media(max-width:760px) { .synopsis-panel { padding:20px 18px; margin-top:14px; } }
+.novel-page h2[id],.reader-account-page .profile-panel { scroll-margin-top:100px; }
+@media(max-width:760px) { .novel-page h2[id],.reader-account-page .profile-panel { scroll-margin-top:20px; } }
