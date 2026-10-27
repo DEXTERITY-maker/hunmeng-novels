@@ -8,7 +8,7 @@ type Source = {
 type Term = { id: string; source_id: string; original_term: string; translated_term: string };
 type Job = {
   id: string; source_id: string; chapter_number: number; chapter_title: string;
-  chapter_slug: string; status: string; qa_notes: string; original_text: string;
+  chapter_slug: string; status: string; updated_at: string; qa_notes: string; original_text: string;
   translated_text: string; chapter_description: string;
 };
 const el = <K extends keyof HTMLElementTagNameMap>(tag: K, content = '') => {
@@ -79,7 +79,7 @@ export async function initAdmin() {
   let jobs: Job[] = [];
 
   const notify = (error: unknown) => {
-    const text = error instanceof BackendError ? error.message : 'The server rejected the request. Please try again.';
+    const text = error instanceof Error ? error.message : 'The server rejected the request. Please try again.';
     if (error instanceof BackendError && (error.status === 401 || error.status === 403)) lock(text);
     else message.textContent = text;
   };
@@ -118,7 +118,7 @@ export async function initAdmin() {
     terms = await rest<Term[]>('novel_terms','GET',
       'select=id,source_id,original_term,translated_term&order=original_term.asc');
     jobs = await rest<Job[]>('novel_translation_jobs','GET',
-      'select=id,source_id,chapter_number,chapter_title,chapter_slug,status,qa_notes,original_text,translated_text,chapter_description&order=updated_at.desc&limit=100');
+      'select=id,source_id,chapter_number,chapter_title,chapter_slug,status,updated_at,qa_notes,original_text,translated_text,chapter_description&order=updated_at.desc&limit=100');
     if (workspace.hidden) return;
     sourceOptions();
     sourcesDiv.replaceChildren();
@@ -134,7 +134,8 @@ export async function initAdmin() {
       remove.className = 'text-button';
       remove.onclick = async () => {
         try {
-          await rest('novel_terms','DELETE','id=eq.' + term.id);
+          const removed = await rest<ApiRecord[]>('novel_terms','DELETE','id=eq.' + encodeURIComponent(term.id));
+          if (removed.length !== 1) throw new Error('The term was already removed. Refresh the list.');
           await load();
         } catch (error) { notify(error); }
       };
@@ -160,7 +161,10 @@ export async function initAdmin() {
       const edit = el('button','Open in editor');
       edit.type = 'button';
       edit.className = 'button secondary';
+      edit.disabled = job.status === 'approved' || job.status === 'published';
+      edit.title = edit.disabled ? 'Reopen an approved chapter before editing; published chapters are immutable.' : '';
       edit.onclick = () => {
+        if (edit.disabled) return;
         for (const [name,data] of Object.entries({
           source_id:job.source_id, chapter_number:job.chapter_number,chapter_slug:job.chapter_slug,
           chapter_title:job.chapter_title,chapter_description:job.chapter_description,
@@ -170,23 +174,48 @@ export async function initAdmin() {
           if (input instanceof HTMLInputElement || input instanceof HTMLTextAreaElement || input instanceof HTMLSelectElement)
             input.value = String(data);
         }
-        (jobForm as HTMLFormElement).dataset.editId = job.id;
+        jobForm.dataset.editId = job.id;
+        jobForm.dataset.editStatus = job.status;
+        jobForm.dataset.editVersion = job.updated_at;
+        const save = jobForm.querySelector<HTMLButtonElement>('[data-job-status="save"]')!;
+        save.textContent = job.status === 'review' ? 'Save changes (keep in review)' : 'Save draft';
+        jobForm.querySelector<HTMLButtonElement>('[data-job-status="draft"]')!.hidden = job.status !== 'review';
         jobForm.scrollIntoView({block:'start'});
       };
       actions.append(edit);
-      if (role === 'admin' && job.status !== 'published') {
+      if (role === 'admin' && job.status === 'review') {
         const approve = el('button','Approve for publication');
         approve.type = 'button';
         approve.className = 'button';
         approve.onclick = async () => {
           try {
-            await rest('novel_translation_jobs','PATCH','id=eq.'+job.id,
+            if (job.status !== 'review') throw new Error('Only reviewed chapters can be approved.');
+            const rows = await rest<Job[]>('novel_translation_jobs','PATCH',
+              'id=eq.'+encodeURIComponent(job.id)+'&updated_at=eq.'+encodeURIComponent(job.updated_at),
               {status:'approved',qa_notes:note.value});
+            if (rows.length !== 1) throw new Error('The chapter changed in another session. Refresh and review it again.');
             message.textContent = 'Chapter approved. A server job will publish it.';
             await load();
           } catch(error) { notify(error); }
         };
         actions.append(approve);
+      }
+      if (role === 'admin' && job.status === 'approved') {
+        const reopen = el('button','Return to review');
+        reopen.type = 'button';
+        reopen.className = 'button secondary';
+        reopen.onclick = async () => {
+          if (!window.confirm('Withdraw approval and return this chapter to review?')) return;
+          try {
+            const rows = await rest<Job[]>('novel_translation_jobs','PATCH',
+              'id=eq.'+encodeURIComponent(job.id)+'&updated_at=eq.'+encodeURIComponent(job.updated_at),
+              {status:'review'});
+            if (rows.length !== 1) throw new Error('The chapter changed in another session. Refresh and try again.');
+            message.textContent = 'Approval withdrawn. Chapter returned to review.';
+            await load();
+          } catch (error) { notify(error); }
+        };
+        actions.append(reopen);
       }
       wrapper.append(actions); jobsDiv.append(wrapper);
     }
@@ -194,16 +223,31 @@ export async function initAdmin() {
   function onSubmit(form: HTMLFormElement, fn: (f: HTMLFormElement, submitter: HTMLElement | null) => Promise<void | string>) {
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
+      // Evaluate form values synchronously, then lock the controls until the
+      // server confirms the mutation and the refreshed list is rendered.
+      const operation = fn(form, e instanceof SubmitEvent ? e.submitter as HTMLElement | null : null);
+      const controls = Array.from(form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement | HTMLButtonElement>(
+        'input, select, textarea, button'));
+      const priorDisabled = controls.map(control => control.disabled);
+      controls.forEach(control => { control.disabled = true; });
       try {
-        const result = await fn(form, e instanceof SubmitEvent ? e.submitter as HTMLElement | null : null);
-        message.textContent = result || 'Saved.';
+        const result = await operation;
         form.reset();
+        if (form === jobForm) {
+          delete jobForm.dataset.editId;
+          delete jobForm.dataset.editStatus;
+          delete jobForm.dataset.editVersion;
+          jobForm.querySelector<HTMLButtonElement>('[data-job-status="save"]')!.textContent = 'Save draft';
+          jobForm.querySelector<HTMLButtonElement>('[data-job-status="draft"]')!.hidden = true;
+        }
         await load();
+        message.textContent = result || 'Saved.';
       } catch (error) { notify(error); }
+      finally { controls.forEach((control, index) => { control.disabled = priorDisabled[index]; }); }
     });
   }
   onSubmit(sourceForm, async f => {
-    await rest('novel_sources','POST','',{
+    const saved = await rest<ApiRecord[]>('novel_sources','POST','',{
       slug:value(f,'slug'),original_title:value(f,'original_title'),
       original_url:value(f,'original_url'),author_name:value(f,'author_name'),
       title_ru:value(f,'title_ru'),description_ru:value(f,'description_ru'),
@@ -212,24 +256,32 @@ export async function initAdmin() {
       original_status:value(f,'original_status'),
       translation_status:value(f,'translation_status'),
     });
+    if (saved.length !== 1) throw new Error('The server did not confirm the new source.');
   });
   onSubmit(rightsForm, async f => {
-    await rest('novel_sources','PATCH','id=eq.'+encodeURIComponent(value(f,'source_id')),{
+    const saved = await rest<ApiRecord[]>('novel_sources','PATCH','id=eq.'+encodeURIComponent(value(f,'source_id')),{
       rights_status:value(f,'rights_status'),
       rights_evidence:value(f,'rights_evidence') || null,
       rights_valid_until:value(f,'rights_valid_until') || null,
       permission_translate:new FormData(f).has('permission_translate'),
       permission_publish:new FormData(f).has('permission_publish'),
     });
+    if (saved.length !== 1) throw new Error('The server did not confirm the permissions update.');
   });
   onSubmit(termForm, async f => {
-    await rest('novel_terms','POST','',{
+    const saved = await rest<ApiRecord[]>('novel_terms','POST','',{
       source_id:value(f,'source_id'),original_term:value(f,'original_term'),
       translated_term:value(f,'translated_term'),term_type:value(f,'term_type'),note:value(f,'note'),
     });
+    if (saved.length !== 1) throw new Error('The server did not confirm the glossary entry.');
   });
   onSubmit(jobForm, async (f, submitter) => {
-    const requestedStatus = submitter?.dataset.jobStatus === 'review' ? 'review' : 'draft';
+    const action = submitter?.dataset.jobStatus ?? 'save';
+    const oldStatus = f.dataset.editStatus;
+    if (oldStatus === 'approved' || oldStatus === 'published')
+      throw new Error('Approved and published chapters cannot be edited here.');
+    const requestedStatus = action === 'review' ? 'review' :
+      action === 'draft' ? 'draft' : oldStatus === 'review' ? 'review' : 'draft';
     if (requestedStatus === 'review' &&
         (value(f, 'original_text').length < 80 || value(f, 'translated_text').length < 80 ||
          value(f, 'chapter_description').length < 10)) {
@@ -242,10 +294,16 @@ export async function initAdmin() {
       translated_text:value(f,'translated_text'),status:requestedStatus,
     };
     if (f.dataset.editId) {
-      await rest('novel_translation_jobs','PATCH','id=eq.'+encodeURIComponent(f.dataset.editId),body);
-      delete f.dataset.editId;
-    } else await rest('novel_translation_jobs','POST','',body);
-    return requestedStatus === 'review' ? 'Sent for editorial review.' : 'Draft saved privately.';
+      if (!f.dataset.editVersion) throw new Error('Missing revision version. Refresh the chapter.');
+      const rows = await rest<Job[]>('novel_translation_jobs','PATCH',
+        'id=eq.'+encodeURIComponent(f.dataset.editId)+
+        '&updated_at=eq.'+encodeURIComponent(f.dataset.editVersion),body);
+      if (rows.length !== 1) throw new Error('Conflict: another session changed or removed this chapter. Refresh before saving.');
+    } else {
+      const rows = await rest<Job[]>('novel_translation_jobs','POST','',body);
+      if (rows.length !== 1) throw new Error('The server did not confirm the saved chapter.');
+    }
+    return requestedStatus === 'review' ? 'Chapter saved in review.' : 'Draft saved privately.';
   });
   document.getElementById('admin-refresh')?.addEventListener('click',()=> {
     void load().catch(notify);
