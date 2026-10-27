@@ -36,7 +36,7 @@ Her voice had the careful levelness he remembered from a hospital corridor when 
 
 “Yes,” she told him. Then, more quietly to Yanchuan, “He keeps moving it out of the way for his father.”
 
-Yanchuan sat down without taking off his work bag. He had a deadline in the morning: a comparison of cooling schedules for an electronics factory. His supervisor had asked for a cleaner chart. All day he had been removing qualifications from the caption.
+Yanchuan sat down without taking off his work bag. He had a deadline in the morning: a comparison of cooling schedules for an electronics factory. His supervisor had asked for a cleaner chart. At five he had deleted a line from the caption explaining when the forecast might fail. The cleaner chart was still waiting on his office computer.
 
 The file was called coastal_acceptance_check.zip. Yansheng had worked as an industrial auditor long enough to name things without imagination. His accompanying message read: Can these two summaries both be right? Only if you have time. The supplier is arguing about the windows.
 
