@@ -83,6 +83,4 @@ Yanchuan wrote the recommendation. It felt unusual to be paid for saying a small
 
 On his last evening in Pune, Leela invited the visitors to watch the shift handover. The outgoing technician read the unresolved observations aloud while the incoming team checked the notes against the machines still in use. The model's warnings occupied one section of the page. They did not replace the handover.
 
-When Yanchuan returned to Shenzhen, the pilot was already running under the factory's own routine. He had not brought home a miracle. He had helped build a small part of a process other people owned.
-
-He considered that a reliable beginning.
+When Yanchuan returned to Shenzhen, Leela sent a maintenance entry made without asking him for help. It named a failed inspection, the human review and the correction applied before the next shift. The small model had not prevented every uncertain result. The factory knew how to handle one.
