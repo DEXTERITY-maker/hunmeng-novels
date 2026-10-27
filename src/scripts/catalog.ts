@@ -54,7 +54,8 @@ function validField(field: Element | RadioNodeList | null, value: string) {
     if (field.type === 'number') field.value = /^\d+$/.test(value) ? value : '';
     else field.value = value;
   } else if (field instanceof HTMLSelectElement) {
-    if (Array.from(field.options).some((option) => option.value === value)) field.value = value;
+    const option = Array.from(field.options).find(option => fold(option.value) === fold(value));
+    if (option) field.value = option.value;
   }
 }
 function linkFor(form: HTMLFormElement, page: number) {
@@ -75,13 +76,13 @@ export async function initCatalog() {
   const loadQuery = () => {
     form.reset();
     const params = new URLSearchParams(location.search);
-    for (const key of ['search','category','genre','status','originalStatus','sort','size','minChapters','minRating']) {
+    for (const key of ['search','category','genre','status','originalStatus','sort','size','minChapters','minRating','tagMode']) {
       const value = params.get(key);
       if (value !== null) validField(form.elements.namedItem(key), key === 'search' ? value : catalogFilterLabel(value));
     }
     for (const key of ['include','exclude']) {
       for (const tag of params.getAll(key)) {
-        const checkbox = Array.from(form.querySelectorAll<HTMLInputElement>('input[type="checkbox"]')).find((x) => x.name === key && x.value === catalogFilterLabel(tag));
+        const checkbox = Array.from(form.querySelectorAll<HTMLInputElement>('input[type="checkbox"]')).find((x) => x.name === key && fold(x.value) === fold(catalogFilterLabel(tag)));
         if (checkbox) checkbox.checked = true;
       }
     }
@@ -90,12 +91,35 @@ export async function initCatalog() {
   const options = document.querySelector<HTMLDetailsElement>('#catalog-options');
   const mobile = matchMedia('(max-width: 760px)');
   mobile.addEventListener('change', () => { if (options) options.open = !mobile.matches; });
+  const tagSearch = form.querySelector<HTMLInputElement>('#catalog-tag-search')!;
+  const tagGroup = form.querySelector<HTMLSelectElement>('#catalog-tag-group')!;
+  const tagRows = Array.from(form.querySelectorAll<HTMLElement>('[data-tag-label]'));
+  const updateTagPicker = () => {
+    let shown = 0;
+    for (const row of tagRows) {
+      const checked = row.querySelector('input:checked') !== null;
+      row.hidden = !checked && (!fold(row.dataset.tagLabel!).includes(fold(tagSearch.value)) ||
+        Boolean(tagGroup.value && row.dataset.tagGroup !== tagGroup.value));
+      if (!row.hidden) shown++;
+    }
+    const included = form.querySelectorAll('input[name="include"]:checked').length;
+    const excluded = form.querySelectorAll('input[name="exclude"]:checked').length;
+    document.getElementById('tag-selection-count')!.textContent = included || excluded
+      ? `${included} included · ${excluded} excluded. Selected tags stay visible.` : 'No tags selected.';
+    document.getElementById('tag-picker-empty')!.hidden = shown > 0;
+  };
+  updateTagPicker();
+  if (form.querySelector('input[type="checkbox"]:checked')) {
+    form.querySelector<HTMLDetailsElement>('.tag-filters')!.open = true;
+    if (options && !mobile.matches) options.open = true;
+  }
   try {
     const novels = await getCatalogIndex();
     const render = (syncUrl: boolean, requestedPage?: number) => {
       const f = new FormData(form);
       const q = fold(String(f.get('search') ?? ''));
-      const selected = [...f.entries()].filter(([key,value]) => value && !['search','sort','size'].includes(key)).length;
+      updateTagPicker();
+      const selected = [...f.entries()].filter(([key,value]) => value && !['search','sort','size','tagMode'].includes(key)).length;
       const summary = document.getElementById('active-filter-count');
       if (summary) { summary.textContent = `Selected: ${selected}`; summary.hidden = selected === 0; }
       const required = f.getAll('include').map(String);
@@ -105,13 +129,15 @@ export async function initCatalog() {
       const filtered = novels.filter((n) =>
         (!q || fold([n.title,n.originalTitle,n.author,...n.tags].join(' ')).includes(q)) &&
         (!f.get('category') || n.categories.includes(String(f.get('category')))) &&
-        (!f.get('genre') || n.genres.includes(String(f.get('genre')))) &&
+        (!f.get('genre') || n.genres.some(genre => fold(genre) === fold(String(f.get('genre'))))) &&
         (!f.get('status') || n.translationStatus === f.get('status')) &&
         (!f.get('originalStatus') || n.originalStatus === f.get('originalStatus')) &&
         n.chapterCount >= minChapters &&
         (!minRating || (n.rating !== null && n.rating.average >= minRating)) &&
-        required.every((t) => n.tags.includes(t)) &&
-        forbidden.every((t) => !n.tags.includes(t)),
+        (required.length === 0 || (f.get('tagMode') === 'any'
+          ? required.some((t) => n.tags.some(tag => fold(tag) === fold(t)))
+          : required.every((t) => n.tags.some(tag => fold(tag) === fold(t))))) &&
+        forbidden.every((t) => !n.tags.some(tag => fold(tag) === fold(t))),
       );
       const sort = String(f.get('sort') ?? 'updated');
       filtered.sort((a,b) => {
@@ -150,10 +176,13 @@ export async function initCatalog() {
     const onFilter = () => render(true,1);
     form.addEventListener('submit',(e)=>{e.preventDefault();onFilter();});
     form.addEventListener('input',(event)=> {
-      if ((event.target as HTMLInputElement).name !== 'search') onFilter();
+      if (['catalog-tag-search', 'catalog-tag-group'].includes((event.target as HTMLElement).id)) updateTagPicker();
       else onFilter();
     });
-    form.addEventListener('change',onFilter);
+    form.addEventListener('change',(event) => {
+      if ((event.target as HTMLElement).id === 'catalog-tag-group') updateTagPicker();
+      else onFilter();
+    });
     // Native controls reset after the event. Re-render in the next task, including collapsed fields.
     form.addEventListener('reset',()=>setTimeout(onFilter,0));
     pager.addEventListener('click',(e)=>{

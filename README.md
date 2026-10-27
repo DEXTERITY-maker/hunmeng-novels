@@ -2,6 +2,7 @@
 
 Hunmeng is a static Astro + TypeScript web novel library. The default and only interface language is now **English**, including reader and editorial tools, auth errors, form validation, demo fiction, news, catalog filters, PWA metadata, structured data, covers, and social preview images.
 
+- Genre and tag directories: `/genres/` and `/tags/`, with searchable groups, local book counts, and catalog links. The catalog supports all/any included tags plus exclusions. Vocabulary and reference notes: [docs/taxonomy.md](docs/taxonomy.md).
 - Production: https://dexterity-maker-hunmeng-novels-364c.twc1.net/
 - Node.js 24 (minimum 22.12), `npm ci`, `npm run build`; publish `dist` on Timeweb.
 - Validate: `node --test tests/*.test.mjs`, then `npm run build:demo` and `npm test` (Chromium required). Browser tests need the demo build; do not deploy it.

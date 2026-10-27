@@ -1,0 +1,29 @@
+---
+import type { TaxonomyTerm } from '../lib/taxonomy';
+interface Props { kind: 'genres' | 'tags'; terms: TaxonomyTerm[]; groups?: string[] }
+const { kind, terms, groups = [] } = Astro.props;
+const title = kind === 'genres' ? 'Genres' : 'Tags';
+---
+<section class="taxonomy-directory" data-taxonomy-directory>
+  <div class="taxonomy-toolbar">
+    <label>Search {kind}<input type="search" data-term-search placeholder={`Find a ${kind === 'genres' ? 'genre' : 'tag'}…`} autocomplete="off" /></label>
+    {groups.length > 0 && <label>Tag group<select data-term-group><option value="">All groups</option>{groups.map(group => <option>{group}</option>)}</select></label>}
+    <label>Show<select data-term-availability><option value="all">All {kind}</option><option value="available">With novels</option></select></label>
+    <label>Sort by<select data-term-sort><option value="name">Name: A–Z</option><option value="count">Most novels</option></select></label>
+    <button type="button" class="button secondary" data-term-reset>Reset</button>
+  </div>
+  <p class="fine" data-term-count role="status" aria-live="polite">{title}: {terms.length}</p>
+  <ul class="taxonomy-grid" data-term-list>
+    {terms.map(term => <li data-term data-label={term.label} data-group={term.group} data-count={term.count}>
+      <a href={`/catalog/?${kind === 'genres' ? 'genre' : 'include'}=${encodeURIComponent(term.label)}`}>
+        <span>{term.label}</span><span class="term-count">{term.count} {term.count === 1 ? 'novel' : 'novels'}</span>
+        {kind === 'tags' && <small>{term.group}</small>}
+      </a>
+    </li>)}
+  </ul>
+  <p class="empty-state" data-term-empty hidden>No matching {kind}. Try a different search or group.</p>
+</section>
+<script>
+  import { initTaxonomyDirectory } from '../scripts/taxonomy-directory';
+  initTaxonomyDirectory();
+</script>

@@ -2,10 +2,11 @@
 import Layout from '../layouts/Layout.astro';
 import NovelCard from '../components/NovelCard.astro';
 import { getLibrary } from '../lib/content';
+import { getTaxonomy } from '../lib/taxonomy';
 const novels = await getLibrary();
-const genres = [...new Set(novels.flatMap((n) => n.genres))].sort((a, b) => a.localeCompare(b, 'en'));
+const { genres, tags, groups } = getTaxonomy(novels);
 const categories = [...new Set(novels.flatMap((n) => n.categories))].sort((a, b) => a.localeCompare(b, 'en'));
-const tags = [...new Set(novels.flatMap((n) => n.tags))].sort((a, b) => a.localeCompare(b, 'en'));
+const pickerTags = [...tags].sort((a, b) => b.count - a.count || a.label.localeCompare(b.label, 'en'));
 const PAGE_SIZE = 24;
 ---
 
@@ -17,6 +18,7 @@ const PAGE_SIZE = 24;
     <div class="page-heading catalog-heading">
       <h1>Novel catalog</h1>
       <p>Search and filter for a story to match your mood.</p>
+      <nav class="taxonomy-nav" aria-label="Browse novels"><a href="/genres/">Browse genres</a><a href="/tags/">Browse tags</a></nav>
     </div>
     <div class="catalog-layout">
       <form id="catalog-filters" class="filter-panel catalog-filter-panel" role="search">
@@ -44,7 +46,7 @@ const PAGE_SIZE = 24;
               Genre
               <select name="genre">
                 <option value="">All genres</option>
-                {genres.map((genre) => <option value={genre}>{genre}</option>)}
+                {genres.map((genre) => <option value={genre.label}>{genre.label} ({genre.count})</option>)}
               </select>
             </label>
             <label>
@@ -95,24 +97,23 @@ const PAGE_SIZE = 24;
           </div>
           <details class="tag-filters">
             <summary>Advanced tag filters</summary>
-            <div class="tag-columns">
-              <fieldset>
-                <legend>Include all selected</legend>
-                {tags.map((tag) => (
-                  <label class="check-label">
-                    <input type="checkbox" name="include" value={tag} />{tag}
-                  </label>
-                ))}
-              </fieldset>
-              <fieldset>
-                <legend>Exclude selected</legend>
-                {tags.map((tag) => (
-                  <label class="check-label">
-                    <input type="checkbox" name="exclude" value={tag} />{tag}
-                  </label>
-                ))}
-              </fieldset>
-            </div>
+            <label>Match included tags<select name="tagMode"><option value="all">All selected tags</option><option value="any">Any selected tag</option></select></label>
+            <label>Find a tag<input type="search" id="catalog-tag-search" placeholder="Search tags…" autocomplete="off" /></label>
+            <label>Tag group<select id="catalog-tag-group"><option value="">All groups</option>{groups.map(group => <option>{group}</option>)}</select></label>
+            <p class="fine">Counts are Hunmeng novels. Excluded tags always remove a book.</p>
+            <p id="tag-selection-count" class="fine" role="status" aria-live="polite">No tags selected.</p>
+            <fieldset class="tag-picker">
+              <legend>Include or exclude tags</legend>
+              <div class="tag-picker-head" aria-hidden="true"><span>Tag</span><span>Include</span><span>Exclude</span></div>
+              <div class="tag-picker-list" tabindex="0" role="region" aria-label="Available tags">
+                {pickerTags.map(tag => <div class="tag-picker-row" data-tag-label={tag.label} data-tag-group={tag.group}>
+                  <span>{tag.label} <small>({tag.count})</small></span>
+                  <label><span class="sr-only">Include {tag.label}</span><input type="checkbox" name="include" value={tag.label} /></label>
+                  <label><span class="sr-only">Exclude {tag.label}</span><input type="checkbox" name="exclude" value={tag.label} /></label>
+                </div>)}
+              </div>
+              <p id="tag-picker-empty" class="fine" hidden>No matching tags.</p>
+            </fieldset>
           </details>
         </details>
         <script is:inline>

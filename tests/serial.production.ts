@@ -1,12 +1,17 @@
 import { test, expect } from '@playwright/test';
+import { readdirSync } from 'node:fs';
 const slug = 'the-latency-of-tomorrow';
 const root = `/novel/${slug}/`;
+// New chapter publications should not leave the production smoke test pinned to launch day.
+const publishedCount = readdirSync(new URL(`../src/content/chapters/${slug}/`, import.meta.url))
+  .filter(name => name.endsWith('.md')).length;
 const edition = { slug, total_chapters: 247, initial_chapters: 50, timezone: 'Europe/Moscow', launch_at: null };
-test('original novel opens with twenty real English chapters and its generated cover', async ({ page, request }) => {
+test('original novel opens with its published English chapters and generated cover', async ({ page, request }) => {
   await page.route('**/rest/v1/serial_*', r => r.fulfill({ json: r.request().url().includes('serial_editions') ? [edition] : [] }));
   await page.goto(root);
   await expect(page.getByRole('heading', { name: 'The Latency of Tomorrow', exact: true })).toBeVisible();
-  await expect(page.locator('.contents-section .chapter-list li')).toHaveCount(20);
+  expect(publishedCount).toBeGreaterThan(0);
+  await expect(page.locator('.contents-section .chapter-list li')).toHaveCount(publishedCount);
   expect(await page.locator('.detail-cover').evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth === 1024 && img.naturalHeight === 1536)).toBe(true);
   await page.getByRole('link', { name: 'Start reading', exact: true }).click();
   await expect(page.locator('#chapter-text')).toContainText('The rice cooker clicked off');
@@ -19,11 +24,11 @@ test('original novel opens with twenty real English chapters and its generated c
   expect(catalog.some((n: { slug: string }) => n.slug === 'khranitel-mayaka' || n.slug === 'sad-zimy')).toBe(false);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
-test('the contents distinguish twenty published chapters from 247 planned chapters', async ({ page }) => {
+test('the contents distinguish published chapters from 247 planned chapters', async ({ page }) => {
   await page.route('**/rest/v1/serial_*', r => r.fulfill({ json: r.request().url().includes('serial_editions') ? [edition] : [] }));
   await page.goto(root + 'releases/');
   await expect(page.locator('[data-release-number]')).toHaveCount(247);
-  await expect(page.locator('[data-release-number] a:visible')).toHaveCount(20);
+  await expect(page.locator('[data-release-number] a:visible')).toHaveCount(publishedCount);
   await expect(page.locator('[data-release-status]')).toContainText('has not started yet');
   await expect(page.locator('[data-release-number="51"] [data-release-date]')).toHaveText('Daily releases have not started yet.');
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
