@@ -3,13 +3,6 @@ import { test, expect } from './fixtures';
 const first = '/novel/khranitel-mayaka/glava-1/';
 
 test('book-specific reading preferences survive reload while global settings stay unchanged', async ({ page }) => {
-  page.on('pageerror', error => console.log('[reader-check-error] ' + error.message));
-  const inspect = () => page.evaluate(() => ({
-    theme: document.documentElement.dataset.theme,
-    font: document.documentElement.dataset.readerFont,
-    inputs: [...new FormData(document.querySelector<HTMLFormElement>('#settings-form')!)],
-    local: JSON.parse(localStorage.getItem('hunmeng-novels:v1') || '{}'),
-  }));
   await page.goto(first);
   await page.locator('.reader-header [data-open="settings-header"]').click();
   const settings = page.getByRole('dialog', { name: 'Reading settings' });
@@ -17,13 +10,9 @@ test('book-specific reading preferences survive reload while global settings sta
 
   const toggle = settings.locator('#reader-novel-settings');
   await toggle.check();
-  console.log('[reader-check] toggle', JSON.stringify(await inspect()));
   await settings.locator('input[name="font"][value="literary"]').check();
-  console.log('[reader-check] font', JSON.stringify(await inspect()));
   await settings.locator('input[name="size"]').fill('24');
-  console.log('[reader-check] size', JSON.stringify(await inspect()));
   await settings.locator('input[name="theme"][value="sepia"]').check();
-  console.log('[reader-check] sepia', JSON.stringify(await inspect()));
 
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'sepia');
   await expect(page.locator('html')).toHaveAttribute('data-reader-font', 'literary');
