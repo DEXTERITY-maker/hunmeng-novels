@@ -398,6 +398,14 @@ img {color:transparent;}
  /* All profile panels remain accessible until the user chooses a section.
     Anchor navigation and focus preserve existing sign-out/settings workflows. */
  .reader-account-page .profile-sidebar nav a {scroll-margin-top:18px;}
+ .reader-account-page #auth-logged-in[data-profile-tabbed='true'][data-profile-active='profile-details'] #profile-reading,
+ .reader-account-page #auth-logged-in[data-profile-tabbed='true'][data-profile-active='profile-details'] #profile-account,
+ .reader-account-page #auth-logged-in[data-profile-tabbed='true'][data-profile-active='profile-reading'] #profile-details,
+ .reader-account-page #auth-logged-in[data-profile-tabbed='true'][data-profile-active='profile-reading'] #profile-account,
+ .reader-account-page #auth-logged-in[data-profile-tabbed='true'][data-profile-active='profile-account'] #profile-details,
+ .reader-account-page #auth-logged-in[data-profile-tabbed='true'][data-profile-active='profile-account'] #profile-reading {display:none;}
+ .reader-account-page #auth-logged-in[data-profile-tabbed='true'][data-profile-active='profile-reading'] .profile-local-note,
+ .reader-account-page #auth-logged-in[data-profile-tabbed='true'][data-profile-active='profile-account'] .profile-local-note {display:none;}
  .reader-account-page .profile-panel {padding:20px 17px;scroll-margin-top:16px;}
  .reader-account-page .profile-panel h2 {font-size:1.55rem;}
  .reader-account-page .preference-grid {gap:14px;}
