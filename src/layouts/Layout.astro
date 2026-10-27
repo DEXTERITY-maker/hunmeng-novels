@@ -166,11 +166,13 @@ const tokens = `:root{--bg:${c.background};--surface:${c.surface};--ink:${c.text
     <script>
       import { initFormValidation } from '../scripts/form-validation';
       initFormValidation();
-      import { repository, applySettings, onStorageChange } from '../lib/storage';
+      import { repository, applySettings, onStorageChange, STORAGE_KEY } from '../lib/storage';
       const apply = async () => applySettings(await repository.getSettings());
-      window.addEventListener('reader:storage-error', () => {
-        document.getElementById('storage-notice')!.hidden = false;
-      });
+      const showStorageWarning = () => { document.getElementById('storage-notice')!.hidden = false; };
+      window.addEventListener('reader:storage-error', showStorageWarning);
+      // Detect unavailable storage even when an earlier module saw the failure before
+      // this event listener was registered. Never override the in-memory fallback.
+      try { window.localStorage.getItem(STORAGE_KEY); } catch { showStorageWarning(); }
       void apply();
       import { initAppearance } from '../scripts/appearance';
       void initAppearance();
