@@ -1,5 +1,8 @@
 /* Discovery surfaces share the established theme tokens and local fonts. */
+:is(.home-page, .catalog-page, .novel-page, .taxonomy-page, .library-page) { max-width: 1440px; }
+.site-footer { width: calc(100% - 80px); max-width: 1360px; }
 .header-inner {
+  max-width: 1440px;
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
   gap: 24px;
@@ -46,8 +49,8 @@
 .home-page .home-section { padding-top: 16px; }
 .home-page .home-cover-grid { gap: 20px; }
 .home-page .home-book-card { border: 1px solid var(--line); border-radius: 8px; padding: 20px; background: var(--surface); }
-.home-page .home-book-link { grid-template-columns: 136px minmax(0, 1fr); gap: 20px; height: 100%; }
-.home-page .home-book-cover { width: 136px; aspect-ratio: 2 / 3; box-shadow: 0 5px 14px #00000014; }
+.home-page .home-book-link { grid-template-columns: 144px minmax(0, 1fr); gap: 20px; height: 100%; }
+.home-page .home-book-cover { width: 144px; aspect-ratio: 2 / 3; box-shadow: 0 5px 14px #00000014; }
 .home-book-cover img { width: 100%; height: 100%; object-fit: cover; }
 .home-page .home-book-copy { gap: 8px; height: 100%; }
 .home-page .home-book-title { font-size: 1.3rem; line-height: 1.35; }
@@ -97,7 +100,8 @@
 .catalog-card-tags { display: flex; flex-wrap: wrap; gap: 0 14px; margin: 8px 0; }
 .catalog-card-tags a { color: var(--accent); font-size: .8125rem; min-height: 30px; display: inline-flex; align-items: center; text-decoration: underline; text-underline-offset: 4px; }
 .catalog-novel-card .fine { border-top: 1px solid var(--line); padding-top: 12px; }
-.novel-page .novel-detail { gap: 36px; padding-top: 6px; }
+.novel-page .novel-detail { grid-template-columns: 300px minmax(0, 1fr); gap: 36px; padding-top: 6px; }
+.novel-page .detail-cover { width: 300px; }
 .novel-page .detail-copy h1 { font-size: clamp(1.9rem, 3.2vw, 2.65rem); }
 .novel-page .author { font-size: .9375rem; }
 .novel-page .detail-actions { margin: 22px 0; gap: 12px; }
@@ -139,8 +143,11 @@ html[data-theme='dark'] .library-page #library-empty a { color: var(--bg); }
   .home-page .home-book-cover { width: 112px; }
   .home-page .home-editorial-columns { grid-template-columns: minmax(0, 1fr); }
   .home-page .home-editorial-columns #latest-news { margin-top: 0; }
+  .novel-page .novel-detail { grid-template-columns: 240px minmax(0, 1fr); }
+  .novel-page .detail-cover { width: 240px; }
 }
 @media (max-width: 760px) {
+  .site-footer { width: auto; }
   .header-inner { grid-template-columns: minmax(0, 1fr) auto; padding: 12px 20px 0; gap: 6px 12px; }
   .header-inner > .brand { grid-column: 1; grid-row: 1; }
   .header-inner > nav { grid-column: 1 / -1; grid-row: 2; justify-content: flex-start; gap: 22px; min-width: 0; }
