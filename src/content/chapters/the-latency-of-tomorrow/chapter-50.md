@@ -13,7 +13,7 @@ Gao was crossing the factory floor when the control screen flagged a rise in tem
 
 Gao rejected the suggestion and followed the plant's existing procedure. A technician checked the readings against a local instrument. The two disagreed slightly, but both showed the temperature moving toward the limit. The crew opened the approved backup path and reduced demand until the loop stabilized.
 
-Nothing dramatic happened. The event occupied fourteen minutes in the operations log.
+Nobody was injured and the temperature stabilized, but Gao remained beside the local gauge after the alarms cleared. He asked the technician to read the number back without looking at the pilot display. Only then did he initial the shift log. The event occupied fourteen minutes.
 
 Yanchuan saw the duration afterward and felt his stomach contract. He had promised himself not to turn every fourteen-minute period into a reflection of his brother. Numbers did not become evidence by resembling one another.
 
