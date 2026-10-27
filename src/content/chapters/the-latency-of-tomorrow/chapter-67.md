@@ -73,6 +73,4 @@ Later Arjun called the revised arrangement unexciting.
 
 Yanchuan laughed. He thought of how often the industry sold two screens as certainty and a second opinion as innovation. The meaningful difference was not visual. It was whether the second source could tell you something the first one could not.
 
-He filed the commissioning record with the two original displays clearly named. The duplicated signal remained available for the task it could perform. The independent check had a different job.
-
-Both were useful once they stopped pretending to be each other.
+He filed the commissioning record with the two displays labelled as outputs of the same sensor. Beside them he placed the reading from the separate instrument, including its calibration date. Arjun's team could now see which observations were repeated and which had genuinely checked the first.
