@@ -70,4 +70,4 @@ He turned toward her.
 
 He had no sentence that could help. They sat until the screen dimmed, then she touched it awake.
 
-Before bed he checked that the submitted packet contained no inference labelled as fact. The annex was the first place they had identified through several independent records. It belonged in the inquiry. What it might hold was still a picture his mind made when the room grew quiet.
+Before bed he checked the packet's attachments against the index. The annex address appeared three times, in records that had different purposes and custodians. He printed the page with the address and left it by his keys. In the morning it would still be a building he had never entered.
