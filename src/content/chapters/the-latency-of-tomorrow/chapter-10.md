@@ -74,4 +74,4 @@ He finally took a drag, then put the cigarette out almost at once.
 
 On the journey back, Yanchuan sent the witnessed account through the agreed channel. Then he sent An a separate message: The checkout claim came from payment. The test question was real. Neither tells us where he went.
 
-She called him instead of replying. For several minutes she let him describe the heat, the stop, the engineer who had held the limit. Only afterward did she ask whether he had eaten.
+She called him instead of replying. He described the heat, the emergency stop and the engineer who had held the limit. An interrupted once, to ask which reading he had seen himself. Then she asked whether he had eaten. He admitted he had missed lunch.
