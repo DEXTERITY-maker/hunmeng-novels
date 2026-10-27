@@ -111,4 +111,4 @@ He made the correction before opening the family document.
 
 For three months the last confirmed contact had remained Thursday, October 29. That date still stood. Friday now had a question with a time attached to it, and someone who might be able to answer.
 
-It was a small thing. Yanchuan carried it carefully.
+He closed the register photograph and left the question about the clerk's identity at the top of the next call agenda. He resisted the urge to send his father the blurred signature a second time.
