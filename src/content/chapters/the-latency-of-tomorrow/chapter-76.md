@@ -47,7 +47,13 @@ An read the governance summary at Yanchuan's request. She asked what would happe
 
 The draft had not said.
 
-Guo approved a separate budget for reviews and a rule against tying the reviewers' pay to the sales result. Yanchuan did not consider the problem solved. He considered the decision recorded.
+Guo approved a separate budget for reviews and a rule against tying the reviewers' pay to the sales result.
+
+“Can the reviewer publish a disagreement before we have answered it?” he asked.
+
+“Not without the agreed procedure,” Ning said. “But if you control whether anyone hears it, we have only renamed the sales review.”
+
+They added a time-bound response and escalation route. Guo signed the extra cost reluctantly. Yanchuan did not consider the problem solved. He considered the decision recorded.
 
 At the founding meeting a lawyer asked whether Yanchuan wanted equity. The proposed share would make him financially dependent on Henglan's valuation and complicate his role as an outside reviewer. He took the offer home and discussed it with Chen and An.
 
