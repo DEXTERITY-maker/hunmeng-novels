@@ -93,9 +93,9 @@ export const settingsBootstrap = `(() => {
     const settings = (${normalizeSettings.toString()})(
       state?.version === 1 ? state.settings : null, ${JSON.stringify(defaults)}
     );
-    const chapter = location.pathname.match(/^\/novel\/([a-z0-9]+(?:-[a-z0-9]+)*)\/([a-z0-9]+(?:-[a-z0-9]+)*)\/$/);
-    const perNovel = chapter && chapter[2] !== 'chapters' && chapter[2] !== 'releases'
-      ? state?.novelSettings?.[chapter[1]]
+    const path = location.pathname.split('/').filter(Boolean);
+    const perNovel = path.length === 3 && path[0] === 'novel' && path[2] !== 'chapters' && path[2] !== 'releases'
+      ? state?.novelSettings?.[path[1]]
       : null;
     (${applySettings.toString()})(perNovel
       ? (${normalizeSettings.toString()})(perNovel, settings)
