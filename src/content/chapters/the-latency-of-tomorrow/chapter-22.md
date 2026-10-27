@@ -115,6 +115,4 @@ He listened while the boy explained the new bracing and the test he wanted to ru
 
 After the call, the case summary was still open on the screen. A woman had remembered a request and identified a face with care. She had a job, people waiting for her after work, and reasons to measure every word. Yanchuan did not know what those reasons were. He did not need to know them to take them seriously.
 
-The question of his brother's Friday visit was no longer empty.
-
-Nor did it belong to his family alone.
+The next message from Wanjiru contained no new identification. It asked the family not to circulate the clerk's name. Yanchuan removed it from the version of the summary he kept on his phone, where other people sometimes saw the screen.
