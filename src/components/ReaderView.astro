@@ -181,6 +181,10 @@ const usesPlaceholder = n.cover === placeholderCover;
             <span class="font-sans">Aa</span>Modern
           </label>
           <label>
+            <input type="radio" name="font" value="literary" />
+            <span class="font-literary">Aa</span>Literary
+          </label>
+          <label>
             <input type="radio" name="font" value="system" />
             <span>Aa</span>System
           </label>
@@ -188,11 +192,11 @@ const usesPlaceholder = n.cover === placeholderCover;
       </fieldset>
       <label>
         Text size <output data-output="size">20 px</output>
-        <input name="size" type="range" min="16" max="32" step="1" value="20" />
+        <input name="size" type="range" min="14" max="28" step="1" value="20" />
       </label>
       <label>
         Line height <output data-output="lineHeight">1,85</output>
-        <input name="lineHeight" type="range" min="1.4" max="2.4" step="0.05" value="1.85" />
+        <input name="lineHeight" type="range" min="1.3" max="2.2" step="0.05" value="1.85" />
       </label>
       <label>
         Column width <output data-output="width">720 px</output>
@@ -202,6 +206,11 @@ const usesPlaceholder = n.cover === placeholderCover;
       <label>
         Paragraph spacing <output data-output="paragraphSpacing">1.35 em</output>
         <input name="paragraphSpacing" type="range" min="0.65" max="2.2" step="0.05" value="1.35" />
+      </label>
+      <label>
+        Side margins <output data-output="sidePadding">18 px</output>
+        <input name="sidePadding" type="range" min="12" max="40" step="2" value="18" />
+        <small>Mobile margins adjust to keep text on screen.</small>
       </label>
       <fieldset>
         <legend>Theme</legend>
@@ -224,6 +233,10 @@ const usesPlaceholder = n.cover === placeholderCover;
           </label>
         </div>
       </fieldset>
+      <div class="reader-settings-scope">
+        <label><input name="novelOverride" type="checkbox" /> Use individual settings for this novel</label>
+        <p class="fine">Off: settings apply to every novel. On: this novel has its own settings, saved in this browser.</p>
+      </div>
       <div class="reader-settings-preview" aria-label="Reading settings preview"><p>Every story begins with a new horizon. Turn the page, and a world unfolds.</p><p>The next chapter is yours to discover.</p></div>
       <button type="button" id="reset-settings" class="text-button">
         Reset to default
