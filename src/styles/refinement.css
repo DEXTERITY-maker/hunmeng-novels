@@ -610,3 +610,9 @@ a, button, summary { -webkit-tap-highlight-color: transparent; }
   .home-page .home-book-description { display: none; }
   .home-page .home-book-meta { font-size: .875rem; line-height: 1.45; }
 }
+
+/* Narrow-phone header remains under 110 px while keeping 44 px nav hit areas. */
+@media(max-width:760px) {
+  .header-inner { row-gap: 4px; }
+  .header-inner > nav { padding-block: 1px 5px; }
+}
