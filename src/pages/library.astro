@@ -7,7 +7,7 @@ import { shelves, site } from '../config/site';
 <Layout title="My library" noindex>
   <main id="main" class="page-shell library-page">
     <div class="page-heading landscape-banner">
-      <h1>Library</h1>
+      <p class="eyebrow">Your own reading corner</p><h1>Library</h1>
       <p>Your stories and reading progress are saved on this device.</p>
     </div>
     <div class="shelf-tabs" role="group" aria-label="Shelves">
@@ -29,14 +29,14 @@ import { shelves, site } from '../config/site';
     <div id="library-list" class="library-list"></div>
     <div id="library-empty" class="empty-state library-empty">
       <img src="/images/library-empty.webp" width="300" height="200" alt="" loading="lazy" />
-      <h2>This shelf is empty.</h2>
+      <h2>This shelf is empty.</h2><p>Start a new story from our catalog and begin your reading journey.</p>
       <a class="button" href="/catalog/">Find a novel in the catalog <Icon name="arrow" size={18} /></a>
     </div>
-    <p class="fine storage-explanation">
+    <p class="fine storage-explanation"><Icon name="info" size={24} /> <span>
       Your library and reading progress are saved only in this browser, without being sent to a server.
       Cross-device sync is disabled, including after signing in. Keep this site's browser data to preserve your library.
       {site.features.accounts && <> <a href="/account/">Your account →</a></>}
-    </p>
+      </span></p>
     <noscript>
       <p class="notice">
         Your local library requires JavaScript. The catalog and chapters are available without it.
