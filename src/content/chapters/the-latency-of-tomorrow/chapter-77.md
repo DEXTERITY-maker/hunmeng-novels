@@ -71,4 +71,4 @@ A month later Zhou wrote to say the new exception-handling process was working b
 
 Yanchuan didn't ask her to.
 
-The empty desk remained in his mind longer than the polished demonstration. He had seen machines complete tasks. He was learning how many tasks had never been named.
+At the next project review Yanchuan asked whether the exception-handling role had a designated person and paid time for training. Ning read him the revised assignment. Zhou's old desk was still gone. The calls she used to make had finally appeared in somebody's description of the work.
