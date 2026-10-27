@@ -109,4 +109,4 @@ Neither tried to improve the sentence.
 
 After the call Yanchuan went back to work. A colleague had asked him to review a model that was being used outside its original test range. He marked the assumption, named the person who needed the result and sent a correction that did not require them to discover the problem again.
 
-It was not heroic. It mattered.
+The colleague replied before lunch: Which version should we use today? Yanchuan sent the corrected one, with the old assumptions struck through and the person responsible for approving the change named at the top.
