@@ -84,4 +84,4 @@ At eleven, Luo called. He had heard about the messages and sounded relieved.
 
 “You can continue obtaining the hotel record,” An replied.
 
-Yanchuan put down the dish towel. The breath he had taken in the office lobby had not brought his brother home. Tomorrow he would still need to ask for leave.
+Yanchuan put down the dish towel. The leave-request form was still open on his laptop, the cursor blinking in a box labelled reason. He wrote family emergency, then called An to ask how she wanted the latest message described.
