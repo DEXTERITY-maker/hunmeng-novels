@@ -1,0 +1,43 @@
+name: Проверка подключения Timeweb
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: [.github/workflows/timeweb-connection.yml]
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Inspect API response shape without exposing credentials or private values
+        env:
+          TIMEWEB_API_TOKEN: ${{ secrets.TIMEWEB_API_TOKEN }}
+        run: |
+          node --input-type=module <<'JS'
+          const token = process.env.TIMEWEB_API_TOKEN?.trim();
+          if (!token) throw new Error('TIMEWEB_API_TOKEN is missing');
+          const response = await fetch('https://api.timeweb.cloud/api/v1/apps', {
+            headers: { Authorization: `Bearer ${token}` }, redirect: 'error', signal: AbortSignal.timeout(30000)
+          }).catch(() => { throw new Error('Timeweb API connection failed'); });
+          if (!response.ok) throw new Error(`Timeweb HTTP ${response.status}`);
+          const data = await response.json();
+          const host = 'dexterity-maker-hunmeng-novels-364c.twc1.net';
+          const repo = 'dexterity-maker/hunmeng-novels';
+          const shape = value => ({ type: Array.isArray(value) ? 'array' : typeof value,
+            keys: value && typeof value === 'object' && !Array.isArray(value) ? Object.keys(value) : [] });
+          console.log(JSON.stringify({ responseKeys: Object.keys(data), total: data.meta?.total, appCount: data.apps?.length,
+            apps: data.apps?.map(app => ({
+              id: Number(app.id), keys: Object.keys(app),
+              branchIsMain: app.branch_name === 'main', branchFieldIsMain: app.branch === 'main',
+              domains: shape(app.domains), domainCount: app.domains?.length,
+              domainShapes: Array.isArray(app.domains) ? app.domains.map(domain => ({ ...shape(domain),
+                hasExpectedHost: JSON.stringify(domain).includes(host) })) : [],
+              directDomainMatches: JSON.stringify(app.domain ?? '').includes(host),
+              repository: shape(app.repository),
+              repositoryHasExpectedName: JSON.stringify(app.repository ?? '').toLowerCase().includes(repo),
+              repositoryUrlHasExpectedName: JSON.stringify(app.repository_url ?? '').toLowerCase().includes(repo),
+              nameLooksLikeHunmeng: String(app.name).toLowerCase().includes('hunmeng')
+            })) }, null, 2));
+          JS
