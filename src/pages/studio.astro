@@ -1,18 +1,24 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import Icon from '../components/Icon.astro';
 ---
 <Layout title="Writing studio" noindex description="Your private original-fiction drafts, chapters and revision history.">
   <main id="main" class="page-shell studio-page">
-    <header class="page-heading">
+    <header class="page-heading studio-hero">
+      <span class="studio-hero-kicker">A space for your stories</span>
       <h1>Writing studio</h1>
       <p>Write original novels in a private workspace. Drafts are not published or added to the public catalog.</p>
     </header>
     <p id="studio-status" class="notice" role="status" aria-live="polite">Checking your account…</p>
-    <p id="studio-login" hidden>Sign in with your reader account to manage your drafts. <a class="button" href="/account/">Sign in</a></p>
+    <div id="studio-login" class="studio-login-card" hidden>
+      <div class="studio-login-notice"><Icon name="shield" size={25} /><span>A quiet, private space for your own stories.</span></div>
+      <p>Sign in with your reader account to manage your drafts.</p>
+      <a class="button" href="/account/">Sign in <Icon name="arrow" size={18} /></a>
+    </div>
     <div id="studio-workspace" hidden>
       <div class="studio-layout">
         <aside class="studio-panel studio-sidebar">
-          <h2>My novels</h2>
+          <p class="studio-overline">Your workspace</p><h2>My novels</h2>
           <label for="studio-novels">Select a novel</label>
           <select id="studio-novels" aria-label="Select a novel"></select>
           <form id="studio-create">
@@ -24,7 +30,7 @@ import Layout from '../layouts/Layout.astro';
         </aside>
         <div class="studio-main">
           <section class="studio-panel" id="studio-novel-panel" hidden>
-            <h2>Novel details</h2>
+            <p class="studio-overline">Story foundation</p><h2>Novel details</h2>
             <form id="studio-novel-form">
               <label>Title <input name="title" required maxlength="250" /></label>
               <label>Synopsis <textarea name="synopsis" rows="3" maxlength="10000"></textarea></label>
@@ -39,7 +45,7 @@ import Layout from '../layouts/Layout.astro';
           </section>
           <section class="studio-panel" id="studio-chapter-panel" hidden>
             <div class="studio-section-heading">
-              <h2>Chapter editor</h2>
+              <h2><Icon name="pen" size={23} /> Chapter editor</h2>
               <button class="button secondary" id="studio-add-chapter" type="button">+ New chapter</button>
             </div>
             <label for="studio-chapters">Choose a chapter</label>

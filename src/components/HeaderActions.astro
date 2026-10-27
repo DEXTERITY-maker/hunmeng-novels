@@ -31,11 +31,11 @@ const { showAccount = true } = Astro.props;
         <a href="/account/?mode=signup">Create account</a>
       </div>
       <div data-account-member hidden>
-        <a href="/account/">My profile</a>
-        <a href="/account/#profile-reading">Reading settings</a>
-        <a href="/library/">My library</a>
-        <a href="/studio/">Writing studio</a>
-        <button type="button" data-header-signout>Sign out</button>
+        <a href="/account/"><Icon name="user" size={19} /> My profile</a>
+        <a href="/account/#profile-reading"><Icon name="book" size={19} /> Reading settings</a>
+        <a href="/library/"><Icon name="bookmark" size={19} /> My library</a>
+        <a href="/studio/"><Icon name="pen" size={19} /> Writing studio</a>
+        <button type="button" data-header-signout><Icon name="logout" size={19} /> Sign out</button>
       </div>
       <p class="fine" data-header-account-status role="status" hidden></p>
     </div>

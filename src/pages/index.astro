@@ -33,6 +33,7 @@ const viewsLabel = new Intl.NumberFormat('en-US');
     <section class="home-hero" aria-labelledby="home-title">
       <div class="home-hero-copy">
         <div class="home-hero-content">
+          <p class="eyebrow home-hero-kicker">Welcome to Hunmeng <span aria-hidden="true">✦</span></p>
           <h1 id="home-title">Stories worth <em>coming back to.</em></h1>
           <p class="home-hero-description">A library of web novels in English, for quiet moments and big imaginations.</p>
           <form class="home-search" role="search" action="/catalog/" method="get">
@@ -43,14 +44,14 @@ const viewsLabel = new Intl.NumberFormat('en-US');
           </form>
           <nav class="home-discover" aria-label="Explore the library">
             <a href="/genres/"><Icon name="layers" size={20} /> Browse genres <Icon name="arrow" size={15} /></a>
-            <a href="/tags/"><Icon name="tag" size={20} /> Browse tags <Icon name="arrow" size={15} /></a>
-            <a href="/library/"><Icon name="book" size={20} /> My library <Icon name="arrow" size={15} /></a>
+            <a href="/updates/"><Icon name="clock" size={20} /> Latest chapters <Icon name="arrow" size={15} /></a>
+            <a href="#new-novels"><Icon name="book" size={20} /> New releases <Icon name="arrow" size={15} /></a>
           </nav>
         </div>
         {recommendations[0] && (
           <a class="home-hero-feature" href={recommendations[0].url} aria-label={'Discover featured novel: ' + recommendations[0].title}>
             <div class="home-feature-top">
-              <span class="home-feature-kicker"><span aria-hidden="true">✧</span> FROM THE LIBRARY</span>
+              <span class="home-feature-kicker"><span aria-hidden="true">✧</span> FEATURED NOVEL</span>
               <span class="home-feature-count">{chapterCount(recommendations[0].chapterCount)}</span>
             </div>
             <div class="home-feature-visual">
@@ -76,7 +77,7 @@ const viewsLabel = new Intl.NumberFormat('en-US');
         <div>
           <h2 id="new-title">New novels</h2>
         </div>
-        <a href="/catalog/">Full catalog <span aria-hidden="true">→</span></a>
+        <a href="/catalog/">View all <span aria-hidden="true">→</span></a>
       </div>
       {newNovels.length ? (
         <div class="home-cover-grid">

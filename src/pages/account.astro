@@ -2,10 +2,11 @@
 import Layout from '../layouts/Layout.astro';
 import { site } from '../config/site';
 import ReaderPreferences from '../components/ReaderPreferences.astro';
+import Icon from '../components/Icon.astro';
 ---
 <Layout title="Sign in or register" noindex description="Sign in to Hunmeng or create a reader account with your email and password.">
   <main id="main" class="page-shell account-page reader-account-page">
-    <header class="page-heading landscape-banner">
+    <header class="page-heading landscape-banner profile-hero">
       <h1 id="account-title">Sign in or register</h1>
       <p id="account-subtitle">You can read novels without an account.</p>
     </header>
@@ -36,14 +37,14 @@ import ReaderPreferences from '../components/ReaderPreferences.astro';
         </section>
         <div id="auth-logged-in" class="profile-layout" hidden>
           <aside class="profile-sidebar" aria-label="Profile sections">
-            <div class="profile-identity"><span id="profile-avatar" class="profile-avatar" data-avatar="sage" aria-hidden="true">R</span><strong id="profile-name">Reader</strong></div>
-            <nav aria-label="Profile settings"><a href="#profile-details" aria-current="location">Profile <span aria-hidden="true">↗</span></a><a href="#profile-reading">Reading <span aria-hidden="true">↗</span></a><a href="#profile-account">Account <span aria-hidden="true">↗</span></a></nav>
-            <a class="profile-library-link" href="/library/">My library <span aria-hidden="true">→</span></a>
-            <a class="profile-library-link" href="/studio/">Writing studio <span aria-hidden="true">→</span></a>
+            <div class="profile-identity"><span id="profile-avatar" class="profile-avatar" data-avatar="sage" aria-hidden="true">R</span><div class="profile-identity-copy"><strong id="profile-name">Reader</strong><span>My reading corner</span></div></div>
+            <nav aria-label="Profile settings"><a href="#profile-details" aria-current="location" data-profile-section="profile-details">Profile</a><a href="#profile-reading" data-profile-section="profile-reading">Reading</a><a href="#profile-account" data-profile-section="profile-account">Account</a></nav>
+            <div class="profile-quicklinks"><a class="profile-library-link" href="/library/"><Icon name="book" size={19} /> My library <span aria-hidden="true">→</span></a>
+            <a class="profile-library-link" href="/studio/"><Icon name="pen" size={19} /> Writing studio <span aria-hidden="true">→</span></a></div>
           </aside>
           <div class="profile-content">
             <section id="profile-details" class="profile-panel" aria-labelledby="profile-title">
-              <h2 id="profile-title">Profile</h2><p class="profile-intro">Your name and a little about you.</p>
+              <p class="eyebrow">Personal space</p><h2 id="profile-title">Profile</h2><p class="profile-intro">Your name and a little about you.</p>
               <form id="profile-form">
                 <fieldset id="profile-fields" disabled>
                   <label>Nickname<input name="nickname" aria-label="Nickname" autocomplete="nickname" minlength="3" maxlength="24" required aria-describedby="nickname-help" /><small id="nickname-help">Use 3–24 characters: letters, numbers, spaces, hyphens, or underscores. Nicknames do not need to be unique.</small></label>
@@ -54,7 +55,7 @@ import ReaderPreferences from '../components/ReaderPreferences.astro';
                 <p id="profile-status" class="fine" role="status" aria-live="polite"></p>
               </form>
             </section>
-            <p class="profile-local-note">Your library and progress stay on this device. Your nickname and bio are saved to your account.</p>
+            <p class="profile-local-note"><Icon name="info" size={20} /><span>Your library and progress stay on this device. Your nickname and bio are saved to your account.</span></p>
             <ReaderPreferences />
             <section id="profile-account" class="profile-panel" aria-labelledby="profile-account-title">
               <h2 id="profile-account-title">Account</h2>
@@ -79,6 +80,8 @@ import ReaderPreferences from '../components/ReaderPreferences.astro';
     });
     window.addEventListener('hashchange', highlightSection);
     highlightSection();
+    import { initProfileTabs } from '../scripts/profile-tabs';
+    initProfileTabs();
     if (site.features.accounts) void import('../scripts/account').then(({ initAccount }) => initAccount());
   </script>
 </Layout>
