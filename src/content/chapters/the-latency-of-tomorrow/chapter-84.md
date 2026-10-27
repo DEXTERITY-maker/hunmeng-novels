@@ -31,7 +31,7 @@ Ning explained that the class was using a simulation. She had recordings of the 
 
 Ning wrote missing observation on the board. The students began naming other things the interface could not show: vibration, smell, a loose mounting, an incorrectly placed sensor. The scheduling assistant knew the cost of waiting but not whether the alarm had been physically assessed.
 
-Yanchuan watched his father listen to the discussion. During the long search for Yansheng, Jianming had become a person to whom other people delivered updates. Here he was a technician again, impatient for a question worth answering.
+Yanchuan watched his father listen to the discussion. Jianming flexed the wrist he had injured months earlier before opening his notebook. During the long search for Yansheng, he had become a person to whom other people delivered updates. Here he was a technician again, impatient for a question worth answering. Yanchuan wanted to ask whether the wrist hurt; he decided to wait until the break.
 
 At the break a student named Sun asked whether experience still mattered when instruments could detect faults sooner than people.
 
