@@ -73,7 +73,7 @@ const usesPlaceholder = n.cover === placeholderCover;
     {remote && <div id="serial-gate" class="notice">
       <p id="serial-status" role="status">Checking chapter availability…</p>
       <button id="serial-retry" type="button" class="button secondary">Check availability</button>
-      <p class="fine">50 chapters at launch, then one daily at 12:00 MSK (UTC+3).</p>
+      <p class="fine">{serial?.initialChapters ?? 85} chapters at launch, then one daily at 12:00 MSK (UTC+3).</p>
     </div>}
     <article
       id="chapter-text"

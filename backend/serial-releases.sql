@@ -1,5 +1,5 @@
 -- Original serials: private manuscript, server-clock release. Apply separately from schema.sql.
--- No manuscript bodies belong in Git after the first 50 chapters.
+-- No manuscript bodies belong in Git after the first 85 chapters.
 begin;
 create table public.serial_editions (
   slug text primary key check (slug ~ '^[a-z0-9]+(-[a-z0-9]+)*$'),
@@ -13,11 +13,11 @@ create table public.serial_chapters (
   novel_slug text not null references public.serial_editions(slug),
   number integer not null check (number > 0),
   title text not null check (char_length(btrim(title)) between 1 and 250),
-  body text not null check (char_length(body) between 4000 and 5090 and body = btrim(body)),
+  body text not null check (char_length(body) between 4000 and 8500 and body = btrim(body)),
   primary key (novel_slug, number)
 );
 
--- Chapter 51: noon on the day after launch in Moscow; chapter 247: day 197.
+-- Chapter 86: noon on the day after launch in Moscow; chapter 247: day 162.
 -- All conversions name the timezone; the database/session timezone is irrelevant.
 create function public.serial_release_at(launch timestamptz, chapter integer, initial integer, zone text)
 returns timestamptz language sql immutable strict security invoker set search_path = '' as $$
@@ -96,7 +96,7 @@ using (exists (
 ));
 
 -- Draft only. Activation is a separate, guarded operation after all 247 bodies
--- are written, checked, privately imported, and the initial 50 are deployed.
+-- are written, checked, privately imported, and the initial 85 are deployed.
 insert into public.serial_editions (slug, total_chapters, initial_chapters)
-  values ('the-latency-of-tomorrow', 247, 50);
+  values ('the-latency-of-tomorrow', 247, 85);
 commit;

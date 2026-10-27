@@ -1,0 +1,99 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+<Layout title="Writing studio" noindex description="Your private original-fiction drafts, chapters and revision history.">
+  <main id="main" class="page-shell studio-page">
+    <header class="page-heading">
+      <h1>Writing studio</h1>
+      <p>Write original novels in a private workspace. Drafts are not published or added to the public catalog.</p>
+    </header>
+    <p id="studio-status" class="notice" role="status" aria-live="polite">Checking your account…</p>
+    <p id="studio-login" hidden>Sign in with your reader account to manage your drafts. <a class="button" href="/account/">Sign in</a></p>
+    <div id="studio-workspace" hidden>
+      <div class="studio-layout">
+        <aside class="studio-panel studio-sidebar">
+          <h2>My novels</h2>
+          <label for="studio-novels">Select a novel</label>
+          <select id="studio-novels" aria-label="Select a novel"></select>
+          <form id="studio-create">
+            <label for="studio-new-title">New novel title</label>
+            <input id="studio-new-title" maxlength="250" required placeholder="Working title" />
+            <button class="button secondary" type="submit">Create private novel</button>
+          </form>
+          <p class="fine">Only you can see your drafts. Publishing is a separate editorial step.</p>
+        </aside>
+        <div class="studio-main">
+          <section class="studio-panel" id="studio-novel-panel" hidden>
+            <h2>Novel details</h2>
+            <form id="studio-novel-form">
+              <label>Title <input name="title" required maxlength="250" /></label>
+              <label>Synopsis <textarea name="synopsis" rows="3" maxlength="10000"></textarea></label>
+              <div class="studio-inline">
+                <label>Genres (comma-separated) <input name="genres" maxlength="1000" /></label>
+                <label>Tags (comma-separated) <input name="tags" maxlength="1000" /></label>
+              </div>
+              <label>Story outline <textarea name="outline" rows="4" maxlength="100000"></textarea></label>
+              <label>Characters and world notes <textarea name="characters" rows="4" maxlength="100000"></textarea></label>
+              <button class="button secondary" type="submit">Save novel details</button>
+            </form>
+          </section>
+          <section class="studio-panel" id="studio-chapter-panel" hidden>
+            <div class="studio-section-heading">
+              <h2>Chapter editor</h2>
+              <button class="button secondary" id="studio-add-chapter" type="button">+ New chapter</button>
+            </div>
+            <label for="studio-chapters">Choose a chapter</label>
+            <select id="studio-chapters"></select>
+            <form id="studio-chapter-form" hidden>
+              <label>Chapter title <input name="title" maxlength="250" required /></label>
+              <label>Manuscript <textarea name="body" rows="20" maxlength="300000" placeholder="Start writing…" spellcheck="true"></textarea></label>
+              <div class="studio-meta">
+                <span id="studio-count">0 characters</span>
+                <span id="studio-save-state" role="status" aria-live="polite">Saved</span>
+              </div>
+              <div class="studio-actions">
+                <button id="studio-save-chapter" class="button" type="submit">Save now</button>
+                <button id="studio-save-version" class="button secondary" type="button">Save version</button>
+              </div>
+            </form>
+            <div id="studio-revisions-panel" hidden>
+              <h3>Version history</h3>
+              <p class="fine">Save a version before major rewrites. Autosave updates your draft without creating a version on each keystroke.</p>
+              <div class="studio-inline">
+                <select id="studio-versions" aria-label="Saved version"></select>
+                <button id="studio-restore" class="button secondary" type="button">Restore selected version</button>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+    <noscript><p class="notice">JavaScript is required to access private writing drafts.</p></noscript>
+  </main>
+  <style>
+    .studio-page { padding-bottom: 64px; }
+    .studio-layout { display: grid; grid-template-columns: minmax(235px, 290px) minmax(0, 1fr); align-items: start; gap: 20px; }
+    .studio-sidebar,.studio-main { min-width:0; }
+    .studio-main { display:grid; gap:20px; }
+    .studio-panel { background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:clamp(16px,2.7vw,28px); }
+    .studio-panel h2 { font-size:1.45rem;margin:0 0 18px; }
+    .studio-panel h3 {font-size:1.15rem;margin:16px 0 8px;}
+    .studio-panel form {display:grid;gap:14px;margin-top:16px;}
+    .studio-panel label {display:grid;gap:7px;min-width:0;font-weight:600;font-size:.88rem;}
+    .studio-panel input,.studio-panel select,.studio-panel textarea,.studio-panel > select {display:block;width:100%;min-width:0;box-sizing:border-box;}
+    .studio-panel textarea {line-height:1.7;resize:vertical;}
+    .studio-panel textarea[name="body"] {min-height:350px;font:1.08rem/1.75 'Noto Serif Variable',Georgia,serif;}
+    .studio-inline {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:end;}
+    .studio-inline button {max-width:100%;}
+    .studio-section-heading,.studio-actions,.studio-meta {display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+    .studio-section-heading h2 {margin:0;}
+    .studio-meta {font-size:.83rem;color:var(--muted);}
+    #studio-revisions-panel {border-top:1px solid var(--line);margin-top:24px;padding-top:8px;}
+    #studio-novels,#studio-chapters {margin-bottom:12px;}
+    @media(max-width:760px){.studio-layout{grid-template-columns:minmax(0,1fr)}.studio-inline{grid-template-columns:minmax(0,1fr)}.studio-panel textarea[name="body"]{min-height:280px}}
+  </style>
+  <script>
+    import { initStudio } from '../scripts/studio';
+    void initStudio();
+  </script>
+</Layout>
