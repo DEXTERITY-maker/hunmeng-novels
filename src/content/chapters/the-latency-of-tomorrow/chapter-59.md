@@ -83,6 +83,4 @@ Then, after a pause, he asked whether there had been news of Yansheng.
 
 They spoke for a while without trying to change the answer.
 
-Asha's map remained in Kenya, where it could be corrected by someone who knew when a road washed out or a spare was moved. Yanchuan held only the part she had chosen to share.
-
-He had finally learned that a useful collaboration could begin without owning every fact the other person knew.
+Asha kept the marked original in Kenya. The extract Yanchuan received carried a revision date and a contact for corrections. Before using it in the estimate, he asked whether the washed-out road marked in red was still closed. Asha replied the next morning: open to light vehicles, not the maintenance truck.
