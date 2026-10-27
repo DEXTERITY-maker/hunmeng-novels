@@ -233,7 +233,7 @@ export async function initAdmin() {
       source_id:value(f,'source_id'),chapter_number:Number(value(f,'chapter_number')),
       chapter_slug:value(f,'chapter_slug'),chapter_title:value(f,'chapter_title'),
       chapter_description:value(f,'chapter_description'),original_text:value(f,'original_text'),
-      translated_text:value(f,'translated_text'),status:'review',
+      translated_text:value(f,'translated_text'),status:value(f,'submission_status') === 'review' ? 'review' : 'draft',
     };
     if (f.dataset.editId) {
       await rest('novel_translation_jobs','PATCH','id=eq.'+encodeURIComponent(f.dataset.editId),body);
