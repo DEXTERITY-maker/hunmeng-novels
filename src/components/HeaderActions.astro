@@ -25,17 +25,33 @@ const { showAccount = true } = Astro.props;
       <span class="header-avatar" data-header-avatar aria-hidden="true"><Icon name="user" size={20} /></span>
     </summary>
     <div class="header-panel account-panel">
-      <p class="header-panel-title" data-header-name>Welcome to Hunmeng</p>
-      <div data-account-guest>
+      <div class="account-menu-heading">
+        <p class="header-panel-title" data-header-name>Welcome to Hunmeng</p>
+        <span class="account-menu-subtitle">Your reading corner</span>
+      </div>
+      <div class="account-menu-links" data-account-guest>
         <a href="/account/" data-account-link>Sign in</a>
         <a href="/account/?mode=signup">Create account</a>
       </div>
-      <div data-account-member hidden>
-        <a href="/account/"><Icon name="user" size={19} /> My profile</a>
-        <a href="/account/#profile-reading"><Icon name="book" size={19} /> Reading settings</a>
-        <a href="/library/"><Icon name="bookmark" size={19} /> My library</a>
-        <a href="/studio/"><Icon name="pen" size={19} /> Writing studio</a>
-        <button type="button" data-header-signout><Icon name="logout" size={19} /> Sign out</button>
+      <div class="account-menu-links" data-account-member hidden>
+        <a href="/account/"><Icon name="user" size={19} /> <span>My profile</span></a>
+        <a href="/account/#profile-reading"><Icon name="book" size={19} /> <span>Reading settings</span></a>
+        <a href="/library/"><Icon name="bookmark" size={19} /> <span>My library</span></a>
+        <a href="/studio/"><Icon name="pen" size={19} /> <span>Writing studio</span></a>
+        <button type="button" data-header-signout><Icon name="logout" size={19} /> <span>Sign out</span></button>
+      </div>
+      <div class="account-menu-preferences" role="group" aria-label="Quick appearance settings">
+        <p class="account-menu-preferences-title" data-account-theme-label>Appearance</p>
+        <div class="account-menu-theme" role="group" aria-label="Quick theme">
+          <label class="account-menu-theme-choice">
+            <input type="radio" name="site-theme-quick" value="light" />
+            <Icon name="sun" size={17} /> <span>Light</span>
+          </label>
+          <label class="account-menu-theme-choice">
+            <input type="radio" name="site-theme-quick" value="dark" />
+            <Icon name="moon" size={17} /> <span>Dark</span>
+          </label>
+        </div>
       </div>
       <p class="fine" data-header-account-status role="status" hidden></p>
     </div>
