@@ -1,0 +1,42 @@
+---
+import { site } from '../config/site';
+import Icon from './Icon.astro';
+import AppearanceControl from './AppearanceControl.astro';
+interface Props { showAccount?: boolean }
+const { showAccount = true } = Astro.props;
+---
+<div class="header-actions">
+  <details class="header-popover header-search">
+    <summary class="header-icon-button" role="button" aria-label="Search novels" title="Search novels"><Icon name="search" size={20} /></summary>
+    <div class="header-panel search-panel">
+      <form action="/catalog/" method="get" role="search" aria-label="Quick search">
+        <label for="header-search-input">Find your next read</label>
+        <div class="header-search-row">
+          <input id="header-search-input" name="search" type="search" placeholder="Title or author" required maxlength="200" autocomplete="off" />
+          <button class="button" type="submit">Search</button>
+        </div>
+      </form>
+      <div class="header-discover"><a href="/genres/">Genres <Icon name="arrow" size={15} /></a><a href="/tags/">Tags <Icon name="arrow" size={15} /></a></div>
+    </div>
+  </details>
+  <AppearanceControl />
+  {site.features.accounts && showAccount && <details class="header-popover header-account">
+    <summary class="header-icon-button" role="button" aria-label="Reader account" title="Reader account">
+      <span class="header-avatar" data-header-avatar aria-hidden="true"><Icon name="user" size={20} /></span>
+    </summary>
+    <div class="header-panel account-panel">
+      <p class="header-panel-title" data-header-name>Welcome to Hunmeng</p>
+      <div data-account-guest>
+        <a href="/account/" data-account-link>Sign in</a>
+        <a href="/account/?mode=signup">Create account</a>
+      </div>
+      <div data-account-member hidden>
+        <a href="/account/">My profile</a>
+        <a href="/account/#profile-reading">Reading settings</a>
+        <a href="/library/">My library</a>
+        <button type="button" data-header-signout>Sign out</button>
+      </div>
+      <p class="fine" data-header-account-status role="status" hidden></p>
+    </div>
+  </details>}
+</div>

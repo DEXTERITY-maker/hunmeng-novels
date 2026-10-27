@@ -49,7 +49,7 @@ export function initProfile(client: SupabaseClient, onExpired: () => void) {
         return;
       }
       if (current?.id !== userId) return;
-      if (data.user) { current=data.user; paint(data.user,true); status.textContent='Profile saved.'; }
+      if (data.user) { current=data.user; paint(data.user,true); window.dispatchEvent(new CustomEvent('reader:auth-change')); status.textContent='Profile saved.'; }
     } catch { status.textContent='Your profile could not be saved. Check your connection and try again.'; }
     finally { saving=false; fields.disabled=!current; }
   });

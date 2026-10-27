@@ -19,9 +19,11 @@ export async function initAccount() {
   const callbackError = address.searchParams.has('error');
   let mode = address.searchParams.get('mode') === 'signup' ? 'signup' : 'signin';
   // Never read access/refresh tokens from a URL or honor a next/redirect destination.
-  if (address.search || address.hash) history.replaceState(null, '', '/account/');
+  const profileAnchors = new Set(['#profile-details', '#profile-reading', '#profile-account']);
+  const profileTarget = profileAnchors.has(address.hash) ? address.hash : '';
+  if (address.search || address.hash) history.replaceState(null, '', '/account/' + profileTarget);
   window.addEventListener('hashchange', () => {
-    if (location.hash) {
+    if (location.hash && !profileAnchors.has(location.hash)) {
       history.replaceState(null, '', '/account/');
       status.textContent = 'Sign in with your email and password. Sign-in data from the address bar is not used.';
     }
@@ -143,5 +145,8 @@ export async function initAccount() {
       render(null,'You are signed out in this browser. The server could not confirm sign-out.');
     }
   } catch {render(null,'Unable to verify your session. Please sign in again.');}
-  finally {busy=false;fields.disabled=false;}
+  finally {
+    busy=false;fields.disabled=false;
+    if (profileTarget && !loggedIn.hidden) document.querySelector(profileTarget)?.scrollIntoView();
+  }
 }

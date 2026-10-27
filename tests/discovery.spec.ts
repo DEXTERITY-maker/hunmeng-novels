@@ -10,13 +10,15 @@ test('appearance follows the reader settings without losing library or progress'
     progress: { 'khranitel-mayaka': { chapterSlug: 'glava-1', chapterNumber: 1, blockId: 'block-0', offset: 0, ratio: .25, updatedAt: 100 } },
   })));
   await page.reload();
+  await page.getByRole('button', { name: 'Site appearance', exact: true }).click();
   for (const theme of ['dark', 'sepia', 'light']) {
-    await page.getByLabel('Site appearance', { exact: true }).selectOption(theme);
+    await page.locator(`input[name="site-theme"][value="${theme}"]`).check();
     await expect(page.locator('html')).toHaveAttribute('data-theme', theme);
   }
-  await page.getByLabel('Site appearance', { exact: true }).selectOption('dark');
+  await page.getByRole('radio', { name: 'Dark', exact: true }).check();
   await page.goto('/catalog/');
-  await expect(page.getByLabel('Site appearance', { exact: true })).toHaveValue('dark');
+  await page.getByRole('button', { name: 'Site appearance', exact: true }).click();
+  await expect(page.getByRole('radio', { name: 'Dark', exact: true })).toBeChecked();
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
   const state = await page.evaluate(() => JSON.parse(localStorage.getItem('hunmeng-novels:v1')!));
   expect(state.settings).toEqual({ font: 'sans', size: 24, lineHeight: 1.9, width: 800, theme: 'dark' });

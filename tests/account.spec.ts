@@ -135,6 +135,40 @@ test('запрещённое хранилище не отправляет дан
 });
 
 async function loginFixture(page:Page) { await open(page);await fill(page);await page.locator('#reader-auth-submit').click();await expect(page.locator('#auth-logged-in')).toBeVisible(); }
+test('меню шапки показывает аватар и настройки, а выход сохраняет библиотеку',async({page})=>{
+ const state=await mockAuth(page);await loginFixture(page);
+ await page.getByLabel('Nickname',{exact:true}).fill('Моряк');
+ await page.getByRole('radio',{name:'Blue',exact:true}).check();
+ await page.getByRole('button',{name:'Save profile',exact:true}).click();
+ await expect(page.locator('#profile-status')).toHaveText('Profile saved.');
+ await expect(page.locator('[data-header-avatar]')).toHaveAttribute('data-avatar','navy');
+ await expect(page.locator('[data-avatar-initial]')).toHaveText('М');
+ await page.evaluate(()=>localStorage.setItem('hunmeng-novels:v1',JSON.stringify({version:1,settings:{theme:'sepia'},library:{'sad-zimy':'later'},progress:{'sad-zimy':{ratio:.25}}})));
+ await page.goto('/');
+ await page.getByRole('button',{name:'Reader account',exact:true}).click();
+ await expect(page.locator('[data-header-name]')).toHaveText('Моряк');
+ await page.locator('.account-panel').getByRole('link',{name:'Reading settings',exact:true}).click();
+ await expect(page).toHaveURL(/\/account\/#profile-reading$/);
+ await expect(page.locator('#auth-logged-in')).toBeVisible();
+ expect(await page.locator('#profile-reading').evaluate(el=>Math.abs(el.getBoundingClientRect().top))).toBeLessThan(110);
+ await page.goto('/');
+ await page.getByRole('button',{name:'Reader account',exact:true}).click();
+ await page.locator('[data-header-signout]').click();
+ await expect(page).toHaveURL(/\/account\/$/);
+ await expect(page.locator('#auth-fields')).toBeVisible();
+ expect(await page.evaluate(k=>localStorage.getItem(k),key)).toBeNull();
+ const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('hunmeng-novels:v1')!));
+ expect(saved.library['sad-zimy']).toBe('later');expect(saved.progress['sad-zimy'].ratio).toBe(.25);expect(saved.settings.theme).toBe('sepia');
+ expect(state.requests.every(p=>p.startsWith('/auth/v1/'))).toBe(true);
+});
+test('выход из меню при недоступном сервере удаляет сессию только в этом браузере',async({page})=>{
+ const state=await mockAuth(page);await loginFixture(page);state.logoutOffline=true;
+ await page.goto('/');await page.getByRole('button',{name:'Reader account',exact:true}).click();
+ await page.locator('[data-header-signout]').click();
+ await expect(page).toHaveURL(/\/account\/$/);await expect(page.locator('#auth-fields')).toBeVisible();
+ await expect(page.locator('#account-status')).toContainText('server could not confirm');
+ expect(await page.evaluate(k=>localStorage.getItem(k),key)).toBeNull();
+});
 test('профиль: никнейм, описание и аватар сохраняются между посещениями только в Auth metadata',async({page})=>{
  const state=await mockAuth(page);await loginFixture(page);
  await expect(page.getByRole('heading',{name:'My profile',exact:true})).toBeVisible();

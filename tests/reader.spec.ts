@@ -123,7 +123,8 @@ test('мобильная страница новостей без горизон
 test('аккаунты читателей: видимый вход без публичной ссылки в редакцию', async ({ page }) => {
   for (const url of ['/', '/catalog/', '/library/', '/news/']) {
     await page.goto(url);
-    await expect(page.locator('header a[href="/account/"]')).toBeVisible();
+    await page.getByRole('button', { name: 'Reader account', exact: true }).click();
+    await expect(page.locator('[data-account-guest] a[href="/account/"]')).toBeVisible();
   }
   await page.goto('/account/');
   await expect(page.getByRole('heading', { name: 'Sign in or register' })).toBeVisible();
