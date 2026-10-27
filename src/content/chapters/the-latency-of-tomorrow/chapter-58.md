@@ -91,6 +91,4 @@ Instead he gave Yanchuan a copy of the workshop's publicly shareable maintenance
 
 On the flight back later that week, Yanchuan opened his original pilot model. It contained choices about power supply, maintenance access and operator authority that he had treated as ordinary. They were ordinary in the places where he had measured them. They were not laws of nature.
 
-He wrote a new requirement for the next project: begin with a map made by the people who operate the network, not a map inferred from the investor's brochure.
-
-It was a small beginning to a different kind of work.
+He added a requirement to the next project's scope: the operating network map must be prepared or confirmed by local engineers before the financial model assigns a value to reserve capacity. Mutiso read the line and asked for one more condition: the map must be updated when the rainy season changes access.
