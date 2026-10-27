@@ -11,11 +11,14 @@ export async function initReader() {
     b.id = `block-${i}`;
   });
   const state = await repository.getState();
-  let settings = state.settings;
+  let novelSpecific = Boolean(state.novelSettings?.[slug]);
+  let settings = state.novelSettings?.[slug] ?? state.settings;
   // Keep an intentional Read later shelf selection intact when the user opens a chapter.
   if (!state.library[slug]) await repository.setShelf(slug, 'reading');
   applySettings(settings);
   const form = document.getElementById('settings-form') as HTMLFormElement;
+  const novelToggle = document.getElementById('reader-novel-settings') as HTMLInputElement;
+  novelToggle.checked = novelSpecific;
   const settingsDialog = document.getElementById('reader-settings') as HTMLDialogElement;
   const tocDialog = document.getElementById('reader-toc') as HTMLDialogElement;
   const bookmark = document.getElementById('reader-save-later') as HTMLButtonElement;
@@ -106,6 +109,11 @@ export async function initReader() {
   const save = () => {
     if (!restoring) void repository.saveProgress(slug, position());
   };
+  // A periodic checkpoint protects progress on mobile when pagehide is skipped.
+  const checkpoint = window.setInterval(() => {
+    if (!document.hidden) save();
+  }, 15000);
+  window.addEventListener('pagehide', () => window.clearInterval(checkpoint), { once: true });
   const restore = async () => {
     await document.fonts.ready;
     await new Promise<void>((r) => requestAnimationFrame(() => requestAnimationFrame(() => r())));
@@ -194,11 +202,23 @@ export async function initReader() {
     await document.fonts.ready;
     if (anchor)
       window.scrollTo(0, window.scrollY + anchor.block.getBoundingClientRect().top - anchor.top);
-    await repository.setSettings(settings);
+    if (novelSpecific) await repository.setNovelSettings(slug, settings);
+    else await repository.setSettings(settings);
     paint();
     save();
   };
   form.addEventListener('submit', (e) => e.preventDefault());
+  novelToggle.addEventListener('change', async () => {
+    novelSpecific = novelToggle.checked;
+    const latest = await repository.getState();
+    // Enabling copies the current appearance; disabling restores the shared settings.
+    if (novelSpecific) await repository.setNovelSettings(slug, settings);
+    else {
+      await repository.setNovelSettings(slug, null);
+      await update(latest.settings);
+    }
+    if (novelSpecific) fill();
+  });
   form.addEventListener('input', () => {
     const f = new FormData(form);
     void update({
