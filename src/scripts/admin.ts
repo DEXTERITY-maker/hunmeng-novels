@@ -191,12 +191,12 @@ export async function initAdmin() {
       wrapper.append(actions); jobsDiv.append(wrapper);
     }
   }
-  function onSubmit(form: HTMLFormElement, fn: (f: HTMLFormElement) => Promise<void>) {
+  function onSubmit(form: HTMLFormElement, fn: (f: HTMLFormElement, submitter: HTMLElement | null) => Promise<void | string>) {
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       try {
-        await fn(form);
-        message.textContent = 'Saved.';
+        const result = await fn(form, e instanceof SubmitEvent ? e.submitter as HTMLElement | null : null);
+        message.textContent = result || 'Saved.';
         form.reset();
         await load();
       } catch (error) { notify(error); }
@@ -228,17 +228,24 @@ export async function initAdmin() {
       translated_term:value(f,'translated_term'),term_type:value(f,'term_type'),note:value(f,'note'),
     });
   });
-  onSubmit(jobForm, async f => {
+  onSubmit(jobForm, async (f, submitter) => {
+    const requestedStatus = submitter?.dataset.jobStatus === 'review' ? 'review' : 'draft';
+    if (requestedStatus === 'review' &&
+        (value(f, 'original_text').length < 80 || value(f, 'translated_text').length < 80 ||
+         value(f, 'chapter_description').length < 10)) {
+      throw new Error('Complete the source, translation, and description before sending for review.');
+    }
     const body: ApiRecord = {
       source_id:value(f,'source_id'),chapter_number:Number(value(f,'chapter_number')),
       chapter_slug:value(f,'chapter_slug'),chapter_title:value(f,'chapter_title'),
       chapter_description:value(f,'chapter_description'),original_text:value(f,'original_text'),
-      translated_text:value(f,'translated_text'),status:'review',
+      translated_text:value(f,'translated_text'),status:requestedStatus,
     };
     if (f.dataset.editId) {
       await rest('novel_translation_jobs','PATCH','id=eq.'+encodeURIComponent(f.dataset.editId),body);
       delete f.dataset.editId;
     } else await rest('novel_translation_jobs','POST','',body);
+    return requestedStatus === 'review' ? 'Sent for editorial review.' : 'Draft saved privately.';
   });
   document.getElementById('admin-refresh')?.addEventListener('click',()=> {
     void load().catch(notify);
