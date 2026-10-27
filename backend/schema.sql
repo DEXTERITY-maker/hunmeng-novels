@@ -275,7 +275,7 @@ begin
        or new.reviewed_by is null or new.approved_at is null
        or length(trim(new.qa_notes)) < 20
        or new.published_at is null
-       or coalesce(new.publish_commit,'') !~ '^[0-9a-f]{40} then
+       or coalesce(new.publish_commit,'') !~ '^[0-9a-f]{40}$' then
       raise exception 'Publication is not authorized or complete';
     end if;
   end if;
