@@ -25,7 +25,7 @@ He set the phone on his desk and looked at the rent notice.
 
 It was difficult to feel like the center of a conspiracy with forty-three dollars in the bank.
 
-By morning that number had fallen further. The clinic's initial payment had cleared, his ribs hurt when he sneezed, and he had not worked a paid shift since waking in New York. The old Ye Xuan had kept a list of possible weekend jobs. Most asked for experience that the new Ye Xuan could not remember having.
+The clinic's payment had cleared, his ribs hurt, and he had not worked since waking in New York.
 
 Mrs. Tang found him counting coins beside the bakery counter.
 
@@ -35,21 +35,19 @@ Mrs. Tang found him counting coins beside the bakery counter.
 
 “I know where you live.”
 
-He almost smiled. Then he checked his phone once more. There were no new messages.
+He almost smiled.
 
 ***
 
 Dr. Price had invited him to an engineering demonstration at the institute. It concerned flood barriers and the limitations of Awakened responders.
 
-“You missed the introductory exercise,” she told him at the door. “Consider this a chance to catch up.”
-
 At the front of the hall stood Nadia Solis, a licensed emergency worker. She wore a protective vest over ordinary clothes. Beside her was a transparent tank fitted with a damaged inlet, an undersized overflow pipe and several flow meters.
 
-Price introduced the problem. Water entered the tank faster than the outlet could drain it. If the inlet remained open, the level would reach a marked danger line in less than a minute.
+The tank filled faster than the outlet could drain it. Its water would reach the danger line within a minute.
 
 Nadia held her hand above the tank.
 
-A stream rose from the water without touching the rim. It curved through the air and poured into an emergency trough. Students leaned forward; someone near the back began filming.
+A stream rose from the tank, curved through the air and poured into an emergency trough.
 
 For twenty seconds the level fell.
 
@@ -62,8 +60,6 @@ A student raised his hand.
 “Where does the energy come from?”
 
 Nadia shrugged. “People much smarter than me are studying that. We can measure what happens. We don't get to pretend we know what causes it.”
-
-She flexed her wrist. Ye Xuan noticed a small scar along her thumb, just below the cuff of her glove.
 
 Price pointed out that the water had moved against gravity, but the meters still recorded volume and time. Nadia could alter the process. She couldn't remove the risk of overwhelming the surrounding drains, and she could not work without rest.
 
@@ -83,7 +79,7 @@ Price turned toward the projected system diagram.
 
 “Yes,” Price said. “That's what engineering is for.”
 
-The class moved on to the next example. Nadia approached Ye Xuan while the equipment was being reset.
+Afterward, Nadia approached Ye Xuan.
 
 “Most people ask whether I can lift more,” she said. “You're asking whether I can do less.”
 
@@ -91,13 +87,9 @@ The class moved on to the next example. Nadia approached Ye Xuan while the equip
 
 “For my wrists, absolutely.”
 
-She offered him her hand, then looked at his injured side and changed her mind.
-
 “Take care of yourself. You look like someone who won't stop until the answer arrives.”
 
-He watched her return to the tank. Here, powers were real. That much was undeniable. Yet everyone still had to deal with consequences. If Nadia pushed herself too hard, someone else might have to carry her to the hospital.
-
-He had acquired a gift that made learning impossibly easy. It did not exempt him from the same world.
+He watched her return to the tank. Her power was real, but her limits were real too. His own gift would be no different.
 
 ***
 
@@ -117,23 +109,19 @@ She took a thick book from her shelf and placed it in his hands.
 
 “The library authorized a temporary loan,” she said. “It's assigned next term. If you're going to ask questions about the waterfront, learn enough to know which questions are useful.”
 
-He examined the worn binding. The book contained diagrams, tables, and dense equations. Someone had left pencil marks beside a paragraph on unsteady flow.
-
 “What if I find something that's wrong?” he asked.
 
 “Bring a derivation. Not a feeling.”
 
-He carried it home like a valuable piece of equipment.
-
-Mrs. Tang let him remain at a table after the bakery closed. She turned off the display lights but left a lamp burning beside the register.
+After the bakery closed, Mrs. Tang left a lamp burning for him.
 
 “You can study here,” she told him. “But if the book makes you forget dinner, I'll take it away.”
 
 He ate the noodles Wei had brought the previous night, then began reading.
 
-The first chapters covered the behavior of liquids in pipes. Pressure and elevation determined some effects; friction and changing flow introduced others. Later chapters treated pumps, emergency drainage, failure mechanisms and the errors made when designers trusted a simplified model outside its proper conditions.
+The book covered pipe pressure, friction, pumps, emergency drainage and the danger of trusting simplified models under the wrong conditions.
 
-Ye Xuan read every equation, every explanation and every example. When he reached an unfamiliar term, he worked through the definition instead of pretending he understood it. He tested a few calculations with pencil and paper, then compared them with the solutions.
+He read every equation and example, working through unfamiliar terms and checking calculations against the solutions.
 
 Reading still required time. His extraordinary gift did not turn the unread pages transparent.
 
@@ -143,7 +131,7 @@ Something inside his understanding shifted.
 
 The material became whole.
 
-Every chapter fitted together. He could trace assumptions from the opening definitions to the final case studies and see where an approximation ceased to be reliable. He understood how the equations had been derived and where they could be extended. When he considered the pier photograph, possible explanations arose faster than he could write them down.
+The chapters became one coherent structure. He saw where approximations failed, where equations could be extended, and several possible explanations for the water at the pier.
 
 But the answers did not arrive for free.
 
@@ -157,7 +145,7 @@ He opened a fresh notebook.
 
 *Hypothesis C: condensation or runoff collected at the seam.*
 
-He listed what evidence would distinguish them. For the first time since waking, he did not feel that the unknown was laughing at him. The unknown could be divided into questions.
+He listed the evidence needed to distinguish them. The unknown could be divided into questions.
 
 He remembered the sentence Ye Ming had left in the notebook back in Hangzhou.
 
@@ -165,9 +153,7 @@ He remembered the sentence Ye Ming had left in the notebook back in Hangzhou.
 
 His brother would have liked this book.
 
-The thought struck so sharply that Ye Xuan had to put down his pencil.
-
-He had been trying to understand the body he inhabited and the city where he had awakened. For a few minutes, he let himself remember the other life: the cramped kitchen, his mother asking whether he had eaten, the empty space at the family table.
+He remembered the cramped kitchen in Hangzhou, his mother asking whether he had eaten, the empty space at the family table.
 
 He could master a book in an instant and still have no idea whether his mother had found his body.
 
@@ -187,11 +173,11 @@ A message from Reed had arrived while he was reading.
 
 *We received the original inspection packet. Please call tomorrow. I have a question about a department identifier on the exception sheet.*
 
-He opened the photograph of the seventh page. The responsibility boxes were empty, but above them was an abbreviated department code beside the project number.
+He opened the seventh page. An abbreviated department code sat beside the project number.
 
 Three letters, then a slash.
 
-He copied the characters into his notes, exactly as written. There was too little information to say what they meant.
+He copied the characters, refusing to guess what they meant.
 
 Then Wei called.
 
@@ -199,7 +185,7 @@ Then Wei called.
 
 “Yes.”
 
-“I found an old institute directory. It's publicly accessible, but I think someone filed it under the wrong academic year.”
+“I found an old institute directory, filed under the wrong academic year.”
 
 “Does it mention the waterfront?”
 
@@ -219,7 +205,7 @@ The words seemed to pull the floor away from under him.
 
 “Spell it.”
 
-Wei did. He sent a photograph of the record. Beside the name were an old enrollment number, an incomplete contact field and a note indicating the student had withdrawn before the placement ended.
+Wei did. The record showed an old enrollment number and a note saying the student had withdrawn before the placement ended.
 
 Ye Ming.
 
