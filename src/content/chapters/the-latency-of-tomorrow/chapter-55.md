@@ -47,6 +47,10 @@ During the break Yanchuan called An.
 
 “Good. Make sure the written finding says it too.”
 
+An did not sound relieved. “If they can explain the signature now, why did the company spend November telling us he'd changed his plans?”
+
+Yanchuan said he would ask which records Luo had possessed at the time. He would not answer for Luo on the strength of his own anger.
+
 He heard dishes in the background. Their son was preparing for a school excursion and could not find his raincoat.
 
 After the break a contractor manager expressed regret for confusion and asked to move directly to corrective testing. Kamau insisted that the revision history be completed first. Amina supported him. An unexamined document process could reproduce the same mistake even after a successful technical repair.
