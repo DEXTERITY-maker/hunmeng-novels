@@ -95,7 +95,10 @@ export async function deployTimeweb({ token, sha, fetchImpl = fetch, sleep = pau
     }
     if (deployment.status === 'success') break;
     if (terminal.has(deployment.status)) throw new Error(`Timeweb deployment finished with status ${deployment.status}. Check the deployment log in Timeweb.`);
-    if (!pending.has(deployment.status)) throw new Error('Unknown Timeweb deployment status; no additional deployment was started.');
+    // Timeweb can introduce intermediate statuses not yet listed above. Never start a
+    // second POST or falsely mark such an in-progress deploy as failed: keep polling
+    // the scoped deployment until a known terminal status or the monitoring timeout.
+    // The unexpected value is deliberately withheld from logs.
     if (Date.now() - started > timeoutMs) throw new Error('Deployment is still pending after the monitoring timeout. It was not cancelled.');
     await sleep(10000);
     const latest = (await request(path + '/deploys?limit=100')).deploys;
