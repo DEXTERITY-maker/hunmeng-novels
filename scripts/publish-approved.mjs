@@ -1,6 +1,7 @@
 import { makePublicationNews } from './publication-news.mjs';
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import { createHash } from 'node:crypto';
 const endpoint=(process.env.SUPABASE_URL||'').replace(/\/+$/,'');
 const secret=process.env.SUPABASE_SERVICE_ROLE_KEY;
 const manifest=path.join(process.env.RUNNER_TEMP||'/tmp','hunmeng-publish.json');
@@ -14,7 +15,7 @@ async function api(table,query='',method='GET',body){
       'Content-Type':'application/json',Prefer:'return=representation'},
     ...(body===undefined?{}:{body:JSON.stringify(body)})});
   const text=await r.text();
-  if(!r.ok)throw new Error(table+' HTTP '+r.status+': '+text.slice(0,300));
+  if(!r.ok)throw new Error(table+' HTTP '+r.status+'. Upstream response omitted to protect private data.');
   return text?JSON.parse(text):[];
 }
 async function exists(file){try{await fs.access(file);return true}catch{return false}}
@@ -22,6 +23,7 @@ function rightsOK(s){return s&&s.rights_status==='verified'&&s.permission_transl
   s.verified_at&&String(s.rights_evidence||'').trim().length>=20&&
   (!s.rights_valid_until||s.rights_valid_until>=today())}
 const safeText=s=>!/<\/?[a-z][^>]*>/i.test(s)&&!/\]\(\s*(javascript|data):/i.test(s);
+const digest=value=>createHash('sha256').update(JSON.stringify(value)).digest('hex');
 async function stage(){
   const jobs=await api('novel_translation_jobs','?status=eq.approved&order=approved_at.asc&limit=40&select=*');
   const queued=[];
@@ -85,22 +87,53 @@ async function stage(){
       const newsPath = path.join('src/content/news', note.name);
       if (!(await exists(newsPath))) await fs.writeFile(newsPath, note.content, 'utf8');
     }
-    queued.push(j.id);
+    queued.push({id:j.id,source_id:j.source_id,jobHash:digest(j),sourceHash:digest(source)});
   }
   await fs.writeFile(manifest,JSON.stringify(queued));
   console.log('Staged chapters: '+queued.length);
 }
+
+async function requireCurrent(batch) {
+  if (!Array.isArray(batch)) throw new Error('Invalid publication manifest');
+  for (const item of batch) {
+    if (!item || !/^[0-9a-f-]{36}$/.test(String(item.id)) ||
+        !/^[0-9a-f-]{36}$/.test(String(item.source_id)) ||
+        !/^[0-9a-f]{64}$/.test(String(item.jobHash)) ||
+        !/^[0-9a-f]{64}$/.test(String(item.sourceHash)))
+      throw new Error('Invalid publication manifest entry');
+    const jobs=await api('novel_translation_jobs','?id=eq.'+encodeURIComponent(item.id)+'&select=*');
+    const job=jobs[0];
+    const sources=await api('novel_sources','?id=eq.'+encodeURIComponent(item.source_id)+'&select=*');
+    const source=sources[0];
+    if (jobs.length !== 1 || !job || job.status !== 'approved' ||
+        job.source_id !== item.source_id || digest(job) !== item.jobHash ||
+        sources.length !== 1 || !rightsOK(source) || digest(source) !== item.sourceHash)
+      throw new Error('Publication aborted: chapter or permission state changed after staging');
+    const terms=await api('novel_terms','?source_id=eq.'+encodeURIComponent(item.source_id)+'&select=*');
+    if(terms.some(t=>job.original_text.toLowerCase().includes(t.original_term.toLowerCase())&&
+      !job.translated_text.toLowerCase().includes(t.translated_term.toLowerCase())))
+      throw new Error('Publication aborted: glossary QA has changed');
+  }
+}
+async function prepush() {
+  const batch=JSON.parse(await fs.readFile(manifest,'utf8'));
+  await requireCurrent(batch);
+  console.log('Verified unchanged approved chapters and publication rights immediately before git push: '+batch.length);
+}
+
 async function finalize(){
   const batch=JSON.parse(await fs.readFile(manifest,'utf8'));
   const sha=process.env.GITHUB_SHA_PUBLISHED;
+  await requireCurrent(batch);
   if(batch.length&&!/^[0-9a-f]{40}$/.test(sha||''))throw new Error('Invalid commit SHA');
-  for(const id of batch){
-    const rows=await api('novel_translation_jobs','?id=eq.'+id+'&status=eq.approved','PATCH',
+  for(const item of batch){
+    const rows=await api('novel_translation_jobs','?id=eq.'+encodeURIComponent(item.id)+'&status=eq.approved','PATCH',
       {status:'published',published_at:new Date().toISOString(),publish_commit:sha});
-    if(rows.length!==1)throw new Error('Failed to confirm '+id);
-    await api('novel_publication_events','','POST',{job_id:id,commit_sha:sha});
+    if(rows.length!==1)throw new Error('Failed to confirm '+item.id);
+    await api('novel_publication_events','','POST',{job_id:item.id,commit_sha:sha});
   }
 }
 if(process.argv[2]==='stage')await stage();
+else if(process.argv[2]==='prepush')await prepush();
 else if(process.argv[2]==='finalize')await finalize();
-else throw new Error('Expected stage or finalize');
+else throw new Error('Expected stage, prepush or finalize');
