@@ -95,6 +95,4 @@ Later Yanchuan stood beside An at the kitchen counter, drying the dishes while s
 
 The corrected documents had taken away an easy explanation. They had not supplied a harder one.
 
-Yanchuan filed the letter from Luo and closed the spreadsheet. A machine could arrange honest entries into a persuasive story. When that story became someone's account of a missing man, the error could outlive every individual who had made it.
-
-For once, he did not ask the next system to tell him what happened. He asked for the person, the observation, and the record behind the words.
+Yanchuan filed Luo's letter beside the earlier movement summary. Both would remain in the archive; deleting the first would hide how the mistaken claim had travelled. He sent the case officer a narrower request for any independently observed departure and left the other columns unchanged.
