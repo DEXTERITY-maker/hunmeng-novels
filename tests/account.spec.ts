@@ -318,6 +318,8 @@ test('authenticated reader sees nine accurate ranks and independent novice title
 test('verified title can be equipped, display survives reload, and cards fit mobile',async({page})=>{
  const state=await mockAuth(page);
  state.rankStats.readingDays=30;
+ state.rankStats.chapters=30;
+ state.rankStats.total_xp=30*80;
  await page.setViewportSize({width:320,height:800});
  await loginFixture(page);
  await expect(page.locator('#reader-advancement')).toHaveAttribute('data-status','ready');
