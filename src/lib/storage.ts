@@ -1,7 +1,7 @@
 import type { Shelf } from '../config/site';
 export type Theme = 'system' | 'light' | 'dark' | 'sepia';
 export interface Settings {
-  font: 'serif' | 'sans' | 'system';
+  font: 'serif' | 'sans' | 'literary' | 'system';
   size: number;
   lineHeight: number;
   paragraphSpacing: number;
@@ -21,6 +21,7 @@ export interface ReaderState {
   settings: Settings;
   library: Record<string, Shelf>;
   progress: Record<string, Progress>;
+  novelSettings?: Record<string, Settings>;
 }
 export interface ReaderRepository {
   getState(): Promise<ReaderState>;
@@ -29,6 +30,7 @@ export interface ReaderRepository {
   setSettings(settings: Settings): Promise<void>;
   setShelf(slug: string, shelf: Shelf | null): Promise<void>;
   saveProgress(slug: string, progress: Progress): Promise<void>;
+  setNovelSettings(slug: string, settings: Settings | null): Promise<void>;
 }
 export const STORAGE_KEY = 'hunmeng-novels:v1';
 export const defaults: Settings = {
@@ -48,13 +50,13 @@ export function normalizeSettings(value: unknown, fallback: Settings): Settings 
   const number = (v: unknown, min: number, max: number, otherwise: number) =>
     typeof v === 'number' && Number.isFinite(v) ? Math.min(max, Math.max(min, v)) : otherwise;
   return {
-    font: s.font === 'serif' || s.font === 'sans' || s.font === 'system' ? s.font : fallback.font,
+    font: s.font === 'serif' || s.font === 'sans' || s.font === 'literary' || s.font === 'system' ? s.font : fallback.font,
     theme:
       s.theme === 'system' || s.theme === 'light' || s.theme === 'dark' || s.theme === 'sepia'
         ? s.theme
         : fallback.theme,
-    size: number(s.size, 16, 32, fallback.size),
-    lineHeight: number(s.lineHeight, 1.4, 2.4, fallback.lineHeight),
+    size: number(s.size, 14, 28, fallback.size),
+    lineHeight: number(s.lineHeight, 1.3, 2.2, fallback.lineHeight),
     paragraphSpacing: number(s.paragraphSpacing, 0.65, 2.2, fallback.paragraphSpacing),
     width: number(s.width, 480, 960, fallback.width),
   };
@@ -89,6 +91,7 @@ const empty = (): ReaderState => ({
   settings: { ...defaults },
   library: {},
   progress: {},
+  novelSettings: {},
 });
 const validSlug = (x: unknown): x is string =>
   typeof x === 'string' && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(x);
@@ -106,6 +109,9 @@ export function sanitizeState(value: unknown): ReaderState {
     for (const [slug, shelf] of Object.entries(value.library))
       if (validSlug(slug) && ['reading', 'later', 'completed', 'dropped'].includes(String(shelf)))
         clean.library[slug] = shelf as Shelf;
+  if (object(value.novelSettings))
+    for (const [slug, settings] of Object.entries(value.novelSettings))
+      if (validSlug(slug) && object(settings)) clean.novelSettings![slug] = normalizeSettings(settings, clean.settings);
   if (object(value.progress))
     for (const [slug, p] of Object.entries(value.progress)) {
       if (
@@ -173,6 +179,14 @@ export const repository: ReaderRepository = {
     const state = read();
     if (shelf) state.library[slug] = shelf;
     else delete state.library[slug];
+    write(state);
+  },
+  async setNovelSettings(slug, settings) {
+    if (!validSlug(slug)) return;
+    const state = read();
+    state.novelSettings ??= {};
+    if (settings) state.novelSettings[slug] = normalizeSettings(settings, state.settings);
+    else delete state.novelSettings[slug];
     write(state);
   },
   async saveProgress(slug, progress) {
