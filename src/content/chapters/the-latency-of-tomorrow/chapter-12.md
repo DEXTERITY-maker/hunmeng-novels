@@ -62,7 +62,7 @@ Mei asked which sentences he could establish. There were several. She asked whic
 
 “I don't know.”
 
-Her refusal to offer comfort made him furious. It also prevented him mistaking comfort for a plan.
+He ended the call too quickly. For ten minutes he rehearsed an argument he no longer had anyone to make it to. Then he opened Luo's statement and began marking the claims it had not sourced.
 
 An called later. She had read the disclosed messages between Yansheng and Luo. Her husband had indeed wanted to travel less. He had also asked which colleague could cover a December visit. The exchange contained dissatisfaction and an expectation of still having a job.
 
