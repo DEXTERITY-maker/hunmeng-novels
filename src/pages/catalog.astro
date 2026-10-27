@@ -16,14 +16,14 @@ const PAGE_SIZE = 24;
 >
   <main id="main" class="page-shell catalog-page">
     <div class="page-heading catalog-heading landscape-banner">
-      <h1>Novel catalog</h1>
+      <span class="eyebrow">Explore your next world</span><h1>Novel catalog</h1>
       <p>Search and filter for a story to match your mood.</p>
       <nav class="taxonomy-nav" aria-label="Browse novels"><a href="/genres/">Browse genres</a><a href="/tags/">Browse tags</a></nav>
     </div>
     <div class="catalog-layout">
       <form id="catalog-filters" class="filter-panel catalog-filter-panel" role="search">
         <div class="catalog-filter-header">
-          <h2>Find your next read</h2>
+          <h2>Find your next read</h2><p>Search the library and refine your selection.</p>
           <button type="reset" class="text-button">Reset filters</button>
         </div>
         <div class="catalog-search-row">
@@ -33,7 +33,7 @@ const PAGE_SIZE = 24;
           </label>
         </div>
         <details id="catalog-options" class="catalog-options">
-          <summary>Filters and sorting <span id="active-filter-count" hidden></span></summary>
+          <summary><span class="filters-summary-title">Filters and sorting</span><span id="active-filter-count" hidden></span></summary>
           <div class="catalog-controls">
             <label>
               Category
