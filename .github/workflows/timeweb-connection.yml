@@ -1,6 +1,9 @@
 name: Проверка подключения Timeweb
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths: [.github/workflows/timeweb-connection.yml]
 permissions:
   contents: read
 jobs:
@@ -37,4 +40,21 @@ jobs:
               repositoryUrlHasExpectedName: JSON.stringify(app.repository_url ?? '').toLowerCase().includes(repo),
               nameLooksLikeHunmeng: String(app.name).toLowerCase().includes('hunmeng')
             })) }, null, 2));
+          const candidates = data.apps.filter(app => (app.branch_name ?? app.branch) === 'main' &&
+            String(app.repository?.full_name).toLowerCase() === repo);
+          if (candidates.length !== 1) throw new Error('Expected one matching repository on main');
+          const selected = candidates[0];
+          const deployResponse = await fetch(`https://api.timeweb.cloud/api/v1/apps/${selected.id}/deploys?limit=5`, {
+            headers: { Authorization: `Bearer ${token}` }, redirect: 'error', signal: AbortSignal.timeout(30000)
+          });
+          if (!deployResponse.ok) throw new Error(`Timeweb deployments HTTP ${deployResponse.status}`);
+          const deployments = await deployResponse.json();
+          const safeSha = value => /^[a-f0-9]{7,40}$/.test(String(value)) ? value : '<not-sha>';
+          const safeId = value => /^[a-z0-9-]{1,80}$/i.test(String(value)) ? value : '<not-id>';
+          console.log('DEPLOYMENT_DIAGNOSTIC ' + JSON.stringify({
+            appId: selected.id, currentCommit: safeSha(selected.commit_sha), responseKeys: Object.keys(deployments),
+            deploys: deployments.deploys?.map(d => ({keys: Object.keys(d), id: safeId(d.id),
+              appId: safeId(d.app_id), commit: safeSha(d.commit_sha), commitField: safeSha(d.commit), commitKeys: d.commit && typeof d.commit === 'object' ? Object.keys(d.commit) : [], nestedCommit: safeSha(d.commit?.sha),
+              status: /^[a-z_]{1,40}$/.test(d.status) ? d.status : '<unknown>'}))
+          }));
           JS
