@@ -80,4 +80,4 @@ Don’t compare the totals yet, she wrote. Compare what each total is allowed to
 
 He added a new row to the chronology: technical review requested. In the final column he wrote, Relationship to disappearance unknown.
 
-Before saving, he read that sentence aloud. It was the first sentence of the day he could defend without changing a word.
+Before saving, he sent the last line to An. She corrected an hour in the chronology and left the uncertainty untouched. He made her correction, then wrote the case number on the paper he kept beside the telephone.
