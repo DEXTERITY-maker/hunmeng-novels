@@ -1,0 +1,99 @@
+---
+import { ACHIEVEMENTS, RANKS, TITLES } from '../config/progression';
+---
+<section class="progression-space" aria-labelledby="reader-progression-title" data-reader-progression>
+  <div class="progression-section-heading">
+    <div>
+      <p class="eyebrow">Every chapter counts</p>
+      <h3 id="reader-progression-title">Your reading journey</h3>
+    </div>
+    <span class="progression-server-label">Verified by Hunmeng</span>
+  </div>
+  <p id="progression-status" class="fine" role="status" aria-live="polite">Loading your reader progression…</p>
+  <div id="progression-content" hidden>
+    <div class="progression-identity" data-rank="iron">
+      <img id="progression-emblem" src="/images/ranks/iron.svg" alt="Reader rank emblem" width="136" height="136" decoding="async" />
+      <div class="progression-identity-copy">
+        <p class="progression-eyebrow">YOUR READER RANK</p>
+        <h4 id="progression-rank-name">Iron</h4>
+        <div class="progression-identity-meta">
+          <span id="progression-level">Level 1</span>
+          <span id="progression-title">Novice Reader</span>
+        </div>
+        <div class="progression-bar-label">
+          <span id="progression-xp">0 / 500 XP</span>
+          <span id="progression-remaining">500 XP to next level</span>
+        </div>
+        <progress id="progression-xp-bar" max="500" value="0" aria-label="XP toward next level"></progress>
+      </div>
+    </div>
+    <div class="progression-stat-grid" aria-label="Reading statistics">
+      <div><strong data-progress-stat="chapters">—</strong><span>Chapters completed</span></div>
+      <div><strong data-progress-stat="completedNovels">—</strong><span>Novels completed</span></div>
+      <div><strong data-progress-stat="readingDays">—</strong><span>Reading days</span></div>
+      <div><strong data-progress-stat="scifiNovels">—</strong><span>Fantasy / sci-fi novels</span></div>
+      <div><strong data-progress-stat="completedGenres">—</strong><span>Genres explored</span></div>
+      <div><strong data-progress-stat="readingOnDevice">—</strong><span>Reading on this device</span></div>
+    </div>
+    <section class="progression-subsection" aria-labelledby="ranks-title">
+      <div class="progression-section-heading">
+        <div><p class="eyebrow">Nine paths to greatness</p><h4 id="ranks-title">Reader ranks</h4></div>
+        <p class="fine">Your rank is earned automatically through XP.</p>
+      </div>
+      <ol class="progression-rank-gallery">
+        {RANKS.map(rank => (
+          <li class="progression-rank-card" data-rank-card={rank.id}>
+            <img src={`/images/ranks/${rank.id}.svg`} alt="" width="116" height="116" loading="lazy" decoding="async" />
+            <strong>{rank.en}</strong>
+            <span class="progression-rank-ru" lang="ru">{rank.ru}</span>
+            <span class="fine">Level {rank.min}–{rank.max}</span>
+            <span class="progression-rank-state" data-rank-state>Locked</span>
+            <p>{rank.description}</p>
+          </li>
+        ))}
+      </ol>
+    </section>
+    <section class="progression-subsection" aria-labelledby="titles-title">
+      <div class="progression-section-heading">
+        <div><p class="eyebrow">Choose your identity</p><h4 id="titles-title">Reader titles</h4></div>
+        <p class="fine">Titles are independent of your rank.</p>
+      </div>
+      <div class="progression-title-list">
+        {TITLES.map(title => (
+          <div class="progression-title-card" data-title-card={title.id}>
+            <div><strong>{title.en}</strong> <span lang="ru" class="progression-rank-ru">{title.ru}</span>
+              <p class="fine" data-title-condition>{title.id === 'novice' ? 'Unlocked from the start' : title.available ? `Requires ${title.threshold} verified ${title.metric}` : 'Awaiting a verified server metric'}</p>
+            </div>
+            <button type="button" class="button secondary" data-select-title={title.id} disabled aria-label={`Equip ${title.en} title`}>Locked</button>
+          </div>
+        ))}
+      </div>
+      <p class="fine" id="progression-title-status" role="status" aria-live="polite"></p>
+    </section>
+    <section class="progression-subsection" aria-labelledby="achievements-title">
+      <div class="progression-section-heading"><div><p class="eyebrow">Milestones to remember</p><h4 id="achievements-title">Achievements</h4></div></div>
+      <div class="progression-achievement-grid">
+        {ACHIEVEMENTS.map(achievement => (
+          <article class="progression-achievement" data-achievement={achievement.id}>
+            <div class="progression-achievement-symbol" aria-hidden="true">✧</div>
+            <h5>{achievement.en}</h5>
+            <p class="progression-rank-ru" lang="ru">{achievement.ru}</p>
+            <progress max={achievement.threshold} value="0" aria-label={`${achievement.en} completion`}></progress>
+            <p class="fine" data-achievement-progress>0 / {achievement.threshold}</p>
+            <p class="fine" data-achievement-date>Not yet unlocked</p>
+          </article>
+        ))}
+      </div>
+    </section>
+    <p class="fine progression-explanation">Levels, titles and achievement dates come from verified activity on your signed-in account. Your library and exact reading position remain stored locally on this device.</p>
+  </div>
+  <dialog id="reader-rank-up" class="progression-rank-dialog" aria-labelledby="reader-rank-up-title">
+    <div class="progression-rank-dialog-body">
+      <p class="eyebrow">A new chapter begins</p>
+      <img id="reader-rank-up-emblem" src="/images/ranks/iron.svg" alt="" width="145" height="145" />
+      <h3 id="reader-rank-up-title">New rank unlocked!</h3>
+      <p id="reader-rank-up-description"></p>
+      <button type="button" class="button" id="reader-rank-up-close">Continue reading</button>
+    </div>
+  </dialog>
+</section>
