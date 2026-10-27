@@ -14,11 +14,11 @@ const image = linkedNovel ? linkedNovel.cover : "/images/reading-landscape.webp"
 ---
 <article class:list={['news-card', compact && 'news-card-compact']} data-news-card data-news-category={category}>
   {!compact && <a class:list={["news-card-image", !linkedNovel && "news-card-landscape"]} href={newsUrl(post.id)} tabindex="-1" aria-hidden="true"><img src={image} alt="" width="220" height="280" loading="lazy" /></a>}
-  <div class="news-card-top">
+  <div class="news-card-body"><div class="news-card-top">
     <span class:list={['news-category', `news-category-${category}`]}>{newsCategories[category]}</span>
     <time datetime={publishedAt}>{dateLabel(publishedAt)}</time>
   </div>
   <h3><a href={newsUrl(post.id)}>{title}</a></h3>
   <p>{excerpt}</p>
-  <a class="news-read-more" href={newsUrl(post.id)}>Read more <span aria-hidden="true">→</span></a>
+  <a class="news-read-more" href={newsUrl(post.id)}>Read more <span aria-hidden="true">→</span></a></div>
 </article>
