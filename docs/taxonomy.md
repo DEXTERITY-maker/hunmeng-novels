@@ -26,7 +26,7 @@ Reference checked on 27 October 2026:
 
 ## Reader behavior
 
-- `/genres/` and `/tags/` have search, local counts, alphabetical/popularity sorting, and an option to show only labels with books. Tags also have group filtering.
+- `/genres/` and `/tags/` have search, local counts, alphabetical/popularity sorting, and show labels with books by default. The full vocabulary remains available through Show → All; searches and sorting can be shared through the URL. Tags also have group filtering.
 - Zero-count labels remain discoverable and lead to a truthful empty catalog result. Their counts never include WTR-LAB books.
 - Catalog genres include the full vocabulary. The tag picker searches and filters by group, has independent Include/Exclude controls, and keeps selected tags visible while searching.
 - `tagMode=all` is the default; `tagMode=any` accepts any included tag. Exclusions apply in either mode. Conflicting include/exclude selections return no matching book under all-mode.

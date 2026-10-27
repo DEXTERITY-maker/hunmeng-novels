@@ -1,5 +1,5 @@
 import { catalogFilterLabel } from '../lib/labels';
-import { getCatalogIndex, type CatalogIndexNovel } from '../lib/client-data';
+import { getCatalogIndex, refreshCatalogChapterCounts, type CatalogIndexNovel } from '../lib/client-data';
 import { chapterCount } from '../lib/format';
 
 const PAGE_SIZES = [24, 48];
@@ -26,13 +26,23 @@ function card(n: CatalogIndexNovel) {
   image.loading = 'lazy';
   cover.append(image);
   const body = make('div', undefined, 'novel-copy');
-  body.append(make('p', n.categories.length ? n.categories.join(' · ') : n.genres.join(' · '), 'genre-line'));
+  body.append(make('p', n.genres.join(' · '), 'genre-line'));
   const h2 = make('h2');
   const title = make('a', n.title);
   title.href = n.url;
   h2.append(title);
   body.append(h2, make('p', n.originalTitle === n.title ? n.author : n.originalTitle + ' · ' + n.author, 'original-title'));
   body.append(make('p', n.description, 'card-description'));
+  if (n.tags.length) {
+    const tags = make('div', undefined, 'catalog-card-tags');
+    tags.setAttribute('aria-label', 'Story tags');
+    for (const tag of n.tags.slice(0, 3)) {
+      const link = make('a', tag);
+      link.href = '/catalog/?include=' + encodeURIComponent(tag);
+      tags.append(link);
+    }
+    body.append(tags);
+  }
   const stats = make('p', undefined, 'catalog-card-stats');
   if (n.rating) stats.append(make('span', '★ ' + n.rating.average.toFixed(1) + ' / 5 · ' + n.rating.count + ' ratings'));
   if (n.views !== null) stats.append(make('span', '◉ ' + numberLabel(n.views) + ' views'));
@@ -195,6 +205,7 @@ export async function initCatalog() {
     });
     window.addEventListener('popstate',()=>{loadQuery();render(false);});
     render(false);
+    void refreshCatalogChapterCounts(novels).then(changed => { if (changed) render(false); });
   } catch {
     count.textContent='Advanced search is temporarily unavailable. Available novels are shown below.';
   }

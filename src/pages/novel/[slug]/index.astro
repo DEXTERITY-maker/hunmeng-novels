@@ -35,7 +35,7 @@ const usesPlaceholder = n.cover === placeholderCover;
   ogImageAlt={usesPlaceholder ? undefined : `Novel cover “${n.title}”`}
   structuredData={structuredData}
 >
-  <main id="main" class="page-shell">
+  <main id="main" class="page-shell novel-page">
     <a class="back-link" href="/catalog/">
       ← Catalog
     </a>
@@ -50,14 +50,16 @@ const usesPlaceholder = n.cover === placeholderCover;
       />
       <div class="detail-copy">
         <p class="genre-line genre-links" aria-label="Genres">{n.genres.map(genre => <a href={`/catalog/?genre=${encodeURIComponent(genre)}`}>{genre}</a>)}</p>
-        <div class="work-categories" aria-label="Categories">
-          {n.categories.map((category) => (
-            <a href={`/catalog/?category=${encodeURIComponent(category)}`}>{category}</a>
-          ))}
-        </div>
         <h1>{n.title}</h1>
         {n.originalTitle !== n.title && <p class="original-title">{n.originalTitle}</p>}
         <p class="author">{n.author}</p>
+        <div class="detail-actions">
+          <a class="button" href={n.firstUrl} data-continue={n.slug}>
+            Start reading
+          </a>
+          <LibraryControl slug={n.slug} />
+          <a class="detail-contents-link" href="#contents-title">Contents <span aria-hidden="true">→</span></a>
+        </div>
         <p class="detail-description">{n.description}</p>
         {serial && <p class="fine">{n.chapterCount} opening chapters published · {serial.totalChapters} planned. <a href={`${n.url}releases/`}>Release schedule</a></p>}
         <dl class="novel-facts">
@@ -101,6 +103,11 @@ const usesPlaceholder = n.cover === placeholderCover;
             </dd>
           </div>
         </dl>
+        <div class="work-categories" aria-label="Categories">
+          {n.categories.map((category) => (
+            <a href={`/catalog/?category=${encodeURIComponent(category)}`}>{category}</a>
+          ))}
+        </div>
         <div class="tag-list">
           {n.tags.map((t) => (
             <a href={`/catalog/?include=${encodeURIComponent(t)}`}>{t}</a>
@@ -115,17 +122,40 @@ const usesPlaceholder = n.cover === placeholderCover;
           </div>
           <p class="fine" data-rating-status aria-live="polite">Your rating is saved only on this device and does not affect the overall rating.</p>
         </div>
-        <div class="detail-actions">
-          <a class="button" href={n.firstUrl} data-continue={n.slug}>
-            Start reading
-          </a>
-          <LibraryControl slug={n.slug} />
-        </div>
         {n.demo && (
           <p class="fine">Demo novel. The story and author are fictional.</p>
         )}
       </div>
     </article>
+    <nav class="novel-section-nav" aria-label="Novel sections">
+      <a href="#contents-title">Contents</a>
+      <a href="#author-title">About the author</a>
+      {glossaryGroups.length > 0 && <a href="#glossary-title">Glossary</a>}
+    </nav>
+    <section class="section contents-section" aria-labelledby="contents-title">
+      {serial && <p class="notice" data-serial-summary={n.slug} data-published={n.chapterCount}><span data-serial-summary-text>The novel is being written. The daily schedule has not started yet. Once the complete manuscript is ready: 50 chapters at launch, then one daily at 12:00 Moscow time. </span><a href={`${n.url}releases/`}>Check chapter availability →</a></p>}
+      <div class="section-heading">
+        <h2 id="contents-title">Contents</h2>
+        <span class="fine">{chapterCount(n.chapterCount)}</span>
+      </div>
+      <ol class="chapter-list">
+        {firstChapters.map((c) => (
+          <li>
+            <a href={chapterUrl(n.slug, c.data.slug)} data-chapter-slug={c.data.slug}>
+              <span>
+                <span class="chapter-number">{String(c.data.number).padStart(2, '0')}</span>
+                {c.data.title}
+              </span>
+              <time datetime={c.data.publishedAt}>{dateLabel(c.data.publishedAt)}</time>
+            </a>
+          </li>
+        ))}
+      </ol>
+      <div class="chapter-pages-footer">
+        <p class="fine">{n.chapterCount > firstChapters.length ? `Showing ${chapterCount(firstChapters.length)} of ${n.chapterCount}.` : `Available to read: ${chapterCount(n.chapterCount)}.`}</p>
+        <a class="button secondary" href={chapterListUrl(n.slug, 1)}>Full contents →</a>
+      </div>
+    </section>
     <section class="section author-section" aria-labelledby="author-title">
       <div class="section-heading"><h2 id="author-title">About the author</h2></div>
       <p class="author-info-name">{n.author}</p>
@@ -165,30 +195,6 @@ const usesPlaceholder = n.cover === placeholderCover;
         </div>
       </section>
     )}
-    <section class="section contents-section" aria-labelledby="contents-title">
-      {serial && <p class="notice" data-serial-summary={n.slug} data-published={n.chapterCount}><span data-serial-summary-text>The novel is being written. The daily schedule has not started yet. Once the complete manuscript is ready: 50 chapters at launch, then one daily at 12:00 Moscow time. </span><a href={`${n.url}releases/`}>Check chapter availability →</a></p>}
-      <div class="section-heading">
-        <h2 id="contents-title">Contents</h2>
-        <span class="fine">{chapterCount(n.chapterCount)}</span>
-      </div>
-      <ol class="chapter-list">
-        {firstChapters.map((c) => (
-          <li>
-            <a href={chapterUrl(n.slug, c.data.slug)} data-chapter-slug={c.data.slug}>
-              <span>
-                <span class="chapter-number">{String(c.data.number).padStart(2, '0')}</span>
-                {c.data.title}
-              </span>
-              <time datetime={c.data.publishedAt}>{dateLabel(c.data.publishedAt)}</time>
-            </a>
-          </li>
-        ))}
-      </ol>
-      <div class="chapter-pages-footer">
-        <p class="fine">{n.chapterCount > firstChapters.length ? `Showing ${chapterCount(firstChapters.length)} of ${n.chapterCount}.` : `Available to read: ${chapterCount(n.chapterCount)}.`}</p>
-        <a class="button secondary" href={chapterListUrl(n.slug, 1)}>Full contents →</a>
-      </div>
-    </section>
   </main>
   <script>
     import { initPersonal } from '../../../scripts/personal';
