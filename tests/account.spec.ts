@@ -138,6 +138,51 @@ test('запрещённое хранилище не отправляет дан
 });
 
 async function loginFixture(page:Page) { await open(page);await fill(page);await page.locator('#reader-auth-submit').click();await expect(page.locator('#auth-logged-in')).toBeVisible(); }
+for (const width of [320, 390, 1440]) {
+ test(`профиль показывает одну вкладку, а ссылки меню открывают нужную при ${width}px`,async({page},testInfo)=>{
+  await page.setViewportSize({width,height:850});
+  const state=await mockAuth(page);
+  await loginFixture(page);
+  const panels=['profile-details','profile-reading','profile-account'] as const;
+  const assertView=async(id:(typeof panels)[number])=>{
+    await expect(page.locator('#account-title')).toHaveText(
+      id==='profile-details'?'My profile':id==='profile-reading'?'Reading settings':'My account');
+    for(const panel of panels){
+      if(panel===id)await expect(page.locator('#'+panel)).toBeVisible();
+      else await expect(page.locator('#'+panel)).toBeHidden();
+    }
+    await expect(page.locator('.profile-sidebar nav a[href="#'+id+'"]')).toHaveAttribute('aria-current','location');
+    await expect(page.locator('.profile-sidebar nav a[aria-current="location"]')).toHaveCount(1);
+    expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
+  };
+  await assertView('profile-details');
+  await expect(page.locator('#profile-details .profile-local-note')).toBeVisible();
+  await page.screenshot({path:testInfo.outputPath(`hunmeng-account-tabs-profile-${width}.png`),fullPage:true,animations:'disabled'});
+  await page.locator('.profile-sidebar nav a[href="#profile-reading"]').click();
+  await expect(page).toHaveURL(/#profile-reading$/);
+  await assertView('profile-reading');
+  await expect(page.getByLabel('Reading font',{exact:true})).toBeVisible();
+  await page.screenshot({path:testInfo.outputPath(`hunmeng-account-tabs-reading-${width}.png`),fullPage:true,animations:'disabled'});
+  await page.locator('.profile-sidebar nav a[href="#profile-account"]').click();
+  await assertView('profile-account');
+  await expect(page.locator('#account-signout')).toBeVisible();
+  await page.goBack();
+  await assertView('profile-reading');
+  await page.goBack();
+  await assertView('profile-details');
+  await page.goto('/');
+  await page.getByRole('button',{name:'Reader account',exact:true}).click();
+  await page.locator('.account-panel').getByRole('link',{name:'Reading settings',exact:true}).click();
+  await expect(page).toHaveURL(/\/account\/#profile-reading$/);
+  await assertView('profile-reading');
+  await page.goto('/');
+  await page.getByRole('button',{name:'Reader account',exact:true}).click();
+  await page.locator('.account-panel').getByRole('link',{name:'My profile',exact:true}).click();
+  await expect(page).toHaveURL(/\/account\/$/);
+  await assertView('profile-details');
+  expect(state.requests.every(p=>p.startsWith('/auth/v1/'))).toBe(true);
+ });
+}
 test('меню шапки показывает аватар и настройки, а выход сохраняет библиотеку',async({page})=>{
  const state=await mockAuth(page);await loginFixture(page);
  await page.getByLabel('Nickname',{exact:true}).fill('Моряк');
