@@ -89,18 +89,195 @@ img {color:transparent;}
   border-radius:17px;box-shadow:0 18px 48px rgb(8 35 43 / .16);
   z-index:50;
 }
-.header-account .account-panel { width:min(290px,calc(100vw - 24px)); padding:18px; }
-.account-panel .header-panel-title {font:600 1.12rem/1.35 'Lora Variable',Georgia,serif;color:var(--hm-navy);padding:4px 7px 13px;margin:0 0 9px;border-bottom:1px solid var(--line);}
-.header-account .account-panel [data-account-member] {display:flex;flex-direction:column;gap:4px;}
-.account-panel [data-account-member] :is(a,button) {
-  display:flex; gap:13px; align-items:center; justify-content:flex-start;
-  min-height:50px; padding:11px 12px; text-align:left; font-size:.95rem;
-  color:var(--ink); border-radius:11px;
+/* Reader account: a compact illustrated-book menu, not a full-page panel. */
+.header-account .account-panel {
+  box-sizing:border-box;
+  right:0;
+  left:auto;
+  width:min(310px,calc(100vw - 24px));
+  max-width:calc(100vw - 24px);
+  max-height:calc(100dvh - 88px);
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  padding:14px;
+  border:1px solid var(--hm-edge);
+  border-radius:17px;
+  background:var(--surface);
+  box-shadow:0 14px 42px rgb(9 42 49 / .16);
+  scrollbar-width:thin;
 }
-.account-panel [data-account-member] svg { flex:none;color:var(--hm-forest); }
-.account-panel [data-account-member] :is(a,button):hover,
-.account-panel [data-account-member] :is(a,button):focus-visible {background:var(--soft);color:var(--hm-forest);}
-.account-panel [data-header-signout] {border-top:1px solid var(--line);border-radius:0 0 11px 11px; margin-top:8px;padding-top:15px;}
+.account-panel .account-menu-heading {
+  padding:4px 8px 12px;
+  border-bottom:1px solid var(--line);
+}
+.account-panel .header-panel-title {
+  margin:0;
+  padding:0;
+  border:0;
+  color:var(--hm-navy);
+  font:700 1.13rem/1.32 'Lora Variable',Georgia,serif;
+}
+.account-panel .account-menu-subtitle {
+  display:block;
+  margin-top:5px;
+  color:var(--muted);
+  font-size:.72rem;
+  line-height:1.35;
+  letter-spacing:.02em;
+}
+.header-account .account-panel :is([data-account-member],[data-account-guest]) {
+  flex-direction:column;
+  gap:1px;
+  padding-top:8px;
+}
+.header-account .account-panel [data-account-member]:not([hidden]),
+.header-account .account-panel [data-account-guest]:not([hidden]) {
+  display:flex;
+}
+.header-account .account-panel :is([data-account-member],[data-account-guest])[hidden] {
+  display:none !important;
+}
+.header-account .account-panel :is([data-account-member],[data-account-guest]) > :is(a,button) {
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  box-sizing:border-box;
+  gap:13px;
+  width:100%;
+  min-height:44px;
+  margin:0;
+  padding:8px 10px;
+  border:0;
+  border-radius:9px;
+  text-align:left;
+  font-size:.91rem;
+  font-weight:550;
+  line-height:1.35;
+  letter-spacing:0;
+  text-decoration:none;
+  color:var(--ink);
+  background:transparent;
+  transition:background .15s ease,color .15s ease;
+}
+.account-panel .account-menu-links svg {
+  flex:none;
+  width:19px;
+  height:19px;
+  color:var(--hm-forest);
+}
+.account-panel .account-menu-links > :is(a,button):hover,
+.account-panel .account-menu-links > :is(a,button):focus-visible {
+  background:var(--soft);
+  color:var(--hm-forest);
+}
+.account-panel .account-menu-links > :is(a,button):focus-visible,
+.account-panel .account-menu-theme-choice:has(input:focus-visible) {
+  outline:2px solid var(--hm-forest);
+  outline-offset:2px;
+}
+.header-account .account-panel [data-header-signout] {
+  margin-top:7px;
+  padding-top:12px;
+  min-height:55px;
+  border-top:1px solid var(--line);
+  border-radius:0 0 9px 9px;
+}
+.account-panel .account-menu-preferences {
+  margin-top:8px;
+  padding:13px 7px 3px;
+  border-top:1px solid var(--line);
+}
+.account-panel .account-menu-preferences-title {
+  margin:0 0 9px;
+  font-size:.72rem;
+  font-weight:700;
+  letter-spacing:.04em;
+  line-height:1.3;
+  color:var(--muted);
+}
+.account-panel .account-menu-theme {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:0;
+  min-height:44px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  overflow:visible;
+}
+.account-panel .account-menu-theme-choice {
+  position:relative;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:7px;
+  min-width:0;
+  min-height:44px;
+  padding:8px 5px;
+  font-size:.83rem;
+  line-height:1.2;
+  font-weight:600;
+  color:var(--muted);
+  background:var(--surface);
+  cursor:pointer;
+  transition:color .15s ease,background .15s ease;
+}
+.account-panel .account-menu-theme-choice:first-child {
+  border-radius:9px 0 0 9px;
+}
+.account-panel .account-menu-theme-choice:last-child {
+  border-left:1px solid var(--line);
+  border-radius:0 9px 9px 0;
+}
+.account-panel .account-menu-theme-choice input {
+  position:absolute;
+  width:100%;
+  height:100%;
+  inset:0;
+  margin:0;
+  opacity:0;
+  cursor:pointer;
+}
+.account-panel .account-menu-theme-choice:has(input:checked) {
+  color:var(--hm-forest);
+  background:var(--soft);
+}
+.account-panel .account-menu-theme-choice:has(input:focus-visible) {
+  z-index:1;
+}
+.account-panel .account-menu-theme-choice:hover {
+  color:var(--hm-forest);
+  background:var(--soft);
+}
+.account-panel .account-menu-theme-choice svg {
+  width:17px;
+  height:17px;
+  flex:none;
+  color:currentColor;
+}
+.account-panel [data-header-account-status]:not([hidden]) {
+  margin:9px 5px 2px;
+  line-height:1.5;
+  overflow-wrap:anywhere;
+}
+@media (max-width:760px) {
+  .header-account .account-panel {
+    top:calc(100% + 8px);
+    right:12px;
+    left:auto;
+    width:min(306px,calc(100vw - 24px));
+    max-width:calc(100vw - 24px);
+    padding:13px;
+    max-height:calc(100dvh - 92px);
+  }
+}
+@media (max-width:350px) {
+  .header-account .account-panel {
+    right:10px;
+    width:calc(100vw - 20px);
+    max-width:calc(100vw - 20px);
+    padding:12px;
+  }
+}
 .header-search .search-panel {border-radius:17px;}
 /* Illustrated home with live book data, not screenshot overlays. */
 .home-page .home-hero {padding:0 0 10px;border:0;}
@@ -569,7 +746,7 @@ img {color:transparent;}
  .rights-page .rights-steps h4 {font-size:.98rem;}
  .rights-page .rights-steps p {font-size:.86rem;}
 
- .header-account .account-panel {width:min(270px,calc(100vw - 24px));}
+ /* Account menu width and insets are defined with its own mobile rules above. */
 }
 @media(max-width:380px) {
  .home-page .home-discover a {font-size:.715rem;padding-inline:3px;}
