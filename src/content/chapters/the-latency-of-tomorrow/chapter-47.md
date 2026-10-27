@@ -37,9 +37,15 @@ The procurement manager looked offended. He had not intended that result. But th
 
 They replaced the guarantee with a service commitment the engineering team could meet: data quality checks, forecasts within an agreed horizon, documented recommendations, reports on evaluated outcomes and notice when conditions fell outside the model's range. Any actual performance guarantee would require a separate agreement about operations, equipment and risk.
 
-The client's lawyer complained that the new language was less attractive.
+The client's lawyer complained that the new language was less attractive. The procurement manager said the department had received approval for the pilot on the expectation of a quantified saving. If the contract changed, he would have to defend the decision again.
 
-“It tells you what we will do,” Chen said. “That is what a contract should do before it tells you what you might save.”
+Guo looked toward the manager rather than the engineers. “And if the revised terms are rejected?”
+
+“Then we don't have this sale,” Chen said. “We still won't guarantee actions we aren't authorized to take.”
+
+The manager asked for a side-by-side explanation of the change. He did not thank them.
+
+“It tells you what we will do,” Chen added. “That is what a contract should do before it tells you what you might save.”
 
 Yanchuan recognized the structure from the acceptance report in Kenya. There, a narrow test had been presented as broad proof. Here, a recommendation tool was nearly becoming a promise about a factory's entire operation. No one needed to intend a deception for the difference to matter.
 
