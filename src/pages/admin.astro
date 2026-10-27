@@ -113,11 +113,14 @@ const taxonomy = getTaxonomy(await getLibrary());
               <label>Chapter title <input name="chapter_title" required maxlength="200" /></label>
             </div>
             <label>Short description (10–200 characters)
-              <textarea name="chapter_description" rows="2" minlength="10" maxlength="200" required></textarea>
+              <textarea name="chapter_description" rows="2" minlength="10" maxlength="200"></textarea>
             </label>
-            <label>Source text <textarea name="original_text" rows="8" required></textarea></label>
-            <label>Translation draft (Markdown) <textarea name="translated_text" rows="12" required></textarea></label>
-            <button class="button" type="submit">Save draft</button>
+            <label>Source text <textarea name="original_text" rows="8"></textarea></label>
+            <label>Translation draft (Markdown) <textarea name="translated_text" rows="12"></textarea></label>
+            <div class="admin-actions">
+              <button class="button secondary" type="submit" data-job-status="draft">Save draft</button>
+              <button class="button" type="submit" data-job-status="review">Send for review</button>
+            </div>
           </form>
           <p class="fine">Drafts are never published automatically. Machine translations from n8n or another service must be reviewed by an editor.</p>
         </section>
