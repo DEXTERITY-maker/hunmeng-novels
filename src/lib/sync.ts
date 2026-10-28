@@ -51,8 +51,17 @@ async function perform(client:SupabaseClient, choice?:SyncChoice):Promise<SyncRe
   const owner=syncOwner();
   if(owner && owner!==userId) throw new SyncOwnershipError();
   for(let attempt=0;attempt<3;attempt++){
-    const fetched=await client.from('novel_reader_state')
-      .select('state,updated_at').eq('user_id',userId).maybeSingle();
+    // A failed connection must not leave the interface spinning indefinitely.
+    const controller=new AbortController();
+    const timeout=window.setTimeout(()=>controller.abort(),3500);
+    let fetched;
+    try {
+      fetched=await client.from('novel_reader_state')
+        .select('state,updated_at').eq('user_id',userId)
+        .abortSignal(controller.signal).maybeSingle();
+    }catch {
+      throw new Error('Unable to read the cloud library. Your device copy is unchanged.');
+    }finally {window.clearTimeout(timeout);}
     if(fetched.error) throw new Error('Unable to read the cloud library. Your device copy is unchanged.');
     const remote=fetched.data as {state:ReaderState;updated_at:string}|null;
     const before=await repository.getState();
