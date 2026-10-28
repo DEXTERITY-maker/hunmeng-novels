@@ -1,0 +1,111 @@
+{
+  "version": "v2-draft",
+  "maxLevel": 500,
+  "source": "Proposed rank model; not yet used by the live interface or Supabase functions.",
+  "ranks": [
+    {
+      "id": "wood",
+      "en": "Wood",
+      "ru": "Деревянный",
+      "min": 1,
+      "max": 24,
+      "accent": "#8c6f47"
+    },
+    {
+      "id": "iron",
+      "en": "Iron",
+      "ru": "Железный",
+      "min": 25,
+      "max": 49,
+      "accent": "#87949a"
+    },
+    {
+      "id": "bronze",
+      "en": "Bronze",
+      "ru": "Бронзовый",
+      "min": 50,
+      "max": 74,
+      "accent": "#b97b4e"
+    },
+    {
+      "id": "silver",
+      "en": "Silver",
+      "ru": "Серебряный",
+      "min": 75,
+      "max": 99,
+      "accent": "#b8ccd9"
+    },
+    {
+      "id": "gold",
+      "en": "Gold",
+      "ru": "Золотой",
+      "min": 100,
+      "max": 124,
+      "accent": "#e7ba5e"
+    },
+    {
+      "id": "dark-gold",
+      "en": "Dark Gold",
+      "ru": "Тёмно-золотой",
+      "min": 125,
+      "max": 149,
+      "accent": "#9d712f"
+    },
+    {
+      "id": "platinum",
+      "en": "Platinum",
+      "ru": "Платиновый",
+      "min": 150,
+      "max": 199,
+      "accent": "#d5d7df"
+    },
+    {
+      "id": "titanium",
+      "en": "Titanium",
+      "ru": "Титановый",
+      "min": 200,
+      "max": 249,
+      "accent": "#829aaa"
+    },
+    {
+      "id": "emerald",
+      "en": "Emerald",
+      "ru": "Изумрудный",
+      "min": 250,
+      "max": 299,
+      "accent": "#3fa884"
+    },
+    {
+      "id": "sapphire",
+      "en": "Sapphire",
+      "ru": "Сапфировый",
+      "min": 300,
+      "max": 349,
+      "accent": "#3979c5"
+    },
+    {
+      "id": "diamond",
+      "en": "Diamond",
+      "ru": "Алмазный",
+      "min": 350,
+      "max": 399,
+      "accent": "#72cae2"
+    },
+    {
+      "id": "legendary",
+      "en": "Legendary",
+      "ru": "Легендарный",
+      "min": 400,
+      "max": 449,
+      "accent": "#d6a65a"
+    },
+    {
+      "id": "mythical",
+      "en": "Mythical",
+      "ru": "Мифический",
+      "min": 450,
+      "max": 500,
+      "accent": "#aa79d2"
+    }
+  ]
+}
