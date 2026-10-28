@@ -16,7 +16,7 @@ export function initAccountNav() {
     document.querySelectorAll<HTMLElement>('[data-account-guest]').forEach(el => { el.hidden = saved; });
     document.querySelectorAll<HTMLElement>('[data-account-member]').forEach(el => { el.hidden = !saved; });
     const name = document.querySelector<HTMLElement>('[data-header-name]');
-    if (name) name.textContent = saved ? profile.nickname : 'Welcome to Hunmeng';
+    if (name) name.textContent = saved ? (profile.nickname || 'Set a nickname') : 'Welcome to Hunmeng';
     const avatar = document.querySelector<HTMLElement>('[data-header-avatar]');
     if (avatar) {
       const icon = avatar.querySelector('svg');
@@ -27,7 +27,7 @@ export function initAccountNav() {
         initial.dataset.avatarInitial = '';
         avatar.append(initial);
       }
-      initial.textContent = saved ? [...profile.nickname][0].toLocaleUpperCase('en') : '';
+      initial.textContent = saved ? (profile.nickname ? [...profile.nickname][0].toLocaleUpperCase('en') : '?') : '';
       avatar.dataset.avatar = saved ? profile.avatar_color : '';
     }
   };
