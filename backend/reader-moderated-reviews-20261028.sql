@@ -76,7 +76,7 @@ create trigger reader_review_moderation_guard before update on public.reader_rev
 -- author drops below the verified threshold. Other titles and XP remain intact.
 create or replace function private.reader_revoke_reviewer_title()
 returns trigger language plpgsql security definer set search_path=''
-as $
+as $$
 begin
  if old.status='approved' and new.status<>'approved' then
    update public.reader_title_selection
@@ -86,7 +86,7 @@ begin
           where user_id=new.user_id and status='approved') < 20;
  end if;
  return new;
-end $;
+end $$;
 revoke execute on function private.reader_revoke_reviewer_title() from public,anon,authenticated;
 drop trigger if exists reader_revoke_reviewer_title on public.reader_reviews;
 create trigger reader_revoke_reviewer_title after update of status on public.reader_reviews
@@ -131,14 +131,14 @@ grant execute on function public.reader_submit_review(text,text) to authenticate
 -- avoids granting SELECT(user_id) on approved reviews to every reader.
 create or replace function private.reader_my_review_status(p_novel text)
 returns text language plpgsql security definer set search_path=''
-as $
+as $$
 declare v_user uuid:=auth.uid(); v_status text;
 begin
  if v_user is null then raise exception 'Authentication required' using errcode='42501'; end if;
  select r.status into v_status from public.reader_reviews r
    where r.user_id=v_user and r.novel_slug=p_novel;
  return v_status;
-end $;
+end $$;
 revoke execute on function private.reader_my_review_status(text) from public,anon;
 grant execute on function private.reader_my_review_status(text) to authenticated;
 create or replace function public.reader_my_review_status(p_novel text)
@@ -158,14 +158,14 @@ grant select on public.reader_published_reviews to anon,authenticated;
 -- Compute verified Reviewer progress privately; never expose author IDs to readers.
 create or replace function private.reader_approved_review_count()
 returns bigint language plpgsql security definer set search_path=''
-as $
+as $$
 declare v_user uuid:=auth.uid(); v_total bigint;
 begin
  if v_user is null then raise exception 'Authentication required' using errcode='42501'; end if;
  select count(*) into v_total from public.reader_reviews
    where user_id=v_user and status='approved';
  return v_total;
-end $;
+end $$;
 revoke execute on function private.reader_approved_review_count() from public,anon;
 grant execute on function private.reader_approved_review_count() to authenticated;
 
