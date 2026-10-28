@@ -17,8 +17,12 @@ URL -> recognized source -> advisory matches -> moderator decision -> local draf
 - Exact/probable matches are advisory only. Similar chapter titles or a matching title and author never merge works; the catalog snapshot is unchanged by a scenario run. A recognized link is not evidence of translation or publication rights.
 - No chapter bodies, descriptions, covers or images are accepted into the draft: only explicitly permitted metadata fields (original title, alternative titles, authors, chapter titles) pass the policy.
 - The prototype has no network code (a test asserts this), no persistence, no user interface, no server endpoint and no connection to the existing publication pipeline.
+- The structural transition table in `src/lib/novel-requests/core.ts` also contains the server-only `converted` state so the document, the SQL candidate and the prototype share one table; the local prototype never produces `converted` because it has no database or editorial role.
 
-Related: `docs/novel-request-schema-proposal.md` proposes the request storage schema, RLS model and server contract (design only — not applied).
+Related documents:
+
+- `docs/novel-request-schema-proposal.md` — revised proposal v2 for request storage, status transitions, rights authority, access model and server contract (design only, not applied).
+- `docs/proposals/novel-requests-schema-draft.sql` — SQL candidate for staging, explicitly marked as a draft (not a generated migration, never executed; the Supabase CLI is not available in this environment).
 
 ## Integration before launch
 

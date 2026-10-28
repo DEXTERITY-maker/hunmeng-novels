@@ -97,11 +97,12 @@ export function selectPermittedMetadata(input: MetadataInput, policy: MetadataPo
   return out;
 }
 
-export type RequestStatus = 'submitted' | 'review' | 'needs_rights' | 'draft' | 'rejected';
+export type RequestStatus = 'submitted' | 'review' | 'needs_rights' | 'draft' | 'converted' | 'rejected';
 export type Decision = { from: RequestStatus; to: RequestStatus; actorId: string; reason: string; at: string };
 const transitions: Record<RequestStatus, readonly RequestStatus[]> = {
   submitted: ['review', 'rejected'], review: ['needs_rights', 'draft', 'rejected'],
-  needs_rights: ['review', 'rejected'], draft: ['review'], rejected: ['review'],
+  needs_rights: ['review', 'rejected'], draft: ['review', 'converted', 'rejected'],
+  converted: [], rejected: ['review'],
 };
 /** The caller must authorize the actor and persist this decision transactionally on the server. */
 export function makeDecision(from: RequestStatus, to: RequestStatus, actorId: string, reason: string, at: string): Decision {

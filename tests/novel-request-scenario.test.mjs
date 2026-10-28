@@ -210,3 +210,27 @@ test('local command-line prototype runs on fictional data', () => {
   assert.match(humanReadable, /merge performed: no/);
   assert.match(humanReadable, /rights=pending/);
 });
+
+test('structural transitions match the documented table in the schema proposal', async () => {
+  const { makeDecision } = await import('../src/lib/novel-requests/core.ts');
+  // Same table as docs/novel-request-schema-proposal.md §4. Role checks,
+  // rights preconditions and conversion links are enforced server-side.
+  const allowed = {
+    submitted: ['review', 'rejected'],
+    review: ['needs_rights', 'draft', 'rejected'],
+    needs_rights: ['review', 'rejected'],
+    draft: ['review', 'converted', 'rejected'],
+    converted: [],
+    rejected: ['review'],
+  };
+  const statuses = Object.keys(allowed);
+  for (const from of statuses) {
+    for (const to of statuses) {
+      const call = () => makeDecision(from, to, 'moderator', 'transition check', '2026-10-28T10:00:00Z');
+      if (allowed[from].includes(to)) assert.doesNotThrow(call, `${from} -> ${to} must be allowed`);
+      else assert.throws(call, /Invalid moderation decision/, `${from} -> ${to} must be rejected`);
+    }
+  }
+  assert.doesNotThrow(() => makeDecision('draft', 'converted', 'admin', 'editorial source created', '2026-10-28T10:00:00Z'));
+  assert.throws(() => makeDecision('converted', 'review', 'admin', 'reopen', '2026-10-28T10:00:00Z'));
+});
