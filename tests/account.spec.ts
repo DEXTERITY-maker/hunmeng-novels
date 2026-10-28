@@ -637,3 +637,39 @@ test('profile recent-reading empty state never invents activity',async({page})=>
  await expect(page.locator('#profile-recent-list li')).toHaveCount(0);
  await expect(page.locator('#profile-recent-status')).toContainText('No reading activity saved');
 });
+
+
+test('achievement milestones and filters use verified statistics without awarding XP',async({page})=>{
+ const state=await mockAuth(page);
+ state.rankStats.chapters=51;
+ state.rankStats.completedNovels=1;
+ state.rankStats.readingDays=8;
+ await loginFixture(page);
+ await expect(page.locator('#reader-advancement')).toHaveAttribute('data-status','ready');
+ await expect(page.locator('[data-achievement-id]')).toHaveCount(13);
+ await expect(page.locator('#reader-stat-achievements')).toHaveText('6');
+ await expect(page.locator('#reader-achievements-summary')).toContainText('6 of 13');
+ await expect(page.locator('[data-achievement-id="first-world"]')).toHaveAttribute('data-unlocked','true');
+ await expect(page.locator('[data-achievement-id="one-hundred-days"]')).toHaveAttribute('data-unlocked','false');
+ await page.locator('[data-achievement-filter="unlocked"]').click();
+ await expect(page.locator('[data-achievement-id]:visible')).toHaveCount(6);
+ await expect(page.locator('[data-achievement-filter="unlocked"]')).toHaveAttribute('aria-pressed','true');
+ await expect(page.locator('#reader-achievements-empty')).toBeHidden();
+ await page.locator('[data-achievement-filter="locked"]').click();
+ await expect(page.locator('[data-achievement-id]:visible')).toHaveCount(7);
+ await page.locator('[data-achievement-filter="all"]').click();
+ await expect(page.locator('[data-achievement-id]:visible')).toHaveCount(13);
+ await expect(page.locator('#reader-level')).toHaveText('Level 1');
+ expect(state.rankStats.total_xp).toBe(0);
+ expect(readerSafeRequests(state.requests)).toBe(true);
+});
+
+test('unlocked achievement filter explains an empty verified history',async({page})=>{
+ await mockAuth(page);
+ await loginFixture(page);
+ await expect(page.locator('#reader-stat-achievements')).toHaveText('0');
+ await page.locator('[data-achievement-filter="unlocked"]').click();
+ await expect(page.locator('[data-achievement-id]:visible')).toHaveCount(0);
+ await expect(page.locator('#reader-achievements-empty')).toBeVisible();
+ await expect(page.locator('#reader-achievements-empty')).toContainText('No achievements match');
+});
