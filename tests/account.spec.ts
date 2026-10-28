@@ -639,6 +639,28 @@ test('profile recent-reading empty state never invents activity',async({page})=>
 });
 
 
+test('profile distinguishes completed device shelf from verified novel rewards',async({page})=>{
+ const state=await mockAuth(page);
+ await open(page);
+ await page.evaluate(()=>localStorage.setItem('hunmeng-novels:v1',JSON.stringify({
+  version:1,library:{'sad-zimy':'completed','khranitel-mayaka':'reading'},progress:{}
+ })));
+ await fill(page);
+ await page.locator('#reader-auth-submit').click();
+ await expect(page.locator('#auth-logged-in')).toBeVisible();
+ await expect(page.locator('#reader-stat-shelf-completed')).toHaveText('1');
+ await expect(page.locator('#reader-stat-novels')).toHaveText('0');
+ expect(state.rankStats.completedNovels).toBe(0);
+ await page.evaluate(()=>{
+  const value=JSON.parse(localStorage.getItem('hunmeng-novels:v1')!);
+  value.library['khranitel-mayaka']='completed';
+  localStorage.setItem('hunmeng-novels:v1',JSON.stringify(value));
+  window.dispatchEvent(new CustomEvent('reader:state-change'));
+ });
+ await expect(page.locator('#reader-stat-shelf-completed')).toHaveText('2');
+ await expect(page.locator('#reader-stat-novels')).toHaveText('0');
+});
+
 test('achievement milestones and filters use verified statistics without awarding XP',async({page})=>{
  const state=await mockAuth(page);
  state.rankStats.chapters=51;

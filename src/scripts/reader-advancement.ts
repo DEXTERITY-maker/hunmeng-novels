@@ -1,5 +1,5 @@
 import type { SupabaseClient,User } from '@supabase/supabase-js';
-import { repository } from '../lib/storage';
+import { repository, onStorageChange } from '../lib/storage';
 import { ranks,titles,achievements,levelFromTotalXp,rankImage,titleStatus,emptyVerifiedStats,type VerifiedStats } from '../lib/reader-progression';
 
 let activeUser: string | null=null;
@@ -14,6 +14,7 @@ async function paintLocalStats() {
   const local=await repository.getState();
   stat('reader-stat-reading',Object.values(local.library).filter(s=>s==='reading').length);
   stat('reader-stat-later',Object.values(local.library).filter(s=>s==='later').length);
+  stat('reader-stat-shelf-completed',Object.values(local.library).filter(s=>s==='completed').length);
 }
 /** Filter presentation only; unlocks always use authenticated server progress. */
 function paintAchievementFilter() {
@@ -104,6 +105,7 @@ function renderStats(s:VerifiedStats) {
 }
 export function initReaderAdvancement(client: SupabaseClient) {
   clientRef=client;
+  onStorageChange(()=>{if(activeUser)void paintLocalStats();});
   document.querySelectorAll<HTMLButtonElement>('[data-achievement-filter]').forEach(button=>{
     button.addEventListener('click',()=>{
       const selected=button.dataset.achievementFilter;
