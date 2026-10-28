@@ -130,3 +130,15 @@ test('reader XP shows session and server-verified reward, then never awards twic
  await page.goto('/account/');
  await expect(page.locator('#reader-stat-chapters')).toHaveText('1');
 });
+
+test('English edition does not mix Russian UI into rank gallery, news or signed-in profile',async({page})=>{
+ await page.goto('/ranks/');
+ await expect(page.locator('.rank-world-cards')).toBeVisible();
+ expect(await page.locator('body').innerText()).not.toMatch(/[А-Яа-яЁё]/);
+ await page.goto('/news/');
+ expect(await page.locator('body').innerText()).not.toMatch(/[А-Яа-яЁё]/);
+ await signedIn(page);await service(page);
+ await page.goto('/account/');
+ await expect(page.locator('#auth-logged-in')).toBeVisible();
+ expect(await page.locator('body').innerText()).not.toMatch(/[А-Яа-яЁё]/);
+});
