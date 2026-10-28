@@ -1,0 +1,57 @@
+/* Nine-rank fantasy gallery. Real content and accessible HTML, not a flattened poster. */
+.ranks-world-page{--rw-gold:#e4c786;--rw-border:rgba(227,189,122,.4);position:relative;isolation:isolate;max-width:1640px;padding:22px clamp(16px,2.2vw,36px) 64px;color:#f7eddb;background:radial-gradient(ellipse 92% 50% at 55% 8%,#294350 0%,#11252e 64%,#07171f 100%);overflow:hidden}
+.ranks-world-page :where(h1,h2,h3){font-family:'Noto Serif Variable',Georgia,serif;color:#fff1d5}
+.rank-world-backdrop{position:absolute;inset:0 0 auto;height:min(44vw,490px);z-index:-1;background:linear-gradient(180deg,rgba(3,12,18,.1) 0%,rgba(5,17,24,.48) 48%,#07171f 100%),url('/images/profile-kingdom.svg') center 47% / cover no-repeat;opacity:.82;pointer-events:none}
+.rank-world-breadcrumbs{display:flex;align-items:center;gap:10px;margin:0 0 16px;color:#e6d4b6;font-size:.82rem}
+.rank-world-breadcrumbs a:hover{color:#fff}
+.rank-world-intro{text-align:center;padding:clamp(28px,4vw,55px) 10px 32px;text-shadow:0 2px 14px #061620}
+.rank-world-kicker{font-size:.68rem;letter-spacing:.22em;font-weight:800;color:var(--rw-gold);text-transform:uppercase}
+.rank-world-intro h1{font-size:clamp(2rem,4vw,4.25rem);font-weight:600;margin:9px 0 8px;letter-spacing:-.045em}
+.rank-world-intro>p{color:#e5e5dc;font-size:clamp(.9rem,1.5vw,1.17rem)}
+.rank-world-highlights{display:flex;justify-content:center;flex-wrap:wrap;gap:12px 24px;margin-top:20px;font-size:.81rem;color:#f2dcae}
+.rank-world-collection{position:relative}
+.rank-world-cards{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:5px;align-items:stretch}
+.rank-world-card{position:relative;isolation:isolate;display:flex;flex-direction:column;align-items:center;min-width:0;min-height:clamp(365px,33vw,510px);padding:10px 7px 15px;text-align:center;border:1px solid color-mix(in srgb,var(--rank-glow) 76%,#fff 15%);border-radius:13px;overflow:hidden;background:linear-gradient(180deg,color-mix(in srgb,var(--rank-glow) 13%,#091620) 0%,rgba(4,17,25,.97) 56%,color-mix(in srgb,var(--rank-glow) 13%,#091920));box-shadow:inset 0 0 24px color-mix(in srgb,var(--rank-glow) 14%,transparent),0 7px 17px rgba(0,0,0,.15)}
+.rank-world-card::before{content:'';position:absolute;z-index:-1;inset:0 0 34%;background:radial-gradient(ellipse at 50% 29%,color-mix(in srgb,var(--rank-glow) 38%,transparent),transparent 65%);pointer-events:none}
+.rank-world-card::after{content:'';position:absolute;z-index:-1;inset:auto -20px 0;height:34%;background:linear-gradient(0deg,rgba(2,11,17,.78),rgba(3,16,23,.05)),url('/images/profile-kingdom.svg') center bottom / auto 100% no-repeat;opacity:.45;filter:saturate(.8);pointer-events:none}
+.rank-world-card-top{display:flex;flex-direction:column;align-items:center;gap:2px;font-family:Georgia,serif;font-size:1.14rem;color:#ffebca;line-height:1.25}
+.rank-world-spark{font-size:.85rem;color:var(--rank-glow);text-shadow:0 0 8px var(--rank-glow)}
+.rank-world-emblem{position:relative;display:grid;place-items:center;min-height:clamp(126px,12vw,192px);width:100%}
+.rank-world-emblem img{display:block;width:min(100%,175px);max-height:190px;object-fit:contain;filter:drop-shadow(0 5px 9px color-mix(in srgb,var(--rank-glow) 50%,transparent)) drop-shadow(0 7px 9px #000);transition:transform .28s ease}
+.rank-world-card h3{font-size:clamp(.85rem,1.09vw,1.13rem);font-weight:600;line-height:1.25;min-height:2.5em;display:flex;align-items:center;justify-content:center;margin:0 0 5px;overflow-wrap:anywhere}
+.rank-world-levels{font-size:clamp(.66rem,.85vw,.85rem);border:1px solid color-mix(in srgb,var(--rank-glow) 58%,transparent);background:color-mix(in srgb,var(--rank-glow) 20%,#081a25);color:#f4eddf;border-radius:999px;width:100%;padding:5px 4px;line-height:1.35;white-space:nowrap}
+.rank-world-lore{position:relative;font-size:clamp(.69rem,.82vw,.8rem);line-height:1.6;color:#e2dfd8;margin:12px 0 auto;overflow-wrap:anywhere;text-wrap:pretty}
+.rank-world-scenery{flex:0 0 clamp(32px,3vw,50px)}
+.rank-world-card[data-rank-style=dark-gold]{background:linear-gradient(180deg,#312412,#100e0a 66%,#221a10)}
+.rank-world-card[data-rank-style=legendary]{background:linear-gradient(180deg,#43221b,#190d0b 66%,#38180c)}
+.rank-world-card[data-rank-style=mythical]{background:linear-gradient(180deg,#2b0c44,#18082a 66%,#33115e)}
+.rank-world-card[data-rank-style=diamond]{background:linear-gradient(180deg,#093b68,#061b35 66%,#06447a)}
+.rank-world-progression,.rank-world-info{border:1px solid var(--rw-border);background:linear-gradient(135deg,rgba(9,27,35,.96),rgba(6,20,27,.96));border-radius:16px;padding:clamp(17px,2vw,28px);margin-top:16px;box-shadow:inset 0 1px rgba(255,245,214,.1)}
+.rank-world-heading{margin-bottom:20px}
+.rank-world-heading h2{font-size:clamp(1.2rem,2vw,1.9rem);margin:4px 0 7px}
+.rank-world-heading>p:last-child{color:#d7d6d0;font-size:.85rem;max-width:78ch}
+.rank-world-track{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));list-style:none;padding:0;margin:24px 0 5px;position:relative}
+.rank-world-track::before{content:'';position:absolute;left:5%;right:5%;height:3px;top:12px;background:linear-gradient(90deg,#88939b,#b97852,#b9eaff,#e3af49,#a87531,#e6dffc,#42adf8,#f1a158,#ab65f9);box-shadow:0 0 10px rgba(229,191,112,.5)}
+.rank-world-track li{z-index:1;text-align:center;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:.72rem;min-width:0}
+.rank-world-track-gem{display:grid;place-items:center;width:27px;height:27px;color:var(--rank-glow);background:#0a1822;border:2px solid var(--rank-glow);box-shadow:0 0 10px color-mix(in srgb,var(--rank-glow) 52%,transparent);transform:rotate(45deg);font-size:0}
+.rank-world-track-gem::before{content:'✦';display:block;font-size:14px;transform:rotate(-45deg)}
+.rank-world-track strong{font-weight:700;margin-top:10px;line-height:1.35;color:#f2e4ce}
+.rank-world-track small{color:#b7c8cc;font-size:.7rem}
+.rank-world-benefits{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.rank-world-benefits>div{border:1px solid rgba(233,199,136,.22);background:rgba(232,200,133,.035);padding:16px;border-radius:14px}
+.rank-world-benefits>div>span{font-size:1.65rem;color:#f1ca87}
+.rank-world-benefits h3{font-size:1rem;margin:6px 0}
+.rank-world-benefits p{font-size:.81rem;line-height:1.6;color:#cbd6d5}
+.rank-world-disclaimer{font-size:.76rem;color:#b8cbcb;margin-top:17px;line-height:1.7}
+.rank-world-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:18px}
+.rank-world-actions a{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:11px 18px;border:1px solid #c99f60;border-radius:999px;font-size:.88rem;font-weight:700}
+.rank-world-actions .rank-world-primary{background:linear-gradient(100deg,#145c4e,#278f72);border-color:#59b498;color:#fff}
+.rank-world-actions .rank-world-secondary{background:rgba(12,27,31,.7);color:#f2dfb8}
+.rank-world-actions a:hover{filter:brightness(1.15)}
+.ranks-world-page .visually-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+@media(hover:hover){.rank-world-card:hover .rank-world-emblem img{transform:translateY(-6px) scale(1.04)}}
+@media(max-width:1350px){.rank-world-cards{grid-template-columns:repeat(5,minmax(0,1fr));gap:9px}.rank-world-card{min-height:410px}.rank-world-card h3{font-size:1.07rem}.rank-world-lore{font-size:.79rem}.rank-world-emblem{min-height:170px}.rank-world-card::after{height:31%}}
+@media(max-width:900px){.rank-world-cards{grid-template-columns:repeat(3,minmax(0,1fr))}.rank-world-track{overflow-x:auto;grid-template-columns:repeat(9,minmax(94px,1fr));padding-bottom:12px}.rank-world-track::before{right:auto;width:calc(9 * 94px - 94px);max-width:none}}
+@media(max-width:610px){.rank-world-intro{padding:25px 2px 23px}.rank-world-intro h1{font-size:2rem}.rank-world-cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.rank-world-card{min-height:360px;padding:9px}.rank-world-emblem{min-height:140px}.rank-world-emblem img{max-height:157px}.rank-world-levels{font-size:.75rem}.rank-world-lore{font-size:.73rem}.rank-world-benefits{grid-template-columns:1fr}.rank-world-highlights{gap:7px 13px;font-size:.72rem}.rank-world-progression,.rank-world-info{margin-top:10px}.rank-world-card h3{font-size:1rem}}
+@media(max-width:365px){.rank-world-card{min-height:355px;padding:7px 5px}.rank-world-emblem{min-height:126px}.rank-world-emblem img{max-height:135px}.rank-world-levels{font-size:.67rem}.rank-world-lore{font-size:.69rem}}
+@media(prefers-reduced-motion:reduce){.rank-world-emblem img{transition:none!important;transform:none!important}}

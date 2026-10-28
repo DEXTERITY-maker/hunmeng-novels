@@ -1,6 +1,6 @@
 import type { SupabaseClient,User } from '@supabase/supabase-js';
 import { repository, onStorageChange } from '../lib/storage';
-import { ranks,titles,achievements,levelFromTotalXp,nextRankMilestone,nextVerifiedAchievement,rankImage,titleStatus,emptyVerifiedStats,type VerifiedStats } from '../lib/reader-progression';
+import { ranks,titles,achievements,levelFromTotalXp,getReaderMastery,nextRankMilestone,nextVerifiedAchievement,rankImage,titleStatus,emptyVerifiedStats,type VerifiedStats } from '../lib/reader-progression';
 
 let activeUser: string | null=null;
 let requestCount=0;
@@ -45,6 +45,16 @@ function renderStats(s:VerifiedStats) {
     .forEach(section=>{section.hidden=false;});
   stat('reader-level',`Level ${level.level}`);
   stat('reader-rank',level.rank.en);
+  const mastery=getReaderMastery(level.level);
+  stat('reader-mastery-name',mastery.ru);
+  document.querySelectorAll<HTMLElement>('[data-mastery-id]').forEach(tile=>{
+    const tierMin=Number(tile.dataset.masteryMin);
+    const state=tile.dataset.masteryId===mastery.id?'current':
+      level.level>=tierMin?'earned':'locked';
+    tile.dataset.masteryStatus=state;
+    const label=tile.querySelector<HTMLElement>('[data-mastery-state]');
+    if(label)label.textContent=state==='current'?'Текущая ступень':state==='earned'?'Открыта':'Закрыто';
+  });
   const current=document.getElementById('reader-current-emblem') as HTMLImageElement;
   current.src=rankImage(level.rank.id);
   current.alt=`${level.rank.en} rank emblem`;
