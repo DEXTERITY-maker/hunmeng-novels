@@ -174,7 +174,7 @@ create or replace function public.reader_my_progress()
 returns jsonb language sql security invoker set search_path=''
 as $$ select private.reader_my_progress() ||
  jsonb_build_object('achievement_dates',private.reader_achievement_dates(),
-  'approvedReviews',private.reader_approved_review_count()) $;
+  'approvedReviews',private.reader_approved_review_count()) $$;
 revoke execute on function public.reader_my_progress() from public,anon;
 grant execute on function public.reader_my_progress() to authenticated;
 
