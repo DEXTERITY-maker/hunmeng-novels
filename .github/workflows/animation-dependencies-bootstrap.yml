@@ -1,0 +1,34 @@
+name: One-time motion dependency lockfile bootstrap
+on:
+  push:
+    branches:
+      - feat/motion-hero-lenis-react-cards-20261028
+    paths:
+      - .github/workflows/animation-dependencies-bootstrap.yml
+permissions:
+  contents: write
+jobs:
+  install-and-lock:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Install supported Astro + React animation packages and create npm lockfile
+        run: |
+          npm install @astrojs/react react react-dom motion gsap lenis
+          npm install -D @types/react @types/react-dom
+      - name: Commit reproducible lockfile to the feature branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package.json package-lock.json
+          git commit -m "chore(motion): install React islands, GSAP, Motion and Lenis with lockfile"
+          git push origin HEAD:feat/motion-hero-lenis-react-cards-20261028
+      - name: Verify the project with real installed dependencies
+        run: npm run build
