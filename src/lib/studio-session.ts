@@ -6,15 +6,16 @@ import type { User } from '@supabase/supabase-js';
  * Old backend.ts has a separate legacy session key and must NOT be used here.
  * Studio drafts stay protected by the existing author_* RLS policies.
  */
-const client = createReaderClient();
+let client: ReturnType<typeof createReaderClient> | null = null;
+const sdk = () => client ?? (client = createReaderClient());
 const url = (import.meta.env.PUBLIC_SUPABASE_URL as string | undefined)?.replace(/\/+$/,'') ?? '';
 const key = import.meta.env.PUBLIC_SUPABASE_PUBLISHABLE_KEY as string | undefined ?? '';
 
 export async function studioUser(): Promise<User | null> {
-  const { data: stored, error: sessionError } = await client.auth.getSession();
+  const { data: stored, error: sessionError } = await sdk().auth.getSession();
   if (sessionError) throw new Error('Could not check your session. Try reloading the page.');
   if (!stored.session) return null;
-  const { data, error } = await client.auth.getUser();
+  const { data, error } = await sdk().auth.getUser();
   if (error) {
     if (error.status === 401 || error.status === 403 || error.name === 'AuthSessionMissingError') return null;
     throw new Error('Could not verify your session. Check your connection.');
@@ -22,13 +23,13 @@ export async function studioUser(): Promise<User | null> {
   return data.user;
 }
 export function onStudioSignedOut(callback: () => void) {
-  return client.auth.onAuthStateChange(event => {
+  return sdk().auth.onAuthStateChange(event => {
     if (event === 'SIGNED_OUT') callback();
   }).data.subscription;
 }
 export async function studioRest<T>(table: string, method='GET', query='', body?: unknown): Promise<T> {
   if (!/^author_(novels|chapters|revisions)$/.test(table)) throw new Error('Invalid studio resource.');
-  const {data,error} = await client.auth.getSession();
+  const {data,error} = await sdk().auth.getSession();
   if (error || !data.session) throw new Error('Your session has ended. Please sign in again.');
   const path = '/rest/v1/' + table + (query ? '?' + query : '');
   const response = await fetch(url+path, {
