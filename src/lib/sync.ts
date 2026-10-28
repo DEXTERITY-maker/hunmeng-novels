@@ -137,7 +137,7 @@ export async function syncReaderState(client:SupabaseClient,choice?:SyncChoice):
 }
 export async function enableReaderSync(client:SupabaseClient,choice?:SyncChoice):Promise<SyncResult> {
   const result=await syncReaderState(client,choice);
-  try {localStorage.setItem(OWNER_KEY,result.userId);}
+  try {localStorage.setItem(PREVIOUS_OWNER_KEY,result.userId);localStorage.setItem(OWNER_KEY,result.userId);}
   catch {throw new Error('Allow browser storage to keep sync enabled.');}
   window.dispatchEvent(new Event('reader:sync-preference'));
   return result;
