@@ -6,6 +6,18 @@ This branch adds a pure TypeScript foundation, not a deployed request system. It
 
 `src/lib/novel-requests/core.ts` identifies URLs through explicitly supplied adapters, compares a bounded set of candidate works with explanations, selects permitted metadata already supplied by an adapter, validates moderation transitions and provides an advisory rights check. No real source adapter is enabled; the adapter in the tests is a fixture. Same provider and external ID are an exact identity signal; matching names and authors or three distinctive numbered chapter titles are probable matches, never an automatic merge. Normalization and chapter titles can have false positives and miss translations or renumbered chapters. Covers are intentionally not used as identity. The function scans its input; it is not a production-wide search index.
 
+## Local end-to-end prototype (fictional data only)
+
+`src/lib/novel-requests/scenario.ts` composes the core into one offline scenario:
+URL -> recognized source -> advisory matches -> moderator decision -> local draft.
+
+- Run it with `node scripts/novel-request-prototype.mjs` (or `npm run prototype:request`); add `--scenario exact|probable|chapters|unsupported-host|unsupported-path` to run one case, or `--json` for machine-readable output.
+- `src/lib/novel-requests/prototype-fixtures.ts` supplies an explicit fixture adapter and a fictional catalog with alternative titles, authors and chapter titles. All hosts end in the reserved `.test` domain; nothing here is a real source or a real permission.
+- The draft keeps the source URL, the recognized source identity, the advisory matches with reasons, the audited moderation decisions and `rights.status: 'pending'`. It sets `publicationAllowed: false`, `mergePerformed: false` and is never added to the static catalog.
+- Exact/probable matches are advisory only. Similar chapter titles or a matching title and author never merge works; the catalog snapshot is unchanged by a scenario run. A recognized link is not evidence of translation or publication rights.
+- No chapter bodies, descriptions, covers or images are accepted into the draft: only explicitly permitted metadata fields (original title, alternative titles, authors, chapter titles) pass the policy.
+- The prototype has no network code (a test asserts this), no persistence, no user interface, no server endpoint and no connection to the existing publication pipeline.
+
 ## Integration before launch
 
 1. Inventory existing deployed schema and roles in a separate staging project. Design additive request, canonical work, alias, external source, match evidence and append-only moderation decision records, explicitly linking to existing `novel_sources` and published slugs rather than duplicating their editorial/reader data. Preserve existing URLs and data. No migration is included here.
@@ -23,4 +35,10 @@ WTR-Lab's request page exposes URL examples, supported sites, usage limits and r
 
 ## Verification
 
-Run `node --test tests/novel-requests.test.mjs` on Node 24. Existing project CI also runs `node --test tests/*.test.mjs`. This does not test database authorization, network security, a user interface or production integration; none is implemented in this branch.
+Run on Node 24:
+
+- `node --test tests/novel-requests.test.mjs tests/novel-request-scenario.test.mjs` — core unit tests plus the end-to-end scenario tests (invalid URLs, exact/probable explanations, no auto-merge, moderation requirements, unverified rights, no texts/covers, no network, CLI smoke test).
+- `npm run prototype:request` (or `npm run prototype:request -- --scenario exact`) — local fictional scenario output.
+- `node --test tests/*.test.mjs` and `npm run build` — the existing project checks.
+
+Nothing here tests database authorization, RLS, network security, a user interface or production integration; none of those is implemented in this branch. Changes are confined to the draft PR branch `feat/novel-request-foundation-20261028`; `main` is untouched.

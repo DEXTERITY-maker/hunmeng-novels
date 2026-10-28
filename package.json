@@ -15,7 +15,8 @@
     "build:demo": "node scripts/build-demo.mjs",
     "preview": "node scripts/astro.mjs preview --host 127.0.0.1",
     "test": "tsc --noEmit -p tsconfig.tests.json && playwright test",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "prototype:request": "node scripts/novel-request-prototype.mjs"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.0",
