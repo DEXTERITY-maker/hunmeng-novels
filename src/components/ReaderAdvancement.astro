@@ -5,12 +5,13 @@ import { ranks,titles,achievements,rankImage } from '../lib/reader-progression';
   <p id="reader-advancement-status" class="fine" role="status" aria-live="polite">Loading verified reading achievements…</p>
   <section class="advancement-hero" aria-labelledby="advancement-heading" hidden>
     <div class="advancement-emblem-wrap">
+      <span class="advancement-emblem-crest" aria-hidden="true">✦ HUNMENG ✦</span>
       <img id="reader-current-emblem" src={rankImage('iron')} width="150" height="168" alt="Current rank emblem" />
     </div>
     <div class="advancement-intro">
-      <p class="eyebrow">Your reading journey</p>
+      <p class="eyebrow">✦ МОЙ ПУТЬ ЧИТАТЕЛЯ ✦</p>
       <h3 id="advancement-heading"><span id="reader-level">Level 1</span> <span class="advancement-separator">·</span> <span id="reader-rank">Iron</span></h3>
-      <p class="advancement-title-line">Equipped title: <strong id="reader-equipped-title">Novice Reader</strong></p>
+      <p class="advancement-title-line">Звание:  <strong id="reader-equipped-title">Novice Reader</strong></p>
       <div class="advancement-xp-label"><span id="reader-xp-numbers">0 / 500 XP</span><span id="reader-xp-remaining">500 XP to next level</span></div>
       <progress id="reader-xp-progress" aria-label="Experience toward next level" max="500" value="0"></progress>
       <div id="reader-next-rank" class="reader-next-rank" hidden>
@@ -23,7 +24,8 @@ import { ranks,titles,achievements,rankImage } from '../lib/reader-progression';
         </div>
       </div>
       <p id="reader-highest-rank" class="fine reader-highest-rank" hidden>Highest rank unlocked: Mythical. Keep reading toward level 500.</p>
-      <p class="fine advancement-trust">Ranks and XP come from verified, account-linked chapter rewards. Browsing and scrolling alone do not earn XP.</p>
+      <div class="advancement-journey-actions"><a href="/ranks/" class="advancement-explore-ranks">Изучить все ранги <span aria-hidden="true">→</span></a><span class="advancement-journey-note">500 уровней · 9 рангов</span></div>
+      <p class="fine advancement-trust">Опыт и ранг подтверждаются сервером. Простое открытие страницы или прокрутка не начисляют XP.</p>
     </div>
   </section>
   <section class="advancement-stats" aria-label="Reading statistics" hidden>
@@ -43,19 +45,20 @@ import { ranks,titles,achievements,rankImage } from '../lib/reader-progression';
     <ol id="reader-xp-history-list" class="reader-xp-history-list" aria-label="Recent verified XP awards"></ol>
   </section>
   <section class="advancement-section" aria-labelledby="rank-gallery-title" hidden>
-    <div class="advancement-section-header"><p class="eyebrow">Nine milestones</p><h3 id="rank-gallery-title">Reader ranks</h3><p>Rank follows your level automatically. It cannot be selected manually.</p></div>
+    <div class="advancement-section-header advancement-rank-header"><p class="eyebrow">✦ ДЕВЯТЬ РАНГОВ</p><h3 id="rank-gallery-title">Ранги читателей</h3><p>Повышайте уровень, чтобы открывать новые медальоны. Всего 500 уровней.</p><a href="/ranks/" class="advancement-all-ranks">Все девять рангов <span aria-hidden="true">→</span></a></div>
     <div class="rank-gallery">
-      {ranks.map(r => (
+      {ranks.map((r,i) => (
         <article class="rank-tile" data-rank-id={r.id} data-rank-min={r.min}>
-          <img src={rankImage(r.id)} alt={`${r.en} emblem`} width="112" height="125" loading="lazy" decoding="async" />
-          <h4>{r.en}</h4><p class="rank-tile-levels">Levels {r.min}–{r.max}</p>
+          <span class="rank-tile-roman" aria-hidden="true">{['I','II','III','IV','V','VI','VII','VIII','IX'][i]}</span>
+          <img src={rankImage(r.id)} alt={`Эмблема ранга «${r.ru}»`} width="112" height="125" loading="lazy" decoding="async" />
+          <h4>{r.ru}</h4><p class="rank-tile-levels">Levels {r.min}–{r.max}</p>
           <p class="rank-tile-description">{r.description}</p><span class="rank-tile-state" data-rank-state>Locked</span>
         </article>
       ))}
     </div>
   </section>
   <section class="advancement-section" aria-labelledby="reader-titles-heading" hidden>
-    <div class="advancement-section-header"><p class="eyebrow">Earn your own identity</p><h3 id="reader-titles-heading">Reader titles</h3><p>Titles are earned separately from ranks. Choose any title you've unlocked.</p></div>
+    <div class="advancement-section-header"><p class="eyebrow">✦ УНИКАЛЬНЫЕ ЗВАНИЯ</p><h3 id="reader-titles-heading">Звания</h3><p>Открывайте звания за особые достижения и выбирайте, какое отображать в профиле. Звания не зависят от визуального ранга.</p></div>
     <div class="reader-awards-list">
       {titles.map(t => (
         <article class="reader-award" data-title-id={t.id}>
@@ -71,7 +74,7 @@ import { ranks,titles,achievements,rankImage } from '../lib/reader-progression';
     <p id="reader-title-status" class="fine" role="status" aria-live="polite"></p>
   </section>
   <section class="advancement-section" aria-labelledby="reader-achievements-heading" hidden>
-    <div class="advancement-section-header"><p class="eyebrow">Moments worth remembering</p><h3 id="reader-achievements-heading">Achievements</h3><p>Earned from verified reading activity. Milestones do not grant extra XP.</p></div>
+    <div class="advancement-section-header"><p class="eyebrow">✦ ГЛАВЫ ВАШЕЙ ИСТОРИИ</p><h3 id="reader-achievements-heading">Достижения</h3><p>Достижения открываются за подтверждённую активность и не начисляют дополнительный XP.</p></div>
     <div id="reader-next-achievement" class="reader-next-achievement" hidden>
       <p class="eyebrow">Closest milestone</p>
       <h4 id="reader-next-achievement-name">Next achievement</h4>
