@@ -144,3 +144,12 @@
 .profile-recent-list progress{grid-column:1;width:100%;max-width:360px}
 .profile-recent-list a{grid-column:2;grid-row:1 / span 3;align-self:center;color:var(--accent);font-weight:700;text-align:right}
 @media(max-width:440px){.profile-recent-list li{grid-template-columns:minmax(0,1fr)}.profile-recent-list a{grid-column:1;grid-row:auto;text-align:left;min-height:44px;display:inline-flex;align-items:center}}
+
+/* Achievement milestone filters: keyboard and touch friendly. */
+.achievement-filter{display:flex;flex-wrap:wrap;gap:8px;margin:-4px 0 9px}
+.achievement-filter button{min-height:42px;padding:9px 16px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--ink);font:inherit;font-size:.84rem;font-weight:650;cursor:pointer}
+.achievement-filter button[aria-pressed=true]{background:var(--accent);color:#fff;border-color:var(--accent)}
+.achievement-filter button:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+#reader-achievements-summary{margin:0 0 12px;color:var(--muted);font-variant-numeric:tabular-nums}
+#reader-achievements-empty{padding:14px;border:1px dashed var(--line);border-radius:12px}
+@media(max-width:440px){.achievement-filter{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}.achievement-filter button{padding:9px 7px;min-width:0}}
