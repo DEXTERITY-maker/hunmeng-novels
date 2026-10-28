@@ -516,3 +516,20 @@ test('cloud updates download when this device has not changed since last sync',a
  expect(local.progress['sad-zimy'].chapterSlug).toBe('glava-2');
  expect(state.cloudWrites).toBe(1);
 });
+
+
+test('a second account never silently imports the previous account library',async({page})=>{
+ const state=await mockAuth(page);
+ await loginFixture(page);
+ await page.evaluate(()=>{
+  localStorage.setItem('hunmeng-novels:cloud-sync-last-owner:v1','11111111-1111-4111-8111-111111111111');
+  localStorage.setItem('hunmeng-novels:v1',JSON.stringify({version:1,library:{'sad-zimy':'later'},progress:{}}));
+ });
+ await page.reload();
+ await expect(page.locator('#auth-logged-in')).toBeVisible();
+ await page.locator('.profile-sidebar nav a[href="#profile-account"]').click();
+ await expect(page.locator('#reader-sync-enable')).toBeHidden();
+ await expect(page.locator('#reader-cloud-sync-status')).toContainText('another synced account');
+ expect(state.cloudWrites).toBe(0);
+ expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('hunmeng-novels:v1')!).library['sad-zimy'])).toBe('later');
+});
