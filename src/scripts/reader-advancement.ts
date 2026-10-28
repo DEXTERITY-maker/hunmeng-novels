@@ -12,6 +12,7 @@ async function paintLocalStats() {
   const local=await repository.getState();
   stat('reader-stat-reading',Object.values(local.library).filter(s=>s==='reading').length);
   stat('reader-stat-later',Object.values(local.library).filter(s=>s==='later').length);
+  stat('reader-stat-shelf-completed',Object.values(local.library).filter(s=>s==='completed').length);
 }
 function renderStats(s:VerifiedStats) {
   const level=levelFromTotalXp(s.total_xp);
