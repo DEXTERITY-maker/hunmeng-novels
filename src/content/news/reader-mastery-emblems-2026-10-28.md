@@ -1,24 +1,24 @@
 ---
-title: "Путь читателя: шесть новых иллюстрированных эмблем"
-excerpt: "Шесть уникальных книжных медальонов, обновлённые карточки читательских ступеней и деликатное уведомление о повышении мастерства."
+title: "Reader's Path: six new illustrated emblems"
+excerpt: "Six unique book-themed medallions, refreshed mastery cards and a subtle celebration when a new step is unlocked."
 category: changelog
 publishedAt: "2026-10-28"
 order: 350
 ---
 
-В Hunmeng обновлена визуальная система **«Путь читателя»**. Вместо простых значков каждая ступень теперь получает собственную иллюстрированную эмблему в стиле фэнтези — с книгами, кристаллами, металлическими рамками, листьями и мягкими световыми акцентами.
+The **Reader's Path** now has its own set of illustrated fantasy emblems. Each mastery step features an open book alongside crystals, metal filigree, leaves or a distinctive symbol.
 
-### Шесть ступеней и их символы
+### Six mastery steps
 
-- **Новичок-читатель** (уровни 1–4) — изумрудный росток и раскрытая книга.
-- **Читатель** (5–9) — серебряная оправа, листья и книга.
-- **Опытный читатель** (10–19) — синие кристаллы и сияющие страницы.
-- **Знаток** (20–34) — изумрудный кристалл и симметричный ромб.
-- **Мастер** (35–49) — золотая восьмиконечная звезда и книжный медальон.
-- **Легенда Hunmeng** (50–500) — корона с фиолетовыми кристаллами и платиново-золотым обрамлением.
+- **Novice Reader** (levels 1–4) — an emerald sprout and open book.
+- **Reader** (5–9) — silver ornaments, foliage and an open book.
+- **Experienced Reader** (10–19) — blue crystals and luminous pages.
+- **Connoisseur** (20–34) — an emerald crystal set in a symmetrical diamond.
+- **Master** (35–49) — a golden eight-pointed star and a book medallion.
+- **Hunmeng Legend** (50–500) — a crown with violet crystals and a platinum-gold frame.
 
-Карточки удобно просматривать на телефоне и компьютере: они показывают текущую ступень, ранее полученные и пока закрытые ступени. При **новом повышении** появляется небольшое поздравление с эмблемой. Уже достигнутая на момент первого входа ступень не вызывает старых поздравлений, а показ не повторяется при обновлении страницы на том же устройстве.
+The cards adapt to mobile and desktop screens and distinguish the current, earned and locked steps. When readers **advance to a new step**, a short celebration shows their newly unlocked emblem. Historic steps do not trigger repeat celebrations on first sign-in or refresh on the same device.
 
-**Условия получения ступеней не менялись.** Они зависят от подтверждённого уровня аккаунта. Девять металлических рангов Hunmeng — отдельная система, как и выбираемые звания. Новые изображения не добавляют XP.
+**Unlock requirements remain unchanged.** Mastery follows verified account levels. The nine metallic ranks are a separate system, as are equipable titles. Emblems never grant XP.
 
-[Посмотреть свой «Путь читателя»](/account/) · [Изучить девять рангов](/ranks/).
+[View your Reader's Path](/account/) · [Explore the nine ranks](/ranks/).
