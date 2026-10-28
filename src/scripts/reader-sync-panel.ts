@@ -1,6 +1,6 @@
 import type { SupabaseClient, User } from '@supabase/supabase-js';
 import {
-  syncOwner, isReaderSyncEnabled, enableReaderSync, disableReaderSync,
+  syncOwner, lastSyncOwner, isReaderSyncEnabled, enableReaderSync, disableReaderSync,
   syncReaderState, SyncConflictError, SyncOwnershipError, startReaderSync,
 } from '../lib/sync';
 import type { SyncChoice } from '../lib/reader-sync-merge';
