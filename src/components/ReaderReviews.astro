@@ -19,3 +19,20 @@ const {slug}=Astro.props;
     <p data-review-feedback class="fine" role="status" aria-live="polite"></p>
   </div>
 </section>
+
+
+<style>
+.reader-reviews{margin-block:clamp(2rem,5vw,4rem);padding:clamp(1rem,3vw,2rem);background:var(--surface);border:1px solid var(--line);border-radius:20px;min-width:0}
+.reader-reviews .section-heading{margin-bottom:.6rem}
+.reader-reviews-list{list-style:none;padding:0;margin:1.25rem 0;display:grid;gap:.9rem}
+.reader-reviews-list li{background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:clamp(.9rem,2vw,1.25rem);overflow-wrap:anywhere}
+.reader-reviews-list p{white-space:pre-wrap;line-height:1.75;max-width:80ch}
+.reader-reviews-list time{display:block;font-size:.8rem;color:var(--muted);margin-top:.75rem}
+.reader-review-entry{border-top:1px solid var(--line);margin-top:1rem;padding-top:1rem}
+.reader-review-entry form{display:grid;gap:.65rem}
+.reader-review-entry label{font-weight:700}
+.reader-review-entry textarea{width:100%;min-width:0;padding:.85rem;border:1px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink);resize:vertical}
+.reader-review-entry .button{justify-self:start;min-height:44px}
+.reader-review-entry [role="status"]{margin-top:.7rem}
+@media(max-width:420px){.reader-reviews{border-radius:14px;padding:1rem}.reader-review-entry .button{width:100%}}
+</style>
