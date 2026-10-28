@@ -41,7 +41,10 @@ function BookCard({ novel }: { novel: HomeNovel }) {
       style={{ rotateX: reduceMotion ? 0 : rotateX, rotateY: reduceMotion ? 0 : rotateY, transformPerspective: 1050 }}
       onPointerMove={onMove}
       onPointerLeave={onLeave}
-      whileHover={reduceMotion ? undefined : { y: -5 }}
+      variants={{ rest: { y: 0 }, hover: { y: -5 } }}
+      initial="rest"
+      animate="rest"
+      whileHover={reduceMotion ? undefined : 'hover'}
       transition={{ type: 'spring', stiffness: 260, damping: 27 }}
     >
       <a className="home-book-link" href={novel.url} aria-label={`View novel “${novel.title}”`}>
@@ -53,7 +56,7 @@ function BookCard({ novel }: { novel: HomeNovel }) {
             height={380}
             loading="lazy"
             decoding="async"
-            whileHover={reduceMotion ? undefined : { scale: 1.055 }}
+            variants={{ rest: { scale: 1 }, hover: { scale: 1.055 } }}
             transition={{ type: 'spring', stiffness: 200, damping: 25 }}
           />
         </span>
