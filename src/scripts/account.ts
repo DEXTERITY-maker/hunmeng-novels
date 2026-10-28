@@ -1,4 +1,5 @@
 import { initProfile } from './profile';
+import { profileHash, resolveProfileTab } from '../lib/profile-navigation';
 import type { User } from '@supabase/supabase-js';
 import { assertAuthStorage, clearReaderAuthStorage, createReaderClient, readerAuthConfigured, readerAuthMessage } from '../lib/reader-auth';
 
@@ -19,13 +20,17 @@ export async function initAccount() {
   const callbackError = address.searchParams.has('error');
   let mode = address.searchParams.get('mode') === 'signup' ? 'signup' : 'signin';
   // Never read access/refresh tokens from a URL or honor a next/redirect destination.
-  const profileAnchors = new Set(['#profile-details', '#profile-reading', '#profile-account']);
-  const profileTarget = profileAnchors.has(address.hash) ? address.hash : '';
-  if (address.search || address.hash) history.replaceState(null, '', '/account/' + profileTarget);
+  const profileTarget = profileHash(address.hash);
+  if (address.search || address.hash !== profileTarget)
+    history.replaceState(null, '', '/account/' + profileTarget);
   window.addEventListener('hashchange', () => {
-    if (location.hash && !profileAnchors.has(location.hash)) {
+    const target = profileHash(location.hash);
+    if (location.hash && !resolveProfileTab(location.hash)) {
       history.replaceState(null, '', '/account/');
-      status.textContent = 'Sign in with your email and password. Sign-in data from the address bar is not used.';
+      status.textContent = 'Only known profile tab links are supported.';
+    } else if (target && target !== location.hash) {
+      history.replaceState(null, '', '/account/' + target);
+      window.dispatchEvent(new Event('popstate'));
     }
   });
   let busy = true;
