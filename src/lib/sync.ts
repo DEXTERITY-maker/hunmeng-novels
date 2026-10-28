@@ -4,6 +4,7 @@ import { repository, sanitizeState, onStorageChange, type ReaderState } from './
 import { mergeReaderStates, type SyncChoice, type SyncConflict } from './reader-sync-merge';
 
 const OWNER_KEY='hunmeng-novels:cloud-sync-owner:v1';
+const PREVIOUS_OWNER_KEY='hunmeng-novels:cloud-sync-last-owner:v1';
 const BASE_PREFIX='hunmeng-novels:cloud-sync-base:v1:';
 let active:Promise<SyncResult>|null=null;
 let started=false;
