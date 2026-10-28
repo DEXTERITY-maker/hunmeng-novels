@@ -5,6 +5,8 @@ import { ranks,titles,achievements,levelFromTotalXp,rankImage,titleStatus,emptyV
 let activeUser: string | null=null;
 let requestCount=0;
 let clientRef: SupabaseClient | null=null;
+type AchievementFilter = 'all' | 'unlocked' | 'locked';
+let achievementFilter: AchievementFilter = 'all';
 const stat = (id:string,value:number|string) => { const node=document.getElementById(id); if(node) node.textContent=String(value); };
 const awardProgress=(metric:string,s:VerifiedStats)=>metric==='chapters'?s.chapters:
  metric==='completedNovels'?s.completedNovels:metric==='readingDays'?s.readingDays:0;
@@ -12,6 +14,27 @@ async function paintLocalStats() {
   const local=await repository.getState();
   stat('reader-stat-reading',Object.values(local.library).filter(s=>s==='reading').length);
   stat('reader-stat-later',Object.values(local.library).filter(s=>s==='later').length);
+}
+/** Filter presentation only; unlocks always use authenticated server progress. */
+function paintAchievementFilter() {
+  const tiles=[...document.querySelectorAll<HTMLElement>('#reader-advancement [data-achievement-id]')];
+  let unlocked=0;
+  let visible=0;
+  for (const tile of tiles) {
+    const earned=tile.dataset.unlocked==='true';
+    if (earned) unlocked++;
+    const show=achievementFilter==='all'||(achievementFilter==='unlocked'?earned:!earned);
+    tile.hidden=!show;
+    if(show) visible++;
+  }
+  document.querySelectorAll<HTMLButtonElement>('[data-achievement-filter]').forEach(button=>{
+    button.setAttribute('aria-pressed',String(button.dataset.achievementFilter===achievementFilter));
+  });
+  stat('reader-stat-achievements',unlocked);
+  const summary=document.getElementById('reader-achievements-summary');
+  if(summary) summary.textContent=`${unlocked} of ${tiles.length} verified milestones unlocked`;
+  const empty=document.getElementById('reader-achievements-empty');
+  if(empty) empty.hidden=visible>0;
 }
 function renderStats(s:VerifiedStats) {
   const level=levelFromTotalXp(s.total_xp);
@@ -41,7 +64,6 @@ function renderStats(s:VerifiedStats) {
   stat('reader-stat-days',s.readingDays.toLocaleString());
   stat('reader-stat-reviews',typeof s.approvedReviews==='number'?s.approvedReviews.toLocaleString():'—');
   stat('reader-stat-collection',typeof s.verifiedLibrary==='number'?s.verifiedLibrary.toLocaleString():'—');
-  let unlockedAchievements=0;
   document.querySelectorAll<HTMLElement>('[data-rank-id]').forEach(tile=>{
     const min=Number(tile.dataset.rankMin);
     const rankId=tile.dataset.rankId;
@@ -68,7 +90,6 @@ function renderStats(s:VerifiedStats) {
     const item=achievements.find(a=>a.id===tile.dataset.achievementId)!;
     const value=awardProgress(item.metric,s);
     const unlocked=value>=item.target;
-    if(unlocked) unlockedAchievements++;
     tile.dataset.unlocked=String(unlocked);
     tile.querySelector<HTMLProgressElement>('progress')!.value=Math.min(value,item.target);
     const verifiedDate=s.achievement_dates?.[item.id];
@@ -77,12 +98,20 @@ function renderStats(s:VerifiedStats) {
     tile.querySelector<HTMLElement>('[data-achievement-status]')!.textContent=unlocked?
       (date?`Unlocked · ${date}`:'Unlocked'):`${value} / ${item.target}`;
   });
-  stat('reader-stat-achievements',unlockedAchievements);
+  paintAchievementFilter();
   void paintLocalStats();
   return level.rank;
 }
 export function initReaderAdvancement(client: SupabaseClient) {
   clientRef=client;
+  document.querySelectorAll<HTMLButtonElement>('[data-achievement-filter]').forEach(button=>{
+    button.addEventListener('click',()=>{
+      const selected=button.dataset.achievementFilter;
+      if(selected!=='all'&&selected!=='unlocked'&&selected!=='locked')return;
+      achievementFilter=selected;
+      paintAchievementFilter();
+    });
+  });
   document.querySelectorAll<HTMLButtonElement>('[data-equip-title]').forEach(button=>{
     button.addEventListener('click',async()=>{
       const owner=activeUser;
