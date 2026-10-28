@@ -143,7 +143,7 @@ revoke execute on function private.reader_my_review_status(text) from public,ano
 grant execute on function private.reader_my_review_status(text) to authenticated;
 create or replace function public.reader_my_review_status(p_novel text)
 returns text language sql security invoker set search_path=''
-as $ select private.reader_my_review_status(p_novel) $;
+as $$ select private.reader_my_review_status(p_novel) $$;
 revoke execute on function public.reader_my_review_status(text) from public,anon;
 grant execute on function public.reader_my_review_status(text) to authenticated;
 
