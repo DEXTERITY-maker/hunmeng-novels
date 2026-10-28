@@ -48,6 +48,12 @@ import Icon from '../components/Icon.astro';
             <section id="profile-details" class="profile-panel" aria-labelledby="profile-title">
               <p class="eyebrow">Personal space</p><h2 id="profile-title">Profile</h2><p class="profile-intro">Your name and a little about you.</p>
               <ReaderAdvancement />
+              <section id="profile-recent-reading" class="profile-recent-reading" aria-labelledby="profile-recent-heading">
+                <div class="advancement-section-header"><p class="eyebrow">Pick up where you left off</p><h3 id="profile-recent-heading">Continue reading</h3></div>
+                <p id="profile-recent-status" class="fine" role="status">Checking recent chapters…</p>
+                <ol id="profile-recent-list" class="profile-recent-list" aria-label="Recently read novels"></ol>
+                <p class="fine">These positions are saved on this device. Cloud sync is optional in Account.</p>
+              </section>
               <form id="profile-form">
                 <fieldset id="profile-fields" disabled>
                   <label>Nickname<input name="nickname" aria-label="Nickname" autocomplete="nickname" minlength="3" maxlength="24" required aria-describedby="nickname-help" /><small id="nickname-help">Use 3–24 characters: letters, numbers, spaces, hyphens, or underscores. Nicknames do not need to be unique.</small></label>
