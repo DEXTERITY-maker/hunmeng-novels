@@ -10,10 +10,16 @@ interface Props {
 const { post, compact = false } = Astro.props;
 const { title, excerpt, publishedAt, category } = post.data;
 const linkedNovel = !compact && (await getLibrary()).find(n => title.toLowerCase().includes(n.title.toLowerCase()));
-const image = linkedNovel ? linkedNovel.cover : "/images/reading-landscape.webp";
+const newsArt: Record<string,string> = {
+  'reader-profile-october-2026':'/images/ranks/mythical.svg',
+  'reader-achievements-october-2026':'/images/ranks/diamond.svg',
+  'reader-library-progress-october-2026':'/images/profile-kingdom.svg',
+};
+const image = linkedNovel ? linkedNovel.cover : (newsArt[post.id] ?? '/images/reading-landscape.webp');
+const emblem = !linkedNovel && image.startsWith('/images/ranks/');
 ---
 <article class:list={['news-card', compact && 'news-card-compact']} data-news-card data-news-category={category}>
-  {!compact && <a class:list={["news-card-image", !linkedNovel && "news-card-landscape"]} href={newsUrl(post.id)} tabindex="-1" aria-hidden="true"><img src={image} alt="" width="220" height="280" loading="lazy" /></a>}
+  {!compact && <a class:list={["news-card-image", !linkedNovel && "news-card-landscape", emblem && "news-card-ornament"]} href={newsUrl(post.id)} tabindex="-1" aria-hidden="true"><img src={image} alt="" width="220" height="280" loading="lazy" /></a>}
   <div class="news-card-body"><div class="news-card-top">
     <span class:list={['news-category', `news-category-${category}`]}>{newsCategories[category]}</span>
     <time datetime={publishedAt}>{dateLabel(publishedAt)}</time>
