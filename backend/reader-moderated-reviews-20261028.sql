@@ -51,6 +51,9 @@ begin
  if auth.uid() is null or not v_admin then
   raise exception 'Administrator review permission required' using errcode='42501';
  end if;
+ if old.user_id=auth.uid() then
+  raise exception 'Administrators cannot moderate their own reviews' using errcode='42501';
+ end if;
  if new.status not in ('approved','rejected') then
   raise exception 'Only approval or rejection is allowed' using errcode='22023';
  end if;
@@ -64,6 +67,26 @@ revoke execute on function private.reader_review_moderation_guard() from public,
 drop trigger if exists reader_review_moderation_guard on public.reader_reviews;
 create trigger reader_review_moderation_guard before update on public.reader_reviews
   for each row execute function private.reader_review_moderation_guard();
+
+-- Revoking an approved review immediately retracts the Reviewer title if the
+-- author drops below the verified threshold. Other titles and XP remain intact.
+create or replace function private.reader_revoke_reviewer_title()
+returns trigger language plpgsql security definer set search_path=''
+as $
+begin
+ if old.status='approved' and new.status<>'approved' then
+   update public.reader_title_selection
+     set equipped_title='novice', updated_at=clock_timestamp()
+   where user_id=new.user_id and equipped_title='reviewer'
+     and (select count(*) from public.reader_reviews
+          where user_id=new.user_id and status='approved') < 20;
+ end if;
+ return new;
+end $;
+revoke execute on function private.reader_revoke_reviewer_title() from public,anon,authenticated;
+drop trigger if exists reader_revoke_reviewer_title on public.reader_reviews;
+create trigger reader_revoke_reviewer_title after update of status on public.reader_reviews
+  for each row execute function private.reader_revoke_reviewer_title();
 
 -- Authenticated submission, one review per user/book. No client table writes.
 -- A 24-hour rate limit and minimum distinct words reduce trivial reward farming.
