@@ -60,7 +60,7 @@ function BookCard({ novel }: { novel: HomeNovel }) {
             transition={{ type: 'spring', stiffness: 200, damping: 25 }}
           />
         </span>
-        <span className="home-book-copy">
+        <div className="home-book-copy">
           <span className="home-book-genre">{novel.genres.join(' · ')}</span>
           <h3 className="home-book-title">{novel.title}</h3>
           <span className="home-book-author">By {novel.author}</span>
@@ -72,7 +72,7 @@ function BookCard({ novel }: { novel: HomeNovel }) {
               <path d="M4 12h16m-7-7 7 7-7 7" />
             </svg>
           </span>
-        </span>
+        </div>
       </a>
     </motion.article>
   );
