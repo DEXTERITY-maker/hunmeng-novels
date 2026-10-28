@@ -35,7 +35,7 @@ function remember(p:Pending) {
 function forget(p:Pending) {
   writePending(pending().filter(e=>!(e.userId===p.userId&&e.sessionId===p.sessionId)));
 }
-const api = (import.meta.env.PUBLIC_SUPABASE_URL as string | undefined)?.replace(/\\/+$/,'')??'';
+const api = (import.meta.env.PUBLIC_SUPABASE_URL as string | undefined)?.replace(/\/+$/,'')??'';
 const publishable = import.meta.env.PUBLIC_SUPABASE_PUBLISHABLE_KEY as string | undefined ?? '';
 async function finishWithKeepalive(p:Pending, token:string) {
   const response=await fetch(api+'/rest/v1/rpc/reader_finish_chapter',{
