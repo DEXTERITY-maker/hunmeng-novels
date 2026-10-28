@@ -86,6 +86,18 @@ export interface VerifiedStats {
   selected_title:string;last_rank_notified:string | null;
   achievement_dates?: Record<string,string | null>;
 }
+/** Prefer the milestone with the highest verified completion ratio; break ties toward easier goals. */
+export function nextVerifiedAchievement(stats: Pick<VerifiedStats,'chapters'|'completedNovels'|'readingDays'>) {
+  const candidates=achievements.map(achievement=>{
+    const raw=stats[achievement.metric];
+    const progress=Number.isFinite(raw)?Math.max(0,Math.floor(raw)):0;
+    return {achievement,progress,remaining:Math.max(0,achievement.target-progress)};
+  }).filter(item=>item.remaining>0);
+  candidates.sort((a,b)=>
+    b.progress/b.achievement.target-a.progress/a.achievement.target ||
+    a.achievement.target-b.achievement.target);
+  return candidates[0]??null;
+}
 export const emptyVerifiedStats = (): VerifiedStats => ({
   total_xp:0,chapters:0,completedNovels:0,readingDays:0,scifiNovels:0,completedGenres:0,
   selected_title:'novice',last_rank_notified:null,
