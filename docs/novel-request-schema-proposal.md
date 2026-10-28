@@ -150,6 +150,8 @@ RLS filters rows, not columns. Therefore:
 
 ## 8. Server contract (proposal)
 
+An isolated reference implementation of the submission step now exists: `src/lib/novel-requests/handler.ts` (unwired; see `docs/proposals/novel-requests-server-handler.md`). It implements validation, idempotency fingerprinting, fail-closed dependency checks and a persistence contract, and deliberately has no route, no Supabase client and no adapters. The storage/RLS parts below remain design-only.
+
 ### 8.1 Create a request
 
 `POST /api/novel-requests`, authenticated, JSON:
@@ -329,5 +331,5 @@ Expected result: zero rows. The report is diagnostic only, owned by the migratio
 - Scope guard re-checked statically: the candidate creates no trigger, policy, grant or column change on existing tables; `novel_sources` is only referenced by FK and joined in views.
 - Consistency with code: `src/lib/novel-requests/core.ts` transition table includes `converted`; `tests/novel-request-scenario.test.mjs` asserts, for every status pair, exactly the transitions in §4. The local prototype remains fictional and stops at `draft`.
 - Static checks performed for this revision: table inventory vs SQL candidate table list; status list in SQL vs `core.ts`; transitions in `core.ts` vs §4; no existing table named in `create/alter/drop` statements; audit triggers and grants reviewed manually.
-- TypeScript checks (unchanged logic except the previous `converted` addition): `node --test tests/novel-requests.test.mjs tests/novel-request-scenario.test.mjs` — 17/17; `node --test tests/*.test.mjs` — 68/68; `npm run build` — exit 0, 285 pages.
+- TypeScript checks: `node --test tests/novel-requests.test.mjs tests/novel-request-scenario.test.mjs tests/novel-request-handler.test.mjs` — 33/33; `node --test tests/*.test.mjs` — 84/84; `npm run build` — exit 0, 285 pages. The handler is isolated and unwired; it does not change the schema plan.
 - No database, RLS, grants, production, `main`, domains, Discord or XP were changed; no migration was applied.
