@@ -58,6 +58,9 @@ begin
  if new.status not in ('approved','rejected') then
   raise exception 'Only approval or rejection is allowed' using errcode='22023';
  end if;
+ -- Serialize decisions affecting one author's verified review count, including
+ -- concurrent revocations of distinct approved reviews.
+ perform pg_catalog.pg_advisory_xact_lock(pg_catalog.hashtextextended(old.user_id::text,37));
  if new.status=old.status then return old; end if;
  new.updated_at:=clock_timestamp();
  new.moderated_at:=clock_timestamp();
