@@ -5,7 +5,8 @@ const {slug}=Astro.props;
 <section class="reader-reviews" data-reader-reviews data-novel={slug} aria-labelledby="reader-reviews-heading">
   <div class="section-heading"><h2 id="reader-reviews-heading">Reader reviews</h2></div>
   <p class="fine">Thoughtful reviews help other readers find their next story. Only approved reviews appear publicly.</p>
-  <p data-reviews-status class="fine" role="status" aria-live="polite">Loading approved reviews…</p>
+  <p data-reviews-status class="fine" role="status" aria-live="polite">Approved reviews load only when you choose to view them.</p>
+  <button type="button" class="button secondary" data-load-reviews>Load reader reviews</button>
   <ol data-published-reviews class="reader-reviews-list"></ol>
   <div class="reader-review-entry">
     <p data-review-auth class="fine">Sign in to leave a review. <a href="/account/">Your account →</a></p>
