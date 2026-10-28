@@ -695,3 +695,55 @@ test('unlocked achievement filter explains an empty verified history',async({pag
  await expect(page.locator('#reader-achievements-empty')).toBeVisible();
  await expect(page.locator('#reader-achievements-empty')).toContainText('No achievements match');
 });
+
+
+test('next rank preview uses verified XP and advances at the exact rank boundary',async({page})=>{
+ const state=await mockAuth(page);
+ const toLevel=(target:number)=>{
+   let total=0;
+   for(let level=1;level<target;level++){
+     const n=level-1;total+=500+4*n+Math.floor(26*Math.sqrt(n));
+   }
+   return total;
+ };
+ state.rankStats.total_xp=toLevel(25)-1;
+ state.rankStats.last_rank_notified='iron';
+ await loginFixture(page);
+ await expect(page.locator('#reader-next-rank')).toBeVisible();
+ await expect(page.locator('#reader-next-rank-name')).toHaveText('Bronze · Level 25');
+ await expect(page.locator('#reader-next-rank-remaining')).toHaveText('1 verified XP remaining');
+ await expect(page.locator('#reader-next-rank-image')).toHaveAttribute('src','/images/ranks/bronze.svg');
+ const amount=await page.locator('#reader-next-rank-progress').evaluate(
+  (bar:HTMLProgressElement)=>({value:bar.value,max:bar.max}));
+ expect(amount.max-amount.value).toBe(1);
+ state.rankStats.total_xp=toLevel(25);
+ state.rankStats.last_rank_notified='bronze';
+ await page.reload();
+ await expect(page.locator('#reader-rank')).toHaveText('Bronze');
+ await expect(page.locator('#reader-next-rank-name')).toHaveText('Silver · Level 60');
+ expect(readerSafeRequests(state.requests)).toBe(true);
+});
+
+test('Dark Gold appears directly after Gold; Mythical has no next rank',async({page})=>{
+ const state=await mockAuth(page);
+ const toLevel=(target:number)=>{
+   let total=0;
+   for(let level=1;level<target;level++){
+     const n=level-1;total+=500+4*n+Math.floor(26*Math.sqrt(n));
+   }
+   return total;
+ };
+ state.rankStats.total_xp=toLevel(110);
+ state.rankStats.last_rank_notified='gold';
+ await loginFixture(page);
+ await expect(page.locator('#reader-rank')).toHaveText('Gold');
+ await expect(page.locator('#reader-next-rank-name')).toHaveText('Dark Gold · Level 140');
+ await expect(page.locator('#reader-next-rank-image')).toHaveAttribute('src','/images/ranks/dark-gold.svg');
+ state.rankStats.total_xp=toLevel(420);
+ state.rankStats.last_rank_notified='mythical';
+ await page.reload();
+ await expect(page.locator('#reader-rank')).toHaveText('Mythical');
+ await expect(page.locator('#reader-next-rank')).toBeHidden();
+ await expect(page.locator('#reader-highest-rank')).toBeVisible();
+ await expect(page.locator('#reader-highest-rank')).toContainText('Keep reading toward level 500');
+});
