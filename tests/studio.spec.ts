@@ -85,7 +85,13 @@ test('author can create a private novel, autosave its chapter and save a revisio
 
 test('the same Supabase reader session opens the studio without a second login',async({page})=>{
   const userSession=session();
-  await page.addInitScript(value=>localStorage.setItem('hunmeng-novels:reader-auth:v1',JSON.stringify(value)),userSession);
+  await page.addInitScript(value=>{
+    // Seed once, not on every reload. Otherwise the test silently signs in
+    // again after removing the session and cannot exercise the guest state.
+    if(sessionStorage.getItem('audit:studio-session-seeded')==='1')return;
+    localStorage.setItem('hunmeng-novels:reader-auth:v1',JSON.stringify(value));
+    sessionStorage.setItem('audit:studio-session-seeded','1');
+  },userSession);
   const headers={'access-control-allow-origin':'*','access-control-allow-headers':'*',
     'access-control-expose-headers':'x-supabase-api-version','x-supabase-api-version':'2024-01-01',
     'content-type':'application/json'};
