@@ -191,7 +191,7 @@
 }
 .reader-account-page #profile-details .reader-mastery-emblem{
   display:block;width:clamp(100px,10.6vw,180px);height:auto;
-  max-width:100%;max-height:186px;aspect-ratio:260/300;object-fit:contain;
+  max-width:100%;max-height:186px;aspect-ratio:1;object-fit:contain;
   filter:drop-shadow(0 6px 10px rgba(0,8,15,.6)) drop-shadow(0 0 8px color-mix(in srgb,var(--badge-accent) 29%,transparent));
   transition:transform .22s ease,filter .22s ease;
 }

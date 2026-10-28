@@ -46,7 +46,7 @@ import { ranks,readerMasteryTiers,titles,achievements,rankImage,masteryImage } f
       {readerMasteryTiers.map(tier=>(
         <article class="reader-mastery-tile" data-mastery-id={tier.id} data-mastery-min={tier.min}>
           <div class="reader-mastery-emblem-wrap">
-            <img class="reader-mastery-emblem" src={masteryImage(tier.id)} alt={`Illustrated emblem for ${tier.en}`} width="260" height="300" loading="lazy" decoding="async" />
+            <img class="reader-mastery-emblem" src={masteryImage(tier.id)} alt={`Illustrated emblem for ${tier.en}`} width="640" height="640" loading="lazy" decoding="async" />
           </div>
           <strong>{tier.en}</strong>
           <span class="reader-mastery-levels">Levels {tier.min}–{tier.max}</span>
@@ -122,7 +122,7 @@ import { ranks,readerMasteryTiers,titles,achievements,rankImage,masteryImage } f
   <div class="reader-mastery-dialog-inner">
     <p class="reader-mastery-dialog-eyebrow">✦ HUNMENG · READER'S PATH ✦</p>
     <div class="reader-mastery-dialog-emblem">
-      <img id="reader-mastery-unlocked-image" src={masteryImage('novice')} alt="New Reader's Path emblem" width="260" height="300" />
+      <img id="reader-mastery-unlocked-image" src={masteryImage('novice')} alt="New Reader's Path emblem" width="640" height="640" decoding="async" />
     </div>
     <h2 id="reader-mastery-unlocked-title">New mastery step unlocked!</h2>
     <p id="reader-mastery-unlocked-detail">Your reading journey continues.</p>
