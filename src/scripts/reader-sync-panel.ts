@@ -19,7 +19,7 @@ export function initReaderSyncPanel(client:SupabaseClient){
   let userId:string|null=null;
   let busy=false;
   const paint=()=>{
-    const owned=userId?syncOwner():null;
+    const owned=userId?lastSyncOwner():null;
     const mismatch=!!(userId&&owned&&owned!==userId);
     const enabled=!!(userId&&isReaderSyncEnabled(userId));
     enable.hidden=!userId||enabled||mismatch;
