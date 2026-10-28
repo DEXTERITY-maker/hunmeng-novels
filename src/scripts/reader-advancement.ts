@@ -94,7 +94,7 @@ function renderStats(s:VerifiedStats) {
       level.level>=tierMin?'earned':'locked';
     tile.dataset.masteryStatus=state;
     const label=tile.querySelector<HTMLElement>('[data-mastery-state]');
-    if(label)label.textContent=state==='current'?'Текущая ступень':state==='earned'?'Открыта':'Закрыто';
+    if(label)label.textContent=state==='current'?'Текущий этап':state==='earned'?'Получено':'Закрыто';
   });
   const current=document.getElementById('reader-current-emblem') as HTMLImageElement;
   current.src=rankImage(level.rank.id);
