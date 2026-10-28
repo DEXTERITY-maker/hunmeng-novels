@@ -20,6 +20,7 @@ export interface ReaderState {
   version: 1;
   settings: Settings;
   library: Record<string, Shelf>;
+  shelfChanges?: Record<string, { shelf: Shelf | null; updatedAt: number }>;
   progress: Record<string, Progress>;
   novelSettings?: Record<string, Settings>;
 }
@@ -90,6 +91,7 @@ const empty = (): ReaderState => ({
   version: 1,
   settings: { ...defaults },
   library: {},
+  shelfChanges: {},
   progress: {},
   novelSettings: {},
 });
@@ -109,6 +111,16 @@ export function sanitizeState(value: unknown): ReaderState {
     for (const [slug, shelf] of Object.entries(value.library))
       if (validSlug(slug) && ['reading', 'later', 'completed', 'dropped'].includes(String(shelf)))
         clean.library[slug] = shelf as Shelf;
+  if (object(value.shelfChanges))
+    for (const [slug, change] of Object.entries(value.shelfChanges)) {
+      if (!validSlug(slug) || !object(change)) continue;
+      const shelf = change.shelf;
+      if (shelf !== null && !['reading','later','completed','dropped'].includes(String(shelf))) continue;
+      clean.shelfChanges![slug] = {
+        shelf: shelf as Shelf | null,
+        updatedAt: bounded(change.updatedAt, 0, Number.MAX_SAFE_INTEGER, 0),
+      };
+    }
   if (object(value.novelSettings))
     for (const [slug, settings] of Object.entries(value.novelSettings))
       if (validSlug(slug) && object(settings)) clean.novelSettings![slug] = normalizeSettings(settings, clean.settings);
@@ -179,6 +191,8 @@ export const repository: ReaderRepository = {
     const state = read();
     if (shelf) state.library[slug] = shelf;
     else delete state.library[slug];
+    state.shelfChanges ??= {};
+    state.shelfChanges[slug] = { shelf, updatedAt: Date.now() };
     write(state);
   },
   async setNovelSettings(slug, settings) {
