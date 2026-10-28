@@ -51,7 +51,12 @@ async function mockAuth(page: Page) {
       const wanted=filter?.startsWith('eq.') ? filter.slice(3) : filter;
       return json(state.reviews.filter(review=>!filter||review.novel_slug===wanted));
     }
-        if(address.pathname==='/rest/v1/rpc/reader_submit_review') {
+        if(address.pathname==='/rest/v1/rpc/reader_my_review_status') {
+      const body=route.request().postDataJSON();
+      const own=state.reviews.find(review=>review.novel_slug===body.p_novel);
+      return json(own?.status ?? null);
+    }
+    if(address.pathname==='/rest/v1/rpc/reader_submit_review') {
       const body=route.request().postDataJSON();
       if(state.reviews.some(review=>review.novel_slug===body.p_novel))return json(null);
       if(typeof body.p_body!=='string'||body.p_body.trim().length<120)return json({message:'Invalid review'},400);
