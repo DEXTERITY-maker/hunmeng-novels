@@ -589,6 +589,7 @@ test('Reviewer title requires 20 approved reviews, stays separate from rank and 
  state.rankStats.approvedReviews=19;
  await loginFixture(page);
  await expect(page.locator('[data-title-id=reviewer] [data-award-progress]')).toHaveText('19 / 20');
+ await expect(page.locator('#reader-stat-reviews')).toHaveText('19');
  await expect(page.locator('[data-equip-title=reviewer]')).toBeDisabled();
  state.rankStats.approvedReviews=20;
  await page.reload();
