@@ -24,6 +24,11 @@ import { ranks,titles,achievements,rankImage } from '../lib/reader-progression';
     <div><span>Read later</span><strong id="reader-stat-later">0</strong><small>On this device</small></div>
     <div><span>Unlocked achievements</span><strong id="reader-stat-achievements">0</strong><small>Verified</small></div>
   </section>
+  <section class="advancement-section" aria-labelledby="reader-xp-history-heading" hidden>
+    <div class="advancement-section-header"><p class="eyebrow">Verified rewards</p><h3 id="reader-xp-history-heading">XP history</h3><p>Experience earned from confirmed reading activity, stored with your account.</p></div>
+    <p id="reader-xp-history-status" class="fine" role="status">Loading your reward history…</p>
+    <ol id="reader-xp-history-list" class="reader-xp-history-list" aria-label="Recent verified XP awards"></ol>
+  </section>
   <section class="advancement-section" aria-labelledby="rank-gallery-title" hidden>
     <div class="advancement-section-header"><p class="eyebrow">Nine milestones</p><h3 id="rank-gallery-title">Reader ranks</h3><p>Rank follows your level automatically. It cannot be selected manually.</p></div>
     <div class="rank-gallery">
