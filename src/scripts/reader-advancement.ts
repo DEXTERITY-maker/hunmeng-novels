@@ -141,6 +141,7 @@ async function loadVerified(userId:string,seq:number) {
   root.dataset.status='ready';
   stat('reader-advancement-status','');
   const rank=renderStats(values);
+  void loadXpHistory(userId,seq);
   // A first login simply remembers the initial rank. Only genuine promotions
   // display the modal, and acknowledgement persists server-side.
   if(values.last_rank_notified===rank.id)return;
@@ -156,4 +157,41 @@ async function loadVerified(userId:string,seq:number) {
   stat('reader-new-rank-detail',`New rank: ${rank.en} · Level ${levelFromTotalXp(values.total_xp).level}. You've unlocked a new rank emblem!`);
   modal.dataset.pendingRank=rank.id;
   if(!modal.open)modal.showModal();
+}
+
+/** Fetch read-only, RLS-scoped award events. Never derive account XP from local progress. */
+async function loadXpHistory(userId:string,seq:number) {
+  if (!clientRef) return;
+  const status=document.getElementById('reader-xp-history-status');
+  const list=document.getElementById('reader-xp-history-list');
+  if (!status||!list) return;
+  list.replaceChildren();
+  status.textContent='Loading your reward history…';
+  const {data,error}=await clientRef.from('reader_xp_events')
+    .select('event_kind,novel_slug,chapter_slug,xp,awarded_at')
+    .order('awarded_at',{ascending:false}).limit(15);
+  if (userId!==activeUser||seq!==requestCount) return;
+  if(error) {
+    status.textContent='Reward history is temporarily unavailable.';
+    return;
+  }
+  if(!data?.length) {
+    status.textContent='No verified XP awards yet. Complete a chapter to begin your journey.';
+    return;
+  }
+  status.textContent='Your 15 most recent verified rewards.';
+  for(const entry of data) {
+    const row=document.createElement('li');
+    const label=document.createElement('span');
+    const isChapter=entry.event_kind==='chapter_finished';
+    label.textContent=isChapter?'Chapter completed':'Novel completed';
+    const detail=document.createElement('small');
+    const date=Date.parse(entry.awarded_at);
+    const when=Number.isFinite(date)?new Date(date).toLocaleDateString():'Date unavailable';
+    detail.textContent=`${entry.novel_slug} · ${when}`;
+    const amount=document.createElement('strong');
+    amount.textContent=`+${entry.xp} XP`;
+    row.append(label,detail,amount);
+    list.append(row);
+  }
 }
