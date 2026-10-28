@@ -412,3 +412,62 @@ test('XP history shows empty and unavailable states without inventing rewards',a
  await expect(page.locator('#reader-xp-history-status')).toHaveText('Reward history is temporarily unavailable.');
  await expect(page.locator('#reader-xp-history-list li')).toHaveCount(0);
 });
+
+
+test('opt-in cloud sync backs up local library and keeps guests local', async ({page}) => {
+ const state=await mockAuth(page);
+ await loginFixture(page);
+ await page.evaluate(()=>localStorage.setItem('hunmeng-novels:v1',JSON.stringify({
+  version:1,settings:{font:'serif',size:20,lineHeight:1.85,paragraphSpacing:1.35,width:720,theme:'system'},
+  library:{'sad-zimy':'reading'},progress:{'sad-zimy':{
+    chapterSlug:'glava-1',chapterNumber:1,blockId:'block-2',offset:10,ratio:.35,updatedAt:12345
+  }}
+ })));
+ await page.locator('.profile-sidebar nav a[href="#profile-account"]').click();
+ await page.locator('#reader-sync-enable').click();
+ await expect(page.locator('#reader-sync-now')).toBeVisible();
+ expect(state.cloudRow?.state.library).toEqual({'sad-zimy':'reading'});
+ expect(state.cloudWrites).toBe(1);
+ expect(readerSafeRequests(state.requests)).toBe(true);
+ await page.locator('#reader-sync-pause').click();
+ await expect(page.locator('#reader-sync-enable')).toBeVisible();
+});
+test('different chapter positions require an explicit decision before cloud upload', async ({page}) => {
+ const state=await mockAuth(page);
+ state.cloudRow={state:{
+   version:1,library:{'sad-zimy':'reading'},progress:{'sad-zimy':{
+     chapterSlug:'glava-2',chapterNumber:2,blockId:'block-4',offset:0,ratio:.44,updatedAt:100
+   }}
+ },updated_at:'2026-10-28T00:00:00Z'};
+ await loginFixture(page);
+ await page.evaluate(()=>localStorage.setItem('hunmeng-novels:v1',JSON.stringify({
+   version:1,library:{'sad-zimy':'reading'},progress:{'sad-zimy':{
+     chapterSlug:'glava-1',chapterNumber:1,blockId:'block-2',offset:0,ratio:.8,updatedAt:200
+   }}
+ })));
+ await page.locator('.profile-sidebar nav a[href="#profile-account"]').click();
+ await page.locator('#reader-sync-enable').click();
+ await expect(page.locator('#reader-sync-conflict')).toBeVisible();
+ expect(state.cloudWrites).toBe(0);
+ await page.locator('[data-sync-choice="device"]').click();
+ await expect(page.locator('#reader-sync-conflict')).toBeHidden();
+ expect((state.cloudRow?.state.progress as Record<string,{chapterSlug:string}>)['sad-zimy'].chapterSlug).toBe('glava-1');
+ expect(state.cloudWrites).toBe(1);
+});
+test('offline or failed cloud storage never erases local progress', async ({page}) => {
+ const state=await mockAuth(page);
+ state.cloudError=true;
+ await loginFixture(page);
+ await page.evaluate(()=>localStorage.setItem('hunmeng-novels:v1',JSON.stringify({
+  version:1,library:{'sad-zimy':'later'},progress:{'sad-zimy':{
+    chapterSlug:'glava-1',chapterNumber:1,blockId:'block-1',offset:0,ratio:.56,updatedAt:100
+  }}
+ })));
+ await page.locator('.profile-sidebar nav a[href="#profile-account"]').click();
+ await page.locator('#reader-sync-enable').click();
+ await expect(page.locator('#reader-cloud-sync-status')).toContainText('cloud library');
+ await expect(page.locator('#reader-sync-enable')).toBeVisible();
+ const preserved=await page.evaluate(()=>JSON.parse(localStorage.getItem('hunmeng-novels:v1')!));
+ expect(preserved.progress['sad-zimy'].ratio).toBe(.56);
+ expect(state.cloudWrites).toBe(0);
+});
