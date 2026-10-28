@@ -18,6 +18,8 @@ URL -> recognized source -> advisory matches -> moderator decision -> local draf
 - No chapter bodies, descriptions, covers or images are accepted into the draft: only explicitly permitted metadata fields (original title, alternative titles, authors, chapter titles) pass the policy.
 - The prototype has no network code (a test asserts this), no persistence, no user interface, no server endpoint and no connection to the existing publication pipeline.
 
+Related: `docs/novel-request-schema-proposal.md` proposes the request storage schema, RLS model and server contract (design only — not applied).
+
 ## Integration before launch
 
 1. Inventory existing deployed schema and roles in a separate staging project. Design additive request, canonical work, alias, external source, match evidence and append-only moderation decision records, explicitly linking to existing `novel_sources` and published slugs rather than duplicating their editorial/reader data. Preserve existing URLs and data. No migration is included here.
