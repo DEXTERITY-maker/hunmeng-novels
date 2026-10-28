@@ -832,7 +832,7 @@ test('six unique SVG reader-mastery badges are readable and responsive on deskto
  const paths=['novice','reader','experienced','connoisseur','master','legend'];
  for(const id of paths){
   const img=page.locator(`[data-mastery-id="${id}"] img.reader-mastery-emblem`);
-  await expect(img).toHaveAttribute('src',`/images/mastery/${id}.svg`);
+  await expect(img).toHaveAttribute('src',`/images/mastery/${id}.webp`);
   await img.scrollIntoViewIfNeeded();
   await expect.poll(()=>img.evaluate((image:HTMLImageElement)=>image.complete&&image.naturalWidth>0)).toBe(true);
  }
@@ -865,7 +865,7 @@ test('mastery celebration appears once for an authenticated promotion, never on 
  state.rankStats.total_xp=xpTo(5);
  await page.reload();
  await expect(page.locator('#reader-mastery-unlocked')).toBeVisible();
- await expect(page.locator('#reader-mastery-unlocked-image')).toHaveAttribute('src','/images/mastery/reader.svg');
+ await expect(page.locator('#reader-mastery-unlocked-image')).toHaveAttribute('src','/images/mastery/reader.webp');
  await expect(page.locator('#reader-mastery-unlocked-detail')).toContainText('Reader');
  await page.setViewportSize({width:390,height:850});
  await page.locator('#reader-mastery-unlocked').screenshot({
@@ -899,7 +899,7 @@ test('rank celebration completes first when a level unlocks both a rank and mast
  await expect(page.locator('#reader-mastery-unlocked')).toBeHidden();
  await page.locator('#reader-rank-acknowledge').click();
  await expect(page.locator('#reader-mastery-unlocked')).toBeVisible();
- await expect(page.locator('#reader-mastery-unlocked-image')).toHaveAttribute('src','/images/mastery/connoisseur.svg');
+ await expect(page.locator('#reader-mastery-unlocked-image')).toHaveAttribute('src','/images/mastery/connoisseur.webp');
  await page.locator('#reader-mastery-acknowledge').click();
  await page.reload();
  await expect(page.locator('#reader-mastery-unlocked')).toBeHidden();
