@@ -747,3 +747,37 @@ test('Dark Gold appears directly after Gold; Mythical has no next rank',async({p
  await expect(page.locator('#reader-highest-rank')).toBeVisible();
  await expect(page.locator('#reader-highest-rank')).toContainText('Keep reading toward level 500');
 });
+
+
+test('closest verified achievement updates from server progress without granting XP',async({page})=>{
+ const state=await mockAuth(page);
+ state.rankStats.chapters=51;
+ state.rankStats.completedNovels=1;
+ state.rankStats.readingDays=8;
+ await loginFixture(page);
+ await expect(page.locator('#reader-next-achievement')).toBeVisible();
+ await expect(page.locator('#reader-next-achievement-name')).toHaveText('Page Voyager');
+ await expect(page.locator('#reader-next-achievement-remaining')).toHaveText('49 chapters to unlock');
+ await expect(page.locator('#reader-next-achievement-progress')).toHaveJSProperty('value',51);
+ await expect(page.locator('#reader-next-achievement-progress')).toHaveJSProperty('max',100);
+ expect(state.rankStats.total_xp).toBe(0);
+ await expect(page.locator('#reader-level')).toHaveText('Level 1');
+ await expect(page.locator('#reader-all-achievements')).toBeHidden();
+ await page.locator('[data-achievement-filter="unlocked"]').click();
+ await expect(page.locator('#reader-next-achievement')).toBeVisible();
+ expect(readerSafeRequests(state.requests)).toBe(true);
+});
+
+test('new readers see a first goal and fully completed readers see a completion state',async({page})=>{
+ const state=await mockAuth(page);
+ await loginFixture(page);
+ await expect(page.locator('#reader-next-achievement-name')).toHaveText('First Chapter');
+ await expect(page.locator('#reader-next-achievement-remaining')).toHaveText('1 chapter to unlock');
+ state.rankStats.chapters=500;
+ state.rankStats.completedNovels=25;
+ state.rankStats.readingDays=100;
+ await page.reload();
+ await expect(page.locator('#reader-next-achievement')).toBeHidden();
+ await expect(page.locator('#reader-all-achievements')).toBeVisible();
+ await expect(page.locator('#reader-achievements-summary')).toContainText('13 of 13');
+});
