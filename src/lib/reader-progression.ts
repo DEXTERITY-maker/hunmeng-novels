@@ -38,6 +38,24 @@ export function levelFromTotalXp(rawXp: number) {
   return {level,rank:getRank(level),currentXp:level===MAX_LEVEL ? 0 : remaining,
     nextXp:xpForNextLevel(level),maxed:level===MAX_LEVEL};
 }
+/** Client-side preview only. The server remains authoritative for awarded XP. */
+export function totalXpToLevel(level: number): number {
+  const target=Number.isFinite(level)?Math.max(1,Math.min(MAX_LEVEL,Math.floor(level))):1;
+  let required=0;
+  for(let current=1;current<target;current++) required+=xpForNextLevel(current);
+  return required;
+}
+export function nextRankMilestone(rawXp: number) {
+  const earned=Number.isFinite(rawXp)?Math.max(0,Math.floor(rawXp)):0;
+  const level=levelFromTotalXp(earned);
+  const next=ranks.find(rank=>rank.min>level.level);
+  if(!next)return null;
+  const start=totalXpToLevel(level.rank.min);
+  const target=totalXpToLevel(next.min);
+  const range=target-start;
+  return {rank:next,level:next.min,progressXp:Math.max(0,Math.min(range,earned-start)),
+    rangeXp:range,remainingXp:Math.max(0,target-earned)};
+}
 export const titles = [
   {id:'novice',en:'Novice Reader',ru:'Новичок-читатель',target:0,metric:'always',description:'Your first title. Available to every reader.'},
   {id:'regular',en:'Regular Reader',ru:'Постоянный читатель',target:30,metric:'readingDays',description:'Read on 30 different days.'},
