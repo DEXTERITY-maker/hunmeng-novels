@@ -47,8 +47,8 @@ function celebrateMastery(userId:string,seq:number,tier:typeof readerMasteryTier
     const show=()=>{
       if(userId!==activeUser||seq!==requestCount||modal.open)return;
       image.src=masteryImage(tier.id);
-      image.alt=`Эмблема ступени «${tier.ru}»`;
-      stat('reader-mastery-unlocked-detail',`${tier.ru} · уровни ${tier.min}–${tier.max}. Новая эмблема открыта!`);
+      image.alt=`${tier.en} mastery emblem`;
+      stat('reader-mastery-unlocked-detail',`${tier.en} · levels ${tier.min}–${tier.max}. Your new emblem is unlocked!`);
       modal.showModal();
     };
     // Native dialogs must not overlap. Give the existing server-verified rank
@@ -87,14 +87,14 @@ function renderStats(s:VerifiedStats) {
   stat('reader-level',`Level ${level.level}`);
   stat('reader-rank',level.rank.en);
   const mastery=getReaderMastery(level.level);
-  stat('reader-mastery-name',mastery.ru);
+  stat('reader-mastery-name',mastery.en);
   document.querySelectorAll<HTMLElement>('[data-mastery-id]').forEach(tile=>{
     const tierMin=Number(tile.dataset.masteryMin);
     const state=tile.dataset.masteryId===mastery.id?'current':
       level.level>=tierMin?'earned':'locked';
     tile.dataset.masteryStatus=state;
     const label=tile.querySelector<HTMLElement>('[data-mastery-state]');
-    if(label)label.textContent=state==='current'?'Текущий этап':state==='earned'?'Получено':'Закрыто';
+    if(label)label.textContent=state==='current'?'Current step':state==='earned'?'Unlocked':'Locked';
   });
   const current=document.getElementById('reader-current-emblem') as HTMLImageElement;
   current.src=rankImage(level.rank.id);
