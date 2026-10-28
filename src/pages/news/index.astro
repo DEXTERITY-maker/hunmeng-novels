@@ -6,17 +6,17 @@ import { getNews, newsCategories } from '../../lib/news';
 const posts = await getNews();
 ---
 
-<Layout title="News and updates" description="The latest Hunmeng news: site updates, announcements, and events.">
+<Layout title="Новости и обновления" description="Новости Hunmeng: обновления сайта, анонсы и события книжной платформы.">
   <main id="main" class="page-shell news-page">
     <header class="news-heading landscape-banner">
       <div>
-        <p class="eyebrow">From the Hunmeng library</p><h1>News</h1>
-        <p>Updates, improvements, and announcements from our library.</p>
+        <p class="eyebrow">Хроники библиотеки Hunmeng</p><h1>Новости и обновления</h1>
+        <p>Последние новости платформы, улучшения и новые возможности для читателей.</p>
       </div>
-      <a class="news-back-link" href="/">← Home</a>
+      <a class="news-back-link" href="/">← Главная</a>
     </header>
-    <nav class="news-filter-tabs" aria-label="News categories" id="news-filters">
-      <a href="/news/" data-news-filter="all" aria-current="page">All</a>
+    <nav class="news-filter-tabs" aria-label="Категории новостей" id="news-filters">
+      <a href="/news/" data-news-filter="all" aria-current="page">Все</a>
       {Object.entries(newsCategories).map(([key, label]) => (
         <a href={`/news/?category=${key}`} data-news-filter={key}>{label}</a>
       ))}
@@ -24,10 +24,10 @@ const posts = await getNews();
     <div class="news-feed" id="news-feed">
       {posts.map((post) => <NewsCard post={post} />)}
     </div>
-    <p id="news-empty" class="home-section-empty" hidden>There are no posts in this category yet.</p>
-    <nav id="news-pagination" class="news-pagination" aria-label="News pages" hidden></nav>
+    <p id="news-empty" class="home-section-empty" hidden>В этой категории пока нет новостей.</p>
+    <nav id="news-pagination" class="news-pagination" aria-label="Страницы новостей" hidden></nav>
     <noscript>
-      <p class="notice">Filters and pagination require JavaScript. All news is available above without it.</p>
+      <p class="notice">Для фильтров и переключения страниц нужен JavaScript. Все новости доступны выше.</p>
     </noscript>
   </main>
   <script>
