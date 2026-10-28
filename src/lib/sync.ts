@@ -55,7 +55,7 @@ async function perform(client:SupabaseClient, choice?:SyncChoice):Promise<SyncRe
   const {data:session,error:authError}=await client.auth.getSession();
   const userId=session.session?.user.id;
   if(authError || !userId) throw new Error('Sign in to sync your reading library.');
-  const owner=syncOwner();
+  const owner=lastSyncOwner();
   if(owner && owner!==userId) throw new SyncOwnershipError();
   for(let attempt=0;attempt<3;attempt++){
     // A failed connection must not leave the interface spinning indefinitely.
