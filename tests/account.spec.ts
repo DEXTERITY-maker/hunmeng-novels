@@ -574,6 +574,8 @@ test('approved reviews are displayed safely, including untrusted markup as text'
   body:'A thoughtful review with <script>alert(1)</script> shown as plain text, never interpreted by the browser.',
   status:'approved',created_at:'2026-10-28T00:00:00Z'}];
  await page.goto('/novel/sad-zimy/');
+ await expect(page.locator('[data-published-reviews] li')).toHaveCount(0);
+ await page.locator('[data-load-reviews]').click();
  await expect(page.locator('[data-published-reviews] li')).toHaveCount(1);
  await expect(page.locator('[data-published-reviews] li')).toContainText('<script>alert(1)</script>');
  await expect(page.locator('[data-published-reviews] script')).toHaveCount(0);
