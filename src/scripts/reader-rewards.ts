@@ -121,6 +121,7 @@ export async function initReaderRewards(novel:string,chapter:string,article:HTML
       schedule();
       return;
     }
+    remember(reward);
     busy=true;
     announce('Checking your chapter reward…');
     try {
@@ -143,7 +144,9 @@ export async function initReaderRewards(novel:string,chapter:string,article:HTML
   const reached=()=>{
     if(!intent||resolved||!nearEnd())return;
     reachedEnd=true;
-    remember(reward); // Recovery receipt is not XP or a trusted completion claim.
+    // Receipt becomes recoverable only after 90s of active, deliberately read page time.
+    // Scrolling straight to the end and leaving early never queues an XP attempt.
+    if(Date.now()-reward.startedAt>=DURATION)remember(reward);
     void finish();
   };
   const onIntent=()=>{intent=true;};
@@ -169,6 +172,7 @@ export async function initReaderRewards(novel:string,chapter:string,article:HTML
     // Keepalive sends a verified RPC when the reader closes immediately after finishing.
     // If the network fails, the 4-hour server session can still be retried later.
     if(reachedEnd&&!resolved&&Date.now()-reward.startedAt>=DURATION){
+      remember(reward);
       void finishWithKeepalive(reward,session.access_token)
         .then(()=>forget(reward)).catch(()=>{});
     }
