@@ -781,3 +781,31 @@ test('new readers see a first goal and fully completed readers see a completion 
  await expect(page.locator('#reader-all-achievements')).toBeVisible();
  await expect(page.locator('#reader-achievements-summary')).toContainText('13 of 13');
 });
+
+test('reader mastery is a six-step level ladder distinct from the nine rank emblems',async({page})=>{
+ const state=await mockAuth(page);
+ const toLevel=(target:number)=>{
+   let xp=0;
+   for(let level=1;level<target;level++){
+     const n=level-1;xp+=500+4*n+Math.floor(26*Math.sqrt(n));
+   }
+   return xp;
+ };
+ state.rankStats.total_xp=toLevel(12);
+ state.rankStats.last_rank_notified='iron';
+ await loginFixture(page);
+ await expect(page.locator('.reader-mastery-tile')).toHaveCount(6);
+ await expect(page.locator('#reader-mastery-name')).toHaveText('Опытный читатель');
+ await expect(page.locator('[data-mastery-id="experienced"]')).toHaveAttribute('data-mastery-status','current');
+ await expect(page.locator('[data-mastery-id="reader"]')).toHaveAttribute('data-mastery-status','earned');
+ await expect(page.locator('[data-mastery-id="connoisseur"]')).toHaveAttribute('data-mastery-status','locked');
+ await expect(page.locator('#reader-rank')).toHaveText('Iron');
+ await expect(page.locator('.advancement-all-ranks')).toHaveAttribute('href','/ranks/');
+ state.rankStats.total_xp=toLevel(50);
+ state.rankStats.last_rank_notified='bronze';
+ await page.reload();
+ await expect(page.locator('#reader-mastery-name')).toHaveText('Легенда Hunmeng');
+ await expect(page.locator('#reader-rank')).toHaveText('Bronze');
+ await expect(page.locator('[data-mastery-id="legend"]')).toHaveAttribute('data-mastery-status','current');
+ expect(readerSafeRequests(state.requests)).toBe(true);
+});
