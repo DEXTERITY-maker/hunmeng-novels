@@ -9,10 +9,10 @@ import { ranks,readerMasteryTiers,titles,achievements,rankImage,masteryImage } f
       <img id="reader-current-emblem" src={rankImage('iron')} width="150" height="168" alt="Current rank emblem" />
     </div>
     <div class="advancement-intro">
-      <p class="eyebrow">✦ МОЙ ПУТЬ ЧИТАТЕЛЯ ✦</p>
+      <p class="eyebrow">✦ READER'S JOURNEY ✦</p>
       <h3 id="advancement-heading"><span id="reader-level">Level 1</span> <span class="advancement-separator">·</span> <span id="reader-rank">Iron</span></h3>
-      <p class="advancement-title-line">Ступень читателя: <strong id="reader-mastery-name">Новичок-читатель</strong></p>
-      <p class="advancement-title-line">Звание: <strong id="reader-equipped-title">Novice Reader</strong></p>
+      <p class="advancement-title-line">Reader mastery: <strong id="reader-mastery-name">Новичок-читатель</strong></p>
+      <p class="advancement-title-line">Title: <strong id="reader-equipped-title">Novice Reader</strong></p>
       <div class="advancement-xp-label"><span id="reader-xp-numbers">0 / 500 XP</span><span id="reader-xp-remaining">500 XP to next level</span></div>
       <progress id="reader-xp-progress" aria-label="Experience toward next level" max="500" value="0"></progress>
       <div id="reader-next-rank" class="reader-next-rank" hidden>
@@ -25,8 +25,8 @@ import { ranks,readerMasteryTiers,titles,achievements,rankImage,masteryImage } f
         </div>
       </div>
       <p id="reader-highest-rank" class="fine reader-highest-rank" hidden>Highest rank unlocked: Mythical. Keep reading toward level 500.</p>
-      <div class="advancement-journey-actions"><a href="/ranks/" class="advancement-explore-ranks">Изучить все ранги <span aria-hidden="true">→</span></a><span class="advancement-journey-note">500 уровней · 9 рангов</span></div>
-      <p class="fine advancement-trust">Опыт и ранг подтверждаются сервером. Простое открытие страницы или прокрутка не начисляют XP.</p>
+      <div class="advancement-journey-actions"><a href="/ranks/" class="advancement-explore-ranks">Explore all ranks <span aria-hidden="true">→</span></a><span class="advancement-journey-note">500 levels · 9 ranks</span></div>
+      <p class="fine advancement-trust">XP and ranks are verified by the server. Simply opening or scrolling a page does not award XP.</p>
     </div>
   </section>
   <section class="advancement-stats" aria-label="Reading statistics" hidden>
@@ -41,16 +41,16 @@ import { ranks,readerMasteryTiers,titles,achievements,rankImage,masteryImage } f
     <div><span>Unlocked achievements</span><strong id="reader-stat-achievements">0</strong><small>Verified</small></div>
   </section>
   <section class="advancement-section reader-mastery-section" aria-labelledby="reader-mastery-heading" hidden>
-    <div class="advancement-section-header"><p class="eyebrow">✦ ШЕСТЬ СТУПЕНЕЙ МАСТЕРСТВА</p><h3 id="reader-mastery-heading">Путь читателя</h3><p>Шесть ступеней определяются текущим уровнем. Они отличаются от девяти визуальных рангов и выбираемых званий.</p></div>
+    <div class="advancement-section-header"><p class="eyebrow">✦ SIX MASTERY STEPS</p><h3 id="reader-mastery-heading">Reader's Path</h3><p>Six mastery steps follow your verified level. They are separate from the nine visual ranks and selectable titles.</p></div>
     <div class="reader-mastery-grid">
       {readerMasteryTiers.map(tier=>(
         <article class="reader-mastery-tile" data-mastery-id={tier.id} data-mastery-min={tier.min}>
           <div class="reader-mastery-emblem-wrap">
-            <img class="reader-mastery-emblem" src={masteryImage(tier.id)} alt={`Иллюстрированная эмблема ступени «${tier.ru}»`} width="260" height="300" loading="lazy" decoding="async" />
+            <img class="reader-mastery-emblem" src={masteryImage(tier.id)} alt={`Illustrated emblem for ${tier.en}`} width="260" height="300" loading="lazy" decoding="async" />
           </div>
-          <strong>{tier.ru}</strong>
-          <span class="reader-mastery-levels">Уровни {tier.min}–{tier.max}</span>
-          <small data-mastery-state>Закрыто</small>
+          <strong>{tier.en}</strong>
+          <span class="reader-mastery-levels">Levels {tier.min}–{tier.max}</span>
+          <small data-mastery-state>Locked</small>
         </article>
       ))}
     </div>
@@ -61,20 +61,20 @@ import { ranks,readerMasteryTiers,titles,achievements,rankImage,masteryImage } f
     <ol id="reader-xp-history-list" class="reader-xp-history-list" aria-label="Recent verified XP awards"></ol>
   </section>
   <section class="advancement-section" aria-labelledby="rank-gallery-title" hidden>
-    <div class="advancement-section-header advancement-rank-header"><p class="eyebrow">✦ ДЕВЯТЬ РАНГОВ</p><h3 id="rank-gallery-title">Ранги читателей</h3><p>Повышайте уровень, чтобы открывать новые медальоны. Всего 500 уровней.</p><a href="/ranks/" class="advancement-all-ranks">Все девять рангов <span aria-hidden="true">→</span></a></div>
+    <div class="advancement-section-header advancement-rank-header"><p class="eyebrow">✦ NINE RANKS</p><h3 id="rank-gallery-title">Reader ranks</h3><p>Gain levels to unlock new medallions. There are 500 levels.</p><a href="/ranks/" class="advancement-all-ranks">All nine ranks <span aria-hidden="true">→</span></a></div>
     <div class="rank-gallery">
       {ranks.map((r,i) => (
         <article class="rank-tile" data-rank-id={r.id} data-rank-min={r.min}>
           <span class="rank-tile-roman" aria-hidden="true">{['I','II','III','IV','V','VI','VII','VIII','IX'][i]}</span>
-          <img src={rankImage(r.id)} alt={`Эмблема ранга «${r.ru}»`} width="112" height="125" loading="lazy" decoding="async" />
-          <h4>{r.ru}</h4><p class="rank-tile-levels">Levels {r.min}–{r.max}</p>
+          <img src={rankImage(r.id)} alt={`Emblem of the ${r.en} rank`} width="112" height="125" loading="lazy" decoding="async" />
+          <h4>{r.en}</h4><p class="rank-tile-levels">Levels {r.min}–{r.max}</p>
           <p class="rank-tile-description">{r.description}</p><span class="rank-tile-state" data-rank-state>Locked</span>
         </article>
       ))}
     </div>
   </section>
   <section class="advancement-section" aria-labelledby="reader-titles-heading" hidden>
-    <div class="advancement-section-header"><p class="eyebrow">✦ УНИКАЛЬНЫЕ ЗВАНИЯ</p><h3 id="reader-titles-heading">Звания</h3><p>Открывайте звания за особые достижения и выбирайте, какое отображать в профиле. Звания не зависят от визуального ранга.</p></div>
+    <div class="advancement-section-header"><p class="eyebrow">✦ SPECIAL TITLES</p><h3 id="reader-titles-heading">Звания</h3><p>Unlock titles through verified achievements and choose which one to display in your profile. Titles are independent of visual ranks.</p></div>
     <div class="reader-awards-list">
       {titles.map(t => (
         <article class="reader-award" data-title-id={t.id}>
@@ -90,7 +90,7 @@ import { ranks,readerMasteryTiers,titles,achievements,rankImage,masteryImage } f
     <p id="reader-title-status" class="fine" role="status" aria-live="polite"></p>
   </section>
   <section class="advancement-section" aria-labelledby="reader-achievements-heading" hidden>
-    <div class="advancement-section-header"><p class="eyebrow">✦ ГЛАВЫ ВАШЕЙ ИСТОРИИ</p><h3 id="reader-achievements-heading">Достижения</h3><p>Достижения открываются за подтверждённую активность и не начисляют дополнительный XP.</p></div>
+    <div class="advancement-section-header"><p class="eyebrow">✦ YOUR STORY MILESTONES</p><h3 id="reader-achievements-heading">Achievements</h3><p>Achievements are based on verified activity and do not award extra XP.</p></div>
     <div id="reader-next-achievement" class="reader-next-achievement" hidden>
       <p class="eyebrow">Closest milestone</p>
       <h4 id="reader-next-achievement-name">Next achievement</h4>
@@ -120,13 +120,13 @@ import { ranks,readerMasteryTiers,titles,achievements,rankImage,masteryImage } f
 </div>
 <dialog id="reader-mastery-unlocked" class="reader-mastery-dialog" aria-labelledby="reader-mastery-unlocked-title" aria-describedby="reader-mastery-unlocked-detail">
   <div class="reader-mastery-dialog-inner">
-    <p class="reader-mastery-dialog-eyebrow">✦ HUNMENG · ПУТЬ ЧИТАТЕЛЯ ✦</p>
+    <p class="reader-mastery-dialog-eyebrow">✦ HUNMENG · READER'S PATH ✦</p>
     <div class="reader-mastery-dialog-emblem">
-      <img id="reader-mastery-unlocked-image" src={masteryImage('novice')} alt="Новая эмблема «Пути читателя»" width="260" height="300" />
+      <img id="reader-mastery-unlocked-image" src={masteryImage('novice')} alt="New Reader's Path emblem" width="260" height="300" />
     </div>
-    <h2 id="reader-mastery-unlocked-title">Новая ступень открыта!</h2>
-    <p id="reader-mastery-unlocked-detail">Ваше путешествие продолжается.</p>
-    <button type="button" id="reader-mastery-acknowledge" class="button">Продолжить путешествие</button>
+    <h2 id="reader-mastery-unlocked-title">New mastery step unlocked!</h2>
+    <p id="reader-mastery-unlocked-detail">Your reading journey continues.</p>
+    <button type="button" id="reader-mastery-acknowledge" class="button">Continue reading</button>
   </div>
 </dialog>
 <dialog id="reader-rank-unlocked" class="reader-rank-dialog" aria-labelledby="reader-new-rank-title">
