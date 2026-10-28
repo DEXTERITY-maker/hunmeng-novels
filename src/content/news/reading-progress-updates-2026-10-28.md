@@ -1,21 +1,21 @@
 ---
-title: "Ваш прогресс чтения: библиотека, история XP и новые возможности профиля"
-excerpt: "В профиле появились история подтверждённых наград, продолжение чтения, статистика библиотеки и более понятное разделение локального и проверенного прогресса."
+title: "Reading progress: your library, XP history and updated profile"
+excerpt: "Your profile now brings together verified XP history, continue-reading positions, library shelves and clearer local-versus-account statistics."
 category: changelog
 publishedAt: "2026-10-28"
 order: 250
 ---
 
-Профиль Hunmeng стал полезнее: теперь он показывает не только имя и настройки, но и то, как складывается ваше читательское путешествие.
+Hunmeng's profile now shows more than a nickname and settings: it helps readers understand and continue their reading journey.
 
-### Что можно посмотреть
+### What you can view
 
-- **История XP** — недавние награды, подтверждённые сервером и привязанные к аккаунту.
-- **Продолжить чтение** — реальные последние главы и позиции на этом устройстве.
-- **Библиотека** — отдельные полки «Читаю», «Прочитать позже» и «Прочитано».
-- **Синхронизация** — по желанию можно синхронизировать библиотеку с аккаунтом, с учётом возможных конфликтов изменений.
-- **Отзывы** — подтверждённые опубликованные отзывы учитываются отдельно от черновиков или ожидающих модерации.
+- **XP history** — recent awards verified by the server and linked to your account.
+- **Continue reading** — last opened chapters and reading positions saved on this device.
+- **Library shelves** — Reading, Read later and Completed selections.
+- **Optional library sync** — your library can be synchronized with your account, with conflict resolution for simultaneous changes.
+- **Reviews** — approved published reviews are counted separately from drafts or reviews awaiting moderation.
 
-Сохранение книги на локальной полке «Прочитано» не означает автоматического получения XP за завершённую новеллу. Мы специально разделили эти показатели, чтобы статистика оставалась честной.
+Moving a novel onto the local **Completed** shelf never grants verified novel-completion XP automatically. We keep these metrics separate so readers can trust their statistics.
 
-[Перейти к профилю](/account/) · [Открыть библиотеку](/library/).
+[Visit your profile](/account/) · [Open your library](/library/).
