@@ -1,5 +1,6 @@
 import type { SupabaseClient,User } from '@supabase/supabase-js';
 import { repository, onStorageChange } from '../lib/storage';
+import { achievementCopy, remainingMetricLabel } from '../lib/reader-copy';
 import { ranks,titles,achievements,levelFromTotalXp,nextRankMilestone,nextVerifiedAchievement,rankImage,titleStatus,emptyVerifiedStats,type VerifiedStats } from '../lib/reader-progression';
 
 let activeUser: string | null=null;
@@ -33,7 +34,7 @@ function paintAchievementFilter() {
   });
   stat('reader-stat-achievements',unlocked);
   const summary=document.getElementById('reader-achievements-summary');
-  if(summary) summary.textContent=`${unlocked} of ${tiles.length} verified milestones unlocked`;
+  if(summary) summary.textContent=`Открыто ${unlocked} из ${tiles.length} подтверждённых достижений`;
   const empty=document.getElementById('reader-achievements-empty');
   if(empty) empty.hidden=visible>0;
 }
@@ -43,23 +44,23 @@ function renderStats(s:VerifiedStats) {
   hero.hidden=false;
   document.querySelectorAll<HTMLElement>('#reader-advancement .advancement-stats, #reader-advancement .advancement-section')
     .forEach(section=>{section.hidden=false;});
-  stat('reader-level',`Level ${level.level}`);
-  stat('reader-rank',level.rank.en);
+  stat('reader-level',`Уровень ${level.level}`);
+  stat('reader-rank',level.rank.ru);
   const current=document.getElementById('reader-current-emblem') as HTMLImageElement;
   current.src=rankImage(level.rank.id);
-  current.alt=`${level.rank.en} rank emblem`;
+  current.alt=`Эмблема ранга «${level.rank.ru}»`;
   const avatar=document.getElementById('profile-avatar');
   if (avatar) avatar.dataset.readerRank=level.rank.id;
   const sidebar=document.getElementById('profile-sidebar-rank') as HTMLImageElement | null;
-  if(sidebar){sidebar.src=rankImage(level.rank.id);sidebar.alt=`${level.rank.en} rank emblem`;sidebar.hidden=false;}
+  if(sidebar){sidebar.src=rankImage(level.rank.id);sidebar.alt=`Эмблема ранга «${level.rank.ru}»`;sidebar.hidden=false;}
   const selected=titles.find(t=>t.id===s.selected_title&&titleStatus(t.id,s).unlocked)??titles[0];
-  stat('reader-equipped-title',selected.en);
+  stat('reader-equipped-title',selected.ru);
   const maxed=level.maxed;
   const progress=document.getElementById('reader-xp-progress') as HTMLProgressElement;
   progress.max=maxed?1:level.nextXp;
   progress.value=maxed?1:level.currentXp;
-  stat('reader-xp-numbers',maxed?'MAX LEVEL · 500':`${level.currentXp.toLocaleString()} / ${level.nextXp.toLocaleString()} XP`);
-  stat('reader-xp-remaining',maxed?'Maximum rank achieved':`${(level.nextXp-level.currentXp).toLocaleString()} XP to next level`);
+  stat('reader-xp-numbers',maxed?'МАКСИМАЛЬНЫЙ УРОВЕНЬ · 500':`${level.currentXp.toLocaleString()} / ${level.nextXp.toLocaleString()} XP`);
+  stat('reader-xp-remaining',maxed?'Максимальный уровень достигнут':`${(level.nextXp-level.currentXp).toLocaleString('ru-RU')} XP до следующего уровня`);
   const milestone=nextRankMilestone(s.total_xp);
   const preview=document.getElementById('reader-next-rank')!;
   const highest=document.getElementById('reader-highest-rank')!;
@@ -68,13 +69,13 @@ function renderStats(s:VerifiedStats) {
   if(milestone){
     const emblem=document.getElementById('reader-next-rank-image') as HTMLImageElement;
     emblem.src=rankImage(milestone.rank.id);
-    emblem.alt=`${milestone.rank.en} rank emblem`;
-    stat('reader-next-rank-name',`${milestone.rank.en} · Level ${milestone.level}`);
-    stat('reader-next-rank-remaining',`${milestone.remainingXp.toLocaleString()} verified XP remaining`);
+    emblem.alt=`Эмблема ранга «${milestone.rank.ru}»`;
+    stat('reader-next-rank-name',`${milestone.rank.ru} · уровень ${milestone.level}`);
+    stat('reader-next-rank-remaining',`Осталось ${milestone.remainingXp.toLocaleString('ru-RU')} подтверждённого XP`);
     const bar=document.getElementById('reader-next-rank-progress') as HTMLProgressElement;
     bar.max=milestone.rangeXp;
     bar.value=milestone.progressXp;
-    bar.setAttribute('aria-label',`Verified experience toward ${milestone.rank.en} rank`);
+    bar.setAttribute('aria-label',`Опыт до ранга «${milestone.rank.ru}»`);
   }
   stat('reader-stat-chapters',s.chapters.toLocaleString());
   stat('reader-stat-novels',s.completedNovels.toLocaleString());
@@ -87,7 +88,7 @@ function renderStats(s:VerifiedStats) {
     const currentRank=rankId===level.rank.id;
     const passed=level.level>=min&&!currentRank;
     tile.dataset.rankStatus=currentRank?'current':passed?'earned':'locked';
-    tile.querySelector<HTMLElement>('[data-rank-state]')!.textContent=currentRank?'Current rank':passed?'Reached':'Locked';
+    tile.querySelector<HTMLElement>('[data-rank-state]')!.textContent=currentRank?'Текущий ранг':passed?'Достигнут':'Закрыт';
   });
   document.querySelectorAll<HTMLElement>('[data-title-id]').forEach(tile=>{
     const item=titles.find(t=>t.id===tile.dataset.titleId)!;
@@ -95,13 +96,13 @@ function renderStats(s:VerifiedStats) {
     const bar=tile.querySelector<HTMLProgressElement>('progress')!;
     bar.value=item.target?Math.min(item.target,state.progress):1;
     const progressText=tile.querySelector<HTMLElement>('[data-award-progress]')!;
-    progressText.textContent=!state.available?'Awaiting verified server activity tracking':
-      item.target?`${state.progress} / ${item.target}`: 'Available from the start';
+    progressText.textContent=!state.available?'Ожидается подтверждённая активность':
+      item.target?`${state.progress} / ${item.target}`: 'Доступно с самого начала';
     tile.dataset.unlocked=String(state.unlocked);
     const button=tile.querySelector<HTMLButtonElement>('button')!;
     const equipped=item.id===selected.id;
     button.disabled=!state.unlocked||equipped;
-    button.textContent=equipped?'Equipped':state.unlocked?'Equip':'Locked';
+    button.textContent=equipped?'Используется':state.unlocked?'Выбрать':'Закрыто';
   });
   document.querySelectorAll<HTMLElement>('[data-achievement-id]').forEach(tile=>{
     const item=achievements.find(a=>a.id===tile.dataset.achievementId)!;
@@ -113,7 +114,7 @@ function renderStats(s:VerifiedStats) {
     const date=verifiedDate&&Number.isFinite(Date.parse(verifiedDate))
       ?new Date(verifiedDate).toLocaleDateString():null;
     tile.querySelector<HTMLElement>('[data-achievement-status]')!.textContent=unlocked?
-      (date?`Unlocked · ${date}`:'Unlocked'):`${value} / ${item.target}`;
+      (date?`Получено · ${date}`:'Получено'):`${value} / ${item.target}`;
   });
   const upcoming=nextVerifiedAchievement(s);
   const nextPreview=document.getElementById('reader-next-achievement')!;
@@ -122,15 +123,13 @@ function renderStats(s:VerifiedStats) {
   allComplete.hidden=!!upcoming;
   if(upcoming){
     const {achievement,progress,remaining}=upcoming;
-    stat('reader-next-achievement-name',achievement.en);
-    stat('reader-next-achievement-description',achievement.description);
-    const measure=achievement.metric==='chapters'?'chapter':
-      achievement.metric==='completedNovels'?'novel':'reading day';
-    stat('reader-next-achievement-remaining',`${remaining.toLocaleString()} ${measure}${remaining===1?'':'s'} to unlock`);
+    stat('reader-next-achievement-name',achievement.ru);
+    stat('reader-next-achievement-description',achievementCopy[achievement.id]);
+    stat('reader-next-achievement-remaining',`${remaining.toLocaleString('ru-RU')} ${remainingMetricLabel(achievement.metric,remaining)} до открытия`);
     const bar=document.getElementById('reader-next-achievement-progress') as HTMLProgressElement;
     bar.max=achievement.target;
     bar.value=progress;
-    bar.setAttribute('aria-label',`Verified progress toward ${achievement.en}`);
+    bar.setAttribute('aria-label',`Подтверждённый прогресс: ${achievement.ru}`);
   }
   paintAchievementFilter();
   void paintLocalStats();
@@ -152,11 +151,11 @@ export function initReaderAdvancement(client: SupabaseClient) {
       const owner=activeUser;
       if(!owner||!clientRef||button.disabled)return;
       button.disabled=true;
-      stat('reader-title-status','Equipping your title…');
+      stat('reader-title-status','Выбираем звание…');
       const {data,error}=await clientRef.rpc('reader_select_title',{p_title:button.dataset.equipTitle});
       if(owner!==activeUser)return;
-      if(error||data!==true) {stat('reader-title-status','Unable to equip that title. Please try again.');button.disabled=false;return;}
-      stat('reader-title-status','Title equipped.');
+      if(error||data!==true) {stat('reader-title-status','Не удалось выбрать звание. Попробуйте ещё раз.');button.disabled=false;return;}
+      stat('reader-title-status','Звание выбрано.');
       await loadVerified(owner,requestCount);
     });
   });
@@ -183,13 +182,13 @@ export function initReaderAdvancement(client: SupabaseClient) {
       root.dataset.status='signed-out';
       document.querySelector<HTMLElement>('.advancement-hero')!.hidden=true;
       document.querySelectorAll<HTMLElement>('#reader-advancement .advancement-stats, #reader-advancement .advancement-section').forEach(n=>n.hidden=true);
-      stat('reader-advancement-status','Sign in to view your verified level and achievements.');
+      stat('reader-advancement-status','Войдите, чтобы увидеть уровень и подтверждённые достижения.');
       delete modal.dataset.pendingRank;
       if(modal.open)modal.close();
       return;
     }
     root.dataset.status='loading';
-    stat('reader-advancement-status','Loading verified reading achievements…');
+    stat('reader-advancement-status','Загружаем подтверждённые достижения…');
     void loadVerified(user.id,seq);
   };
 }
@@ -199,7 +198,7 @@ async function loadVerified(userId:string,seq:number) {
   if(userId!==activeUser||seq!==requestCount)return;
   if(error||!data||typeof data!=='object'||typeof data.total_xp!=='number') {
     document.getElementById('reader-advancement')!.dataset.status='unavailable';
-    stat('reader-advancement-status','Verified progression is temporarily unavailable. Your saved account rewards have not been changed.');
+    stat('reader-advancement-status','Прогресс временно недоступен. Сохранённые награды аккаунта не изменены.');
     return;
   }
   const values={...emptyVerifiedStats(),...data} as VerifiedStats;
@@ -220,7 +219,7 @@ async function loadVerified(userId:string,seq:number) {
   if(after<=before)return;
   const modal=document.getElementById('reader-rank-unlocked') as HTMLDialogElement;
   (document.getElementById('reader-new-rank-image') as HTMLImageElement).src=rankImage(rank.id);
-  stat('reader-new-rank-detail',`New rank: ${rank.en} · Level ${levelFromTotalXp(values.total_xp).level}. You've unlocked a new rank emblem!`);
+  stat('reader-new-rank-detail',`Новый ранг: ${rank.ru} · уровень ${levelFromTotalXp(values.total_xp).level}. Открыта новая эмблема!`);
   modal.dataset.pendingRank=rank.id;
   if(!modal.open)modal.showModal();
 }
@@ -232,7 +231,7 @@ async function loadXpHistory(userId:string,seq:number) {
   const list=document.getElementById('reader-xp-history-list');
   if (!status||!list) return;
   list.replaceChildren();
-  status.textContent='Loading your reward history…';
+  status.textContent='Загружаем историю наград…';
   // A slow or unavailable service must never leave the account panel loading forever.
   const controller=new AbortController();
   const timeout=window.setTimeout(()=>controller.abort(),4000);
@@ -243,7 +242,7 @@ async function loadXpHistory(userId:string,seq:number) {
       .order('awarded_at',{ascending:false}).limit(15)
       .abortSignal(controller.signal);
   } catch {
-    if (userId===activeUser&&seq===requestCount) status.textContent='Reward history is temporarily unavailable.';
+    if (userId===activeUser&&seq===requestCount) status.textContent='История наград временно недоступна.';
     return;
   } finally {
     window.clearTimeout(timeout);
@@ -251,22 +250,22 @@ async function loadXpHistory(userId:string,seq:number) {
   if (userId!==activeUser||seq!==requestCount) return;
   const {data,error}=response;
   if(error) {
-    status.textContent='Reward history is temporarily unavailable.';
+    status.textContent='История наград временно недоступна.';
     return;
   }
   if(!data?.length) {
-    status.textContent='No verified XP awards yet. Complete a chapter to begin your journey.';
+    status.textContent='Пока нет подтверждённых наград XP. Завершите главу, чтобы начать путь.';
     return;
   }
-  status.textContent='Your 15 most recent verified rewards.';
+  status.textContent='Последние 15 подтверждённых наград.';
   for(const entry of data) {
     const row=document.createElement('li');
     const label=document.createElement('span');
     const isChapter=entry.event_kind==='chapter_finished';
-    label.textContent=isChapter?'Chapter completed':'Novel completed';
+    label.textContent=isChapter?'Глава завершена':'Книга завершена';
     const detail=document.createElement('small');
     const date=Date.parse(entry.awarded_at);
-    const when=Number.isFinite(date)?new Date(date).toLocaleDateString():'Date unavailable';
+    const when=Number.isFinite(date)?new Date(date).toLocaleDateString():'Дата недоступна';
     detail.textContent=`${entry.novel_slug} · ${when}`;
     const amount=document.createElement('strong');
     amount.textContent=`+${entry.xp} XP`;
