@@ -8,12 +8,13 @@ const session=()=>({access_token:[Buffer.from('{"alg":"HS256","typ":"JWT"}').toS
   Buffer.from(JSON.stringify({sub:user.id,exp:Math.floor(Date.now()/1000)+3600,role:'authenticated'})).toString('base64url'),'fixture-signature'].join('.'),
   refresh_token:'fixture-reader-refresh',expires_in:3600,expires_at:Math.floor(Date.now()/1000)+3600,token_type:'bearer',user});
 const readerSafeRequests = (requests: string[]) => requests.every(p =>
-  p.startsWith('/auth/v1/') || p.startsWith('/rest/v1/rpc/reader_') || p === '/rest/v1/reader_xp_events');
+  p.startsWith('/auth/v1/') || p.startsWith('/rest/v1/rpc/reader_') || p === '/rest/v1/reader_xp_events' || p === '/rest/v1/novel_reader_state');
 async function mockAuth(page: Page) {
   const state={requests:[] as string[],signupBody:{} as Record<string,unknown>,signupRedirect:'',signupCalls:0,
     passwordCalls:0,codeCalls:0,errorCode:'',logoutOffline:false,profileUser:structuredClone(user),profileCalls:0,profileBody:{} as Record<string,unknown>,profileError:0,verifyError:0,sessionExpired:false,
     rankStats:{total_xp:0,chapters:0,completedNovels:0,readingDays:0,scifiNovels:0,completedGenres:0,selected_title:'novice',last_rank_notified:null as string|null},
-    xpAwards:[] as Array<{event_kind:string,novel_slug:string,chapter_slug:string,xp:number,awarded_at:string}>,xpHistoryRequests:0,xpHistoryError:false};
+    xpAwards:[] as Array<{event_kind:string,novel_slug:string,chapter_slug:string,xp:number,awarded_at:string}>,xpHistoryRequests:0,xpHistoryError:false,
+    cloudRow:null as null|{state:Record<string,unknown>;updated_at:string},cloudWrites:0,cloudError:false};
   await page.route('https://*.supabase.co/**',async route=>{
     const address=new URL(route.request().url());state.requests.push(address.pathname);
     const json=(body:unknown,status=200)=>route.fulfill({status,contentType:'application/json',
@@ -41,6 +42,26 @@ async function mockAuth(page: Page) {
       return json(state.profileUser);
     }
     if(address.pathname.endsWith('/logout'))return state.logoutOffline?route.abort('failed'):json({});
+    if(address.pathname==='/rest/v1/novel_reader_state') {
+      const method=route.request().method();
+      if(state.cloudError)return json({message:'Storage unavailable'},503);
+      if(method==='GET')return json(state.cloudRow?[state.cloudRow]:[]);
+      if(method==='POST'){
+        if(state.cloudRow)return json({code:'23505',message:'Duplicate'},409);
+        const payload=route.request().postDataJSON();
+        state.cloudRow={state:payload.state,updated_at:'2026-10-28T00:00:00Z'};
+        state.cloudWrites++;
+        return json([state.cloudRow]);
+      }
+      if(method==='PATCH'){
+        if(!state.cloudRow)return json([]);
+        const payload=route.request().postDataJSON();
+        state.cloudRow={state:payload.state,updated_at:payload.updated_at};
+        state.cloudWrites++;
+        return json([state.cloudRow]);
+      }
+      return json({message:'Unsupported'},405);
+    }
     if(address.pathname==='/rest/v1/reader_xp_events') {
       state.xpHistoryRequests++;
       // Only a read-only projection is permitted: any attempted client write is rejected.
