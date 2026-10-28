@@ -8,11 +8,12 @@ const session=()=>({access_token:[Buffer.from('{"alg":"HS256","typ":"JWT"}').toS
   Buffer.from(JSON.stringify({sub:user.id,exp:Math.floor(Date.now()/1000)+3600,role:'authenticated'})).toString('base64url'),'fixture-signature'].join('.'),
   refresh_token:'fixture-reader-refresh',expires_in:3600,expires_at:Math.floor(Date.now()/1000)+3600,token_type:'bearer',user});
 const readerSafeRequests = (requests: string[]) => requests.every(p =>
-  p.startsWith('/auth/v1/') || p.startsWith('/rest/v1/rpc/reader_'));
+  p.startsWith('/auth/v1/') || p.startsWith('/rest/v1/rpc/reader_') || p === '/rest/v1/reader_xp_events');
 async function mockAuth(page: Page) {
   const state={requests:[] as string[],signupBody:{} as Record<string,unknown>,signupRedirect:'',signupCalls:0,
     passwordCalls:0,codeCalls:0,errorCode:'',logoutOffline:false,profileUser:structuredClone(user),profileCalls:0,profileBody:{} as Record<string,unknown>,profileError:0,verifyError:0,sessionExpired:false,
-    rankStats:{total_xp:0,chapters:0,completedNovels:0,readingDays:0,scifiNovels:0,completedGenres:0,selected_title:'novice',last_rank_notified:null as string|null}};
+    rankStats:{total_xp:0,chapters:0,completedNovels:0,readingDays:0,scifiNovels:0,completedGenres:0,selected_title:'novice',last_rank_notified:null as string|null},
+    xpAwards:[] as Array<{event_kind:string,novel_slug:string,chapter_slug:string,xp:number,awarded_at:string}>,xpHistoryRequests:0,xpHistoryError:false};
   await page.route('https://*.supabase.co/**',async route=>{
     const address=new URL(route.request().url());state.requests.push(address.pathname);
     const json=(body:unknown,status=200)=>route.fulfill({status,contentType:'application/json',
@@ -40,6 +41,13 @@ async function mockAuth(page: Page) {
       return json(state.profileUser);
     }
     if(address.pathname.endsWith('/logout'))return state.logoutOffline?route.abort('failed'):json({});
+    if(address.pathname==='/rest/v1/reader_xp_events') {
+      state.xpHistoryRequests++;
+      // Only a read-only projection is permitted: any attempted client write is rejected.
+      if(route.request().method()!=='GET')return json({message:'XP events are read only'},403);
+      if(state.xpHistoryError)return json({message:'History unavailable'},503);
+      return json(state.xpAwards);
+    }
     if(address.pathname==='/rest/v1/rpc/reader_my_progress')return json(state.rankStats);
     if(address.pathname==='/rest/v1/rpc/reader_mark_rank_seen'){
       state.rankStats.last_rank_notified=route.request().postDataJSON().p_rank;
@@ -351,4 +359,35 @@ test('Dark Gold promotion at level 140 is announced once and survives refresh', 
  await page.reload();
  await expect(page.locator('#reader-level')).toHaveText('Level 140');
  await expect(modal).toBeHidden();
+});
+
+
+test('verified XP ledger shows real server awards, not local reading estimates',async({page})=>{
+ const state=await mockAuth(page);
+ state.rankStats.total_xp=480;
+ state.rankStats.chapters=1;
+ state.xpAwards=[
+  {event_kind:'novel_finished',novel_slug:'sad-zimy',chapter_slug:'',xp:400,awarded_at:'2026-10-27T13:00:00Z'},
+  {event_kind:'chapter_finished',novel_slug:'sad-zimy',chapter_slug:'glava-1',xp:80,awarded_at:'2026-10-27T12:00:00Z'},
+ ];
+ await loginFixture(page);
+ await expect(page.locator('#reader-advancement')).toHaveAttribute('data-status','ready');
+ await expect(page.locator('#reader-xp-history-list li')).toHaveCount(2);
+ await expect(page.locator('#reader-xp-history-list li').first()).toContainText('Novel completed');
+ await expect(page.locator('#reader-xp-history-list li').first()).toContainText('+400 XP');
+ await expect(page.locator('#reader-xp-history-list li').last()).toContainText('Chapter completed');
+ await expect(page.locator('#reader-xp-history-list li').last()).toContainText('+80 XP');
+ expect(state.xpHistoryRequests).toBeGreaterThan(0);
+ expect(readerSafeRequests(state.requests)).toBe(true);
+});
+test('XP history shows empty and unavailable states without inventing rewards',async({page})=>{
+ const state=await mockAuth(page);
+ await loginFixture(page);
+ await expect(page.locator('#reader-xp-history-list li')).toHaveCount(0);
+ await expect(page.locator('#reader-xp-history-status')).toContainText('No verified XP awards yet');
+ state.xpHistoryError=true;
+ await page.reload();
+ await expect(page.locator('#reader-advancement')).toHaveAttribute('data-status','ready');
+ await expect(page.locator('#reader-xp-history-status')).toHaveText('Reward history is temporarily unavailable.');
+ await expect(page.locator('#reader-xp-history-list li')).toHaveCount(0);
 });
