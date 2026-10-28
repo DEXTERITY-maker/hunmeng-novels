@@ -39,6 +39,7 @@ function renderStats(s:VerifiedStats) {
   stat('reader-stat-chapters',s.chapters.toLocaleString());
   stat('reader-stat-novels',s.completedNovels.toLocaleString());
   stat('reader-stat-days',s.readingDays.toLocaleString());
+  stat('reader-stat-reviews',typeof s.approvedReviews==='number'?s.approvedReviews.toLocaleString():'—');
   stat('reader-stat-collection',typeof s.verifiedLibrary==='number'?s.verifiedLibrary.toLocaleString():'—');
   let unlockedAchievements=0;
   document.querySelectorAll<HTMLElement>('[data-rank-id]').forEach(tile=>{
