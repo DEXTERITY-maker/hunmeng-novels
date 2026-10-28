@@ -1,48 +1,135 @@
-import { backendConfigured, getSession, rest } from './backend';
-import { site } from '../config/site';
+import type { SupabaseClient } from '@supabase/supabase-js';
+import { createReaderClient, readerAuthConfigured } from './reader-auth';
 import { repository, sanitizeState, onStorageChange, type ReaderState } from './storage';
+import { mergeReaderStates, type SyncChoice, type SyncConflict } from './reader-sync-merge';
 
-let synchronizing = false;
-let scheduled: ReturnType<typeof setTimeout> | null = null;
-export async function syncReaderState() {
-  if (!site.features.accounts || !site.features.readerSync || synchronizing || !backendConfigured) return;
-  const session = await getSession();
-  if (!session) return;
-  synchronizing = true;
-  try {
-    const rows = await rest<{ state: ReaderState }[]>('novel_reader_state', 'GET',
-      'select=state&user_id=eq.' + encodeURIComponent(session.user.id));
-    const local = await repository.getState();
-    let merged = sanitizeState(local);
-    if (rows[0]?.state) {
-      const remote = sanitizeState(rows[0].state);
-      merged = {
-        ...local,
-        library: { ...remote.library, ...local.library },
-        progress: { ...remote.progress },
-      };
-      for (const [slug, progress] of Object.entries(local.progress)) {
-        if (!merged.progress[slug] || progress.updatedAt >= merged.progress[slug].updatedAt)
-          merged.progress[slug] = progress;
-      }
-      // Reading settings on this device take priority.
-      await repository.restoreState(merged);
-    }
-    await rest('novel_reader_state','POST','',
-      {user_id: session.user.id, state: merged, updated_at: new Date().toISOString()},
-      {Prefer:'resolution=merge-duplicates,return=representation'});
-    window.dispatchEvent(new Event('hunmeng:sync-success'));
-  } finally { synchronizing = false; }
+const OWNER_KEY='hunmeng-novels:cloud-sync-owner:v1';
+let active:Promise<SyncResult>|null=null;
+let started=false;
+let timer:ReturnType<typeof setTimeout>|null=null;
+
+export class SyncConflictError extends Error {
+  constructor(public conflicts: SyncConflict[]) {
+    super('Different reading positions need your choice before syncing.');
+  }
 }
+export class SyncOwnershipError extends Error {
+  constructor(){super('This browser was previously synced with another account. No data was transferred.');}
+}
+export interface SyncResult { userId:string; uploaded:boolean; conflictsResolved:number }
+export function syncOwner():string|null {
+  try { return localStorage.getItem(OWNER_KEY); } catch { return null; }
+}
+export function isReaderSyncEnabled(userId:string):boolean { return syncOwner()===userId; }
+export function disableReaderSync(userId:string) {
+  if(syncOwner()===userId) try {localStorage.removeItem(OWNER_KEY);} catch {}
+  window.dispatchEvent(new Event('reader:sync-preference'));
+}
+const sorted=(v:Record<string,unknown>|undefined)=>Object.fromEntries(Object.entries(v??{}).sort(([a],[b])=>a.localeCompare(b)));
+/** Excludes per-device global appearance settings from cloud comparisons. */
+function snapshot(value:ReaderState):string {
+  const s=sanitizeState(value);
+  return JSON.stringify({
+    library:sorted(s.library),progress:sorted(s.progress),
+    shelfChanges:sorted(s.shelfChanges),novelSettings:sorted(s.novelSettings),
+  });
+}
+async function perform(client:SupabaseClient, choice?:SyncChoice):Promise<SyncResult> {
+  const {data:session,error:authError}=await client.auth.getSession();
+  const userId=session.session?.user.id;
+  if(authError || !userId) throw new Error('Sign in to sync your reading library.');
+  const owner=syncOwner();
+  if(owner && owner!==userId) throw new SyncOwnershipError();
+  for(let attempt=0;attempt<3;attempt++){
+    const fetched=await client.from('novel_reader_state')
+      .select('state,updated_at').eq('user_id',userId).maybeSingle();
+    if(fetched.error) throw new Error('Unable to read the cloud library. Your device copy is unchanged.');
+    const remote=fetched.data as {state:ReaderState;updated_at:string}|null;
+    const before=await repository.getState();
+    const result=mergeReaderStates(before,remote?.state,choice);
+    if(result.conflicts.length&&!choice) throw new SyncConflictError(result.conflicts);
+    const cloudState:ReaderState={
+      ...result.state,
+      // Reading appearance is device-specific; do not overwrite another device.
+      settings:remote ? sanitizeState(remote.state).settings : before.settings,
+    };
+    const changed=!remote || snapshot(cloudState)!==snapshot(remote.state);
+    if(changed) {
+      const stillSignedIn=await client.auth.getSession();
+      if(stillSignedIn.data.session?.user.id!==userId)
+        throw new Error('Account changed during sync. No cloud updates were sent.');
+      if(remote){
+        const write=await client.from('novel_reader_state')
+          .update({state:cloudState,updated_at:new Date().toISOString()})
+          .eq('user_id',userId).eq('updated_at',remote.updated_at)
+          .select('updated_at').maybeSingle();
+        if(write.error) throw new Error('Unable to update the cloud library. Your device copy is unchanged.');
+        if(!write.data)continue; // Another device wrote first. Re-read, never blindly overwrite.
+      }else{
+        const write=await client.from('novel_reader_state')
+          .insert({user_id:userId,state:cloudState})
+          .select('updated_at').maybeSingle();
+        if(write.error){
+          if(write.error.code==='23505')continue; // Concurrent first sign-in.
+          throw new Error('Unable to create cloud reading storage. Your device copy is unchanged.');
+        }
+      }
+    }
+    const newest=await repository.getState();
+    if(snapshot(newest)===snapshot(before)){
+      // Preserve device-specific appearance and preferences even after import.
+      await repository.restoreState({...newest,...result.state,settings:newest.settings});
+    }else{
+      // Do not erase chapter progress written while the request was in flight.
+      window.dispatchEvent(new Event('reader:sync-pending'));
+    }
+    return {userId,uploaded:changed,conflictsResolved:choice?result.conflicts.length:0};
+  }
+  throw new Error('Your library changed on another device. Please retry.');
+}
+export async function syncReaderState(client:SupabaseClient,choice?:SyncChoice):Promise<SyncResult> {
+  if(active)return active;
+  const promise=perform(client,choice);
+  active=promise;
+  try{return await promise;}finally{if(active===promise)active=null;}
+}
+export async function enableReaderSync(client:SupabaseClient,choice?:SyncChoice):Promise<SyncResult> {
+  const result=await syncReaderState(client,choice);
+  try {localStorage.setItem(OWNER_KEY,result.userId);}
+  catch {throw new Error('Allow browser storage to keep sync enabled.');}
+  window.dispatchEvent(new Event('reader:sync-preference'));
+  return result;
+}
+/** Sync only after a user has explicitly opted in for this account and browser. */
 export function startReaderSync() {
-  if (!site.features.accounts || !site.features.readerSync || !backendConfigured || typeof window === 'undefined') return;
-  const queue = () => {
-    if (synchronizing) return;
-    if (scheduled) clearTimeout(scheduled);
-    scheduled = setTimeout(() => { void syncReaderState().catch(() => {}); }, 1500);
+  if(started || !readerAuthConfigured || typeof window==='undefined')return;
+  started=true;
+  let client:SupabaseClient|null=null;
+  const queue=()=>{
+    if(!syncOwner())return;
+    if(timer)clearTimeout(timer);
+    timer=setTimeout(()=>{
+      timer=null;
+      if(!navigator.onLine||!syncOwner())return;
+      client??=createReaderClient();
+      void client.auth.getSession().then(async({data})=>{
+        if(!data.session||!isReaderSyncEnabled(data.session.user.id))return;
+        try{
+          await syncReaderState(client!);
+          window.dispatchEvent(new CustomEvent('reader:sync-status',{detail:'synced'}));
+        }catch(error){
+          window.dispatchEvent(new CustomEvent('reader:sync-status',{
+            detail:error instanceof SyncConflictError?'conflict':'error'
+          }));
+        }
+      }).catch(()=>{});
+    },3500);
   };
   onStorageChange(queue);
-  void syncReaderState().catch(() => {});
-  window.addEventListener('online', queue);
-  window.addEventListener('hunmeng:auth-change', queue);
+  window.addEventListener('online',queue);
+  window.addEventListener('pageshow',queue);
+  window.addEventListener('reader:sync-pending',queue);
+  window.addEventListener('reader:sync-preference',queue);
+  window.addEventListener('reader:auth-change',queue);
+  queue();
 }
