@@ -3,13 +3,15 @@
  * URL hashes remain ordinary links and no account/storage logic changes.
  * Without JavaScript the sections remain readable in their original order.
  */
+import { resolveProfileTab, type ProfileTab } from '../lib/profile-navigation';
+
 export function initProfileTabs() {
   const root = document.getElementById('auth-logged-in');
   const nav = root?.querySelector<HTMLElement>('.profile-sidebar nav');
   if (!root || !nav) return;
 
-  const ids = ['profile-details', 'profile-reading', 'profile-account'] as const;
-  type Section = (typeof ids)[number];
+  const ids: ProfileTab[] = ['profile-details', 'profile-reading', 'profile-account'];
+  type Section = ProfileTab;
   const sections = new Map(ids.map(id => [id, document.getElementById(id)!]));
   const links = [...nav.querySelectorAll<HTMLAnchorElement>('a[data-profile-section]')];
 
@@ -29,8 +31,7 @@ export function initProfileTabs() {
   };
 
   const activeFromUrl = (): Section => {
-    const hash = location.hash.slice(1);
-    return ids.includes(hash as Section) ? hash as Section : 'profile-details';
+    return resolveProfileTab(location.hash) ?? 'profile-details';
   };
 
   const show = (active: Section) => {
@@ -57,6 +58,7 @@ export function initProfileTabs() {
     if (sections.has(id)) show(id);
   }));
   window.addEventListener('hashchange', () => show(activeFromUrl()));
+  window.addEventListener('popstate', () => show(activeFromUrl()));
   window.addEventListener('reader:auth-change', () => queueMicrotask(() => show(activeFromUrl())));
   root.dataset.profileTabsReady = 'true';
   show(activeFromUrl());
