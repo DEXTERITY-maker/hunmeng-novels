@@ -152,13 +152,26 @@ with (security_invoker=true) as
 revoke all on public.reader_published_reviews from public,anon,authenticated;
 grant select on public.reader_published_reviews to anon,authenticated;
 
+-- Compute verified Reviewer progress privately; never expose author IDs to readers.
+create or replace function private.reader_approved_review_count()
+returns bigint language plpgsql security definer set search_path=''
+as $
+declare v_user uuid:=auth.uid(); v_total bigint;
+begin
+ if v_user is null then raise exception 'Authentication required' using errcode='42501'; end if;
+ select count(*) into v_total from public.reader_reviews
+   where user_id=v_user and status='approved';
+ return v_total;
+end $;
+revoke execute on function private.reader_approved_review_count() from public,anon;
+grant execute on function private.reader_approved_review_count() to authenticated;
+
 -- Extend the existing account metrics without changing any XP ledger.
 create or replace function public.reader_my_progress()
 returns jsonb language sql security invoker set search_path=''
 as $$ select private.reader_my_progress() ||
  jsonb_build_object('achievement_dates',private.reader_achievement_dates(),
-  'approvedReviews',(select count(*) from public.reader_reviews
-    where user_id=(select auth.uid()) and status='approved')) $$;
+  'approvedReviews',private.reader_approved_review_count()) $;
 revoke execute on function public.reader_my_progress() from public,anon;
 grant execute on function public.reader_my_progress() to authenticated;
 
