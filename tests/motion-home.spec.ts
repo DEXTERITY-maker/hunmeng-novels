@@ -43,3 +43,25 @@ test('editorial scroll is never started on the account screen',async({page})=>{
  await expect(page.locator('#reader-auth-submit')).toBeVisible();
  expect(await page.evaluate(()=>document.documentElement.classList.contains('lenis'))).toBe(false);
 });
+
+test('home card button text remains readable in light and dark themes', async ({ page }) => {
+ for (const theme of ['light', 'dark'] as const) {
+  await page.emulateMedia({ colorScheme: theme });
+  await page.goto('/');
+  await page.evaluate(value => document.documentElement.setAttribute('data-theme', value), theme);
+  const card = page.locator('.home-book-card').first();
+  const label = card.locator('.home-book-read');
+  await expect(label).toHaveText(/Read novel/);
+  for (const hover of [false, true]) {
+   if (hover) await card.hover();
+   const contrast = await label.evaluate(el => {
+    const style = getComputedStyle(el);
+    const rgb = (value: string) => value.match(/[\d.]+/g)!.slice(0, 3).map(Number);
+    const luminance = (values: number[]) => values.map(v => { const c = v / 255; return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4; }).reduce((sum, v, i) => sum + v * [0.2126, 0.7152, 0.0722][i], 0);
+    const a = luminance(rgb(style.color)), b = luminance(rgb(style.backgroundColor));
+    return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+   });
+   expect(contrast, `${theme}, hover=${hover}`).toBeGreaterThanOrEqual(4.5);
+  }
+ }
+});
