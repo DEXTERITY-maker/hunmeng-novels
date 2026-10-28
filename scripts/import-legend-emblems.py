@@ -78,7 +78,7 @@ def main():
     if len(candidates)!=1:raise SystemExit('Missing archive asset: '+filename)
     binary=archive.read(candidates[0])
     if ext=='png':
-     valid=binary.startswith(b'\\x89PNG\\r\\n\\x1a\\n') and binary[16:24]==(640).to_bytes(4,'big')*2 and binary[25]==6
+     valid=binary.startswith(b'\x89PNG\r\n\x1a\n') and binary[16:24]==(640).to_bytes(4,'big')*2 and binary[25]==6
     else:
      valid=binary[:4]==b'RIFF' and binary[8:12]==b'WEBP' and len(binary)<300000
     if not valid:raise SystemExit('Invalid image: '+filename)
