@@ -1,23 +1,23 @@
 ---
-title: "13 достижений, ближайшая цель и прогресс до следующего ранга"
-excerpt: "Расширили систему достижений: фильтры, понятные этапы прогресса и новая подсказка о том, сколько осталось до следующего ранга и достижения."
+title: "13 achievements, your next milestone and progress toward a new rank"
+excerpt: "Track verified achievements, filter earned and locked milestones, and see exactly how much progress remains until your next goal."
 category: changelog
 publishedAt: "2026-10-28"
 order: 280
 ---
 
-Читательское путешествие стало нагляднее: в Hunmeng теперь **13 достижений**, основанных на подтверждённой активности.
+The reader journey is clearer now: Hunmeng has **13 achievements** based on verified activity.
 
-### Новое в профиле
+### What's new in your profile
 
-- Достижения за прочитанные главы, завершённые новеллы и разные дни чтения.
-- Фильтры **«Все», «Полученные» и «Закрытые»**, чтобы быстро находить нужные награды.
-- **Ближайшее достижение** — подсказка с оставшимся количеством глав, новелл или дней чтения.
-- **Следующий ранг** — его эмблема, требуемый уровень и точное количество оставшегося XP.
-- Отдельное состояние, когда открыты все доступные достижения.
+- Milestones for rewarded chapters, completed novels and distinct reading days.
+- **All**, **Unlocked** and **Locked** filters to navigate the achievement gallery.
+- A **Closest milestone** preview showing the remaining chapters, novels or reading days.
+- **Next rank** with its emblem, required level and exact remaining XP.
+- A dedicated state when every available milestone is unlocked.
 
-Напоминаем: достижения сами по себе **не выдают дополнительный XP**. Прогресс рассчитывается только из проверенных сервером данных.
+Achievements **do not award extra XP**. They reflect server-verified activity only.
 
-В системе рангов 500 уровней. После **Золотого** следует отдельный **Тёмно-золотой** ранг.
+There are 500 levels across nine visual ranks, with **Dark Gold** between Gold and Platinum.
 
-[Посмотреть достижения в профиле](/account/) · [Изучить систему рангов](/ranks/).
+[Open your achievements](/account/) · [Explore reader ranks](/ranks/).

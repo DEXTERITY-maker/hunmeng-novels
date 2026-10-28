@@ -1,20 +1,20 @@
 ---
-title: "Новая галерея девяти рангов Hunmeng"
-excerpt: "Представляем обновлённые эмблемы, фэнтезийную страницу рангов и наглядный путь через все 500 уровней."
+title: "Explore Hunmeng's new nine-rank gallery"
+excerpt: "Discover ornate reader emblems, a fantasy-themed rank gallery and the journey through 500 levels."
 category: announcements
 publishedAt: "2026-10-28"
 order: 300
 ---
 
-Мы обновили оформление **системы рангов читателей Hunmeng**, чтобы путь от первой главы до высшего ранга ощущался как путешествие по миру фэнтези.
+We refreshed Hunmeng's **reader rank system** so that the journey from your first chapter to the highest rank feels like a fantasy adventure.
 
-### Что изменилось
+### What's changed
 
-- **Девять уникальных декоративных эмблем** — для Железного, Бронзового, Серебряного, Золотого, Тёмно-золотого, Платинового, Алмазного, Легендарного и Мифического рангов.
-- **Отдельная галерея рангов** с диапазонами уровней от 1 до 500, описаниями и визуальной шкалой продвижения.
-- **Обновлённая страница профиля**, где легче увидеть свой ранг, уровень и награды.
-- Адаптация галереи для телефонов, планшетов и компьютеров.
+- **Nine illustrated metal and gemstone emblems** for Iron, Bronze, Silver, Gold, Dark Gold, Platinum, Diamond, Legendary and Mythical ranks.
+- A **dedicated rank gallery** showing levels 1–500, descriptions and a progression timeline.
+- An **updated profile** that brings your current rank, level and achievements closer together.
+- Responsive design for phones, tablets and desktop screens.
 
-Ранги определяются автоматически по уровню. Изменение оформления не влияет на начисление опыта: XP по-прежнему выдаёт сервер только за допустимые подтверждённые действия.
+Your rank follows your account level automatically. These visual updates do not change XP awards: the server still controls eligible, verified reading activity.
 
-[Посмотреть все девять рангов](/ranks/) · [Открыть мой профиль](/account/).
+[Explore all nine ranks](/ranks/) · [Open your profile](/account/).

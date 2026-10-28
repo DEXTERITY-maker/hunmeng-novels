@@ -67,8 +67,8 @@ test('fantasy rank gallery preserves all nine emblems and fits phone and desktop
   await page.setViewportSize({width,height:900});
   await page.goto('/ranks/');
   await expect(page.locator('.rank-world-card')).toHaveCount(9);
-  await expect(page.locator('.rank-world-card[data-rank-style="dark-gold"] h3')).toHaveText('Тёмно-золотой');
-  await expect(page.locator('.rank-world-card[data-rank-style="mythical"] .rank-world-levels')).toHaveText('Уровни 420–500');
+  await expect(page.locator('.rank-world-card[data-rank-style="dark-gold"] h3')).toHaveText('Dark Gold');
+  await expect(page.locator('.rank-world-card[data-rank-style="mythical"] .rank-world-levels')).toHaveText('Levels 420–500');
   for(const emblem of await page.locator('.rank-world-emblem img').all()){
     await emblem.scrollIntoViewIfNeeded();
     await expect.poll(()=>emblem.evaluate((img:HTMLImageElement)=>img.complete&&img.naturalWidth>0)).toBe(true);

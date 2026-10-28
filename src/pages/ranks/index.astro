@@ -4,36 +4,36 @@ import { ranks, rankImage } from '../../lib/reader-progression';
 import '../../styles/ranks-showcase.css';
 const roman=['I','II','III','IV','V','VI','VII','VIII','IX'];
 const lore=[
- 'Каждая глава — новое открытие. Здесь начинается большой путь читателя.',
- 'Истории расширяют горизонты, а новые миры становятся ближе.',
- 'Внимательный исследователь находит смысл в каждой прочитанной истории.',
- 'Читатель, который умеет находить настоящие сокровища среди книг.',
- 'Редкий вкус, стойкое увлечение и любовь к неизведанным мирам.',
- 'Опыт и преданность историям сияют ярче драгоценных металлов.',
- 'Знания и впечатления превращаются в настоящее мастерство.',
- 'Выдающийся читатель оставляет след в истории книжного мира.',
- 'Легенды о путешествиях между мирами начинаются здесь.'
+ 'Every chapter opens a new world. Your reading journey begins here.',
+ 'Stories expand horizons and bring distant worlds closer.',
+ 'A thoughtful explorer finds meaning in every story.',
+ 'A reader with a gift for discovering hidden literary treasures.',
+ 'Refined taste, curiosity and a love of uncharted worlds.',
+ 'Experience and devotion to stories shine like precious metal.',
+ 'Knowledge and wonder become true reading mastery.',
+ 'An exceptional reader leaves a mark on the world of stories.',
+ 'The legends of journeys between worlds begin here.'
 ];
 ---
-<Layout title="Система рангов читателей" description="Откройте девять фэнтезийных рангов Hunmeng: от Железного до Мифического. 500 уровней, уникальные эмблемы и проверенный прогресс чтения.">
+<Layout title="Reader rank system" description="Explore nine fantasy reader ranks from Iron to Mythical, 500 levels, unique emblems and verified reading progress.">
  <main id="main" class="page-shell ranks-world-page">
   <div class="rank-world-backdrop" aria-hidden="true"></div>
-  <nav class="rank-world-breadcrumbs" aria-label="Навигация"><a href="/">Главная</a><span aria-hidden="true">›</span><span>Система рангов</span></nav>
+  <nav class="rank-world-breadcrumbs" aria-label="Breadcrumbs"><a href="/">Home</a><span aria-hidden="true">›</span><span>Reader ranks</span></nav>
   <header class="rank-world-intro">
-    <div class="rank-world-kicker"><span aria-hidden="true">✦</span> МИР HUNMENG <span aria-hidden="true">✦</span></div>
-    <h1>Система рангов читателей</h1>
-    <p>Чем больше читаешь, тем дальше путешествие</p>
-    <div class="rank-world-highlights" aria-label="Система прогресса"><span>✧ Девять рангов</span><span>✧ 500 уровней</span><span>✧ Уникальные эмблемы</span></div>
+    <div class="rank-world-kicker"><span aria-hidden="true">✦</span> WORLD OF HUNMENG <span aria-hidden="true">✦</span></div>
+    <h1>Reader rank system</h1>
+    <p>The more you read, the further you travel.</p>
+    <div class="rank-world-highlights" aria-label="Progression system"><span>✧ Nine ranks</span><span>✧ 500 levels</span><span>✧ Unique emblems</span></div>
   </header>
   <section class="rank-world-collection" aria-labelledby="rank-world-gallery-title">
-    <h2 id="rank-world-gallery-title" class="visually-hidden">Все девять рангов Hunmeng</h2>
+    <h2 id="rank-world-gallery-title" class="visually-hidden">All nine Hunmeng ranks</h2>
     <div class="rank-world-cards">
       {ranks.map((rank,i)=>(
         <article class="rank-world-card" data-rank-style={rank.id} style={`--rank-glow:${rank.accent}`}>
           <div class="rank-world-card-top"><span class="rank-world-roman">{roman[i]}</span><span class="rank-world-spark" aria-hidden="true">✦</span></div>
-          <div class="rank-world-emblem"><img src={rankImage(rank.id)} alt={`Эмблема ранга «${rank.ru}»`} width="200" height="224" loading={i>2?'lazy':'eager'} decoding="async"/></div>
-          <h3>{rank.ru}</h3>
-          <p class="rank-world-levels">Уровни {rank.min}–{rank.max}</p>
+          <div class="rank-world-emblem"><img src={rankImage(rank.id)} alt={`Emblem of the ${rank.en} rank`} width="200" height="224" loading={i>2?'lazy':'eager'} decoding="async"/></div>
+          <h3>{rank.en}</h3>
+          <p class="rank-world-levels">Levels {rank.min}–{rank.max}</p>
           <p class="rank-world-lore">{lore[i]}</p>
           <div class="rank-world-scenery" aria-hidden="true"></div>
         </article>
@@ -41,20 +41,20 @@ const lore=[
     </div>
   </section>
   <section class="rank-world-progression" aria-labelledby="rank-world-progress-heading">
-   <div class="rank-world-heading"><p class="rank-world-kicker">ПУТЬ ЧИТАТЕЛЯ</p><h2 id="rank-world-progress-heading">От первых страниц до легенды</h2><p>Продвижение происходит автоматически по уровню аккаунта, на основе подтверждённого сервером опыта.</p></div>
+   <div class="rank-world-heading"><p class="rank-world-kicker">READER JOURNEY</p><h2 id="rank-world-progress-heading">From the first pages to a legend</h2><p>Ranks advance automatically with account levels, based on server-verified XP.</p></div>
    <ol class="rank-world-track">
-    {ranks.map((rank,i)=>(<li style={`--rank-glow:${rank.accent}`}><span class="rank-world-track-gem" aria-hidden="true">✧</span><strong>{rank.ru}</strong><small>{rank.min}–{rank.max}</small></li>))}
+    {ranks.map((rank,i)=>(<li style={`--rank-glow:${rank.accent}`}><span class="rank-world-track-gem" aria-hidden="true">✧</span><strong>{rank.en}</strong><small>{rank.min}–{rank.max}</small></li>))}
    </ol>
   </section>
   <section class="rank-world-info" aria-labelledby="rank-world-info-heading">
-   <div class="rank-world-heading"><p class="rank-world-kicker">НАГРАДА ЗА ПУТЕШЕСТВИЕ</p><h2 id="rank-world-info-heading">Что даёт повышение ранга?</h2></div>
+   <div class="rank-world-heading"><p class="rank-world-kicker">THE REWARD FOR YOUR JOURNEY</p><h2 id="rank-world-info-heading">What does a higher rank offer?</h2></div>
    <div class="rank-world-benefits">
-    <div><span aria-hidden="true">✦</span><h3>Своя эмблема</h3><p>Каждый из девяти рангов имеет особенный медальон, который отображается в профиле.</p></div>
-    <div><span aria-hidden="true">◈</span><h3>Оформление профиля</h3><p>Ранг подчёркивается цветом и украшением профиля. Эмблема обновляется автоматически.</p></div>
-    <div><span aria-hidden="true">✧</span><h3>Прозрачный прогресс</h3><p>Смотрите текущий уровень, опыт до следующего и ближайшие достижения.</p></div>
+    <div><span aria-hidden="true">✦</span><h3>Your own emblem</h3><p>Each of the nine ranks has its own medallion displayed in your profile.</p></div>
+    <div><span aria-hidden="true">◈</span><h3>Profile styling</h3><p>Your rank is reflected in the profile colors and emblem. The emblem updates automatically.</p></div>
+    <div><span aria-hidden="true">✧</span><h3>Clear progression</h3><p>See your current level, XP to the next level and upcoming achievements.</p></div>
    </div>
-   <p class="rank-world-disclaimer">Опыт начисляется только за допустимые подтверждённые действия чтения. Просмотр страницы и прокрутка сами по себе не дают XP. Ранги и звания — разные системы.</p>
-   <div class="rank-world-actions"><a href="/account/" class="rank-world-primary">Мой профиль <span aria-hidden="true">→</span></a><a href="/news/" class="rank-world-secondary">Новости Hunmeng</a></div>
+   <p class="rank-world-disclaimer">XP is awarded only for eligible, server-verified reading. Opening or scrolling a page alone grants no XP. Ranks and titles are separate systems.</p>
+   <div class="rank-world-actions"><a href="/account/" class="rank-world-primary">My profile <span aria-hidden="true">→</span></a><a href="/news/" class="rank-world-secondary">Hunmeng news</a></div>
   </section>
  </main>
 </Layout>

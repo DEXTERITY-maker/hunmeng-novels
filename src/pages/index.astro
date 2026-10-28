@@ -44,13 +44,13 @@ const animatedNovels = newNovels.map((n) => ({
           <form class="home-search" role="search" action="/catalog/" method="get">
             <label class="home-sr-only" for="home-search-input">Search novels</label>
             <span class="home-search-symbol"><Icon name="search" size={21} /></span>
-            <input id="home-search-input" type="search" name="search" placeholder="Search stories or authors" autocomplete="off" required />
+            <input id="home-search-input" type="search" name="search" placeholder="Title or author" autocomplete="off" required />
             <button class="button" type="submit">Search <Icon name="arrow" size={17} /></button>
           </form>
           <nav class="home-discover" aria-label="Explore the library">
             <a href="/genres/"><Icon name="layers" size={20} /> Browse genres <Icon name="arrow" size={15} /></a>
             <a href="/updates/"><Icon name="clock" size={20} /> Latest chapters <Icon name="arrow" size={15} /></a>
-            <a href="#new-novels"><Icon name="book" size={20} /> New releases <Icon name="arrow" size={15} /></a>
+            <a href="/catalog/?sort=added"><Icon name="book" size={20} /> New releases <Icon name="arrow" size={15} /></a>
           </nav>
         </div>
         {recommendations[0] && (
@@ -60,8 +60,9 @@ const animatedNovels = newNovels.map((n) => ({
               <span class="home-feature-count">{chapterCount(recommendations[0].chapterCount)}</span>
             </div>
             <div class="home-feature-visual">
-              <span class="home-feature-cover">
-                <img src={recommendations[0].cover} alt="" width="250" height="375" fetchpriority="high" decoding="async" />
+              <span class="home-feature-cover" data-feature-cover>
+                <img src={recommendations[0].cover} alt={`Cover of ${recommendations[0].title}`} width="250" height="375" fetchpriority="high" decoding="async" />
+                <span class="home-feature-cover-fallback" hidden aria-hidden="true">✦<small>Cover unavailable</small></span>
               </span>
             </div>
             <div class="home-feature-details">
@@ -195,7 +196,9 @@ const animatedNovels = newNovels.map((n) => ({
   <script>
     import { initPersonal } from '../scripts/personal';
     import { initHomeHeroMotion } from '../scripts/home-hero-motion';
+    import { initFeaturedCover } from '../scripts/featured-cover';
     void initPersonal();
+    initFeaturedCover();
     initHomeHeroMotion();
   </script>
 </Layout>

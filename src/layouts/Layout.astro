@@ -13,6 +13,7 @@ import '../styles/hunmeng-redesign.css';
 import '../styles/reader-advancement.css';
 import '../styles/fantasy-profile.css';
 import '../styles/motion-polish.css';
+import '../styles/reader-audit-fixes.css';
 import '@fontsource-variable/lora/wght.css';
 import '@fontsource-variable/manrope/wght.css';
 import '@fontsource-variable/noto-serif/wght.css';
@@ -199,6 +200,17 @@ const tokens = `:root{--bg:${c.background};--surface:${c.surface};--ink:${c.text
       import { site } from '../config/site';
       if (site.features.accounts) {
         void import('../scripts/account-nav').then(({ initAccountNav }) => initAccountNav());
+      }
+      // Recover a locally queued, server-verified chapter reward on the next page,
+      // without loading Supabase or affecting guest pages when no receipt exists.
+      if (site.features.accounts) {
+        let pendingRewards = false;
+        try { pendingRewards = !!localStorage.getItem('hunmeng-novels:reader-reward-pending:v1'); } catch {}
+        if (pendingRewards) {
+          void import('../scripts/reader-rewards')
+            .then(({ recoverPendingReaderRewards }) => recoverPendingReaderRewards())
+            .catch(() => {});
+        }
       }
       if (site.features.accounts && site.features.readerSync) {
         // Guest pages do not need the Supabase sync bundle at all.

@@ -1,4 +1,4 @@
-import { getUser, rest } from '../lib/backend';
+import { studioUser, studioRest as rest, onStudioSignedOut } from '../lib/studio-session';
 
 type Novel = {
   id: string; title: string; synopsis: string; outline: string; characters: string;
@@ -171,13 +171,13 @@ export async function initStudio() {
   window.addEventListener('beforeunload', event => {
     if (dirty && authenticated) { event.preventDefault(); event.returnValue = ''; }
   });
-  window.addEventListener('hunmeng:session-ended', () => {
+  const subscription = onStudioSignedOut(() => {
     authenticated = false; workspace.hidden = true; login.hidden = false;
     message('Your session has ended. Sign in to access drafts again.');
   });
 
   try {
-    const user = await getUser();
+    const user = await studioUser();
     if (!user) {
       message('Sign in to access your private writing studio.');
       login.hidden = false;
@@ -193,6 +193,7 @@ export async function initStudio() {
     return;
   }
 
+  window.addEventListener('pagehide', () => subscription.unsubscribe(), {once:true});
   $<HTMLFormElement>('#studio-create').addEventListener('submit', async event => {
     event.preventDefault();
     if (!await settle()) return;

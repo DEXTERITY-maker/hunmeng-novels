@@ -1,8 +1,14 @@
 import { test, expect } from './fixtures';
 const user = { id: '00000000-0000-4000-8000-000000000077', email: 'author@example.test' };
 const session = () => ({
-  access_token: 'test-access', refresh_token: 'test-refresh', user,
-  expires_at: Math.floor(Date.now() / 1000) + 3600,
+  access_token: [
+    Buffer.from('{"alg":"HS256","typ":"JWT"}').toString('base64url'),
+    Buffer.from(JSON.stringify({sub:user.id,exp:Math.floor(Date.now()/1000)+3600,role:'authenticated'})).toString('base64url'),
+    'fixture-signature',
+  ].join('.'),
+  refresh_token:'test-reader-refresh',
+  expires_at:Math.floor(Date.now()/1000)+3600,
+  expires_in:3600,token_type:'bearer',user:{...user,aud:'authenticated',role:'authenticated'},
 });
 
 test('writing studio keeps private controls hidden from guests', async ({ page }) => {
@@ -14,7 +20,7 @@ test('writing studio keeps private controls hidden from guests', async ({ page }
 });
 
 test('author can create a private novel, autosave its chapter and save a revision', async ({ page }) => {
-  await page.addInitScript(value => localStorage.setItem('hunmeng-novels:session:v1', JSON.stringify(value)), session());
+  await page.addInitScript(value => localStorage.setItem('hunmeng-novels:reader-auth:v1', JSON.stringify(value)), session());
   const novels: Record<string, unknown>[] = [];
   const chapters: Record<string, unknown>[] = [];
   const revisions: Record<string, unknown>[] = [];
@@ -75,4 +81,36 @@ test('author can create a private novel, autosave its chapter and save a revisio
   await page.getByRole('button', { name: 'Save version' }).click();
   await expect(page.locator('#studio-versions option')).toHaveCount(1);
   expect(revisions[0].body).toBe(chapters[0].body);
+});
+
+test('the same Supabase reader session opens the studio without a second login',async({page})=>{
+  const userSession=session();
+  await page.addInitScript(value=>{
+    // Seed once, not on every reload. Otherwise the test silently signs in
+    // again after removing the session and cannot exercise the guest state.
+    if(sessionStorage.getItem('audit:studio-session-seeded')==='1')return;
+    localStorage.setItem('hunmeng-novels:reader-auth:v1',JSON.stringify(value));
+    sessionStorage.setItem('audit:studio-session-seeded','1');
+  },userSession);
+  const headers={'access-control-allow-origin':'*','access-control-allow-headers':'*',
+    'access-control-expose-headers':'x-supabase-api-version','x-supabase-api-version':'2024-01-01',
+    'content-type':'application/json'};
+  const paths:string[]=[];
+  await page.route('https://*.supabase.co/**',async route=>{
+    const url=new URL(route.request().url());paths.push(url.pathname);
+    const data=url.pathname.endsWith('/auth/v1/user')?user:[];
+    return route.fulfill({status:200,headers,body:JSON.stringify(data)});
+  });
+  await page.goto('/studio/');
+  await expect(page.locator('#studio-status')).toContainText('Private workspace ready');
+  await expect(page.locator('#studio-workspace')).toBeVisible();
+  await expect(page.locator('#studio-login')).toBeHidden();
+  await expect(page.locator('[data-account-member]')).not.toHaveAttribute('hidden', '');
+  expect(paths).toContain('/auth/v1/user');
+  expect(paths).toContain('/rest/v1/author_novels');
+  expect(paths).not.toContain('/auth/v1/token');
+  await page.evaluate(()=>localStorage.removeItem('hunmeng-novels:reader-auth:v1'));
+  await page.reload();
+  await expect(page.locator('#studio-login')).toBeVisible();
+  await expect(page.locator('#studio-workspace')).toBeHidden();
 });

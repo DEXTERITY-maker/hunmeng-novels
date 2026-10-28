@@ -19,12 +19,12 @@ export const ranks = [
 ] as const;
 /** Reader mastery is a six-step display tier, separate from nine ornate ranks and equipable titles. */
 export const readerMasteryTiers = [
-  {id:'novice',ru:'Новичок-читатель',min:1,max:4},
-  {id:'reader',ru:'Читатель',min:5,max:9},
-  {id:'experienced',ru:'Опытный читатель',min:10,max:19},
-  {id:'connoisseur',ru:'Знаток',min:20,max:34},
-  {id:'master',ru:'Мастер',min:35,max:49},
-  {id:'legend',ru:'Легенда Hunmeng',min:50,max:500},
+  {id:'novice',en:'Novice Reader',ru:'Новичок-читатель',min:1,max:4},
+  {id:'reader',en:'Reader',ru:'Читатель',min:5,max:9},
+  {id:'experienced',en:'Experienced Reader',ru:'Опытный читатель',min:10,max:19},
+  {id:'connoisseur',en:'Connoisseur',ru:'Знаток',min:20,max:34},
+  {id:'master',en:'Master',ru:'Мастер',min:35,max:49},
+  {id:'legend',en:'Hunmeng Legend',ru:'Легенда Hunmeng',min:50,max:500},
 ] as const;
 /** Original SVG illustrations. Kept separate from the nine metal/gemstone rank emblems. */
 export const masteryImage = (id: string) => `/images/mastery/${id}.svg`;
