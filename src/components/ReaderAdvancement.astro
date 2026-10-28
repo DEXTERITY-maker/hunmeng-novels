@@ -1,5 +1,5 @@
 ---
-import { ranks,readerMasteryTiers,titles,achievements,rankImage } from '../lib/reader-progression';
+import { ranks,readerMasteryTiers,titles,achievements,rankImage,masteryImage } from '../lib/reader-progression';
 ---
 <div id="reader-advancement" class="reader-advancement" data-status="loading" aria-label="Reader progression">
   <p id="reader-advancement-status" class="fine" role="status" aria-live="polite">Loading verified reading achievements…</p>
@@ -45,7 +45,9 @@ import { ranks,readerMasteryTiers,titles,achievements,rankImage } from '../lib/r
     <div class="reader-mastery-grid">
       {readerMasteryTiers.map(tier=>(
         <article class="reader-mastery-tile" data-mastery-id={tier.id} data-mastery-min={tier.min}>
-          <span class="reader-mastery-symbol" aria-hidden="true">{tier.symbol}</span>
+          <div class="reader-mastery-emblem-wrap">
+            <img class="reader-mastery-emblem" src={masteryImage(tier.id)} alt={`Иллюстрированная эмблема ступени «${tier.ru}»`} width="260" height="300" loading="lazy" decoding="async" />
+          </div>
           <strong>{tier.ru}</strong>
           <span class="reader-mastery-levels">Уровни {tier.min}–{tier.max}</span>
           <small data-mastery-state>Закрыто</small>
@@ -116,6 +118,17 @@ import { ranks,readerMasteryTiers,titles,achievements,rankImage } from '../lib/r
     <p id="reader-achievements-empty" class="fine" hidden>No achievements match this filter yet.</p>
   </section>
 </div>
+<dialog id="reader-mastery-unlocked" class="reader-mastery-dialog" aria-labelledby="reader-mastery-unlocked-title" aria-describedby="reader-mastery-unlocked-detail">
+  <div class="reader-mastery-dialog-inner">
+    <p class="reader-mastery-dialog-eyebrow">✦ HUNMENG · ПУТЬ ЧИТАТЕЛЯ ✦</p>
+    <div class="reader-mastery-dialog-emblem">
+      <img id="reader-mastery-unlocked-image" src={masteryImage('novice')} alt="Новая эмблема «Пути читателя»" width="260" height="300" />
+    </div>
+    <h2 id="reader-mastery-unlocked-title">Новая ступень открыта!</h2>
+    <p id="reader-mastery-unlocked-detail">Ваше путешествие продолжается.</p>
+    <button type="button" id="reader-mastery-acknowledge" class="button">Продолжить путешествие</button>
+  </div>
+</dialog>
 <dialog id="reader-rank-unlocked" class="reader-rank-dialog" aria-labelledby="reader-new-rank-title">
   <div class="reader-rank-dialog-inner">
     <p class="eyebrow">A new chapter in your journey</p>
