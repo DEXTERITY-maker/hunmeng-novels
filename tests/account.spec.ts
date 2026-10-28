@@ -471,3 +471,48 @@ test('offline or failed cloud storage never erases local progress', async ({page
  expect(preserved.progress['sad-zimy'].ratio).toBe(.56);
  expect(state.cloudWrites).toBe(0);
 });
+
+
+test('routine reading changes upload automatically without a false chapter conflict',async({page})=>{
+ const state=await mockAuth(page);
+ await loginFixture(page);
+ await page.evaluate(()=>localStorage.setItem('hunmeng-novels:v1',JSON.stringify({
+  version:1,library:{'sad-zimy':'reading'},progress:{'sad-zimy':{
+   chapterSlug:'glava-1',chapterNumber:1,blockId:'block-2',offset:0,ratio:.2,updatedAt:100
+  }}
+ })));
+ await page.locator('.profile-sidebar nav a[href="#profile-account"]').click();
+ await page.locator('#reader-sync-enable').click();
+ await expect(page.locator('#reader-sync-now')).toBeVisible();
+ await page.evaluate(()=>{
+  const state=JSON.parse(localStorage.getItem('hunmeng-novels:v1')!);
+  state.progress['sad-zimy']={chapterSlug:'glava-2',chapterNumber:2,blockId:'block-4',offset:0,ratio:.6,updatedAt:200};
+  localStorage.setItem('hunmeng-novels:v1',JSON.stringify(state));
+ });
+ await page.locator('#reader-sync-now').click();
+ await expect(page.locator('#reader-cloud-sync-status')).toContainText('backed up');
+ await expect(page.locator('#reader-sync-conflict')).toBeHidden();
+ expect((state.cloudRow?.state.progress as Record<string,{chapterSlug:string}>)['sad-zimy'].chapterSlug).toBe('glava-2');
+ expect(state.cloudWrites).toBe(2);
+});
+test('cloud updates download when this device has not changed since last sync',async({page})=>{
+ const state=await mockAuth(page);
+ await loginFixture(page);
+ await page.evaluate(()=>localStorage.setItem('hunmeng-novels:v1',JSON.stringify({
+  version:1,library:{'sad-zimy':'reading'},progress:{'sad-zimy':{
+   chapterSlug:'glava-1',chapterNumber:1,blockId:'block-2',offset:0,ratio:.2,updatedAt:100
+  }}
+ })));
+ await page.locator('.profile-sidebar nav a[href="#profile-account"]').click();
+ await page.locator('#reader-sync-enable').click();
+ await expect(page.locator('#reader-sync-now')).toBeVisible();
+ state.cloudRow!.updated_at='2026-10-28T01:00:00Z';
+ (state.cloudRow!.state.progress as Record<string,unknown>)['sad-zimy']={
+  chapterSlug:'glava-2',chapterNumber:2,blockId:'block-4',offset:0,ratio:.7,updatedAt:400
+ };
+ await page.locator('#reader-sync-now').click();
+ await expect(page.locator('#reader-cloud-sync-status')).toContainText('matches');
+ const local=await page.evaluate(()=>JSON.parse(localStorage.getItem('hunmeng-novels:v1')!));
+ expect(local.progress['sad-zimy'].chapterSlug).toBe('glava-2');
+ expect(state.cloudWrites).toBe(1);
+});
