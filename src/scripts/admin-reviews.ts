@@ -45,7 +45,7 @@ export async function initAdminReviews(){
      notice.textContent='Saving review moderation…';
      try{
       const updated=await rest<ReviewRow[]>('reader_reviews','PATCH',
-       'id=eq.'+encodeURIComponent(item.id)+'&status=eq.'+encodeURIComponent(item.status),
+       'id=eq.'+encodeURIComponent(item.id)+'&status=eq.'+encodeURIComponent(item.status)+'&select=id,status',
        {status:target});
       if(updated.length!==1)throw new Error('Another administrator changed this review. Refresh the queue.');
       await load();
