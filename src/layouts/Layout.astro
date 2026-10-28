@@ -12,6 +12,7 @@ import '../styles/atmosphere.css';
 import '../styles/hunmeng-redesign.css';
 import '../styles/reader-advancement.css';
 import '../styles/fantasy-profile.css';
+import '../styles/motion-polish.css';
 import '@fontsource-variable/lora/wght.css';
 import '@fontsource-variable/manrope/wght.css';
 import '@fontsource-variable/noto-serif/wght.css';
@@ -187,6 +188,13 @@ const tokens = `:root{--bg:${c.background};--surface:${c.surface};--ink:${c.text
       void initAppearance();
       import { initHeader } from '../scripts/header';
       initHeader();
+      // Smooth scrolling is an editorial enhancement, not a dependency of the reader,
+      // account, admin pages or their scroll/keyboard behaviour.
+      if (window.matchMedia('(min-width: 1024px) and (pointer: fine) and (prefers-reduced-motion: no-preference)').matches) {
+        void import('../scripts/editorial-scroll').then(({ initEditorialScroll }) => {
+          initEditorialScroll();
+        });
+      }
       onStorageChange(() => void apply());
       import { site } from '../config/site';
       if (site.features.accounts) {

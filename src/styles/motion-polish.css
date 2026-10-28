@@ -1,0 +1,88 @@
+/* Hunmeng Motion System — homepage-only finishing layer.
+ * Existing editorial/reader CSS remains unchanged; these selectors are deliberately
+ * scoped after the legacy CSS imports in Layout.astro.
+ */
+:root {
+  --hm-motion-fast: 180ms;
+  --hm-motion-normal: 350ms;
+  --hm-motion-ease: cubic-bezier(.22,1,.36,1);
+}
+.home-page .home-hero-copy {
+  position:relative;
+  isolation:isolate;
+  overflow:hidden;
+  border:1px solid color-mix(in srgb,var(--hm-gold,#d1ac70) 43%,var(--line));
+  box-shadow:0 18px 56px rgba(8,30,40,.13), inset 0 1px rgba(255,255,255,.15);
+}
+.home-page .home-hero-copy::before{
+  content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse 54% 120% at 12% 16%,rgba(230,198,135,.1),transparent 68%);
+}
+.home-page .home-hero-content,.home-page .home-hero-feature {position:relative;z-index:1}
+.home-page .home-hero h1 {letter-spacing:-.035em;text-wrap:balance}
+.home-page .home-hero h1 em{
+  color:var(--hm-forest,var(--accent));font-style:normal;
+  text-shadow:0 3px 28px color-mix(in srgb,var(--accent) 16%,transparent);
+}
+.home-page .home-search{
+  transition:border-color var(--hm-motion-fast) ease, box-shadow var(--hm-motion-normal) var(--hm-motion-ease);
+}
+.home-page .home-search:focus-within{
+  border-color:color-mix(in srgb,var(--accent) 65%,#cfba88);
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 17%,transparent),
+    0 15px 34px rgba(3,29,27,.14);
+}
+.home-page .home-discover a {
+  transition:background var(--hm-motion-fast) ease,border-color var(--hm-motion-fast) ease,
+    box-shadow var(--hm-motion-normal) var(--hm-motion-ease);
+}
+.home-page .home-discover a:focus-visible,
+.home-page .home-book-link:focus-visible{
+  outline:3px solid var(--accent);outline-offset:4px;
+}
+.home-page .hm-motion-book-card {
+  position:relative;isolation:isolate;
+  transform-style:preserve-3d;
+  backface-visibility:hidden;
+  border:1px solid color-mix(in srgb,var(--accent) 15%,var(--line));
+  box-shadow:0 10px 29px rgba(10,34,42,.07),inset 0 1px rgba(255,255,255,.13);
+  transition:border-color var(--hm-motion-fast) ease,box-shadow var(--hm-motion-normal) var(--hm-motion-ease);
+}
+.home-page .hm-motion-book-card::after {
+  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:linear-gradient(123deg,rgba(250,224,163,.08),transparent 42%);
+  opacity:0;transition:opacity var(--hm-motion-normal) ease;
+}
+.home-page .hm-motion-book-card:hover,
+.home-page .hm-motion-book-card:focus-within{
+  border-color:color-mix(in srgb,var(--accent) 56%,#c7a771);
+  box-shadow:0 20px 39px rgba(10,34,42,.14),0 0 0 1px rgba(220,183,117,.15);
+}
+.home-page .hm-motion-book-card:hover::after,
+.home-page .hm-motion-book-card:focus-within::after{opacity:1}
+.home-page .hm-motion-book-card .home-book-cover {
+  overflow:hidden;border-radius:10px;
+  box-shadow:0 12px 26px rgba(6,24,32,.13);
+  transform:translateZ(9px);
+}
+.home-page .hm-motion-book-card .home-book-cover img{
+  display:block;max-width:100%;height:auto;object-fit:cover;
+}
+.home-page .hm-motion-book-card .home-book-copy{min-width:0;transform:translateZ(3px)}
+.home-page .hm-motion-book-card .home-book-read{
+  color:var(--accent);
+  transition:color var(--hm-motion-fast) ease;
+}
+.home-page .hm-motion-book-card:hover .home-book-read {color:var(--hm-forest,var(--accent))}
+@media(hover:none){
+  .home-page .hm-motion-book-card{transform:none!important}
+  .home-page .hm-motion-book-card .home-book-cover{transform:none}
+}
+@media(prefers-reduced-motion:reduce){
+  .home-page .home-search,
+  .home-page .home-discover a,
+  .home-page .hm-motion-book-card,
+  .home-page .hm-motion-book-card::after,
+  .home-page .hm-motion-book-card .home-book-read{transition:none!important;animation:none!important}
+  .home-page .hm-motion-book-card .home-book-cover{transform:none}
+}

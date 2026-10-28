@@ -1,5 +1,6 @@
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
+import react from '@astrojs/react';
 import { cp } from 'node:fs/promises';
 import { site } from './src/config/site.ts';
 // Никаких адаптеров SSR: результат — обычные HTML/CSS/JS и локальные ресурсы.
@@ -20,6 +21,7 @@ export default defineConfig({
   output: 'static',
   trailingSlash: 'always',
   integrations: [
+    react(),
     sitemap({ filter: (page) => {
       const path = new URL(page).pathname;
       // Scheduled shells carry no article text and stay out of search results.

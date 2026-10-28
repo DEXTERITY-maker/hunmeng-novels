@@ -1,7 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Icon from '../components/Icon.astro';
-import CompactNovelCard from '../components/CompactNovelCard.astro';
+import MotionNovelGrid from '../components/MotionNovelGrid';
 import ContinueReading from '../components/ContinueReading.astro';
 import { getLibrary, dateLabel, chapterCount } from '../lib/content';
 import { getLatestChapters } from '../lib/updates';
@@ -23,6 +23,11 @@ const recommendations = [...novels]
   .sort((a, b) => b.chapterCount - a.chapterCount || b.updatedAt.localeCompare(a.updatedAt))
   .slice(0, 4);
 const viewsLabel = new Intl.NumberFormat('en-US');
+const animatedNovels = newNovels.map((n) => ({
+  slug: n.slug, url: n.url, title: n.title, author: n.author, cover: n.cover,
+  description: n.description, genres: n.genres, chapters: chapterCount(n.chapterCount),
+  translationStatus: n.translationStatus,
+}));
 ---
 
 <Layout
@@ -80,9 +85,7 @@ const viewsLabel = new Intl.NumberFormat('en-US');
         <a href="/catalog/">View all <span aria-hidden="true">→</span></a>
       </div>
       {newNovels.length ? (
-        <div class="home-cover-grid">
-          {newNovels.map((n) => <CompactNovelCard novel={n} />)}
-        </div>
+        <MotionNovelGrid novels={animatedNovels} client:visible />
       ) : (
         <p class="home-section-empty">New stories will appear here soon.</p>
       )}
@@ -191,6 +194,8 @@ const viewsLabel = new Intl.NumberFormat('en-US');
   </main>
   <script>
     import { initPersonal } from '../scripts/personal';
+    import { initHomeHeroMotion } from '../scripts/home-hero-motion';
     void initPersonal();
+    initHomeHeroMotion();
   </script>
 </Layout>
