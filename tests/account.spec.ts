@@ -610,3 +610,30 @@ test('Reviewer title requires 20 approved reviews, stays separate from rank and 
  await expect(page.locator('#reader-equipped-title')).toHaveText('Novice Reader');
  expect(readerSafeRequests(state.requests)).toBe(true);
 });
+
+test('profile Continue Reading shows saved chapter position without fabricated progress',async({page})=>{
+ await mockAuth(page);
+ await open(page);
+ await page.evaluate(()=>localStorage.setItem('hunmeng-novels:v1',JSON.stringify({
+  version:1,library:{'sad-zimy':'reading'},progress:{
+   'sad-zimy':{chapterSlug:'glava-1',chapterNumber:1,blockId:'block-4',offset:0,ratio:.62,updatedAt:Date.now()}
+  }
+ })));
+ await fill(page);
+ await page.locator('#reader-auth-submit').click();
+ await expect(page.locator('#auth-logged-in')).toBeVisible();
+ await expect(page.locator('#profile-recent-list li')).toHaveCount(1);
+ await expect(page.locator('#profile-recent-list li').first()).toContainText('62%');
+ await expect(page.locator('#profile-recent-list li a').first()).toHaveAttribute('href',/sad-zimy/);
+ await expect(page.locator('#profile-recent-list progress').first()).toHaveJSProperty('value',62);
+ await page.reload();
+ await expect(page.locator('#profile-recent-list li')).toHaveCount(1);
+});
+test('profile recent-reading empty state never invents activity',async({page})=>{
+ await mockAuth(page);
+ await open(page);await fill(page);
+ await page.locator('#reader-auth-submit').click();
+ await expect(page.locator('#auth-logged-in')).toBeVisible();
+ await expect(page.locator('#profile-recent-list li')).toHaveCount(0);
+ await expect(page.locator('#profile-recent-status')).toContainText('No reading activity saved');
+});

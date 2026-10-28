@@ -4,6 +4,7 @@ import { readerAuthMessage } from '../lib/reader-auth';
 import { initPreferences } from './preferences';
 import { initReaderAdvancement } from './reader-advancement';
 import { initReaderSyncPanel } from './reader-sync-panel';
+import { initProfileRecentReading } from './profile-recent-reading';
 export function initProfile(client: SupabaseClient, onExpired: () => void) {
   const form = document.querySelector<HTMLFormElement>('#profile-form')!;
   const fields = document.querySelector<HTMLFieldSetElement>('#profile-fields')!;
@@ -58,10 +59,11 @@ export function initProfile(client: SupabaseClient, onExpired: () => void) {
   void initPreferences();
   const updateAdvancement = initReaderAdvancement(client);
   const updateSync = initReaderSyncPanel(client);
+  const updateRecent = initProfileRecentReading();
   return (user: User | null) => {
     const changed = current?.id !== user?.id;
     current=user; fields.disabled=!user || saving;
-    if (changed){updateAdvancement(user);updateSync(user);}
+    if (changed){updateAdvancement(user);updateSync(user);updateRecent(Boolean(user));}
     if (user) paint(user,changed);
     else { form.reset(); status.textContent=''; }
   };
