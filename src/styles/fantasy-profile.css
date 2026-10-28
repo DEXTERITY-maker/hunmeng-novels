@@ -162,12 +162,6 @@
 .reader-account-page #profile-details .reader-mastery-tile:nth-child(4){background:linear-gradient(155deg,#23482e,#102b23)}
 .reader-account-page #profile-details .reader-mastery-tile:nth-child(5){background:linear-gradient(155deg,#483717,#251f16)}
 .reader-account-page #profile-details .reader-mastery-tile:nth-child(6){background:linear-gradient(155deg,#3d3858,#16273c)}
-.reader-account-page #profile-details .reader-mastery-symbol{display:grid;place-items:center;flex:1;min-height:66px;font:500 clamp(2.4rem,4vw,4rem) Georgia,serif;
- color:#f9d795;text-shadow:0 0 18px rgba(248,203,116,.55)}
-.reader-account-page #profile-details .reader-mastery-tile:nth-child(2) .reader-mastery-symbol{color:#c0e3f6}
-.reader-account-page #profile-details .reader-mastery-tile:nth-child(3) .reader-mastery-symbol{color:#6acfff}
-.reader-account-page #profile-details .reader-mastery-tile:nth-child(4) .reader-mastery-symbol{color:#80dda4}
-.reader-account-page #profile-details .reader-mastery-tile:nth-child(6) .reader-mastery-symbol{color:#d6b4fb}
 .reader-account-page #profile-details .reader-mastery-tile strong{font:650 .83rem 'Noto Serif Variable',Georgia,serif;line-height:1.3;color:#f6e9d2}
 .reader-account-page #profile-details .reader-mastery-levels{border:1px solid rgba(221,202,155,.29);border-radius:999px;padding:4px 7px;color:#dfe8df;font-size:.68rem;white-space:nowrap}
 .reader-account-page #profile-details .reader-mastery-tile small{color:#aabeb9;font-size:.66rem}
@@ -176,3 +170,89 @@
 .reader-account-page #profile-details .reader-mastery-tile[data-mastery-status=locked] .reader-mastery-symbol{opacity:.66}
 @media(max-width:1250px){.reader-account-page #profile-details .reader-mastery-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:580px){.reader-account-page #profile-details .reader-mastery-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.reader-account-page #profile-details .reader-mastery-tile{min-height:160px}}
+
+/* Six individual book-themed illustrated emblems: transparent, locally served SVGs. */
+.reader-account-page #profile-details .reader-mastery-tile{
+  min-height:246px;gap:8px;justify-content:flex-end;
+  border-color:color-mix(in srgb,var(--badge-accent,#d1b882) 46%,transparent);
+  box-shadow:inset 0 1px rgba(255,245,219,.08),0 7px 19px rgba(1,12,20,.18);
+  transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease;
+}
+.reader-account-page #profile-details .reader-mastery-tile:nth-child(1){--badge-accent:#77ddab}
+.reader-account-page #profile-details .reader-mastery-tile:nth-child(2){--badge-accent:#d1ebfa}
+.reader-account-page #profile-details .reader-mastery-tile:nth-child(3){--badge-accent:#5fc8ff}
+.reader-account-page #profile-details .reader-mastery-tile:nth-child(4){--badge-accent:#7df2bb}
+.reader-account-page #profile-details .reader-mastery-tile:nth-child(5){--badge-accent:#f3c878}
+.reader-account-page #profile-details .reader-mastery-tile:nth-child(6){--badge-accent:#d7adff}
+.reader-account-page #profile-details .reader-mastery-emblem-wrap{
+  display:grid;place-items:center;align-self:stretch;flex:1;min-width:0;
+  min-height:140px;position:relative;
+  background:radial-gradient(circle at 50% 54%,color-mix(in srgb,var(--badge-accent) 19%,transparent),transparent 65%);
+}
+.reader-account-page #profile-details .reader-mastery-emblem{
+  display:block;width:clamp(100px,10.6vw,180px);height:auto;
+  max-width:100%;max-height:186px;aspect-ratio:260/300;object-fit:contain;
+  filter:drop-shadow(0 6px 10px rgba(0,8,15,.6)) drop-shadow(0 0 8px color-mix(in srgb,var(--badge-accent) 29%,transparent));
+  transition:transform .22s ease,filter .22s ease;
+}
+.reader-account-page #profile-details .reader-mastery-tile strong{font-size:clamp(.78rem,1.05vw,.99rem);line-height:1.4;text-wrap:balance}
+.reader-account-page #profile-details .reader-mastery-levels{color:#e5ece8;border-color:color-mix(in srgb,var(--badge-accent) 35%,transparent)}
+.reader-account-page #profile-details .reader-mastery-tile [data-mastery-state]{
+  display:inline-flex;justify-content:center;align-items:center;
+  font-size:.69rem;font-weight:730;line-height:1.2;
+  min-height:28px;border:1px solid rgba(212,192,142,.34);
+  border-radius:999px;padding:5px 10px;margin-top:3px;color:#c9cfcd;background:rgba(5,19,25,.42)
+}
+.reader-account-page #profile-details .reader-mastery-tile[data-mastery-status=current]{
+  background:linear-gradient(162deg,color-mix(in srgb,var(--badge-accent) 17%,#0a252d),#0b202b 80%);
+  border-color:var(--badge-accent);box-shadow:0 0 0 1px color-mix(in srgb,var(--badge-accent) 50%,transparent),0 0 22px color-mix(in srgb,var(--badge-accent) 29%,transparent)
+}
+.reader-account-page #profile-details .reader-mastery-tile[data-mastery-status=current] [data-mastery-state]{
+  color:#09251e;background:var(--badge-accent);border-color:var(--badge-accent)
+}
+.reader-account-page #profile-details .reader-mastery-tile[data-mastery-status=earned] [data-mastery-state]{
+  color:#b4f8d5;border-color:#4eae87;background:rgba(18,83,65,.37)
+}
+.reader-account-page #profile-details .reader-mastery-tile[data-mastery-status=locked] .reader-mastery-emblem{opacity:.68;filter:saturate(.76) drop-shadow(0 5px 8px rgba(0,9,16,.46))}
+.reader-account-page #profile-details .reader-mastery-tile[data-mastery-status=locked] [data-mastery-state]{color:#b6bec3}
+@media(hover:hover){
+  .reader-account-page #profile-details .reader-mastery-tile:hover{transform:translateY(-3px);border-color:var(--badge-accent)}
+  .reader-account-page #profile-details .reader-mastery-tile:hover .reader-mastery-emblem{transform:scale(1.05)}
+}
+@media(max-width:1250px){
+  .reader-account-page #profile-details .reader-mastery-tile{min-height:265px}
+  .reader-account-page #profile-details .reader-mastery-emblem{width:clamp(135px,17vw,190px)}
+}
+@media(max-width:580px){
+  .reader-account-page #profile-details .reader-mastery-tile{min-height:225px;gap:6px;padding:11px 7px}
+  .reader-account-page #profile-details .reader-mastery-emblem-wrap{min-height:135px}
+  .reader-account-page #profile-details .reader-mastery-emblem{width:min(100%,152px);max-height:160px}
+}
+@media(max-width:355px){
+  .reader-account-page #profile-details .reader-mastery-tile{min-height:213px;padding:8px 5px}
+  .reader-account-page #profile-details .reader-mastery-emblem{max-height:136px}
+  .reader-account-page #profile-details .reader-mastery-tile strong{font-size:.75rem}
+  .reader-account-page #profile-details .reader-mastery-levels{font-size:.6rem}
+}
+.reader-mastery-dialog{width:min(450px,calc(100vw - 28px));max-height:calc(100dvh - 24px);border:1px solid #d8b477;
+  border-radius:23px;padding:0;overflow:auto;color:#fff0d6;background:radial-gradient(ellipse 100% 50% at 50% 30%,#275147,#071b26 75%);
+  box-shadow:0 18px 65px rgba(4,15,21,.72),inset 0 0 0 2px rgba(244,208,147,.1)}
+.reader-mastery-dialog::backdrop{background:rgba(0,11,17,.76);backdrop-filter:blur(3px)}
+.reader-mastery-dialog-inner{display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;
+  padding:clamp(20px,4vw,34px);min-width:0}
+.reader-mastery-dialog-eyebrow{font-size:.72rem;letter-spacing:.18em;color:#f3d299;font-weight:800;margin:0}
+.reader-mastery-dialog-emblem{display:grid;place-items:center;width:min(100%,238px);min-height:220px;
+  background:radial-gradient(circle,rgba(187,143,224,.22),rgba(191,154,103,.08) 55%,transparent 75%)}
+.reader-mastery-dialog-emblem img{display:block;max-width:100%;max-height:237px;object-fit:contain;
+  filter:drop-shadow(0 9px 14px rgba(0,0,0,.5)) drop-shadow(0 0 13px rgba(212,167,255,.32))}
+.reader-mastery-dialog h2{font-family:'Noto Serif Variable',Georgia,serif;color:#ffe6b6;font-size:clamp(1.45rem,4vw,2rem);margin:0}
+.reader-mastery-dialog p:not(.reader-mastery-dialog-eyebrow){color:#e6e2d9;line-height:1.65;margin:0}
+.reader-mastery-dialog .button{min-height:45px;margin-top:5px;border:1px solid #f1cc86;background:linear-gradient(110deg,#9a642a,#e0b868);
+  color:#201609;font-weight:800;border-radius:999px;padding:11px 24px}
+.reader-mastery-dialog .button:focus-visible{outline:3px solid #fff1bf;outline-offset:4px}
+.reader-mastery-dialog[open] .reader-mastery-dialog-emblem img{animation:mastery-appears .5s cubic-bezier(.17,.8,.3,1) both}
+@keyframes mastery-appears{from{opacity:.15;transform:translateY(15px) scale(.9)}to{opacity:1;transform:translateY(0) scale(1)}}
+@media(prefers-reduced-motion:reduce){
+  .reader-account-page #profile-details .reader-mastery-tile,.reader-account-page #profile-details .reader-mastery-emblem{transition:none!important;transform:none!important}
+  .reader-mastery-dialog[open] .reader-mastery-dialog-emblem img{animation:none!important}
+}
