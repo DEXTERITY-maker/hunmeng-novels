@@ -809,3 +809,101 @@ test('reader mastery is a six-step level ladder distinct from the nine rank embl
  await expect(page.locator('[data-mastery-id="legend"]')).toHaveAttribute('data-mastery-status','current');
  expect(readerSafeRequests(state.requests)).toBe(true);
 });
+
+
+test('six unique SVG reader-mastery badges are readable and responsive on desktop and mobile',async({page},info)=>{
+ const state=await mockAuth(page);
+ const xpTo=(target:number)=>{
+  let total=0;
+  for(let level=1;level<target;level++){
+   const n=level-1;total+=500+4*n+Math.floor(26*Math.sqrt(n));
+  }
+  return total;
+ };
+ state.rankStats.total_xp=xpTo(12);
+ state.rankStats.last_rank_notified='iron';
+ await loginFixture(page);
+ await expect(page.locator('.reader-mastery-tile')).toHaveCount(6);
+ await expect(page.locator('#reader-mastery-name')).toHaveText('Опытный читатель');
+ await expect(page.locator('[data-mastery-id="experienced"]')).toHaveAttribute('data-mastery-status','current');
+ await expect(page.locator('[data-mastery-id="experienced"] [data-mastery-state]')).toHaveText('Текущий этап');
+ await expect(page.locator('[data-mastery-id="reader"] [data-mastery-state]')).toHaveText('Получено');
+ await expect(page.locator('[data-mastery-id="master"] [data-mastery-state]')).toHaveText('Закрыто');
+ const paths=['novice','reader','experienced','connoisseur','master','legend'];
+ for(const id of paths){
+  const img=page.locator(`[data-mastery-id="${id}"] img.reader-mastery-emblem`);
+  await expect(img).toHaveAttribute('src',`/images/mastery/${id}.svg`);
+  await img.scrollIntoViewIfNeeded();
+  await expect.poll(()=>img.evaluate((image:HTMLImageElement)=>image.complete&&image.naturalWidth>0)).toBe(true);
+ }
+ for(const width of [390,1440]){
+  await page.setViewportSize({width,height:900});
+  await page.evaluate(theme=>{document.documentElement.dataset.theme=theme;},width===390?'dark':'light');
+  await expect(page.locator('.reader-mastery-section')).toBeVisible();
+  await page.evaluate(()=>document.fonts.ready);
+  await page.locator('.reader-mastery-section').screenshot({
+   path:info.outputPath(`hunmeng-reader-mastery-${width}.png`),animations:'disabled',
+  });
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+1)).toBe(true);
+ }
+ expect(readerSafeRequests(state.requests)).toBe(true);
+});
+
+test('mastery celebration appears once for an authenticated promotion, never on initial login or refresh',async({page},info)=>{
+ const state=await mockAuth(page);
+ const xpTo=(target:number)=>{
+  let total=0;
+  for(let level=1;level<target;level++){
+   const n=level-1;total+=500+4*n+Math.floor(26*Math.sqrt(n));
+  }
+  return total;
+ };
+ state.rankStats.total_xp=xpTo(4);
+ state.rankStats.last_rank_notified='iron';
+ await loginFixture(page);
+ await expect(page.locator('#reader-mastery-unlocked')).toBeHidden();
+ state.rankStats.total_xp=xpTo(5);
+ await page.reload();
+ await expect(page.locator('#reader-mastery-unlocked')).toBeVisible();
+ await expect(page.locator('#reader-mastery-unlocked-image')).toHaveAttribute('src','/images/mastery/reader.svg');
+ await expect(page.locator('#reader-mastery-unlocked-detail')).toContainText('Читатель');
+ await page.setViewportSize({width:390,height:850});
+ await page.locator('#reader-mastery-unlocked').screenshot({
+  path:info.outputPath('hunmeng-mastery-unlock-390.png'),animations:'disabled',
+ });
+ await page.locator('#reader-mastery-acknowledge').click();
+ await expect(page.locator('#reader-mastery-unlocked')).toBeHidden();
+ await page.reload();
+ await expect(page.locator('#reader-mastery-unlocked')).toBeHidden();
+ await expect(page.locator('[data-mastery-id="reader"]')).toHaveAttribute('data-mastery-status','current');
+ expect(state.rankStats.total_xp).toBe(xpTo(5));
+ expect(readerSafeRequests(state.requests)).toBe(true);
+});
+
+test('rank celebration completes first when a level unlocks both a rank and mastery tier',async({page})=>{
+ const state=await mockAuth(page);
+ const xpTo=(target:number)=>{
+  let total=0;
+  for(let level=1;level<target;level++){
+   const n=level-1;total+=500+4*n+Math.floor(26*Math.sqrt(n));
+  }
+  return total;
+ };
+ state.rankStats.total_xp=xpTo(19);
+ state.rankStats.last_rank_notified='iron';
+ await loginFixture(page);
+ await expect(page.locator('#reader-mastery-unlocked')).toBeHidden();
+ state.rankStats.total_xp=xpTo(25);
+ await page.reload();
+ await expect(page.locator('#reader-rank-unlocked')).toBeVisible();
+ await expect(page.locator('#reader-mastery-unlocked')).toBeHidden();
+ await page.locator('#reader-rank-acknowledge').click();
+ await expect(page.locator('#reader-mastery-unlocked')).toBeVisible();
+ await expect(page.locator('#reader-mastery-unlocked-image')).toHaveAttribute('src','/images/mastery/connoisseur.svg');
+ await page.locator('#reader-mastery-acknowledge').click();
+ await page.reload();
+ await expect(page.locator('#reader-mastery-unlocked')).toBeHidden();
+ await expect(page.locator('#reader-rank-unlocked')).toBeHidden();
+ expect(state.rankStats.last_rank_notified).toBe('bronze');
+ expect(readerSafeRequests(state.requests)).toBe(true);
+});

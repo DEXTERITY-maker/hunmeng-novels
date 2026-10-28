@@ -1,6 +1,6 @@
 import type { SupabaseClient,User } from '@supabase/supabase-js';
 import { repository, onStorageChange } from '../lib/storage';
-import { ranks,titles,achievements,levelFromTotalXp,getReaderMastery,nextRankMilestone,nextVerifiedAchievement,rankImage,titleStatus,emptyVerifiedStats,type VerifiedStats } from '../lib/reader-progression';
+import { ranks,readerMasteryTiers,titles,achievements,levelFromTotalXp,getReaderMastery,nextRankMilestone,nextVerifiedAchievement,rankImage,masteryImage,titleStatus,emptyVerifiedStats,type VerifiedStats } from '../lib/reader-progression';
 
 let activeUser: string | null=null;
 let requestCount=0;
@@ -15,6 +15,47 @@ async function paintLocalStats() {
   stat('reader-stat-reading',Object.values(local.library).filter(s=>s==='reading').length);
   stat('reader-stat-later',Object.values(local.library).filter(s=>s==='later').length);
   stat('reader-stat-shelf-completed',Object.values(local.library).filter(s=>s==='completed').length);
+}
+/**
+ * Reader-mastery badges are earned from server-verified XP, never local chapter data.
+ * The local, per-account receipt prevents a repeat dialog on refresh without writing
+ * anything to the protected progression tables. First observation establishes a
+ * baseline rather than pretending a historic achievement was just unlocked.
+ */
+function rememberMasteryPromotion(userId:string,currentId:string) {
+  const next=readerMasteryTiers.findIndex(tier=>tier.id===currentId);
+  if(next<0)return null;
+  const key=`hunmeng-novels:mastery-seen:v1:${userId}`;
+  try {
+    const previous=window.localStorage.getItem(key);
+    const previousIndex=readerMasteryTiers.findIndex(tier=>tier.id===previous);
+    // Never decrease the remembered best tier even if the source is temporarily stale.
+    if(previousIndex>=next)return null;
+    window.localStorage.setItem(key,currentId);
+    return previousIndex>=0?readerMasteryTiers[next]:null;
+  }catch{
+    // If persistence is unavailable, do not risk repeating the celebration.
+    return null;
+  }
+}
+function celebrateMastery(userId:string,seq:number,tier:typeof readerMasteryTiers[number]) {
+  queueMicrotask(()=>{
+    if(userId!==activeUser||seq!==requestCount)return;
+    const modal=document.getElementById('reader-mastery-unlocked') as HTMLDialogElement;
+    const image=document.getElementById('reader-mastery-unlocked-image') as HTMLImageElement;
+    const rankModal=document.getElementById('reader-rank-unlocked') as HTMLDialogElement;
+    const show=()=>{
+      if(userId!==activeUser||seq!==requestCount||modal.open)return;
+      image.src=masteryImage(tier.id);
+      image.alt=`Эмблема ступени «${tier.ru}»`;
+      stat('reader-mastery-unlocked-detail',`${tier.ru} · уровни ${tier.min}–${tier.max}. Новая эмблема открыта!`);
+      modal.showModal();
+    };
+    // Native dialogs must not overlap. Give the existing server-verified rank
+    // celebration priority, then present the separate reader-mastery badge.
+    if(rankModal.open)rankModal.addEventListener('close',show,{once:true});
+    else show();
+  });
 }
 /** Filter presentation only; unlocks always use authenticated server progress. */
 function paintAchievementFilter() {
@@ -53,7 +94,7 @@ function renderStats(s:VerifiedStats) {
       level.level>=tierMin?'earned':'locked';
     tile.dataset.masteryStatus=state;
     const label=tile.querySelector<HTMLElement>('[data-mastery-state]');
-    if(label)label.textContent=state==='current'?'Текущая ступень':state==='earned'?'Открыта':'Закрыто';
+    if(label)label.textContent=state==='current'?'Текущий этап':state==='earned'?'Получено':'Закрыто';
   });
   const current=document.getElementById('reader-current-emblem') as HTMLImageElement;
   current.src=rankImage(level.rank.id);
@@ -170,6 +211,10 @@ export function initReaderAdvancement(client: SupabaseClient) {
       await loadVerified(owner,requestCount);
     });
   });
+  const masteryModal=document.getElementById('reader-mastery-unlocked') as HTMLDialogElement;
+  document.getElementById('reader-mastery-acknowledge')!.addEventListener('click',()=>{
+    if(masteryModal.open)masteryModal.close();
+  });
   const modal=document.getElementById('reader-rank-unlocked') as HTMLDialogElement;
   const acknowledge=document.getElementById('reader-rank-acknowledge')!;
   // Acknowledge before closing: relying only on the asynchronous dialog
@@ -196,6 +241,7 @@ export function initReaderAdvancement(client: SupabaseClient) {
       stat('reader-advancement-status','Sign in to view your verified level and achievements.');
       delete modal.dataset.pendingRank;
       if(modal.open)modal.close();
+      if(masteryModal.open)masteryModal.close();
       return;
     }
     root.dataset.status='loading';
@@ -217,6 +263,9 @@ async function loadVerified(userId:string,seq:number) {
   root.dataset.status='ready';
   stat('reader-advancement-status','');
   const rank=renderStats(values);
+  const mastery=getReaderMastery(levelFromTotalXp(values.total_xp).level);
+  const unlocked=rememberMasteryPromotion(userId,mastery.id);
+  if(unlocked)celebrateMastery(userId,seq,unlocked);
   void loadXpHistory(userId,seq);
   // A first login simply remembers the initial rank. Only genuine promotions
   // display the modal, and acknowledgement persists server-side.
