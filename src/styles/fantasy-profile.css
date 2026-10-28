@@ -148,3 +148,31 @@
  .reader-account-page #profile-details .rank-gallery{gap:8px}
 }
 @media(prefers-reduced-motion:reduce){.reader-account-page #profile-details .rank-tile img{transition:none}}
+
+
+/* The six mastery steps are intentionally separate from the nine visual ranks. */
+.reader-account-page #profile-details .reader-mastery-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:9px}
+.reader-account-page #profile-details .reader-mastery-tile{position:relative;isolation:isolate;display:flex;min-width:0;min-height:190px;flex-direction:column;align-items:center;justify-content:flex-end;gap:6px;
+ text-align:center;padding:13px 8px;border-radius:14px;border:1px solid rgba(224,196,138,.3);
+ background:linear-gradient(160deg,#17413a,#0a252d 75%);overflow:hidden}
+.reader-account-page #profile-details .reader-mastery-tile::before{content:'';position:absolute;z-index:-1;inset:0 0 45%;
+ background:radial-gradient(circle at 50% 50%,rgba(90,202,174,.3),transparent 67%)}
+.reader-account-page #profile-details .reader-mastery-tile:nth-child(2){background:linear-gradient(155deg,#183d4a,#10202c)}
+.reader-account-page #profile-details .reader-mastery-tile:nth-child(3){background:linear-gradient(155deg,#153e5b,#0b233a)}
+.reader-account-page #profile-details .reader-mastery-tile:nth-child(4){background:linear-gradient(155deg,#23482e,#102b23)}
+.reader-account-page #profile-details .reader-mastery-tile:nth-child(5){background:linear-gradient(155deg,#483717,#251f16)}
+.reader-account-page #profile-details .reader-mastery-tile:nth-child(6){background:linear-gradient(155deg,#3d3858,#16273c)}
+.reader-account-page #profile-details .reader-mastery-symbol{display:grid;place-items:center;flex:1;min-height:66px;font:500 clamp(2.4rem,4vw,4rem) Georgia,serif;
+ color:#f9d795;text-shadow:0 0 18px rgba(248,203,116,.55)}
+.reader-account-page #profile-details .reader-mastery-tile:nth-child(2) .reader-mastery-symbol{color:#c0e3f6}
+.reader-account-page #profile-details .reader-mastery-tile:nth-child(3) .reader-mastery-symbol{color:#6acfff}
+.reader-account-page #profile-details .reader-mastery-tile:nth-child(4) .reader-mastery-symbol{color:#80dda4}
+.reader-account-page #profile-details .reader-mastery-tile:nth-child(6) .reader-mastery-symbol{color:#d6b4fb}
+.reader-account-page #profile-details .reader-mastery-tile strong{font:650 .83rem 'Noto Serif Variable',Georgia,serif;line-height:1.3;color:#f6e9d2}
+.reader-account-page #profile-details .reader-mastery-levels{border:1px solid rgba(221,202,155,.29);border-radius:999px;padding:4px 7px;color:#dfe8df;font-size:.68rem;white-space:nowrap}
+.reader-account-page #profile-details .reader-mastery-tile small{color:#aabeb9;font-size:.66rem}
+.reader-account-page #profile-details .reader-mastery-tile[data-mastery-status=current]{border-color:#f5cf85;box-shadow:0 0 0 1px rgba(242,214,140,.45),0 5px 19px rgba(248,185,81,.2)}
+.reader-account-page #profile-details .reader-mastery-tile[data-mastery-status=current] small{color:#97f1c8;font-weight:800}
+.reader-account-page #profile-details .reader-mastery-tile[data-mastery-status=locked] .reader-mastery-symbol{opacity:.66}
+@media(max-width:1250px){.reader-account-page #profile-details .reader-mastery-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:580px){.reader-account-page #profile-details .reader-mastery-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.reader-account-page #profile-details .reader-mastery-tile{min-height:160px}}
