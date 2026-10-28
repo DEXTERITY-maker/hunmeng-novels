@@ -43,7 +43,7 @@ import { ranks,readerMasteryTiers,titles,achievements,rankImage } from '../lib/r
   <section class="advancement-section reader-mastery-section" aria-labelledby="reader-mastery-heading" hidden>
     <div class="advancement-section-header"><p class="eyebrow">✦ ШЕСТЬ СТУПЕНЕЙ МАСТЕРСТВА</p><h3 id="reader-mastery-heading">Путь читателя</h3><p>Шесть ступеней определяются текущим уровнем. Они отличаются от девяти визуальных рангов и выбираемых званий.</p></div>
     <div class="reader-mastery-grid">
-      {readerMasteryTiers.map((tier,index)=>(
+      {readerMasteryTiers.map(tier=>(
         <article class="reader-mastery-tile" data-mastery-id={tier.id} data-mastery-min={tier.min}>
           <span class="reader-mastery-symbol" aria-hidden="true">{tier.symbol}</span>
           <strong>{tier.ru}</strong>
