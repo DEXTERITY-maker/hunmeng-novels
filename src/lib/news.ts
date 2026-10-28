@@ -1,9 +1,9 @@
 import { getCollection } from 'astro:content';
 
 export const newsCategories = {
-  changelog: 'Changelog',
-  announcements: 'Announcements',
-  giveaways: 'Giveaways',
+  changelog: 'Обновления',
+  announcements: 'Объявления',
+  giveaways: 'Розыгрыши',
 } as const;
 
 export type NewsCategory = keyof typeof newsCategories;
