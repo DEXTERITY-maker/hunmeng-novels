@@ -8,12 +8,13 @@ const session=()=>({access_token:[Buffer.from('{"alg":"HS256","typ":"JWT"}').toS
   Buffer.from(JSON.stringify({sub:user.id,exp:Math.floor(Date.now()/1000)+3600,role:'authenticated'})).toString('base64url'),'fixture-signature'].join('.'),
   refresh_token:'fixture-reader-refresh',expires_in:3600,expires_at:Math.floor(Date.now()/1000)+3600,token_type:'bearer',user});
 const readerSafeRequests = (requests: string[]) => requests.every(p =>
-  p.startsWith('/auth/v1/') || p.startsWith('/rest/v1/rpc/reader_') || p === '/rest/v1/reader_xp_events');
+  p.startsWith('/auth/v1/') || p.startsWith('/rest/v1/rpc/reader_') || p === '/rest/v1/reader_xp_events' || p === '/rest/v1/novel_reader_state');
 async function mockAuth(page: Page) {
   const state={requests:[] as string[],signupBody:{} as Record<string,unknown>,signupRedirect:'',signupCalls:0,
     passwordCalls:0,codeCalls:0,errorCode:'',logoutOffline:false,profileUser:structuredClone(user),profileCalls:0,profileBody:{} as Record<string,unknown>,profileError:0,verifyError:0,sessionExpired:false,
     rankStats:{total_xp:0,chapters:0,completedNovels:0,readingDays:0,scifiNovels:0,completedGenres:0,selected_title:'novice',last_rank_notified:null as string|null},
-    xpAwards:[] as Array<{event_kind:string,novel_slug:string,chapter_slug:string,xp:number,awarded_at:string}>,xpHistoryRequests:0,xpHistoryError:false};
+    xpAwards:[] as Array<{event_kind:string,novel_slug:string,chapter_slug:string,xp:number,awarded_at:string}>,xpHistoryRequests:0,xpHistoryError:false,
+    cloudRow:null as null|{state:Record<string,unknown>;updated_at:string},cloudWrites:0,cloudError:false};
   await page.route('https://*.supabase.co/**',async route=>{
     const address=new URL(route.request().url());state.requests.push(address.pathname);
     const json=(body:unknown,status=200)=>route.fulfill({status,contentType:'application/json',
@@ -41,6 +42,26 @@ async function mockAuth(page: Page) {
       return json(state.profileUser);
     }
     if(address.pathname.endsWith('/logout'))return state.logoutOffline?route.abort('failed'):json({});
+    if(address.pathname==='/rest/v1/novel_reader_state') {
+      const method=route.request().method();
+      if(state.cloudError)return json({message:'Storage unavailable'},503);
+      if(method==='GET')return json(state.cloudRow?[state.cloudRow]:[]);
+      if(method==='POST'){
+        if(state.cloudRow)return json({code:'23505',message:'Duplicate'},409);
+        const payload=route.request().postDataJSON();
+        state.cloudRow={state:payload.state,updated_at:'2026-10-28T00:00:00Z'};
+        state.cloudWrites++;
+        return json([state.cloudRow]);
+      }
+      if(method==='PATCH'){
+        if(!state.cloudRow)return json([]);
+        const payload=route.request().postDataJSON();
+        state.cloudRow={state:payload.state,updated_at:payload.updated_at};
+        state.cloudWrites++;
+        return json([state.cloudRow]);
+      }
+      return json({message:'Unsupported'},405);
+    }
     if(address.pathname==='/rest/v1/reader_xp_events') {
       state.xpHistoryRequests++;
       // Only a read-only projection is permitted: any attempted client write is rejected.
@@ -390,4 +411,125 @@ test('XP history shows empty and unavailable states without inventing rewards',a
  await expect(page.locator('#reader-advancement')).toHaveAttribute('data-status','ready');
  await expect(page.locator('#reader-xp-history-status')).toHaveText('Reward history is temporarily unavailable.');
  await expect(page.locator('#reader-xp-history-list li')).toHaveCount(0);
+});
+
+
+test('opt-in cloud sync backs up local library and keeps guests local', async ({page}) => {
+ const state=await mockAuth(page);
+ await loginFixture(page);
+ await page.evaluate(()=>localStorage.setItem('hunmeng-novels:v1',JSON.stringify({
+  version:1,settings:{font:'serif',size:20,lineHeight:1.85,paragraphSpacing:1.35,width:720,theme:'system'},
+  library:{'sad-zimy':'reading'},progress:{'sad-zimy':{
+    chapterSlug:'glava-1',chapterNumber:1,blockId:'block-2',offset:10,ratio:.35,updatedAt:12345
+  }}
+ })));
+ await page.locator('.profile-sidebar nav a[href="#profile-account"]').click();
+ await page.locator('#reader-sync-enable').click();
+ await expect(page.locator('#reader-sync-now')).toBeVisible();
+ expect(state.cloudRow?.state.library).toEqual({'sad-zimy':'reading'});
+ expect(state.cloudWrites).toBe(1);
+ expect(readerSafeRequests(state.requests)).toBe(true);
+ await page.locator('#reader-sync-pause').click();
+ await expect(page.locator('#reader-sync-enable')).toBeVisible();
+});
+test('different chapter positions require an explicit decision before cloud upload', async ({page}) => {
+ const state=await mockAuth(page);
+ state.cloudRow={state:{
+   version:1,library:{'sad-zimy':'reading'},progress:{'sad-zimy':{
+     chapterSlug:'glava-2',chapterNumber:2,blockId:'block-4',offset:0,ratio:.44,updatedAt:100
+   }}
+ },updated_at:'2026-10-28T00:00:00Z'};
+ await loginFixture(page);
+ await page.evaluate(()=>localStorage.setItem('hunmeng-novels:v1',JSON.stringify({
+   version:1,library:{'sad-zimy':'reading'},progress:{'sad-zimy':{
+     chapterSlug:'glava-1',chapterNumber:1,blockId:'block-2',offset:0,ratio:.8,updatedAt:200
+   }}
+ })));
+ await page.locator('.profile-sidebar nav a[href="#profile-account"]').click();
+ await page.locator('#reader-sync-enable').click();
+ await expect(page.locator('#reader-sync-conflict')).toBeVisible();
+ expect(state.cloudWrites).toBe(0);
+ await page.locator('[data-sync-choice="device"]').click();
+ await expect(page.locator('#reader-sync-conflict')).toBeHidden();
+ expect((state.cloudRow?.state.progress as Record<string,{chapterSlug:string}>)['sad-zimy'].chapterSlug).toBe('glava-1');
+ expect(state.cloudWrites).toBe(1);
+});
+test('offline or failed cloud storage never erases local progress', async ({page}) => {
+ const state=await mockAuth(page);
+ state.cloudError=true;
+ await loginFixture(page);
+ await page.evaluate(()=>localStorage.setItem('hunmeng-novels:v1',JSON.stringify({
+  version:1,library:{'sad-zimy':'later'},progress:{'sad-zimy':{
+    chapterSlug:'glava-1',chapterNumber:1,blockId:'block-1',offset:0,ratio:.56,updatedAt:100
+  }}
+ })));
+ await page.locator('.profile-sidebar nav a[href="#profile-account"]').click();
+ await page.locator('#reader-sync-enable').click();
+ await expect(page.locator('#reader-cloud-sync-status')).toContainText('cloud library');
+ await expect(page.locator('#reader-sync-enable')).toBeVisible();
+ const preserved=await page.evaluate(()=>JSON.parse(localStorage.getItem('hunmeng-novels:v1')!));
+ expect(preserved.progress['sad-zimy'].ratio).toBe(.56);
+ expect(state.cloudWrites).toBe(0);
+});
+
+
+test('routine reading changes upload automatically without a false chapter conflict',async({page})=>{
+ const state=await mockAuth(page);
+ await loginFixture(page);
+ await page.evaluate(()=>localStorage.setItem('hunmeng-novels:v1',JSON.stringify({
+  version:1,library:{'sad-zimy':'reading'},progress:{'sad-zimy':{
+   chapterSlug:'glava-1',chapterNumber:1,blockId:'block-2',offset:0,ratio:.2,updatedAt:100
+  }}
+ })));
+ await page.locator('.profile-sidebar nav a[href="#profile-account"]').click();
+ await page.locator('#reader-sync-enable').click();
+ await expect(page.locator('#reader-sync-now')).toBeVisible();
+ await page.evaluate(()=>{
+  const state=JSON.parse(localStorage.getItem('hunmeng-novels:v1')!);
+  state.progress['sad-zimy']={chapterSlug:'glava-2',chapterNumber:2,blockId:'block-4',offset:0,ratio:.6,updatedAt:200};
+  localStorage.setItem('hunmeng-novels:v1',JSON.stringify(state));
+ });
+ await page.locator('#reader-sync-now').click();
+ await expect(page.locator('#reader-cloud-sync-status')).toContainText('backed up');
+ await expect(page.locator('#reader-sync-conflict')).toBeHidden();
+ expect((state.cloudRow?.state.progress as Record<string,{chapterSlug:string}>)['sad-zimy'].chapterSlug).toBe('glava-2');
+ expect(state.cloudWrites).toBe(2);
+});
+test('cloud updates download when this device has not changed since last sync',async({page})=>{
+ const state=await mockAuth(page);
+ await loginFixture(page);
+ await page.evaluate(()=>localStorage.setItem('hunmeng-novels:v1',JSON.stringify({
+  version:1,library:{'sad-zimy':'reading'},progress:{'sad-zimy':{
+   chapterSlug:'glava-1',chapterNumber:1,blockId:'block-2',offset:0,ratio:.2,updatedAt:100
+  }}
+ })));
+ await page.locator('.profile-sidebar nav a[href="#profile-account"]').click();
+ await page.locator('#reader-sync-enable').click();
+ await expect(page.locator('#reader-sync-now')).toBeVisible();
+ state.cloudRow!.updated_at='2026-10-28T01:00:00Z';
+ (state.cloudRow!.state.progress as Record<string,unknown>)['sad-zimy']={
+  chapterSlug:'glava-2',chapterNumber:2,blockId:'block-4',offset:0,ratio:.7,updatedAt:400
+ };
+ await page.locator('#reader-sync-now').click();
+ await expect(page.locator('#reader-cloud-sync-status')).toContainText('matches');
+ const local=await page.evaluate(()=>JSON.parse(localStorage.getItem('hunmeng-novels:v1')!));
+ expect(local.progress['sad-zimy'].chapterSlug).toBe('glava-2');
+ expect(state.cloudWrites).toBe(1);
+});
+
+
+test('a second account never silently imports the previous account library',async({page})=>{
+ const state=await mockAuth(page);
+ await loginFixture(page);
+ await page.evaluate(()=>{
+  localStorage.setItem('hunmeng-novels:cloud-sync-last-owner:v1','11111111-1111-4111-8111-111111111111');
+  localStorage.setItem('hunmeng-novels:v1',JSON.stringify({version:1,library:{'sad-zimy':'later'},progress:{}}));
+ });
+ await page.reload();
+ await expect(page.locator('#auth-logged-in')).toBeVisible();
+ await page.locator('.profile-sidebar nav a[href="#profile-account"]').click();
+ await expect(page.locator('#reader-sync-enable')).toBeHidden();
+ await expect(page.locator('#reader-cloud-sync-status')).toContainText('another synced account');
+ expect(state.cloudWrites).toBe(0);
+ expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('hunmeng-novels:v1')!).library['sad-zimy'])).toBe('later');
 });

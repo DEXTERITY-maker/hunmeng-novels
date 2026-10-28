@@ -144,7 +144,7 @@ test('локальная библиотека сохраняется без за
   await page.reload();
   await page.locator('[data-shelf-tab=later]').click();
   await expect(page.locator('.library-row')).toHaveCount(1);
-  await expect(page.locator('.storage-explanation')).toContainText('saved only in this browser');
+  await expect(page.locator('.storage-explanation')).toContainText('Guest reading is never uploaded');
   expect(outgoing).toEqual([]);
 });
 test('мобильная читалка: выключены автоматические переносы, текст слева', async ({ page }) => {

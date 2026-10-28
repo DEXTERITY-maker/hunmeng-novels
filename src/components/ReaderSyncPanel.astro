@@ -1,0 +1,19 @@
+<section id="reader-cloud-sync" class="reader-cloud-sync" aria-labelledby="reader-cloud-sync-heading">
+  <h3 id="reader-cloud-sync-heading">Cross-device reading sync</h3>
+  <p>Keep your library and reading positions with your account. Your global reading appearance stays specific to each device.</p>
+  <p id="reader-cloud-sync-status" class="fine" role="status" aria-live="polite">Sign in to manage your cloud library.</p>
+  <div class="account-actions">
+    <button type="button" id="reader-sync-enable" class="button secondary" hidden>Enable sync and merge</button>
+    <button type="button" id="reader-sync-now" class="button secondary" hidden>Sync now</button>
+    <button type="button" id="reader-sync-pause" class="button secondary" hidden>Pause sync on this device</button>
+  </div>
+  <div id="reader-sync-conflict" class="reader-sync-conflict" hidden>
+    <p id="reader-sync-conflict-detail"></p>
+    <p class="fine">Choose which device's version wins only for conflicting books. Books present on just one device are preserved.</p>
+    <div class="account-actions">
+      <button type="button" class="button" data-sync-choice="device">Keep this device's position</button>
+      <button type="button" class="button secondary" data-sync-choice="cloud">Keep cloud position</button>
+    </div>
+  </div>
+  <p class="fine">Guests remain local. XP, ranks and verified rewards use separate, server-protected records and are never imported from your browser.</p>
+</section>

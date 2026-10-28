@@ -6,7 +6,7 @@ export const site = {
   url: 'https://dexterity-maker-hunmeng-novels-f1c8.twc1.net',
   reportUrl: '',
   contacts: { email: '', telegram: '', rightsEmail: '' },
-  features: { accounts: true, readerSync: false },
+  features: { accounts: true, readerSync: true },
   logo: {
     light: '/images/logo-light.png',
     dark: '/images/logo-dark.png',

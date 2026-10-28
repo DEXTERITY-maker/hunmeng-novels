@@ -3,6 +3,7 @@ import Layout from '../layouts/Layout.astro';
 import { site } from '../config/site';
 import ReaderPreferences from '../components/ReaderPreferences.astro';
 import ReaderAdvancement from '../components/ReaderAdvancement.astro';
+import ReaderSyncPanel from '../components/ReaderSyncPanel.astro';
 import Icon from '../components/Icon.astro';
 ---
 <Layout title="Sign in or register" noindex description="Sign in to Hunmeng or create a reader account with your email and password.">
@@ -56,13 +57,13 @@ import Icon from '../components/Icon.astro';
                 </fieldset>
                 <p id="profile-status" class="fine" role="status" aria-live="polite"></p>
               </form>
-              <p class="profile-local-note"><Icon name="info" size={20} /><span>Your library and progress stay on this device. Your nickname and bio are saved to your account.</span></p>
+              <p class="profile-local-note"><Icon name="info" size={20} /><span>Your library remains on this device; optional cloud sync is available in Account. Your nickname and bio are saved to your account.</span></p>
             </section>
             <ReaderPreferences />
             <section id="profile-account" class="profile-panel" aria-labelledby="profile-account-title">
               <h2 id="profile-account-title">Account</h2>
               <p class="profile-intro">You are signed in to Hunmeng</p><p id="account-email"></p><p id="account-confirmed" class="fine"></p>
-              <p class="fine">Your library and reading position are saved on this device. Sync is currently disabled.</p>
+              <ReaderSyncPanel />
               <div class="account-actions"><a href="/library/" class="button secondary">Open library</a><button type="button" id="account-signout" class="button secondary">Sign out</button></div>
             </section>
           </div>

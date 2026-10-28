@@ -1,4 +1,5 @@
 import { repository, defaults, applySettings, type Settings } from '../lib/storage';
+import { recordVerifiedLibraryAdd } from '../lib/verified-library';
 export async function initReader() {
   const main = document.querySelector<HTMLElement>('[data-reader]');
   if (!main) return;
@@ -40,6 +41,7 @@ export async function initReader() {
   bookmark.addEventListener('click', async () => {
     shelf = shelf === 'later' ? 'reading' : 'later';
     await repository.setShelf(slug, shelf);
+    if(shelf==='later') void recordVerifiedLibraryAdd(slug);
     paintBookmark();
   });
   let focusMode = false;

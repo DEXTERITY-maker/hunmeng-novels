@@ -1,4 +1,5 @@
 import { repository, onStorageChange } from '../lib/storage';
+import { recordVerifiedLibraryAdd } from '../lib/verified-library';
 import { getCatalog, element, catalogUpdatedEvent } from '../lib/client-data';
 import { type Shelf } from '../config/site';
 import { readingAction } from '../lib/reading-action';
@@ -66,10 +67,13 @@ export async function initPersonal() {
     const slug = control.dataset.slug!;
     control
       .querySelector('[data-add-library]')!
-      .addEventListener('click', () => void repository.setShelf(slug, 'later'));
+      .addEventListener('click', () => {
+        void repository.setShelf(slug, 'later').then(()=>recordVerifiedLibraryAdd(slug));
+      });
     control.querySelector<HTMLSelectElement>('[data-shelf]')!.addEventListener('change', (e) => {
       const v = (e.target as HTMLSelectElement).value;
-      void repository.setShelf(slug, v === 'remove' ? null : (v as Shelf));
+      void repository.setShelf(slug, v === 'remove' ? null : (v as Shelf))
+        .then(()=>{ if(v!=='remove') return recordVerifiedLibraryAdd(slug); });
     });
   });
   await refresh();

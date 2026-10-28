@@ -122,3 +122,14 @@
 .reader-xp-history-list li small{grid-column:1;color:var(--muted,#68737b);overflow-wrap:anywhere}
 .reader-xp-history-list li strong{grid-column:2;grid-row:1 / span 2;color:var(--emerald,#167b62);white-space:nowrap}
 @media(max-width:360px){.reader-xp-history-list li{padding:.7rem;gap:.2rem .5rem}}
+
+
+/* Device-owned reading data and cloud conflict resolution. */
+.reader-cloud-sync{margin-top:1.5rem;padding:clamp(1rem,2.4vw,1.5rem);border:1px solid var(--line);border-radius:18px;background:var(--surface);min-width:0}
+.reader-cloud-sync h3{font-size:1.15rem;margin-bottom:.4rem;color:var(--ink)}
+.reader-cloud-sync>p{max-width:66ch;color:var(--muted)}
+.reader-cloud-sync .account-actions{display:flex;gap:.6rem;flex-wrap:wrap;margin:.85rem 0}
+.reader-cloud-sync .account-actions button{min-height:44px;max-width:100%;white-space:normal;overflow-wrap:anywhere}
+.reader-sync-conflict{border:1px solid var(--accent);border-radius:12px;padding:1rem;margin-top:1rem}
+.reader-sync-conflict>p{margin:0 0 .7rem}
+@media(max-width:450px){.reader-cloud-sync .account-actions{flex-direction:column}.reader-cloud-sync .account-actions button{width:100%}}

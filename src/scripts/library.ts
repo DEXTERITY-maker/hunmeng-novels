@@ -1,4 +1,5 @@
 import { repository, onStorageChange } from '../lib/storage';
+import { recordVerifiedLibraryAdd } from '../lib/verified-library';
 import { getCatalog, element, catalogUpdatedEvent } from '../lib/client-data';
 import { shelves, type Shelf } from '../config/site';
 import { chapterCount } from '../lib/format';
@@ -76,11 +77,11 @@ export async function initLibrary() {
         select.value = active;
         select.addEventListener(
           'change',
-          () =>
-            void repository.setShelf(
-              n.slug,
-              select.value === 'remove' ? null : (select.value as Shelf),
-            ),
+          () => {
+            const choice=select.value;
+            void repository.setShelf(n.slug,choice==='remove'?null:choice as Shelf)
+              .then(()=>{ if(choice!=='remove') return recordVerifiedLibraryAdd(n.slug); });
+          },
         );
         label.append(select);
         row.append(img, body, label);

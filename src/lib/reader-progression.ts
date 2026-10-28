@@ -56,6 +56,7 @@ export const achievements = [
 export type ProgressMetric = (typeof titles)[number]['metric'] | (typeof achievements)[number]['metric'];
 export interface VerifiedStats {
   total_xp:number;chapters:number;completedNovels:number;readingDays:number;scifiNovels:number;completedGenres:number;
+  verifiedLibrary?:number;approvedReviews?:number;
   selected_title:string;last_rank_notified:string | null;
   achievement_dates?: Record<string,string | null>;
 }
@@ -67,8 +68,12 @@ export function titleStatus(id:string, stats: VerifiedStats) {
   const item=titles.find(t=>t.id===id);
   if (!item) return {progress:0,unlocked:false,available:false};
   if (item.metric==='always') return {progress:0,unlocked:true,available:true};
-  if (item.metric==='verifiedLibrary'||item.metric==='approvedReviews')
-    return {progress:0,unlocked:false,available:false};
+  if (item.metric==='verifiedLibrary'||item.metric==='approvedReviews') {
+    const value=stats[item.metric];
+    if(typeof value!=='number'||!Number.isFinite(value)) return {progress:0,unlocked:false,available:false};
+    const progress=Math.max(0,Math.floor(value));
+    return {progress,unlocked:progress>=item.target,available:true};
+  }
   const progress=Math.max(0,Number(stats[item.metric]||0));
   return {progress,unlocked:progress>=item.target,available:true};
 }

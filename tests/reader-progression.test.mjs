@@ -33,6 +33,9 @@ test('title is separate from rank and unsupported metrics do not fabricate progr
  const initial=emptyVerifiedStats();
  assert.deepEqual(titleStatus('novice',initial),{progress:0,unlocked:true,available:true});
  assert.equal(titleStatus('collector',initial).available,false);
+ assert.equal(titleStatus('collector',{...initial,verifiedLibrary:49}).unlocked,false);
+ assert.equal(titleStatus('collector',{...initial,verifiedLibrary:50}).unlocked,true);
+ assert.equal(titleStatus('collector',{...initial,verifiedLibrary:50}).available,true);
  assert.equal(titleStatus('reviewer',initial).available,false);
  assert.equal(titleStatus('regular',{...initial,readingDays:30}).unlocked,true);
 });
