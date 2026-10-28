@@ -192,7 +192,10 @@ const tokens = `:root{--bg:${c.background};--surface:${c.surface};--ink:${c.text
         void import('../scripts/account-nav').then(({ initAccountNav }) => initAccountNav());
       }
       if (site.features.accounts && site.features.readerSync) {
-        void import('../lib/sync').then(({ startReaderSync }) => startReaderSync());
+        // Guest pages do not need the Supabase sync bundle at all.
+        let optedIn = false;
+        try { optedIn = !!localStorage.getItem('hunmeng-novels:cloud-sync-owner:v1'); } catch {}
+        if (optedIn) void import('../lib/sync').then(({ startReaderSync }) => startReaderSync());
       }
       window
         .matchMedia('(prefers-color-scheme: dark)')
