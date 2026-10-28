@@ -1,4 +1,4 @@
-import { defaults, sanitizeState, type ReaderState } from './storage';
+import { defaults, sanitizeState, type ReaderState } from './storage.ts';
 import type { Shelf } from '../config/site';
 
 export type SyncChoice = 'device' | 'cloud';
