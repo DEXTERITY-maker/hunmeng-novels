@@ -6,6 +6,7 @@ const publicScreens: [string, string, string][] = [
   ['catalog','/catalog/','.catalog-heading'],
   ['library','/library/','.shelf-tabs'],
   ['news','/news/','.news-feed'],
+  ['ranks','/ranks/','.rank-world-cards'],
   ['rights','/rights/','.rights-steps'],
   ['writing-studio','/studio/','.studio-hero'],
 ];
@@ -59,4 +60,19 @@ test('profile and reading settings are navigable and captured with synthetic Aut
   await expect(page.locator('.header-account .account-panel')).toBeVisible();
   await page.screenshot({path:info.outputPath('hunmeng-account-menu-'+info.project.name+'.png'),fullPage:false,animations:'disabled'});
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
+});
+
+test('fantasy rank gallery preserves all nine emblems and fits phone and desktop widths',async({page})=>{
+ for(const width of [320,390,768,1280,1536]){
+  await page.setViewportSize({width,height:900});
+  await page.goto('/ranks/');
+  await expect(page.locator('.rank-world-card')).toHaveCount(9);
+  await expect(page.locator('.rank-world-card[data-rank-style="dark-gold"] h3')).toHaveText('Тёмно-золотой');
+  await expect(page.locator('.rank-world-card[data-rank-style="mythical"] .rank-world-levels')).toHaveText('Уровни 420–500');
+  for(const emblem of await page.locator('.rank-world-emblem img').all()){
+    expect(await emblem.evaluate((img:HTMLImageElement)=>img.complete&&img.naturalWidth>0)).toBe(true);
+  }
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
+ }
+ await expect(page.locator('a[href="/account/"].rank-world-primary')).toBeVisible();
 });
