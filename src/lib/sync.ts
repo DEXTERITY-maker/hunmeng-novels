@@ -22,9 +22,15 @@ export interface SyncResult { userId:string; uploaded:boolean; conflictsResolved
 export function syncOwner():string|null {
   try { return localStorage.getItem(OWNER_KEY); } catch { return null; }
 }
+export function lastSyncOwner():string|null {
+  try { return localStorage.getItem(PREVIOUS_OWNER_KEY)||syncOwner(); }catch{return syncOwner();}
+}
 export function isReaderSyncEnabled(userId:string):boolean { return syncOwner()===userId; }
 export function disableReaderSync(userId:string) {
-  if(syncOwner()===userId) try {localStorage.removeItem(OWNER_KEY);} catch {}
+  if(syncOwner()===userId) try {
+    localStorage.setItem(PREVIOUS_OWNER_KEY,userId);
+    localStorage.removeItem(OWNER_KEY);
+  } catch {}
   window.dispatchEvent(new Event('reader:sync-preference'));
 }
 const sorted=(v:Record<string,unknown>|undefined)=>Object.fromEntries(Object.entries(v??{}).sort(([a],[b])=>a.localeCompare(b)));
