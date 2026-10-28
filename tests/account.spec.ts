@@ -12,7 +12,7 @@ const readerSafeRequests = (requests: string[]) => requests.every(p =>
 async function mockAuth(page: Page) {
   const state={requests:[] as string[],signupBody:{} as Record<string,unknown>,signupRedirect:'',signupCalls:0,
     passwordCalls:0,codeCalls:0,errorCode:'',logoutOffline:false,profileUser:structuredClone(user),profileCalls:0,profileBody:{} as Record<string,unknown>,profileError:0,verifyError:0,sessionExpired:false,
-    rankStats:{total_xp:0,chapters:0,completedNovels:0,readingDays:0,scifiNovels:0,completedGenres:0,selected_title:'novice',last_rank_notified:null as string|null},
+    rankStats:{total_xp:0,chapters:0,completedNovels:0,readingDays:0,scifiNovels:0,completedGenres:0,approvedReviews:0,selected_title:'novice',last_rank_notified:null as string|null},
     xpAwards:[] as Array<{event_kind:string,novel_slug:string,chapter_slug:string,xp:number,awarded_at:string}>,xpHistoryRequests:0,xpHistoryError:false,
     cloudRow:null as null|{state:Record<string,unknown>;updated_at:string},cloudWrites:0,cloudError:false,
     reviews:[] as Array<{id:string,novel_slug:string,body:string,status:string,created_at:string}>,reviewSubmissions:0};
@@ -92,7 +92,7 @@ async function mockAuth(page: Page) {
     }
     if(address.pathname==='/rest/v1/rpc/reader_select_title'){
       const title=route.request().postDataJSON().p_title;
-      if(title!=='novice'&&!(title==='regular'&&state.rankStats.readingDays>=30))return json({message:'Title locked'},403);
+      if(title!=='novice'&&!(title==='regular'&&state.rankStats.readingDays>=30)&&!(title==='reviewer'&&state.rankStats.approvedReviews>=20))return json({message:'Title locked'},403);
       state.rankStats.selected_title=title;
       return json(true);
     }
@@ -579,5 +579,26 @@ test('approved reviews are displayed safely, including untrusted markup as text'
  await expect(page.locator('[data-published-reviews] li')).toHaveCount(1);
  await expect(page.locator('[data-published-reviews] li')).toContainText('<script>alert(1)</script>');
  await expect(page.locator('[data-published-reviews] script')).toHaveCount(0);
+ expect(readerSafeRequests(state.requests)).toBe(true);
+});
+
+test('Reviewer title requires 20 approved reviews, stays separate from rank and locks after revocation',async({page})=>{
+ const state=await mockAuth(page);
+ state.rankStats.approvedReviews=19;
+ await loginFixture(page);
+ await expect(page.locator('[data-title-id=reviewer] [data-award-progress]')).toHaveText('19 / 20');
+ await expect(page.locator('[data-equip-title=reviewer]')).toBeDisabled();
+ state.rankStats.approvedReviews=20;
+ await page.reload();
+ await expect(page.locator('[data-equip-title=reviewer]')).toBeEnabled();
+ await page.locator('[data-equip-title=reviewer]').click();
+ await expect(page.locator('#reader-equipped-title')).toHaveText('Reviewer');
+ await expect(page.locator('#reader-rank')).toHaveText('Iron');
+ await page.reload();
+ await expect(page.locator('#reader-equipped-title')).toHaveText('Reviewer');
+ state.rankStats.approvedReviews=19;
+ await page.reload();
+ await expect(page.locator('[data-equip-title=reviewer]')).toBeDisabled();
+ await expect(page.locator('#reader-equipped-title')).toHaveText('Novice Reader');
  expect(readerSafeRequests(state.requests)).toBe(true);
 });
