@@ -347,10 +347,10 @@ img {color:transparent;}
 .catalog-page .catalog-heading {min-height:245px; margin-bottom:22px;}
 .catalog-page .catalog-heading .taxonomy-nav a {box-shadow:0 5px 12px rgb(16 45 40 / .08);}
 .catalog-page .catalog-filter-panel {border:1px solid var(--hm-edge);border-radius:17px;background:var(--surface);box-shadow:var(--hm-shadow);}
-.catalog-filter-header {align-items:flex-start;}
+.catalog-filter-header {display:grid;grid-template-columns:minmax(0,1fr);align-items:start;gap:4px;}
 .catalog-filter-header h2 {font-size:1.42rem;margin:0 0 5px;}
 .catalog-filter-header > p {font-size:.86rem;color:var(--muted);line-height:1.5;grid-column:1;}
-.catalog-filter-header .text-button {font-size:.83rem;white-space:nowrap;}
+.catalog-filter-header .text-button {font-size:.83rem;white-space:nowrap;justify-self:start;}
 .catalog-filter-panel input[type='search'] {min-height:49px;}
 .catalog-options {border-top:1px solid var(--line);padding-top:14px;margin-top:12px;}
 .catalog-options > summary {cursor:pointer;min-height:46px;border-radius:9px;align-items:center;}
