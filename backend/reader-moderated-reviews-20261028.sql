@@ -19,7 +19,7 @@ create index if not exists reader_reviews_published_by_novel
 alter table public.reader_reviews enable row level security;
 revoke all on public.reader_reviews from public,anon,authenticated;
 -- Grant only displayable fields: user IDs and moderation details are never publicly returned.
-grant select(id,novel_slug,body,status,created_at,updated_at)
+grant select(id,user_id,novel_slug,body,status,created_at,updated_at)
   on public.reader_reviews to authenticated;
 grant select(id,novel_slug,body,status,created_at)
   on public.reader_reviews to anon;
