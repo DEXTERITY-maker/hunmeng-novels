@@ -26,7 +26,7 @@ export function initReaderSyncPanel(client:SupabaseClient){
     now.hidden=!enabled;
     pause.hidden=!enabled;
     if(!busy) {
-      if(mismatch)status.textContent='This browser is linked to another reader account. No data was merged. Sign in with the original account to pause its sync first.';
+      if(mismatch)status.textContent='This browser contains reading data from another synced account. To protect its privacy, use a separate browser profile for this account. Nothing was transferred.';
       else if(!userId)status.textContent='Sign in to manage your cloud library.';
       else if(!enabled)status.textContent='Sync is off. Your library is saved only on this device until you enable it.';
       else status.textContent='Sync enabled for this account. Changes are uploaded after you stop reading.';
