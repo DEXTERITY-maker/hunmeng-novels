@@ -131,12 +131,21 @@ const taxonomy = getTaxonomy(await getLibrary());
           <button id="admin-refresh" class="button secondary" type="button">Refresh queue</button>
           <div id="admin-job-list"></div>
         </section>
+        <section id="admin-reader-reviews" class="admin-card admin-wide" hidden>
+          <h2>5. Reader review moderation</h2>
+          <p>Only verified administrator approval publishes reviews and counts toward the Reviewer title. Rejecting an approved review revokes that credit.</p>
+          <p id="admin-reader-reviews-status" class="fine" role="status"></p>
+          <button type="button" id="admin-reader-reviews-refresh" class="button secondary">Refresh reader reviews</button>
+          <div id="admin-reader-reviews-list" class="admin-reader-reviews-list"></div>
+        </section>
       </div>
     </div>
     <p class="fine admin-help">A database administrator assigns editorial roles. The interface does not grant permissions: PostgreSQL RLS policies and server constraints check every action.</p>
   </main>
   <script>
     import { initAdmin } from '../scripts/admin';
+    import { initAdminReviews } from '../scripts/admin-reviews';
     void initAdmin();
+    void initAdminReviews().catch(() => {});
   </script>
 </Layout>

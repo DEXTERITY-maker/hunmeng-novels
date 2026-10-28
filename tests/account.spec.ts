@@ -8,13 +8,14 @@ const session=()=>({access_token:[Buffer.from('{"alg":"HS256","typ":"JWT"}').toS
   Buffer.from(JSON.stringify({sub:user.id,exp:Math.floor(Date.now()/1000)+3600,role:'authenticated'})).toString('base64url'),'fixture-signature'].join('.'),
   refresh_token:'fixture-reader-refresh',expires_in:3600,expires_at:Math.floor(Date.now()/1000)+3600,token_type:'bearer',user});
 const readerSafeRequests = (requests: string[]) => requests.every(p =>
-  p.startsWith('/auth/v1/') || p.startsWith('/rest/v1/rpc/reader_') || p === '/rest/v1/reader_xp_events' || p === '/rest/v1/novel_reader_state');
+  p.startsWith('/auth/v1/') || p.startsWith('/rest/v1/rpc/reader_') || p === '/rest/v1/reader_xp_events' || p === '/rest/v1/novel_reader_state' || p === '/rest/v1/reader_reviews' || p === '/rest/v1/reader_published_reviews');
 async function mockAuth(page: Page) {
   const state={requests:[] as string[],signupBody:{} as Record<string,unknown>,signupRedirect:'',signupCalls:0,
     passwordCalls:0,codeCalls:0,errorCode:'',logoutOffline:false,profileUser:structuredClone(user),profileCalls:0,profileBody:{} as Record<string,unknown>,profileError:0,verifyError:0,sessionExpired:false,
-    rankStats:{total_xp:0,chapters:0,completedNovels:0,readingDays:0,scifiNovels:0,completedGenres:0,selected_title:'novice',last_rank_notified:null as string|null},
+    rankStats:{total_xp:0,chapters:0,completedNovels:0,readingDays:0,scifiNovels:0,completedGenres:0,approvedReviews:0,selected_title:'novice',last_rank_notified:null as string|null},
     xpAwards:[] as Array<{event_kind:string,novel_slug:string,chapter_slug:string,xp:number,awarded_at:string}>,xpHistoryRequests:0,xpHistoryError:false,
-    cloudRow:null as null|{state:Record<string,unknown>;updated_at:string},cloudWrites:0,cloudError:false};
+    cloudRow:null as null|{state:Record<string,unknown>;updated_at:string},cloudWrites:0,cloudError:false,
+    reviews:[] as Array<{id:string,novel_slug:string,body:string,status:string,created_at:string}>,reviewSubmissions:0};
   await page.route('https://*.supabase.co/**',async route=>{
     const address=new URL(route.request().url());state.requests.push(address.pathname);
     const json=(body:unknown,status=200)=>route.fulfill({status,contentType:'application/json',
@@ -42,6 +43,28 @@ async function mockAuth(page: Page) {
       return json(state.profileUser);
     }
     if(address.pathname.endsWith('/logout'))return state.logoutOffline?route.abort('failed'):json({});
+    if(address.pathname==='/rest/v1/reader_published_reviews') {
+      return json(state.reviews.filter(review=>review.status==='approved').map(({id,novel_slug,body,created_at})=>({id,novel_slug,body,created_at})));
+    }
+    if(address.pathname==='/rest/v1/reader_reviews') {
+      const filter=address.searchParams.get('novel_slug');
+      const wanted=filter?.startsWith('eq.') ? filter.slice(3) : filter;
+      return json(state.reviews.filter(review=>!filter||review.novel_slug===wanted));
+    }
+        if(address.pathname==='/rest/v1/rpc/reader_my_review_status') {
+      const body=route.request().postDataJSON();
+      const own=state.reviews.find(review=>review.novel_slug===body.p_novel);
+      return json(own?.status ?? null);
+    }
+    if(address.pathname==='/rest/v1/rpc/reader_submit_review') {
+      const body=route.request().postDataJSON();
+      if(state.reviews.some(review=>review.novel_slug===body.p_novel))return json(null);
+      if(typeof body.p_body!=='string'||body.p_body.trim().length<120)return json({message:'Invalid review'},400);
+      state.reviewSubmissions++;
+      const id='00000000-0000-4000-8000-000000000099';
+      state.reviews.push({id,novel_slug:body.p_novel,body:body.p_body,status:'pending',created_at:'2026-10-28T00:00:00Z'});
+      return json(id);
+    }
     if(address.pathname==='/rest/v1/novel_reader_state') {
       const method=route.request().method();
       if(state.cloudError)return json({message:'Storage unavailable'},503);
@@ -76,7 +99,7 @@ async function mockAuth(page: Page) {
     }
     if(address.pathname==='/rest/v1/rpc/reader_select_title'){
       const title=route.request().postDataJSON().p_title;
-      if(title!=='novice'&&!(title==='regular'&&state.rankStats.readingDays>=30))return json({message:'Title locked'},403);
+      if(title!=='novice'&&!(title==='regular'&&state.rankStats.readingDays>=30)&&!(title==='reviewer'&&state.rankStats.approvedReviews>=20))return json({message:'Title locked'},403);
       state.rankStats.selected_title=title;
       return json(true);
     }
@@ -534,6 +557,59 @@ test('a second account never silently imports the previous account library',asyn
  expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('hunmeng-novels:v1')!).library['sad-zimy'])).toBe('later');
 });
 
+
+test('signed-in reader submits one substantive review; pending content is not published',async({page})=>{
+ const state=await mockAuth(page);
+ await loginFixture(page);
+ await page.goto('/novel/sad-zimy/');
+ await expect(page.locator('[data-review-form]')).toBeVisible();
+ const review='I enjoyed the careful pacing and the changing relationship between the characters. The setting feels immersive, while the story builds tension naturally through meaningful choices and increasingly difficult consequences.';
+ await page.locator('[data-review-form] textarea').fill(review);
+ await page.locator('[data-review-form] button[type=submit]').click();
+ await expect(page.locator('[data-review-feedback]')).toContainText('submitted for moderation');
+ await expect(page.locator('[data-published-reviews] li')).toHaveCount(0);
+ expect(state.reviewSubmissions).toBe(1);
+ await page.reload();
+ await expect(page.locator('[data-review-form]')).toBeHidden();
+ await expect(page.locator('[data-review-feedback]')).toContainText('awaiting moderation');
+ expect(state.reviewSubmissions).toBe(1);
+ expect(readerSafeRequests(state.requests)).toBe(true);
+});
+test('approved reviews are displayed safely, including untrusted markup as text',async({page})=>{
+ const state=await mockAuth(page);
+ state.reviews=[{id:'00000000-0000-4000-8000-000000000099',novel_slug:'sad-zimy',
+  body:'A thoughtful review with <script>alert(1)</script> shown as plain text, never interpreted by the browser.',
+  status:'approved',created_at:'2026-10-28T00:00:00Z'}];
+ await page.goto('/novel/sad-zimy/');
+ await expect(page.locator('[data-published-reviews] li')).toHaveCount(0);
+ await page.locator('[data-load-reviews]').click();
+ await expect(page.locator('[data-published-reviews] li')).toHaveCount(1);
+ await expect(page.locator('[data-published-reviews] li')).toContainText('<script>alert(1)</script>');
+ await expect(page.locator('[data-published-reviews] script')).toHaveCount(0);
+ expect(readerSafeRequests(state.requests)).toBe(true);
+});
+
+test('Reviewer title requires 20 approved reviews, stays separate from rank and locks after revocation',async({page})=>{
+ const state=await mockAuth(page);
+ state.rankStats.approvedReviews=19;
+ await loginFixture(page);
+ await expect(page.locator('[data-title-id=reviewer] [data-award-progress]')).toHaveText('19 / 20');
+ await expect(page.locator('#reader-stat-reviews')).toHaveText('19');
+ await expect(page.locator('[data-equip-title=reviewer]')).toBeDisabled();
+ state.rankStats.approvedReviews=20;
+ await page.reload();
+ await expect(page.locator('[data-equip-title=reviewer]')).toBeEnabled();
+ await page.locator('[data-equip-title=reviewer]').click();
+ await expect(page.locator('#reader-equipped-title')).toHaveText('Reviewer');
+ await expect(page.locator('#reader-rank')).toHaveText('Iron');
+ await page.reload();
+ await expect(page.locator('#reader-equipped-title')).toHaveText('Reviewer');
+ state.rankStats.approvedReviews=19;
+ await page.reload();
+ await expect(page.locator('[data-equip-title=reviewer]')).toBeDisabled();
+ await expect(page.locator('#reader-equipped-title')).toHaveText('Novice Reader');
+ expect(readerSafeRequests(state.requests)).toBe(true);
+});
 
 test('profile Continue Reading shows saved chapter position without fabricated progress',async({page})=>{
  await mockAuth(page);

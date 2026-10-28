@@ -1,6 +1,7 @@
 ---
 import Layout from '../../../layouts/Layout.astro';
 import LibraryControl from '../../../components/LibraryControl.astro';
+import ReaderReviews from '../../../components/ReaderReviews.astro';
 import { getLibrary, dateLabel, chapterCount, chapterUrl } from '../../../lib/content';
 import { chapterListUrl } from '../../../lib/pagination';
 import { novelStructuredData, placeholderCover, socialCover } from '../../../lib/seo';
@@ -155,6 +156,7 @@ const usesPlaceholder = n.cover === placeholderCover;
         <a class="button secondary" href={chapterListUrl(n.slug, 1)}>Full contents →</a>
       </div>
     </section>
+    <ReaderReviews slug={n.slug} />
     <section class="section author-section" aria-labelledby="author-title">
       <div class="section-heading"><h2 id="author-title">About the author</h2></div>
       <p class="author-info-name">{n.author}</p>
@@ -196,6 +198,8 @@ const usesPlaceholder = n.cover === placeholderCover;
     )}
   </main>
   <script>
+    import { initReaderReviews } from '../../../scripts/reader-reviews';
+    void initReaderReviews();
     import { initPersonal } from '../../../scripts/personal';
     void initPersonal();
     import { initPersonalRatings } from '../../../scripts/rating';
