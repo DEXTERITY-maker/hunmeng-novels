@@ -70,10 +70,10 @@
 }
 .home-page .hm-motion-book-card .home-book-copy{min-width:0;transform:translateZ(3px)}
 .home-page .hm-motion-book-card .home-book-read{
-  color:var(--accent);
+  color:var(--bg);
   transition:color var(--hm-motion-fast) ease;
 }
-.home-page .hm-motion-book-card:hover .home-book-read {color:var(--hm-forest,var(--accent))}
+.home-page .hm-motion-book-card:hover .home-book-read {color:var(--bg)}
 @media(hover:none){
   .home-page .hm-motion-book-card{transform:none!important}
   .home-page .hm-motion-book-card .home-book-cover{transform:none}
