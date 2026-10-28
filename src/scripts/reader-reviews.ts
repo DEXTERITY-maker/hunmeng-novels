@@ -9,17 +9,22 @@ export async function initReaderReviews() {
  const form=root.querySelector<HTMLFormElement>('[data-review-form]')!;
  const auth=root.querySelector<HTMLElement>('[data-review-auth]')!;
  const feedback=root.querySelector<HTMLElement>('[data-review-feedback]')!;
+ const loadButton=root.querySelector<HTMLButtonElement>('[data-load-reviews]')!;
  if(!readerAuthConfigured){
   status.textContent='Reviews are unavailable until the account service is configured.';
   return;
  }
  const client=createReaderClient();
  const renderPublic=async()=>{
+  loadButton.disabled=true;
+  status.textContent='Loading approved reviews…';
   const {data,error}=await client.from('reader_published_reviews')
     .select('id,body,created_at').eq('novel_slug',slug)
     .order('created_at',{ascending:false}).limit(10);
   list.replaceChildren();
+  loadButton.disabled=false;
   if(error){status.textContent='Unable to load reviews. Please try again later.';return;}
+  loadButton.hidden=true;
   if(!data?.length){status.textContent='No approved reviews yet.';return;}
   status.textContent=data.length===10?'Showing the 10 newest approved reviews.':`${data.length} approved review(s)`;
   for(const item of data){
@@ -37,13 +42,15 @@ export async function initReaderReviews() {
   const user=data.session?.user;
   if(error||!user){form.hidden=true;auth.hidden=false;return;}
   auth.hidden=true;
+  // A normal array result avoids fragile singular-object response negotiation.
   const own=await client.from('reader_reviews').select('status')
-   .eq('user_id',user.id).eq('novel_slug',slug).maybeSingle();
+   .eq('user_id',user.id).eq('novel_slug',slug).limit(1);
   if(own.error){form.hidden=true;feedback.textContent='Unable to verify your review status. Please retry later.';return;}
-  if(own.data){
+  const existing=own.data?.[0];
+  if(existing){
    form.hidden=true;
-   feedback.textContent=own.data.status==='approved'?'Your review is published.':
-    own.data.status==='rejected'?'Your review was not approved.':'Your review is awaiting moderation.';
+   feedback.textContent=existing.status==='approved'?'Your review is published.':
+    existing.status==='rejected'?'Your review was not approved.':'Your review is awaiting moderation.';
   }else{form.hidden=false;feedback.textContent='';}
  };
  let submitting=false;
@@ -67,7 +74,7 @@ export async function initReaderReviews() {
    feedback.textContent='Unable to reach the review service. Your text has not been deleted.';
   }finally{submitting=false;button.disabled=false;}
  });
- void renderPublic();
+ loadButton.addEventListener('click',()=>void renderPublic());
  void refreshAuth();
  window.addEventListener('reader:auth-change',()=>void refreshAuth());
 }
