@@ -1,0 +1,69 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { ranks, rankImage } from '../lib/reader-progression';
+
+const numerals = ['I','II','III','IV','V','VI','VII','VIII','IX'];
+const stories = [
+  'Каждая глава — новое открытие. Здесь начинается путь читателя.',
+  'Горизонты становятся шире, а любимых историй — больше.',
+  'Знания растут. Всё больше миров раскрывают свои тайны.',
+  'Тонкий вкус к историям и любовь к редким открытиям.',
+  'Глубокое понимание историй и поиск скрытых жемчужин.',
+  'Настойчивость и богатый опыт путешествий по книгам.',
+  'Яркий след в мире самых удивительных историй.',
+  'Путь читателя становится вдохновением для других.',
+  'Вершина читательского пути. Новые страницы ждут всегда.',
+];
+const benefits = [
+  ['✧', 'Новая эмблема', 'Особый знак вашего текущего ранга.'],
+  ['◈', 'Оформление профиля', 'Цветовая тема эмблемы отражает достигнутый ранг.'],
+  ['✦', 'Прогресс до 500', 'Уровень, XP и путь до следующего ранга.'],
+  ['❖', 'Достижения', 'Отдельные цели за подтверждённое чтение.'],
+];
+---
+<Layout title="Ранги читателей — 500 уровней" description="Девять рангов читателей Hunmeng: от Железного до Мифического, 500 уровней и подтверждённый прогресс XP.">
+  <main id="main" class="page-shell rank-saga-page">
+    <header class="rank-saga-hero">
+      <p class="rank-saga-kicker">HUNMENG · ПУТЬ ЧИТАТЕЛЯ</p>
+      <h1>Система рангов читателей</h1>
+      <p>Чем больше читаешь, тем дальше путешествие</p>
+      <div class="rank-saga-max"><strong>500 уровней</strong><span>Больше чтения<br/>Больше возможностей</span></div>
+    </header>
+    <section aria-label="Девять рангов Hunmeng" class="rank-saga-cards">
+      {ranks.map((rank,i) => (
+        <article class="rank-saga-card" data-rank-id={rank.id} style={`--rank-accent:${rank.accent}`}>
+          <span class="rank-saga-numeral">{numerals[i]}</span>
+          <img src={rankImage(rank.id)} alt={`Эмблема: ${rank.ru}`} width="200" height="224" loading={i>2?'lazy':'eager'} decoding="async" />
+          <h2>{rank.ru}</h2>
+          <p class="rank-saga-levels">Уровни {rank.min} – {rank.max}</p>
+          <p class="rank-saga-story">{stories[i]}</p>
+          <div class="rank-saga-landscape" aria-hidden="true"></div>
+        </article>
+      ))}
+    </section>
+    <div class="rank-saga-bottom">
+      <section class="rank-saga-timeline" aria-labelledby="rank-saga-timeline-title">
+        <h2 id="rank-saga-timeline-title">Прогресс уровней</h2>
+        <ol>
+          {ranks.map((rank,i) => (
+            <li style={`--rank-accent:${rank.accent}`}>
+              <span class="rank-saga-gem" aria-hidden="true">✦</span>
+              <strong>{rank.ru}</strong>
+              <small>{rank.min}–{rank.max}</small>
+            </li>
+          ))}
+        </ol>
+      </section>
+      <section class="rank-saga-benefits" aria-labelledby="rank-saga-benefits-title">
+        <h2 id="rank-saga-benefits-title">Что дают ранги?</h2>
+        <div class="rank-saga-benefit-grid">
+          {benefits.map(([symbol,title,description]) => (
+            <div><span aria-hidden="true">{symbol}</span><strong>{title}</strong><small>{description}</small></div>
+          ))}
+        </div>
+      </section>
+    </div>
+    <p class="rank-saga-fair">Ранг определяется уровнем автоматически. XP выдаётся только за подтверждённое сервером чтение; простое открытие страницы не приносит награду. Специальные привилегии и награды не заявляются как доступные, пока не реализованы.</p>
+    <a class="rank-saga-action" href="/account/">Мой читательский профиль <span aria-hidden="true">→</span></a>
+  </main>
+</Layout>
