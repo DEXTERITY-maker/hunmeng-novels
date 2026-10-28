@@ -1,0 +1,150 @@
+/* Hunmeng fantasy profile: an accessible, functional translation of the supplied art direction. */
+.reader-account-page{max-width:1490px}
+.reader-account-page .profile-hero{min-height:clamp(215px,22vw,300px);border:1px solid #bda276;border-radius:22px;box-shadow:0 16px 42px rgba(12,31,30,.2);
+  background:linear-gradient(90deg,rgba(4,24,31,.96) 0%,rgba(9,43,43,.77) 42%,rgba(11,38,38,.12) 90%),url('/images/profile-kingdom.svg') center 40% / cover no-repeat}
+.reader-account-page .profile-hero::after{content:'✦ HUNMENG ✦';position:absolute;right:20px;bottom:14px;font-family:Georgia,serif;font-size:.7rem;font-weight:700;letter-spacing:.28em;color:#fff0cd;text-shadow:0 2px 10px #061619}
+.reader-account-page .profile-hero h1{font-family:'Noto Serif Variable',Georgia,serif;font-size:clamp(2.15rem,4vw,4rem);font-weight:600}
+.reader-account-page .profile-sidebar{border-color:color-mix(in srgb,#b8a078 46%,var(--line));box-shadow:0 10px 27px rgba(17,46,50,.1)}
+.reader-account-page .profile-sidebar-rank{width:58px;height:65px;filter:drop-shadow(0 4px 6px rgba(2,23,28,.2))}
+.reader-account-page #profile-details{
+ --ink:#f8ecd5;--muted:#d3d7d0;--accent:#80d7af;--line:rgba(219,192,143,.3);--soft:#1b3a3c;--surface:#10262e;
+ position:relative;isolation:isolate;overflow:hidden;color:var(--ink);border:1px solid rgba(198,162,98,.62);
+ background:radial-gradient(ellipse 105% 32% at 75% 0%,rgba(41,89,83,.55),transparent),
+ linear-gradient(155deg,#0b242a,#07191e 65%,#0b2227);box-shadow:0 22px 54px rgba(6,27,33,.21)}
+.reader-account-page #profile-details::before{content:'';position:absolute;inset:0 0 auto;height:360px;z-index:-1;pointer-events:none;
+ background:linear-gradient(180deg,rgba(4,24,30,.64),rgba(4,24,30,.94)),
+ url('/images/profile-kingdom.svg') center 35% / cover no-repeat;opacity:.8}
+.reader-account-page #profile-details>.eyebrow{color:#dfc18a;text-transform:uppercase;letter-spacing:.22em}
+.reader-account-page #profile-details>#profile-title{font-family:'Noto Serif Variable',Georgia,serif;color:#f5e8ce}
+.reader-account-page #profile-details>.profile-intro{color:#c5d7d0}
+.reader-account-page #profile-details :is(h2,h3,h4){color:#f4ead5}
+.reader-account-page #profile-details .advancement-section-header .eyebrow,.reader-account-page #profile-details .advancement-intro .eyebrow{color:#f1cd8e;font-weight:800;letter-spacing:.16em}
+.reader-account-page #profile-details .reader-advancement{gap:clamp(18px,2.5vw,28px)}
+.reader-account-page #profile-details .advancement-hero{position:relative;isolation:isolate;overflow:hidden;
+ grid-template-columns:minmax(150px,200px) minmax(0,1fr);gap:clamp(16px,3vw,35px);
+ border:1px solid rgba(236,207,142,.68);border-radius:22px;
+ background:linear-gradient(90deg,rgba(245,236,215,.96) 0%,rgba(241,234,217,.9) 47%,rgba(210,230,218,.64) 73%,rgba(10,41,45,.2) 100%),url('/images/profile-kingdom.svg') center 44% / cover no-repeat;
+ box-shadow:0 12px 35px rgba(1,13,20,.32);padding:clamp(18px,3vw,32px);color:#173a3e}
+.reader-account-page #profile-details .advancement-hero::before{content:'';position:absolute;right:0;bottom:0;width:30%;height:52%;z-index:-1;background:linear-gradient(90deg,transparent,rgba(4,25,26,.06));pointer-events:none}
+.reader-account-page #profile-details .advancement-hero .eyebrow{color:#175342;letter-spacing:.14em}
+.reader-account-page #profile-details .advancement-intro h3{font-size:clamp(1.5rem,3.2vw,2.7rem);color:#102f30;font-weight:650}
+.reader-account-page #profile-details .advancement-title-line{color:#415552}
+.reader-account-page #profile-details .advancement-title-line strong{color:#113f32}
+.reader-account-page #profile-details .advancement-xp-label{color:#1b403e;font-weight:700}
+.reader-account-page #profile-details .advancement-trust{color:#385750;font-size:.74rem}
+.reader-account-page #profile-details .advancement-emblem-wrap{position:relative;min-height:205px;
+ border:1px solid rgba(203,167,94,.62);border-radius:50%;background:radial-gradient(circle,rgba(36,113,88,.26),rgba(240,215,151,.11) 65%,transparent 73%);
+ box-shadow:0 0 0 5px rgba(237,207,139,.15),0 12px 26px rgba(25,56,45,.14)}
+.reader-account-page #profile-details .advancement-emblem-wrap img{width:min(100%,190px);max-height:205px;filter:drop-shadow(0 11px 13px rgba(30,52,38,.38))}
+.reader-account-page #profile-details .advancement-emblem-crest{position:absolute;bottom:6px;color:#35624f;font:700 .65rem Georgia,serif;letter-spacing:.18em}
+.reader-account-page #profile-details .advancement-hero progress{height:13px;border:1px solid rgba(147,102,44,.65);background:#f6efdf;box-shadow:inset 0 1px 5px rgba(68,42,20,.24)}
+.reader-account-page #profile-details .advancement-hero progress::-webkit-progress-bar{background:#f6efdf}
+.reader-account-page #profile-details .advancement-hero progress::-webkit-progress-value{background:linear-gradient(90deg,#07503d,#13aa78,#f4cf71);box-shadow:0 0 9px rgba(5,130,91,.28)}
+.reader-account-page #profile-details .advancement-hero progress::-moz-progress-bar{background:linear-gradient(90deg,#07503d,#13aa78,#f4cf71)}
+.reader-account-page #profile-details .reader-next-rank{background:rgba(255,255,248,.7);border:1px solid rgba(178,146,89,.58);backdrop-filter:blur(2px)}
+.reader-account-page #profile-details .reader-next-rank-copy strong{color:#16493e}
+.reader-account-page #profile-details .reader-next-rank-copy :is(span,small){color:#416357}
+.reader-account-page #profile-details .advancement-journey-actions{display:flex;align-items:center;flex-wrap:wrap;gap:10px 18px;margin-top:12px}
+.reader-account-page #profile-details .advancement-explore-ranks{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:40px;border-radius:999px;
+ background:linear-gradient(110deg,#0c644d,#137e60);color:#fff;font-size:.78rem;font-weight:800;padding:8px 15px;box-shadow:0 4px 12px rgba(6,59,38,.2)}
+.reader-account-page #profile-details .advancement-explore-ranks:hover{filter:brightness(1.12)}
+.reader-account-page #profile-details .advancement-journey-note{color:#3c564e;font-size:.75rem;font-weight:750}
+.reader-account-page #profile-details .advancement-stats{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.reader-account-page #profile-details .advancement-stats>div{position:relative;min-height:112px;align-content:center;gap:4px;
+ border:1px solid rgba(226,189,116,.32);border-radius:14px;padding:13px 13px 13px 51px;
+ background:linear-gradient(125deg,rgba(22,63,60,.94),rgba(10,32,39,.97))}
+.reader-account-page #profile-details .advancement-stats>div::before{content:'✦';position:absolute;left:15px;top:50%;transform:translateY(-50%);color:#efc787;font-size:1.45rem;text-shadow:0 0 8px rgba(232,198,129,.22)}
+.reader-account-page #profile-details .advancement-stats>div:nth-child(2)::before{content:'❖'}
+.reader-account-page #profile-details .advancement-stats>div:nth-child(3)::before{content:'▣'}
+.reader-account-page #profile-details .advancement-stats>div:nth-child(4)::before{content:'◷'}
+.reader-account-page #profile-details .advancement-stats>div:nth-child(5)::before{content:'✎'}
+.reader-account-page #profile-details .advancement-stats>div:nth-child(6)::before{content:'❧'}
+.reader-account-page #profile-details .advancement-stats>div:nth-child(7)::before{content:'♧'}
+.reader-account-page #profile-details .advancement-stats>div:nth-child(8)::before{content:'✥'}
+.reader-account-page #profile-details .advancement-stats>div:nth-child(9)::before{content:'✶'}
+.reader-account-page #profile-details .advancement-stats strong{font:700 clamp(1.45rem,2.4vw,2rem) Georgia,serif;color:#fae7bd}
+.reader-account-page #profile-details .advancement-stats span{color:#e0e7df}
+.reader-account-page #profile-details .advancement-stats small{color:#a7c6be}
+.reader-account-page #profile-details .advancement-section{padding:clamp(15px,2vw,23px);border-radius:17px;border:1px solid rgba(216,180,115,.3);
+ background:linear-gradient(135deg,rgba(9,40,40,.96),rgba(6,26,35,.98));box-shadow:inset 0 1px rgba(240,202,131,.07)}
+.reader-account-page #profile-details .advancement-section-header{position:relative}
+.reader-account-page #profile-details .advancement-section-header p:last-child{color:#bdd0ca}
+.reader-account-page #profile-details .advancement-rank-header{padding-right:145px}
+.reader-account-page #profile-details .advancement-all-ranks{position:absolute;right:0;top:9px;display:inline-flex;align-items:center;gap:8px;min-height:42px;padding:9px 13px;
+ border:1px solid #c9a96c;border-radius:999px;color:#f4d99c;font-size:.75rem;font-weight:700}
+.reader-account-page #profile-details .advancement-all-ranks:hover{background:rgba(212,170,91,.15);color:#ffeabd}
+.reader-account-page #profile-details .rank-gallery{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.reader-account-page #profile-details .rank-tile{--rank-a:#96a4b1;position:relative;isolation:isolate;padding:13px 9px 15px;
+ border-radius:15px;border-color:color-mix(in srgb,var(--rank-a) 53%,transparent);
+ background:linear-gradient(180deg,color-mix(in srgb,var(--rank-a) 18%,#091c25),#071921 73%,color-mix(in srgb,var(--rank-a) 10%,#071921));
+ box-shadow:inset 0 0 18px color-mix(in srgb,var(--rank-a) 11%,transparent)}
+.reader-account-page #profile-details .rank-tile::after{content:'';position:absolute;z-index:-1;inset:auto 0 0;height:30%;
+ background:linear-gradient(0deg,rgba(1,15,19,.75),transparent),url('/images/profile-kingdom.svg') center bottom / auto 100% no-repeat;opacity:.25}
+.reader-account-page #profile-details .rank-tile[data-rank-id=bronze]{--rank-a:#c47743}
+.reader-account-page #profile-details .rank-tile[data-rank-id=silver]{--rank-a:#b8d3df}
+.reader-account-page #profile-details .rank-tile[data-rank-id=gold]{--rank-a:#e2ab47}
+.reader-account-page #profile-details .rank-tile[data-rank-id=dark-gold]{--rank-a:#c28b3a}
+.reader-account-page #profile-details .rank-tile[data-rank-id=platinum]{--rank-a:#c2c6e9}
+.reader-account-page #profile-details .rank-tile[data-rank-id=diamond]{--rank-a:#52c9f6}
+.reader-account-page #profile-details .rank-tile[data-rank-id=legendary]{--rank-a:#f3ae48}
+.reader-account-page #profile-details .rank-tile[data-rank-id=mythical]{--rank-a:#bd86ff}
+.reader-account-page #profile-details .rank-tile img{width:min(100%,145px);height:148px;filter:drop-shadow(0 8px 9px color-mix(in srgb,var(--rank-a) 34%,transparent));opacity:1}
+.reader-account-page #profile-details .rank-tile[data-rank-status=locked] img{filter:drop-shadow(0 6px 10px color-mix(in srgb,var(--rank-a) 30%,transparent));opacity:.83}
+.reader-account-page #profile-details .rank-tile-roman{color:#f1cd8e;font:600 .85rem Georgia,serif}
+.reader-account-page #profile-details .rank-tile h4{font:650 clamp(.9rem,1.6vw,1.12rem) 'Noto Serif Variable',Georgia,serif;color:#f8e6cb}
+.reader-account-page #profile-details .rank-tile .rank-tile-levels{color:#e0eced;font-size:.73rem;border:1px solid color-mix(in srgb,var(--rank-a) 52%,transparent);
+ background:color-mix(in srgb,var(--rank-a) 15%,#0b212b);border-radius:999px;padding:4px 9px}
+.reader-account-page #profile-details .rank-tile .rank-tile-description{color:#b9cdce}
+.reader-account-page #profile-details .rank-tile-state{background:#142f36;border:1px solid rgba(226,204,161,.32);color:#e2d6c2}
+.reader-account-page #profile-details .rank-tile[data-rank-status=current]{border-color:#f4d899;box-shadow:0 0 0 1px rgba(242,219,155,.5),0 0 19px rgba(214,181,101,.2)}
+.reader-account-page #profile-details .rank-tile[data-rank-status=current] .rank-tile-state{background:#0c735b;color:#fff}
+.reader-account-page #profile-details .reader-awards-list{grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+.reader-account-page #profile-details .reader-award{grid-template-columns:43px minmax(0,1fr);align-items:start;background:linear-gradient(130deg,#183b39,#0b272b);
+ border:1px solid rgba(219,190,135,.3);border-radius:13px;min-height:158px}
+.reader-account-page #profile-details .award-symbol,.reader-account-page #profile-details .achievement-icon{color:#f1cd83;background:linear-gradient(135deg,#2d5c4d,#14322f);border:1px solid rgba(231,186,107,.38)}
+.reader-account-page #profile-details .reader-award .award-select{grid-column:2;justify-self:start;min-height:36px;margin-top:4px}
+.reader-account-page #profile-details .reader-award .award-body h4{color:#f5e6c9}
+.reader-account-page #profile-details .reader-award :is(p,small){color:#bed0ce}
+.reader-account-page #profile-details .reader-achievements-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.reader-account-page #profile-details .achievement-tile{background:linear-gradient(135deg,#173b37,#10242b);border-color:rgba(218,181,121,.29)}
+.reader-account-page #profile-details .reader-next-achievement{background:linear-gradient(135deg,#20413c,#102930)}
+.reader-account-page #profile-details .reader-next-achievement small{color:#d5e5dd}
+.reader-account-page #profile-details .reader-xp-history-list li{background:rgba(17,47,49,.94);border-color:rgba(227,197,145,.27)}
+.reader-account-page #profile-details #profile-recent-reading{background:linear-gradient(130deg,#103135,#0d252e);border-color:rgba(229,188,122,.35)}
+.reader-account-page #profile-details .profile-recent-list li{background:#133238;border-color:rgba(223,186,116,.3)}
+.reader-account-page #profile-details #profile-form{border-top:1px solid rgba(224,191,129,.3);padding-top:25px}
+.reader-account-page #profile-details #profile-form :is(input,textarea){color:#e9ece3;background:#17383b;border-color:rgba(211,183,129,.4)}
+.reader-account-page #profile-details #profile-form :is(input,textarea)::placeholder{color:#a7c5bc}
+.reader-account-page #profile-details #profile-form :is(label,legend,small){color:#e2e9de}
+.reader-account-page #profile-details #profile-form button{background:#1b7961;color:#fff}
+.reader-account-page #profile-details .profile-local-note{color:#b2c9c1}
+.reader-account-page #profile-details .profile-local-note svg{color:#e5c78b}
+.reader-account-page #profile-details .reader-advancement progress::-webkit-progress-value{background:linear-gradient(90deg,#0f8068,#38b58a)}
+.reader-account-page #profile-details .reader-advancement progress::-moz-progress-bar{background:linear-gradient(90deg,#0f8068,#38b58a)}
+.reader-account-page #profile-details .advancement-hero progress::-webkit-progress-value{background:linear-gradient(90deg,#07503d,#13aa78,#f4cf71)}
+.reader-account-page #profile-details .advancement-hero progress::-moz-progress-bar{background:linear-gradient(90deg,#07503d,#13aa78,#f4cf71)}
+@media(min-width:1200px){.reader-account-page #profile-details .rank-gallery{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:900px){.reader-account-page #profile-details .advancement-rank-header{padding-right:0}
+ .reader-account-page #profile-details .advancement-all-ranks{position:static;margin-top:12px}
+ .reader-account-page #profile-details .rank-gallery{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));overflow:visible}
+ .reader-account-page #profile-details .rank-tile{flex:auto}
+}
+@media(max-width:610px){.reader-account-page #profile-details .advancement-hero{grid-template-columns:110px minmax(0,1fr);gap:11px;padding:13px}
+ .reader-account-page #profile-details .advancement-emblem-wrap{min-height:126px}
+ .reader-account-page #profile-details .advancement-emblem-wrap img{max-height:143px}
+ .reader-account-page #profile-details .advancement-emblem-crest{display:none}
+ .reader-account-page #profile-details .advancement-intro h3{font-size:1.35rem}
+ .reader-account-page #profile-details .advancement-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .reader-account-page #profile-details .reader-awards-list{grid-template-columns:1fr}
+ .reader-account-page #profile-details .advancement-rank-header{padding-right:0}
+ .reader-account-page #profile-details .advancement-all-ranks{position:static;margin-top:10px}
+ .reader-account-page #profile-details .reader-achievements-grid{grid-template-columns:1fr}
+}
+@media(max-width:420px){.reader-account-page #profile-details .advancement-hero{grid-template-columns:1fr}
+ .reader-account-page #profile-details .advancement-emblem-wrap{width:148px;justify-self:center}
+ .reader-account-page #profile-details .advancement-stats>div{padding-left:34px}
+ .reader-account-page #profile-details .advancement-stats>div::before{left:9px;font-size:1rem}
+ .reader-account-page #profile-details .rank-tile img{width:100%;height:126px}
+ .reader-account-page #profile-details .rank-gallery{gap:8px}
+}
+@media(prefers-reduced-motion:reduce){.reader-account-page #profile-details .rank-tile img{transition:none}}
