@@ -795,7 +795,7 @@ test('reader mastery is a six-step level ladder distinct from the nine rank embl
  state.rankStats.last_rank_notified='iron';
  await loginFixture(page);
  await expect(page.locator('.reader-mastery-tile')).toHaveCount(6);
- await expect(page.locator('#reader-mastery-name')).toHaveText('Опытный читатель');
+ await expect(page.locator('#reader-mastery-name')).toHaveText('Experienced Reader');
  await expect(page.locator('[data-mastery-id="experienced"]')).toHaveAttribute('data-mastery-status','current');
  await expect(page.locator('[data-mastery-id="reader"]')).toHaveAttribute('data-mastery-status','earned');
  await expect(page.locator('[data-mastery-id="connoisseur"]')).toHaveAttribute('data-mastery-status','locked');
@@ -804,7 +804,7 @@ test('reader mastery is a six-step level ladder distinct from the nine rank embl
  state.rankStats.total_xp=toLevel(50);
  state.rankStats.last_rank_notified='bronze';
  await page.reload();
- await expect(page.locator('#reader-mastery-name')).toHaveText('Легенда Hunmeng');
+ await expect(page.locator('#reader-mastery-name')).toHaveText('Hunmeng Legend');
  await expect(page.locator('#reader-rank')).toHaveText('Bronze');
  await expect(page.locator('[data-mastery-id="legend"]')).toHaveAttribute('data-mastery-status','current');
  expect(readerSafeRequests(state.requests)).toBe(true);
@@ -824,11 +824,11 @@ test('six unique SVG reader-mastery badges are readable and responsive on deskto
  state.rankStats.last_rank_notified='iron';
  await loginFixture(page);
  await expect(page.locator('.reader-mastery-tile')).toHaveCount(6);
- await expect(page.locator('#reader-mastery-name')).toHaveText('Опытный читатель');
+ await expect(page.locator('#reader-mastery-name')).toHaveText('Experienced Reader');
  await expect(page.locator('[data-mastery-id="experienced"]')).toHaveAttribute('data-mastery-status','current');
- await expect(page.locator('[data-mastery-id="experienced"] [data-mastery-state]')).toHaveText('Текущий этап');
- await expect(page.locator('[data-mastery-id="reader"] [data-mastery-state]')).toHaveText('Получено');
- await expect(page.locator('[data-mastery-id="master"] [data-mastery-state]')).toHaveText('Закрыто');
+ await expect(page.locator('[data-mastery-id="experienced"] [data-mastery-state]')).toHaveText('Current step');
+ await expect(page.locator('[data-mastery-id="reader"] [data-mastery-state]')).toHaveText('Unlocked');
+ await expect(page.locator('[data-mastery-id="master"] [data-mastery-state]')).toHaveText('Locked');
  const paths=['novice','reader','experienced','connoisseur','master','legend'];
  for(const id of paths){
   const img=page.locator(`[data-mastery-id="${id}"] img.reader-mastery-emblem`);
@@ -866,7 +866,7 @@ test('mastery celebration appears once for an authenticated promotion, never on 
  await page.reload();
  await expect(page.locator('#reader-mastery-unlocked')).toBeVisible();
  await expect(page.locator('#reader-mastery-unlocked-image')).toHaveAttribute('src','/images/mastery/reader.svg');
- await expect(page.locator('#reader-mastery-unlocked-detail')).toContainText('Читатель');
+ await expect(page.locator('#reader-mastery-unlocked-detail')).toContainText('Reader');
  await page.setViewportSize({width:390,height:850});
  await page.locator('#reader-mastery-unlocked').screenshot({
   path:info.outputPath('hunmeng-mastery-unlock-390.png'),animations:'disabled',
