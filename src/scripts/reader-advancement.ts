@@ -167,10 +167,23 @@ async function loadXpHistory(userId:string,seq:number) {
   if (!status||!list) return;
   list.replaceChildren();
   status.textContent='Loading your reward history…';
-  const {data,error}=await clientRef.from('reader_xp_events')
-    .select('event_kind,novel_slug,chapter_slug,xp,awarded_at')
-    .order('awarded_at',{ascending:false}).limit(15);
+  // A slow or unavailable service must never leave the account panel loading forever.
+  const controller=new AbortController();
+  const timeout=window.setTimeout(()=>controller.abort(),4000);
+  let response;
+  try {
+    response=await clientRef.from('reader_xp_events')
+      .select('event_kind,novel_slug,chapter_slug,xp,awarded_at')
+      .order('awarded_at',{ascending:false}).limit(15)
+      .abortSignal(controller.signal);
+  } catch {
+    if (userId===activeUser&&seq===requestCount) status.textContent='Reward history is temporarily unavailable.';
+    return;
+  } finally {
+    window.clearTimeout(timeout);
+  }
   if (userId!==activeUser||seq!==requestCount) return;
+  const {data,error}=response;
   if(error) {
     status.textContent='Reward history is temporarily unavailable.';
     return;
