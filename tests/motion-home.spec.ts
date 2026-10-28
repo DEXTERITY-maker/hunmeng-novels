@@ -45,7 +45,7 @@ test('editorial scroll is never started on the account screen',async({page})=>{
 });
 
 test('home card button text remains readable in light and dark themes', async ({ page }) => {
- for (const theme of ['light', 'dark']) {
+ for (const theme of ['light', 'dark'] as const) {
   await page.emulateMedia({ colorScheme: theme });
   await page.goto('/');
   await page.evaluate(value => document.documentElement.setAttribute('data-theme', value), theme);
