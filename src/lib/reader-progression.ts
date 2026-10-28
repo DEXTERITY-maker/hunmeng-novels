@@ -26,6 +26,8 @@ export const readerMasteryTiers = [
   {id:'master',ru:'Мастер',min:35,max:49,symbol:'✵'},
   {id:'legend',ru:'Легенда Hunmeng',min:50,max:500,symbol:'♛'},
 ] as const;
+/** Original SVG illustrations. Kept separate from the nine metal/gemstone rank emblems. */
+export const masteryImage = (id: string) => `/images/mastery/${id}.svg`;
 export const getReaderMastery = (level: number) =>
   readerMasteryTiers.find(tier=>level>=tier.min&&level<=tier.max) ??
   (level>MAX_LEVEL ? readerMasteryTiers[readerMasteryTiers.length-1] : readerMasteryTiers[0]);
