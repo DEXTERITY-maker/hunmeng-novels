@@ -549,3 +549,33 @@ test('a second account never silently imports the previous account library',asyn
  expect(state.cloudWrites).toBe(0);
  expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('hunmeng-novels:v1')!).library['sad-zimy'])).toBe('later');
 });
+
+
+test('signed-in reader submits one substantive review; pending content is not published',async({page})=>{
+ const state=await mockAuth(page);
+ await loginFixture(page);
+ await page.goto('/novel/sad-zimy/');
+ await expect(page.locator('[data-review-form]')).toBeVisible();
+ const review='I enjoyed the careful pacing and the changing relationship between the characters. The setting feels immersive, while the story builds tension naturally through meaningful choices and increasingly difficult consequences.';
+ await page.locator('[data-review-form] textarea').fill(review);
+ await page.locator('[data-review-form] button[type=submit]').click();
+ await expect(page.locator('[data-review-feedback]')).toContainText('submitted for moderation');
+ await expect(page.locator('[data-published-reviews] li')).toHaveCount(0);
+ expect(state.reviewSubmissions).toBe(1);
+ await page.reload();
+ await expect(page.locator('[data-review-form]')).toBeHidden();
+ await expect(page.locator('[data-review-feedback]')).toContainText('awaiting moderation');
+ expect(state.reviewSubmissions).toBe(1);
+ expect(readerSafeRequests(state.requests)).toBe(true);
+});
+test('approved reviews are displayed safely, including untrusted markup as text',async({page})=>{
+ const state=await mockAuth(page);
+ state.reviews=[{id:'00000000-0000-4000-8000-000000000099',novel_slug:'sad-zimy',
+  body:'A thoughtful review with <script>alert(1)</script> shown as plain text, never interpreted by the browser.',
+  status:'approved',created_at:'2026-10-28T00:00:00Z'}];
+ await page.goto('/novel/sad-zimy/');
+ await expect(page.locator('[data-published-reviews] li')).toHaveCount(1);
+ await expect(page.locator('[data-published-reviews] li')).toContainText('<script>alert(1)</script>');
+ await expect(page.locator('[data-published-reviews] script')).toHaveCount(0);
+ expect(readerSafeRequests(state.requests)).toBe(true);
+});
