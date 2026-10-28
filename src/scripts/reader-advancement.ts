@@ -1,5 +1,5 @@
 import type { SupabaseClient,User } from '@supabase/supabase-js';
-import { repository } from '../lib/storage';
+import { repository, onStorageChange } from '../lib/storage';
 import { ranks,titles,achievements,levelFromTotalXp,rankImage,titleStatus,emptyVerifiedStats,type VerifiedStats } from '../lib/reader-progression';
 
 let activeUser: string | null=null;
@@ -84,6 +84,7 @@ function renderStats(s:VerifiedStats) {
 }
 export function initReaderAdvancement(client: SupabaseClient) {
   clientRef=client;
+  onStorageChange(()=>{if(activeUser)void paintLocalStats();});
   document.querySelectorAll<HTMLButtonElement>('[data-equip-title]').forEach(button=>{
     button.addEventListener('click',async()=>{
       const owner=activeUser;
