@@ -6,6 +6,7 @@ import {
 import type { SyncChoice } from '../lib/reader-sync-merge';
 
 export function initReaderSyncPanel(client:SupabaseClient){
+  startReaderSync();
   const panel=document.getElementById('reader-cloud-sync');
   if(!panel)return (_user:User|null)=>{};
   const status=panel.querySelector<HTMLElement>('#reader-cloud-sync-status')!;
