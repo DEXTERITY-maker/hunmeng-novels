@@ -1,0 +1,21 @@
+---
+interface Props { slug:string }
+const {slug}=Astro.props;
+---
+<section class="reader-reviews" data-reader-reviews data-novel={slug} aria-labelledby="reader-reviews-heading">
+  <div class="section-heading"><h2 id="reader-reviews-heading">Reader reviews</h2></div>
+  <p class="fine">Thoughtful reviews help other readers find their next story. Only approved reviews appear publicly.</p>
+  <p data-reviews-status class="fine" role="status" aria-live="polite">Loading approved reviews…</p>
+  <ol data-published-reviews class="reader-reviews-list"></ol>
+  <div class="reader-review-entry">
+    <p data-review-auth class="fine">Sign in to leave a review. <a href="/account/">Your account →</a></p>
+    <form data-review-form hidden>
+      <label for="hunmeng-reader-review-body">Your review</label>
+      <textarea id="hunmeng-reader-review-body" name="body" rows="6" minlength="120" maxlength="4000" required
+        placeholder="What stood out to you? Mention the storytelling, characters and your reading experience."></textarea>
+      <p class="fine">At least 120 characters and 20 words. One review per novel; a moderator checks it before publication. No XP is awarded merely for submitting a review.</p>
+      <button type="submit" class="button">Submit for review</button>
+    </form>
+    <p data-review-feedback class="fine" role="status" aria-live="polite"></p>
+  </div>
+</section>
