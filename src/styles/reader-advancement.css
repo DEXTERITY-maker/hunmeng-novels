@@ -133,3 +133,14 @@
 .reader-sync-conflict{border:1px solid var(--accent);border-radius:12px;padding:1rem;margin-top:1rem}
 .reader-sync-conflict>p{margin:0 0 .7rem}
 @media(max-width:450px){.reader-cloud-sync .account-actions{flex-direction:column}.reader-cloud-sync .account-actions button{width:100%}}
+
+/* Real recent-reading positions on the current device. */
+.profile-recent-reading{min-width:0;margin:1.2rem 0 1.8rem;padding:clamp(14px,2.5vw,22px);border:1px solid var(--line);border-radius:17px;background:var(--surface)}
+.profile-recent-reading .advancement-section-header{margin-bottom:.6rem}
+.profile-recent-list{list-style:none;display:grid;gap:.65rem;margin:.8rem 0;padding:0}
+.profile-recent-list li{min-width:0;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:.25rem .85rem;padding:.9rem 1rem;border:1px solid var(--line);border-radius:12px}
+.profile-recent-list strong{overflow-wrap:anywhere;color:var(--ink)}
+.profile-recent-list span{grid-column:1;font-size:.82rem;color:var(--muted)}
+.profile-recent-list progress{grid-column:1;width:100%;max-width:360px}
+.profile-recent-list a{grid-column:2;grid-row:1 / span 3;align-self:center;color:var(--accent);font-weight:700;text-align:right}
+@media(max-width:440px){.profile-recent-list li{grid-template-columns:minmax(0,1fr)}.profile-recent-list a{grid-column:1;grid-row:auto;text-align:left;min-height:44px;display:inline-flex;align-items:center}}
