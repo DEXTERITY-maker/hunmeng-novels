@@ -11,7 +11,7 @@ import { ranks,readerMasteryTiers,titles,achievements,rankImage,masteryImage } f
     <div class="advancement-intro">
       <p class="eyebrow">✦ READER'S JOURNEY ✦</p>
       <h3 id="advancement-heading"><span id="reader-level">Level 1</span> <span class="advancement-separator">·</span> <span id="reader-rank">Iron</span></h3>
-      <p class="advancement-title-line">Reader mastery: <strong id="reader-mastery-name">Новичок-читатель</strong></p>
+      <p class="advancement-title-line">Reader mastery: <strong id="reader-mastery-name">Novice Reader</strong></p>
       <p class="advancement-title-line">Title: <strong id="reader-equipped-title">Novice Reader</strong></p>
       <div class="advancement-xp-label"><span id="reader-xp-numbers">0 / 500 XP</span><span id="reader-xp-remaining">500 XP to next level</span></div>
       <progress id="reader-xp-progress" aria-label="Experience toward next level" max="500" value="0"></progress>
@@ -74,7 +74,7 @@ import { ranks,readerMasteryTiers,titles,achievements,rankImage,masteryImage } f
     </div>
   </section>
   <section class="advancement-section" aria-labelledby="reader-titles-heading" hidden>
-    <div class="advancement-section-header"><p class="eyebrow">✦ SPECIAL TITLES</p><h3 id="reader-titles-heading">Звания</h3><p>Unlock titles through verified achievements and choose which one to display in your profile. Titles are independent of visual ranks.</p></div>
+    <div class="advancement-section-header"><p class="eyebrow">✦ SPECIAL TITLES</p><h3 id="reader-titles-heading">Titles</h3><p>Unlock titles through verified achievements and choose which one to display in your profile. Titles are independent of visual ranks.</p></div>
     <div class="reader-awards-list">
       {titles.map(t => (
         <article class="reader-award" data-title-id={t.id}>
