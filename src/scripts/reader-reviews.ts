@@ -42,15 +42,14 @@ export async function initReaderReviews() {
   const user=data.session?.user;
   if(error||!user){form.hidden=true;auth.hidden=false;return;}
   auth.hidden=true;
-  // A normal array result avoids fragile singular-object response negotiation.
-  const own=await client.from('reader_reviews').select('status')
-   .eq('user_id',user.id).eq('novel_slug',slug).limit(1);
+  // Server checks auth.uid(): never expose or query other readers' UUIDs.
+  const own=await client.rpc('reader_my_review_status',{p_novel:slug});
   if(own.error){form.hidden=true;feedback.textContent='Unable to verify your review status. Please retry later.';return;}
-  const existing=own.data?.[0];
+  const existing=own.data;
   if(existing){
    form.hidden=true;
-   feedback.textContent=existing.status==='approved'?'Your review is published.':
-    existing.status==='rejected'?'Your review was not approved.':'Your review is awaiting moderation.';
+   feedback.textContent=existing==='approved'?'Your review is published.':
+    existing==='rejected'?'Your review was not approved.':'Your review is awaiting moderation.';
   }else{form.hidden=false;feedback.textContent='';}
  };
  let submitting=false;
