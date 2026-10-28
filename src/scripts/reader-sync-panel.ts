@@ -24,10 +24,12 @@ export function initReaderSyncPanel(client:SupabaseClient){
     enable.hidden=!userId||enabled||mismatch;
     now.hidden=!enabled;
     pause.hidden=!enabled;
-    if(mismatch)status.textContent='This browser is linked to another reader account. No data was merged. Sign in with the original account to pause its sync first.';
-    else if(!userId)status.textContent='Sign in to manage your cloud library.';
-    else if(!enabled)status.textContent='Sync is off. Your library is saved only on this device until you enable it.';
-    else if(!busy)status.textContent='Sync enabled for this account. Changes are uploaded after you stop reading.';
+    if(!busy) {
+      if(mismatch)status.textContent='This browser is linked to another reader account. No data was merged. Sign in with the original account to pause its sync first.';
+      else if(!userId)status.textContent='Sign in to manage your cloud library.';
+      else if(!enabled)status.textContent='Sync is off. Your library is saved only on this device until you enable it.';
+      else status.textContent='Sync enabled for this account. Changes are uploaded after you stop reading.';
+    }
     for(const button of [enable,now,pause,...choices])button.disabled=busy;
   };
   const run=async(choice?:SyncChoice)=>{
@@ -58,7 +60,7 @@ export function initReaderSyncPanel(client:SupabaseClient){
       }else{
         status.textContent=error instanceof Error?error.message:'Sync is unavailable. Your local library is intact.';
       }
-    }finally{busy=false;const saved=status.textContent;paint();if(saved&&!status.textContent.includes('Sync enabled')&&!status.textContent.includes('Sync is off'))status.textContent=saved;}
+    }finally{const saved=status.textContent;busy=false;paint();if(userId===current && saved)status.textContent=saved;}
   };
   enable.addEventListener('click',()=>void run());
   now.addEventListener('click',()=>void run());
