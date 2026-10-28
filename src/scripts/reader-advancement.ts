@@ -1,6 +1,6 @@
 import type { SupabaseClient,User } from '@supabase/supabase-js';
 import { repository, onStorageChange } from '../lib/storage';
-import { ranks,titles,achievements,levelFromTotalXp,nextRankMilestone,rankImage,titleStatus,emptyVerifiedStats,type VerifiedStats } from '../lib/reader-progression';
+import { ranks,titles,achievements,levelFromTotalXp,nextRankMilestone,nextVerifiedAchievement,rankImage,titleStatus,emptyVerifiedStats,type VerifiedStats } from '../lib/reader-progression';
 
 let activeUser: string | null=null;
 let requestCount=0;
@@ -115,6 +115,23 @@ function renderStats(s:VerifiedStats) {
     tile.querySelector<HTMLElement>('[data-achievement-status]')!.textContent=unlocked?
       (date?`Unlocked · ${date}`:'Unlocked'):`${value} / ${item.target}`;
   });
+  const upcoming=nextVerifiedAchievement(s);
+  const nextPreview=document.getElementById('reader-next-achievement')!;
+  const allComplete=document.getElementById('reader-all-achievements')!;
+  nextPreview.hidden=!upcoming;
+  allComplete.hidden=!!upcoming;
+  if(upcoming){
+    const {achievement,progress,remaining}=upcoming;
+    stat('reader-next-achievement-name',achievement.en);
+    stat('reader-next-achievement-description',achievement.description);
+    const measure=achievement.metric==='chapters'?'chapter':
+      achievement.metric==='completedNovels'?'novel':'reading day';
+    stat('reader-next-achievement-remaining',`${remaining.toLocaleString()} ${measure}${remaining===1?'':'s'} to unlock`);
+    const bar=document.getElementById('reader-next-achievement-progress') as HTMLProgressElement;
+    bar.max=achievement.target;
+    bar.value=progress;
+    bar.setAttribute('aria-label',`Verified progress toward ${achievement.en}`);
+  }
   paintAchievementFilter();
   void paintLocalStats();
   return level.rank;
