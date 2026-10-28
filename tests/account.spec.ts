@@ -360,3 +360,34 @@ test('Dark Gold promotion at level 140 is announced once and survives refresh', 
  await expect(page.locator('#reader-level')).toHaveText('Level 140');
  await expect(modal).toBeHidden();
 });
+
+
+test('verified XP ledger shows real server awards, not local reading estimates',async({page})=>{
+ const state=await mockAuth(page);
+ state.rankStats.total_xp=480;
+ state.rankStats.chapters=1;
+ state.xpAwards=[
+  {event_kind:'novel_finished',novel_slug:'sad-zimy',chapter_slug:'',xp:400,awarded_at:'2026-10-27T13:00:00Z'},
+  {event_kind:'chapter_finished',novel_slug:'sad-zimy',chapter_slug:'glava-1',xp:80,awarded_at:'2026-10-27T12:00:00Z'},
+ ];
+ await loginFixture(page);
+ await expect(page.locator('#reader-advancement')).toHaveAttribute('data-status','ready');
+ await expect(page.locator('#reader-xp-history-list li')).toHaveCount(2);
+ await expect(page.locator('#reader-xp-history-list li').first()).toContainText('Novel completed');
+ await expect(page.locator('#reader-xp-history-list li').first()).toContainText('+400 XP');
+ await expect(page.locator('#reader-xp-history-list li').last()).toContainText('Chapter completed');
+ await expect(page.locator('#reader-xp-history-list li').last()).toContainText('+80 XP');
+ expect(state.xpHistoryRequests).toBeGreaterThan(0);
+ expect(readerSafeRequests(state.requests)).toBe(true);
+});
+test('XP history shows empty and unavailable states without inventing rewards',async({page})=>{
+ const state=await mockAuth(page);
+ await loginFixture(page);
+ await expect(page.locator('#reader-xp-history-list li')).toHaveCount(0);
+ await expect(page.locator('#reader-xp-history-status')).toContainText('No verified XP awards yet');
+ state.xpHistoryError=true;
+ await page.reload();
+ await expect(page.locator('#reader-advancement')).toHaveAttribute('data-status','ready');
+ await expect(page.locator('#reader-xp-history-status')).toHaveText('Reward history is temporarily unavailable.');
+ await expect(page.locator('#reader-xp-history-list li')).toHaveCount(0);
+});
