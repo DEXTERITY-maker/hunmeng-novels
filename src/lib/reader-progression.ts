@@ -49,9 +49,17 @@ export const titles = [
 export const achievements = [
   {id:'first-chapter',en:'First Chapter',ru:'Первая глава',metric:'chapters',target:1,description:'Complete your first verified chapter.'},
   {id:'ten-chapters',en:'Story Seeker',ru:'Искатель историй',metric:'chapters',target:10,description:'Complete 10 different chapters.'},
+  {id:'fifty-chapters',en:'Chapter Pathfinder',ru:'Следопыт глав',metric:'chapters',target:50,description:'Complete 50 different chapters.'},
   {id:'hundred-chapters',en:'Page Voyager',ru:'Путешественник по страницам',metric:'chapters',target:100,description:'Complete 100 different chapters.'},
-  {id:'thirty-days',en:'A Daily Chapter',ru:'Чтение каждый день',metric:'readingDays',target:30,description:'Read on 30 different days.'},
+  {id:'five-hundred-chapters',en:'Endless Pages',ru:'Бесконечные страницы',metric:'chapters',target:500,description:'Complete 500 different chapters.'},
+  {id:'first-world',en:'First World',ru:'Первый мир',metric:'completedNovels',target:1,description:'Finish your first verified completed novel.'},
+  {id:'five-worlds',en:'World Wanderer',ru:'Странник миров',metric:'completedNovels',target:5,description:'Finish 5 verified completed novels.'},
   {id:'ten-worlds',en:'Ten Worlds',ru:'Десять миров',metric:'completedNovels',target:10,description:'Finish 10 verified completed novels.'},
+  {id:'twenty-five-worlds',en:'Library Explorer',ru:'Исследователь библиотеки',metric:'completedNovels',target:25,description:'Finish 25 verified completed novels.'},
+  {id:'three-days',en:'The First Routine',ru:'Первые привычки',metric:'readingDays',target:3,description:'Read on 3 different days.'},
+  {id:'seven-days',en:'Seven Reading Days',ru:'Семь дней чтения',metric:'readingDays',target:7,description:'Read on 7 different days.'},
+  {id:'thirty-days',en:'A Daily Chapter',ru:'Чтение каждый день',metric:'readingDays',target:30,description:'Read on 30 different days.'},
+  {id:'one-hundred-days',en:'Devoted Reader',ru:'Преданный читатель',metric:'readingDays',target:100,description:'Read on 100 different days.'},
 ] as const;
 export type ProgressMetric = (typeof titles)[number]['metric'] | (typeof achievements)[number]['metric'];
 export interface VerifiedStats {
