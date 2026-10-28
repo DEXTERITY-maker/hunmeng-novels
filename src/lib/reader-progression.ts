@@ -17,6 +17,18 @@ export const ranks = [
   {id:'legendary',en:'Legendary',ru:'Легендарный',min:330,max:419,accent:'#e3ad61',description:'The mark of an extraordinary reader.'},
   {id:'mythical',en:'Mythical',ru:'Мифический',min:420,max:500,accent:'#ae83eb',description:'At the summit of Hunmeng.'},
 ] as const;
+/** Reader mastery is a six-step display tier, separate from nine ornate ranks and equipable titles. */
+export const readerMasteryTiers = [
+  {id:'novice',ru:'Новичок-читатель',min:1,max:4,symbol:'✦'},
+  {id:'reader',ru:'Читатель',min:5,max:9,symbol:'✧'},
+  {id:'experienced',ru:'Опытный читатель',min:10,max:19,symbol:'❖'},
+  {id:'connoisseur',ru:'Знаток',min:20,max:34,symbol:'◈'},
+  {id:'master',ru:'Мастер',min:35,max:49,symbol:'✵'},
+  {id:'legend',ru:'Легенда Hunmeng',min:50,max:500,symbol:'♛'},
+] as const;
+export const getReaderMastery = (level: number) =>
+  readerMasteryTiers.find(tier=>level>=tier.min&&level<=tier.max) ??
+  (level>MAX_LEVEL ? readerMasteryTiers[readerMasteryTiers.length-1] : readerMasteryTiers[0]);
 export type Rank = (typeof ranks)[number];
 export const rankImage = (id: string) => `/images/ranks/${id}.svg`;
 export const getRank = (level: number): Rank =>
