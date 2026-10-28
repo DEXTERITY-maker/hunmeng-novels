@@ -1,5 +1,6 @@
 ---
 import { ranks,titles,achievements,rankImage } from '../lib/reader-progression';
+import {titleCopy,achievementCopy} from '../lib/reader-copy';
 const numerals=['I','II','III','IV','V','VI','VII','VIII','IX'];
 ---
 <div id="reader-advancement" class="reader-advancement" data-status="loading" aria-label="Ранги и достижения читателя">
@@ -62,7 +63,7 @@ const numerals=['I','II','III','IV','V','VI','VII','VIII','IX'];
       {titles.map(t => (
         <article class="reader-award" data-title-id={t.id}>
           <div class="award-symbol" aria-hidden="true">✦</div>
-          <div class="award-body"><h4>{t.ru}</h4><p>{t.description}</p>
+          <div class="award-body"><h4>{t.ru}</h4><p>{titleCopy[t.id]}</p>
             <progress max={Math.max(1,t.target)} value="0" aria-label={`Прогресс звания: ${t.ru}`}></progress>
             <small data-award-progress>Проверяем прогресс…</small>
           </div>
@@ -92,7 +93,7 @@ const numerals=['I','II','III','IV','V','VI','VII','VIII','IX'];
       {achievements.map((a,i) => (
         <article class="achievement-tile" data-achievement-id={a.id}>
           <div class="achievement-icon" aria-hidden="true">{['✧','❖','✦','◈','✶','✵','✻'][i % 7]}</div>
-          <h4>{a.ru}</h4><p>{a.description}</p>
+          <h4>{a.ru}</h4><p>{achievementCopy[a.id]}</p>
           <progress value="0" max={a.target} aria-label={`Прогресс достижения: ${a.ru}`}></progress>
           <span data-achievement-status>Проверяем…</span>
         </article>
