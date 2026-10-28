@@ -61,17 +61,24 @@ import { ranks,titles,achievements,rankImage } from '../lib/reader-progression';
     <p id="reader-title-status" class="fine" role="status" aria-live="polite"></p>
   </section>
   <section class="advancement-section" aria-labelledby="reader-achievements-heading" hidden>
-    <div class="advancement-section-header"><p class="eyebrow">Moments worth remembering</p><h3 id="reader-achievements-heading">Achievements</h3></div>
+    <div class="advancement-section-header"><p class="eyebrow">Moments worth remembering</p><h3 id="reader-achievements-heading">Achievements</h3><p>Earned from verified reading activity. Milestones do not grant extra XP.</p></div>
+    <div class="achievement-filter" role="group" aria-label="Filter achievements">
+      <button type="button" data-achievement-filter="all" aria-pressed="true">All</button>
+      <button type="button" data-achievement-filter="unlocked" aria-pressed="false">Unlocked</button>
+      <button type="button" data-achievement-filter="locked" aria-pressed="false">Locked</button>
+    </div>
+    <p id="reader-achievements-summary" class="fine" aria-live="polite">Checking verified achievements…</p>
     <div class="reader-achievements-grid">
       {achievements.map((a,i) => (
         <article class="achievement-tile" data-achievement-id={a.id}>
-          <div class="achievement-icon" aria-hidden="true">{['✧','❖','✦','◈','✶'][i]}</div>
+          <div class="achievement-icon" aria-hidden="true">{['✧','❖','✦','◈','✶','✵','✻'][i % 7]}</div>
           <h4>{a.en}</h4><p>{a.description}</p>
           <progress value="0" max={a.target} aria-label={`${a.en} achievement progress`}></progress>
           <span data-achievement-status>Checking…</span>
         </article>
       ))}
     </div>
+    <p id="reader-achievements-empty" class="fine" hidden>No achievements match this filter yet.</p>
   </section>
 </div>
 <dialog id="reader-rank-unlocked" class="reader-rank-dialog" aria-labelledby="reader-new-rank-title">
