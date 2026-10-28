@@ -15,9 +15,9 @@ const { title, publishedAt, category, excerpt } = post.data;
 
 <Layout title={title} description={excerpt}>
   <main id="main" class="page-shell news-article-shell">
-    <nav class="news-breadcrumbs" aria-label="News navigation">
-      <a href="/">Home</a><span aria-hidden="true">›</span>
-      <a href="/news/">News</a><span aria-hidden="true">›</span>
+    <nav class="news-breadcrumbs" aria-label="Навигация по новостям">
+      <a href="/">Главная</a><span aria-hidden="true">›</span>
+      <a href="/news/">Новости</a><span aria-hidden="true">›</span>
       <span>{newsCategories[category]}</span>
     </nav>
     <article class="news-article">
@@ -34,16 +34,16 @@ const { title, publishedAt, category, excerpt } = post.data;
       </div>
     </article>
     <section class="news-reactions" data-news-reactions={post.id} aria-labelledby="reaction-title">
-      <h2 id="reaction-title">Your reaction</h2>
-      <p>Choose one reaction. It is visible only on your device.</p>
-      <div class="news-reaction-options" role="group" aria-label="Reaction to post">
+      <h2 id="reaction-title">Ваша реакция</h2>
+      <p>Выберите одну реакцию. Она сохраняется только на этом устройстве.</p>
+      <div class="news-reaction-options" role="group" aria-label="Реакция на новость">
         {['👍', '❤️', '🔥', '🎉', '🤔', '👀'].map((emoji) => (
-          <button type="button" data-reaction={emoji} aria-label={`Reaction ${emoji}`} aria-pressed="false">{emoji}</button>
+          <button type="button" data-reaction={emoji} aria-label={`Реакция ${emoji}`} aria-pressed="false">{emoji}</button>
         ))}
       </div>
-      <p class="fine" id="news-reaction-status" role="status">No reaction yet.</p>
+      <p class="fine" id="news-reaction-status" role="status">Пока нет реакции.</p>
     </section>
-    <a class="news-return" href="/news/">← All news</a>
+    <a class="news-return" href="/news/">← Все новости</a>
   </main>
   <script>
     import { initNewsReactions } from '../../scripts/news';
