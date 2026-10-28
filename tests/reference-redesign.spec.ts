@@ -70,7 +70,8 @@ test('fantasy rank gallery preserves all nine emblems and fits phone and desktop
   await expect(page.locator('.rank-world-card[data-rank-style="dark-gold"] h3')).toHaveText('Тёмно-золотой');
   await expect(page.locator('.rank-world-card[data-rank-style="mythical"] .rank-world-levels')).toHaveText('Уровни 420–500');
   for(const emblem of await page.locator('.rank-world-emblem img').all()){
-    expect(await emblem.evaluate((img:HTMLImageElement)=>img.complete&&img.naturalWidth>0)).toBe(true);
+    await emblem.scrollIntoViewIfNeeded();
+    await expect.poll(()=>emblem.evaluate((img:HTMLImageElement)=>img.complete&&img.naturalWidth>0)).toBe(true);
   }
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
  }
