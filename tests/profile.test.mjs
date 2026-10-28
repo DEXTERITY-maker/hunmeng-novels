@@ -8,7 +8,7 @@ test('никнейм: кириллица, латиница, нормализац
 });
 test('метаданные профиля допускают только поля представления и известные цвета',()=>{
  assert.deepEqual(readProfile({nickname:'Моряк',bio:'Sea',avatar_color:'navy',role:'admin',library:{},progress:{}}),{nickname:'Моряк',bio:'Sea',avatar_color:'navy'});
- assert.deepEqual(readProfile(null),{nickname:'Reader',bio:'',avatar_color:'sage'});
+ assert.deepEqual(readProfile(null),{nickname:'',bio:'',avatar_color:'sage'});
  assert.deepEqual(readProfile({nickname:'<script>',bio:{},avatar_color:'url(evil)'}),readProfile(null));
  assert.equal(readProfile({bio:'x'.repeat(200)}).bio.length,160);
 });
