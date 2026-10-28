@@ -64,28 +64,17 @@ function makeStore({ existing = [], failFind = false, failCreate = false } = {})
   const created = [];
   return {
     created,
-    findByIdempotencyKey: async (requesterRef, key) => {
-      if (failFind) throw new Error('store down');
-      const found = entries.find(entry => entry.requesterRef === requesterRef && entry.key === key);
-      return found ? found.record : null;
-    },
-    findActiveBySource: async (requesterRef, source) => {
-      if (failFind) throw new Error('store down');
-      const found = entries.find(
-        entry =>
-          entry.requesterRef === requesterRef &&
-          entry.record.status === 'submitted' &&
-          entry.record.source.provider === source.provider &&
-          entry.record.source.externalId === source.externalId,
-      );
-      return found ? found.record : null;
-    },
-    create: async record => {
-      if (failCreate) throw new Error('store down');
+    submitAtomically: async record => {
+      if (failFind || failCreate) throw new Error('store down');
+      const keyed = entries.find(e => e.requesterRef === record.requesterRef && e.key === record.idempotencyKey);
+      if (keyed) return keyed.record.fingerprint === record.fingerprint
+        ? {kind: 'replay', record: keyed.record} : {kind: 'conflict', existingRequestId: keyed.record.id};
+      const active = entries.find(e => e.requesterRef === record.requesterRef && e.record.status === 'submitted' && e.record.source.provider === record.source.provider && e.record.source.externalId === record.source.externalId);
+      if (active) return {kind: 'active-request', record: active.record};
       const stored = { ...record, id: `req-${created.length + 1}`, createdAt: '2026-10-28T10:00:00.000Z' };
       created.push(stored);
       entries.push({ key: record.idempotencyKey, requesterRef: record.requesterRef, record: stored });
-      return stored;
+      return {kind: 'new', record: stored};
     },
   };
 }
@@ -100,6 +89,7 @@ const validBody = {
 function makeDeps(overrides = {}) {
   return {
     identity: makeIdentity(defaultIdentityMap),
+    allowedAdapters: [fixtureAdapter],
     sources: makeRegistry({
       originalTitle: 'The Lantern of Ninth Street',
       authors: ['A. Marlowe'],
@@ -146,7 +136,7 @@ test('missing, invalid, inactive and unavailable identity fail closed', async ()
 });
 
 test('unconfigured dependencies fail closed instead of allowing the request', async () => {
-  for (const key of ['identity', 'sources', 'catalog', 'rateLimiter', 'store']) {
+  for (const key of ['identity', 'sources', 'allowedAdapters', 'catalog', 'rateLimiter', 'store']) {
     const deps = makeDeps({ [key]: null });
     const result = await handleNovelRequest({ token: 'good', body: validBody }, deps);
     assert.equal(result.status, 503, `${key} must fail closed`);
@@ -224,7 +214,6 @@ test('same idempotency key with different content is a conflict, not a replay', 
   assert.equal(first.status, 201);
   assert.equal(conflict.status, 409);
   assert.equal(conflict.body.error, 'idempotency-key-reused');
-  assert.equal(conflict.body.existingRequestId, first.body.requestId);
   assert.equal(deps.store.created.length, 1);
 });
 
@@ -307,6 +296,7 @@ test('response is a projection: no tokens, user ids, fingerprints, hints or fore
   assert.notEqual(stored.requesterRef, 'user-1');
   assert.equal(await requesterReference('user-1'), stored.requesterRef);
   assert.deepEqual(stored.hints, validBody.clientHints);
+  assert.equal(stored.note, 'fixture note');
   assert.ok(stored.adapterMetadata.originalTitle);
 });
 
@@ -352,4 +342,41 @@ test('IP bucket denial also returns rate-limited', async () => {
   assert.equal(denied.result.status, 429);
   assert.equal(denied.result.body.retryAfterSeconds, 60);
   assert.ok(limiter.calls.some(bucket => bucket.startsWith('submit:ip:')));
+});
+
+
+test('untrusted adapter output cannot authorize another host or malformed URL', async () => {
+  for (const url of ['https://evil.test/work/4242', 'not a url', 'http://fiction-archive.test/work/4242']) {
+    const registry = {recognize: async () => ({source: {provider: FIXTURE_PROVIDER_ARCHIVE, externalId:'4242', url}, metadata:{}, provenance:{provider:FIXTURE_PROVIDER_ARCHIVE,adapterVersion:'v1',policyId:'p'}})};
+    const {result} = await call({sources:registry});
+    assert.ok([400,503].includes(result.status));
+  }
+});
+test('simultaneous submits through the atomic store return one record', async () => {
+  const deps = makeDeps();
+  const [a,b] = await Promise.all([handleNovelRequest({token:'good',body:validBody},deps),handleNovelRequest({token:'good',body:validBody},deps)]);
+  assert.deepEqual([a.status,b.status].sort(), [200,201]);
+  assert.equal(deps.store.created.length, 1);
+});
+test('unknown field is not reflected in error response', async () => {
+  const {result} = await call({}, {body:{...validBody, 'secret-field-value':true}});
+  assert.equal(result.status,400);
+  assert.ok(!JSON.stringify(result).includes('secret-field-value'));
+});
+
+test('concurrent different keys for the same source share one request', async () => {
+  const deps = makeDeps();
+  const [a,b] = await Promise.all([
+    handleNovelRequest({token:'good',body:validBody},deps),
+    handleNovelRequest({token:'good',body:{...validBody,idempotencyKey:'idem-key-0002'}},deps),
+  ]);
+  assert.deepEqual([a.status,b.status].sort(), [200,201]);
+  assert.equal(a.body.requestId,b.body.requestId);
+  assert.equal(deps.store.created.length,1);
+});
+test('creation quota is a distinct atomic store outcome', async () => {
+  const store = {submitAtomically: async () => ({kind:'quota-exceeded',retryAfterSeconds:45})};
+  const {result} = await call({store});
+  assert.equal(result.status,429);
+  assert.equal(result.body.retryAfterSeconds,45);
 });

@@ -14,12 +14,12 @@ Files:
 
 1. **Identity** — `dependencies.identity.verify(token)`. Missing verifier, a throwing verifier or any unconfigured dependency → `503 dependency-unavailable` (fail closed). `null` actor → `401`; inactive account → `403`.
 2. **Input validation** — body must be a JSON object with exactly `url`, `note`, `idempotencyKey`, `clientHints`. Unknown fields are rejected with `400 unexpected-field`, so a client cannot set `requesterId`, `role`, `status`, `rights`, `matches`, `fingerprint`, `published`, etc. URL length, note length, key length, hints schema and payload size are bounded.
-3. **Rate limiting** — `submit:user:<requesterRef>` and, when the transport supplies a hashed IP, `submit:ip:<hash>`. Denied → `429 rate-limited` with `retryAfterSeconds`; limiter unavailable → `503`.
+3. **HTTP request throttling** — `submit:user:<requesterRef>` and, when the transport supplies a hashed IP, `submit:ip:<hash>`. Denied → `429 rate-limited` with `retryAfterSeconds`; limiter unavailable → `503`.
 4. **Source recognition** — only through `dependencies.sources.recognize(url)` (an explicit registry). `null` → `400 unsupported-url`; registry failure → `503`. No adapter that performs network I/O is shipped.
 5. **Fingerprint** — server-side SHA-256 over canonical URL, provider, external id, note and validated hints. The client never supplies or overrides it.
 6. **Idempotency** — same `(requesterRef, idempotencyKey)` and same fingerprint → `200 replay` with the original request id; same key with different content → `409 idempotency-key-reused` and the original is untouched; an already-open request for the same source → `200 active-request`.
 7. **Advisory matching** — only adapter metadata (never client hints) is compared with a read-only catalog. Matches are advisory; nothing merges.
-8. **Persistence contract** — a single `store.create(...)` call; storage errors → `503 storage-unavailable`. The real store must execute idempotency/source uniqueness and the insert in one database transaction (see SQL candidate). The in-memory double used by tests cannot prove that.
+8. **Persistence contract** — `store.submitAtomically(...)` must check key and fingerprint, active-source uniqueness, and consume the creation quota only for a new record, in one transaction. It returns new/replay/active-request/conflict/quota-exceeded. The separate HTTP limiter applies to all attempts, including replays, so an abuse limit may still return 429. The in-memory double cannot prove database atomicity.
 9. **Response projection** — `{requestId, status:'submitted', deduplicated, matches, rights:'unverified', algorithmVersion, provisional:true}`. No tokens, user ids, requester refs, fingerprints, hints, adapter metadata, IP hashes or other users' data are returned.
 
 Dependencies are explicit interfaces: `IdentityVerifier`, `SourceRegistry`, `CatalogReader`, `RateLimiter`, `RequestStore`. The handler contains no test doubles, no Supabase client, no `fetch`, and no chapter or cover import.
@@ -74,3 +74,7 @@ Until those steps are done and the staging tests in `docs/proposals/novel-reques
 - The in-memory store does not prove atomicity, idempotency or uniqueness of a real database; only the SQL candidate executed in a disposable staging database can.
 - The fixture identity map is not authentication; the fixture limiter is not rate limiting; the fixture catalog is not a catalog.
 - No RLS policy, grant, migration, route, production system, domain, Discord, XP or site page was changed in this step.
+
+## Security boundaries added in this revision
+
+The registry output is checked against independently supplied trusted URL adapters, including source identity and canonical URL. Rules and registry implementations remain test fixtures; no external source is enabled. A normalized requester reference currently uses SHA-256 of a user ID: it is pseudonymous, potentially correlatable and not anonymous. Before deployment, use a reviewed server-managed keyed derivation (e.g. HMAC) with key rotation and retention policy; no key is included here. `note` is persisted but is excluded from response projections. A real transactional implementation must check idempotency before charging the creation quota and enforce both atomically. Request throttling is separate and may limit replay traffic.

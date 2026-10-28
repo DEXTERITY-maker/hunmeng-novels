@@ -87,6 +87,7 @@ export type StoredRequest = {
   readonly requesterRef: string;
   readonly source: SourceIdentity;
   readonly fingerprint: string;
+  readonly note: string;
   readonly hints: ClientHints;
   readonly adapterMetadata: AdapterMetadata;
   readonly matches: readonly Match[];
@@ -104,18 +105,21 @@ export type NewRequest = Omit<StoredRequest, 'id' | 'createdAt'> & {
  * idempotency/source uniqueness checks in ONE database transaction; the in-memory
  * double used by tests cannot prove that.
  */
+export type StoreResult =
+  | { readonly kind: 'new' | 'replay' | 'active-request'; readonly record: StoredRequest }
+  | { readonly kind: 'conflict'; readonly existingRequestId: string }
+  | { readonly kind: 'quota-exceeded'; readonly retryAfterSeconds?: number };
+/** A single transaction must check idempotency and active source, consume the
+ * creation quota only for a new row, and persist it. HTTP throttling is separate. */
 export type RequestStore = {
-  findByIdempotencyKey(requesterRef: string, idempotencyKey: string): Promise<StoredRequest | null>;
-  findActiveBySource(
-    requesterRef: string,
-    source: Pick<SourceIdentity, 'provider' | 'externalId'>,
-  ): Promise<StoredRequest | null>;
-  create(record: NewRequest): Promise<StoredRequest>;
+  submitAtomically(record: NewRequest): Promise<StoreResult>;
 };
 
 export type HandlerDependencies = {
   readonly identity: IdentityVerifier | null;
   readonly sources: SourceRegistry | null;
+  /** Independently configured, trusted URL rules, never derived from registry output. */
+  readonly allowedAdapters: readonly SourceAdapter[] | null;
   readonly catalog: CatalogReader | null;
   readonly rateLimiter: RateLimiter | null;
   readonly store: RequestStore | null;
@@ -231,7 +235,7 @@ function normalizeText(value: string, field: string): string {
 function validateHints(raw: unknown): ClientHints {
   if (!isRecord(raw)) throw fail(400, 'invalid-body', 'clientHints must be an object', { field: 'clientHints' });
   for (const key of Object.keys(raw)) {
-    if (!HINT_FIELDS.has(key)) throw fail(400, 'unexpected-field', `clientHints.${key} is not accepted`, { field: `clientHints.${key}` });
+    if (!HINT_FIELDS.has(key)) throw fail(400, 'unexpected-field', 'Unknown clientHints field');
   }
   const hints: {
     originalTitle?: string;
@@ -275,7 +279,7 @@ function validateBody(raw: unknown): ValidatedBody {
   if (!isRecord(raw)) throw fail(400, 'invalid-body', 'request body must be a JSON object');
   for (const key of Object.keys(raw)) {
     if (!BODY_FIELDS.has(key))
-      throw fail(400, 'unexpected-field', `${key} cannot be set by the client; the server owns it`, { field: key });
+      throw fail(400, 'unexpected-field', 'Unknown request field');
   }
   if (typeof raw.url !== 'string' || raw.url.length > MAX_URL_LENGTH)
     throw fail(400, 'invalid-body', 'url must be a string of at most 2048 characters', { field: 'url' });
@@ -316,7 +320,7 @@ function responseFor(record: StoredRequest, deduplicated: SubmitResponse['dedupl
 export async function handleNovelRequest(input: SubmitInput, dependencies: HandlerDependencies): Promise<HandlerResult> {
   const algorithmVersion = dependencies.algorithmVersion ?? DEFAULT_ALGORITHM_VERSION;
 
-  if (!dependencies.identity || !dependencies.sources || !dependencies.catalog || !dependencies.rateLimiter || !dependencies.store)
+  if (!dependencies.identity || !dependencies.sources || !dependencies.allowedAdapters || !dependencies.catalog || !dependencies.rateLimiter || !dependencies.store)
     return fail(503, 'dependency-unavailable', 'Request intake is not configured.');
 
   let body: ValidatedBody;
@@ -355,17 +359,21 @@ export async function handleNovelRequest(input: SubmitInput, dependencies: Handl
     return fail(503, 'dependency-unavailable', 'Rate limiting is unavailable.');
   }
 
-  // 3. Source recognition through an explicitly provided adapter registry.
+  // 3. Both input and canonical output must match independently configured rules.
   let recognition: AdapterRecognition | null;
   try {
+    const expected = identifySource(body.url, dependencies.allowedAdapters);
+    if (!expected) return fail(400, 'unsupported-url', 'This URL is not supported.', { field: 'url' });
     recognition = await dependencies.sources.recognize(body.url);
+    if (!recognition) return fail(400, 'unsupported-url', 'This URL is not supported.', { field: 'url' });
+    const canonical = identifySource(recognition.source.url, dependencies.allowedAdapters);
+    if (!canonical || canonical.provider !== expected.provider || canonical.externalId !== expected.externalId ||
+        recognition.source.provider !== expected.provider || recognition.source.externalId !== expected.externalId ||
+        canonical.url !== recognition.source.url || recognition.provenance.provider !== expected.provider)
+      return fail(400, 'unsupported-url', 'This URL is not supported.', { field: 'url' });
   } catch {
     return fail(503, 'dependency-unavailable', 'Source recognition is unavailable.');
   }
-  if (!recognition) return fail(400, 'unsupported-url', 'This URL is not supported.', { field: 'url' });
-  // Defense in depth: the adapter result must still be a valid, allow-listed shape.
-  if (identifySource(recognition.source.url, buildAdapters(recognition)) === null)
-    return fail(400, 'unsupported-url', 'This URL is not supported.', { field: 'url' });
 
   // 4. Server-side fingerprint: canonical URL + validated hints + note.
   const fingerprint = await sha256(
@@ -377,26 +385,6 @@ export async function handleNovelRequest(input: SubmitInput, dependencies: Handl
       hints: body.hints,
     }),
   );
-
-  // 5. Idempotency: same key + same content replays; same key + different content conflicts.
-  let stored: StoredRequest | null;
-  try {
-    stored = await dependencies.store.findByIdempotencyKey(requesterRef, body.idempotencyKey);
-    if (stored) {
-      if (stored.fingerprint !== fingerprint)
-        return fail(409, 'idempotency-key-reused', 'This idempotency key was already used with different content.', {
-          existingRequestId: stored.id,
-        });
-      return responseFor(stored, 'replay', algorithmVersion);
-    }
-    const active = await dependencies.store.findActiveBySource(requesterRef, {
-      provider: recognition.source.provider,
-      externalId: recognition.source.externalId,
-    });
-    if (active) return responseFor(active, 'active-request', algorithmVersion);
-  } catch {
-    return fail(503, 'storage-unavailable', 'Request storage is unavailable.');
-  }
 
   // 6. Advisory matching uses adapter metadata only; client hints are never match input.
   let matches: readonly Match[];
@@ -415,30 +403,17 @@ export async function handleNovelRequest(input: SubmitInput, dependencies: Handl
     return fail(503, 'dependency-unavailable', 'Matching catalog is unavailable.');
   }
 
-  // 7. Persist once through the store contract; the real store must be transactional.
+  // 7. Store enforces replay, conflict, source uniqueness and creation quota atomically.
   try {
-    const created = await dependencies.store.create({
-      requesterRef,
-      idempotencyKey: body.idempotencyKey,
-      source: recognition.source,
-      fingerprint,
-      hints: body.hints,
-      adapterMetadata: recognition.metadata,
-      matches,
-      status: 'submitted',
+    const result = await dependencies.store.submitAtomically({
+      requesterRef, idempotencyKey: body.idempotencyKey, source: recognition.source,
+      fingerprint, note: body.note, hints: body.hints, adapterMetadata: recognition.metadata,
+      matches, status: 'submitted',
     });
-    return responseFor(created, 'new', algorithmVersion);
+    if (result.kind === 'conflict') return fail(409, 'idempotency-key-reused', 'This idempotency key was already used with different content.');
+    if (result.kind === 'quota-exceeded') return fail(429, 'rate-limited', 'Too many submissions. Try again later.', { retryAfterSeconds: result.retryAfterSeconds });
+    return responseFor(result.record, result.kind, algorithmVersion);
   } catch {
     return fail(503, 'storage-unavailable', 'Request storage is unavailable.');
   }
-}
-
-/** Minimal adapter built only from the registry result, used for the defensive re-check. */
-function buildAdapters(recognition: AdapterRecognition): readonly SourceAdapter[] {
-  return [
-    {
-      hosts: [new URL(recognition.source.url).hostname.toLowerCase()],
-      identify: (url: URL) => (url.pathname.length > 0 ? recognition.source : null),
-    },
-  ];
 }
