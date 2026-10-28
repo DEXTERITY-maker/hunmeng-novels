@@ -19,7 +19,8 @@ create index if not exists reader_reviews_published_by_novel
 alter table public.reader_reviews enable row level security;
 revoke all on public.reader_reviews from public,anon,authenticated;
 -- Grant only displayable fields: user IDs and moderation details are never publicly returned.
-grant select(id,user_id,novel_slug,body,status,created_at,updated_at)
+-- Keep review author UUIDs private even from other authenticated readers.
+grant select(id,novel_slug,body,status,created_at,updated_at)
   on public.reader_reviews to authenticated;
 grant select(id,novel_slug,body,status,created_at)
   on public.reader_reviews to anon;
@@ -122,6 +123,26 @@ returns uuid language sql security invoker set search_path=''
 as $$ select private.reader_submit_review(p_novel,p_body) $$;
 revoke execute on function public.reader_submit_review(text,text) from public,anon;
 grant execute on function public.reader_submit_review(text,text) to authenticated;
+
+-- Authenticated readers may inspect only their own review status. A dedicated RPC
+-- avoids granting SELECT(user_id) on approved reviews to every reader.
+create or replace function private.reader_my_review_status(p_novel text)
+returns text language plpgsql security definer set search_path=''
+as $
+declare v_user uuid:=auth.uid(); v_status text;
+begin
+ if v_user is null then raise exception 'Authentication required' using errcode='42501'; end if;
+ select r.status into v_status from public.reader_reviews r
+   where r.user_id=v_user and r.novel_slug=p_novel;
+ return v_status;
+end $;
+revoke execute on function private.reader_my_review_status(text) from public,anon;
+grant execute on function private.reader_my_review_status(text) to authenticated;
+create or replace function public.reader_my_review_status(p_novel text)
+returns text language sql security invoker set search_path=''
+as $ select private.reader_my_review_status(p_novel) $;
+revoke execute on function public.reader_my_review_status(text) from public,anon;
+grant execute on function public.reader_my_review_status(text) to authenticated;
 
 -- Public view reveals only approved review content without account identities.
 create or replace view public.reader_published_reviews
