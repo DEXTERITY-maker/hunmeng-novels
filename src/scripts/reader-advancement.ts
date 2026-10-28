@@ -1,6 +1,6 @@
 import type { SupabaseClient,User } from '@supabase/supabase-js';
 import { repository, onStorageChange } from '../lib/storage';
-import { ranks,titles,achievements,levelFromTotalXp,rankImage,titleStatus,emptyVerifiedStats,type VerifiedStats } from '../lib/reader-progression';
+import { ranks,titles,achievements,levelFromTotalXp,nextRankMilestone,rankImage,titleStatus,emptyVerifiedStats,type VerifiedStats } from '../lib/reader-progression';
 
 let activeUser: string | null=null;
 let requestCount=0;
@@ -60,6 +60,22 @@ function renderStats(s:VerifiedStats) {
   progress.value=maxed?1:level.currentXp;
   stat('reader-xp-numbers',maxed?'MAX LEVEL · 500':`${level.currentXp.toLocaleString()} / ${level.nextXp.toLocaleString()} XP`);
   stat('reader-xp-remaining',maxed?'Maximum rank achieved':`${(level.nextXp-level.currentXp).toLocaleString()} XP to next level`);
+  const milestone=nextRankMilestone(s.total_xp);
+  const preview=document.getElementById('reader-next-rank')!;
+  const highest=document.getElementById('reader-highest-rank')!;
+  preview.hidden=!milestone;
+  highest.hidden=!!milestone;
+  if(milestone){
+    const emblem=document.getElementById('reader-next-rank-image') as HTMLImageElement;
+    emblem.src=rankImage(milestone.rank.id);
+    emblem.alt=`${milestone.rank.en} rank emblem`;
+    stat('reader-next-rank-name',`${milestone.rank.en} · Level ${milestone.level}`);
+    stat('reader-next-rank-remaining',`${milestone.remainingXp.toLocaleString()} verified XP remaining`);
+    const bar=document.getElementById('reader-next-rank-progress') as HTMLProgressElement;
+    bar.max=milestone.rangeXp;
+    bar.value=milestone.progressXp;
+    bar.setAttribute('aria-label',`Verified experience toward ${milestone.rank.en} rank`);
+  }
   stat('reader-stat-chapters',s.chapters.toLocaleString());
   stat('reader-stat-novels',s.completedNovels.toLocaleString());
   stat('reader-stat-days',s.readingDays.toLocaleString());
