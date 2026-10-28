@@ -1,0 +1,34 @@
+name: Materialize premium mastery art from GitHub objects
+on:
+  push:
+    branches:
+      - feat/deploy-legend-premium-emblems-20261028
+    paths:
+      - .github/workflows/materialize-masteries.yml
+permissions:
+  contents: write
+jobs:
+  import-emblems:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Materialize and verify uploaded Git blobs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p public/images/mastery
+          gh api repos/DEXTERITY-maker/hunmeng-novels/git/blobs/94841d620694287464cb45031274b41324a4d2c2 --jq '.content' | base64 -d > public/images/mastery/novice.webp
+          gh api repos/DEXTERITY-maker/hunmeng-novels/git/blobs/e201824b65abaa11c2cb341d59ea4fb2f281f221 --jq '.content' | base64 -d > public/images/mastery/reader.webp
+          gh api repos/DEXTERITY-maker/hunmeng-novels/git/blobs/ad13918cadf898dccdb16b6a684a7a088e562ec5 --jq '.content' | base64 -d > public/images/mastery/experienced.webp
+          gh api repos/DEXTERITY-maker/hunmeng-novels/git/blobs/165e24322796d256afe808a08154d9aa1ee73c40 --jq '.content' | base64 -d > public/images/mastery/connoisseur.webp
+          gh api repos/DEXTERITY-maker/hunmeng-novels/git/blobs/947bcfd52c2f5f73e40eef0f3ef2f19cbbc585d3 --jq '.content' | base64 -d > public/images/mastery/master.webp
+          gh api repos/DEXTERITY-maker/hunmeng-novels/git/blobs/3be8d59774870b6484693a6b20a9334a85a37169 --jq '.content' | base64 -d > public/images/mastery/legend.webp
+          file public/images/mastery/*.webp
+          test "$(find public/images/mastery -maxdepth 1 -name '*.webp' | wc -l)" -eq 6
+      - name: Commit six premium WebP assets to the feature branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/images/mastery/*.webp
+          git commit -m "feat(mastery): add six premium illustrated 640px WebP emblems"
+          git push origin HEAD:feat/deploy-legend-premium-emblems-20261028
