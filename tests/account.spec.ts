@@ -354,15 +354,15 @@ test('authenticated reader sees nine accurate ranks and independent novice title
  const state=await mockAuth(page);
  await loginFixture(page);
  await expect(page.locator('#reader-advancement')).toHaveAttribute('data-status','ready');
- await expect(page.locator('#reader-level')).toHaveText('Level 1');
- await expect(page.locator('#reader-rank')).toHaveText('Iron');
- await expect(page.locator('#reader-equipped-title')).toHaveText('Novice Reader');
+ await expect(page.locator('#reader-level')).toHaveText('Уровень 1');
+ await expect(page.locator('#reader-rank')).toHaveText('Железный');
+ await expect(page.locator('#reader-equipped-title')).toHaveText('Новичок-читатель');
  await expect(page.locator('#reader-xp-numbers')).toHaveText('0 / 500 XP');
  await expect(page.locator('[data-rank-id]')).toHaveCount(9);
  await expect(page.locator('[data-rank-id]').evaluateAll(els=>els.map(el=>el.getAttribute('data-rank-id'))))
   .resolves.toEqual(['iron','bronze','silver','gold','dark-gold','platinum','diamond','legendary','mythical']);
  await expect(page.locator('[data-rank-id=dark-gold] .rank-tile-levels')).toHaveText('Levels 140–174');
- await expect(page.locator('[data-title-id=novice] .award-select')).toHaveText('Equipped');
+ await expect(page.locator('[data-title-id=novice] .award-select')).toHaveText('Используется');
  await expect(page.locator('[data-title-id=reviewer] .award-select')).toBeDisabled();
  expect(readerSafeRequests(state.requests)).toBe(true);
 });
@@ -376,9 +376,9 @@ test('verified title can be equipped, display survives reload, and cards fit mob
  await loginFixture(page);
  await expect(page.locator('#reader-advancement')).toHaveAttribute('data-status','ready');
  await page.locator('[data-equip-title=regular]').click();
- await expect(page.locator('#reader-equipped-title')).toHaveText('Regular Reader');
+ await expect(page.locator('#reader-equipped-title')).toHaveText('Постоянный читатель');
  await page.reload();
- await expect(page.locator('#reader-equipped-title')).toHaveText('Regular Reader');
+ await expect(page.locator('#reader-equipped-title')).toHaveText('Постоянный читатель');
  const scroll=await page.evaluate(()=>document.documentElement.scrollWidth);
  expect(scroll).toBeLessThanOrEqual(321);
  await page.screenshot({path:'test-results/hunmeng-rank-profile-mobile.png',fullPage:true});
@@ -391,8 +391,8 @@ test('Dark Gold promotion at level 140 is announced once and survives refresh', 
  state.rankStats.total_xp=Array.from({length:139},(_,i)=>500+4*i+Math.floor(26*Math.sqrt(i))).reduce((a,b)=>a+b,0);
  state.rankStats.last_rank_notified='gold';
  await loginFixture(page);
- await expect(page.locator('#reader-level')).toHaveText('Level 140');
- await expect(page.locator('#reader-rank')).toHaveText('Dark Gold');
+ await expect(page.locator('#reader-level')).toHaveText('Уровень 140');
+ await expect(page.locator('#reader-rank')).toHaveText('Тёмно-золотой');
  const modal=page.locator('#reader-rank-unlocked');
  await expect(modal).toBeVisible();
  await expect(modal).toContainText('Dark Gold');
@@ -401,7 +401,7 @@ test('Dark Gold promotion at level 140 is announced once and survives refresh', 
  await expect.poll(()=>state.requests.filter(p=>p.includes('reader_mark_rank_seen')).length).toBeGreaterThan(0);
  await expect.poll(()=>state.rankStats.last_rank_notified, {message: JSON.stringify(state.requests)}).toBe('dark-gold');
  await page.reload();
- await expect(page.locator('#reader-level')).toHaveText('Level 140');
+ await expect(page.locator('#reader-level')).toHaveText('Уровень 140');
  await expect(modal).toBeHidden();
 });
 
@@ -600,14 +600,14 @@ test('Reviewer title requires 20 approved reviews, stays separate from rank and 
  await page.reload();
  await expect(page.locator('[data-equip-title=reviewer]')).toBeEnabled();
  await page.locator('[data-equip-title=reviewer]').click();
- await expect(page.locator('#reader-equipped-title')).toHaveText('Reviewer');
- await expect(page.locator('#reader-rank')).toHaveText('Iron');
+ await expect(page.locator('#reader-equipped-title')).toHaveText('Рецензент');
+ await expect(page.locator('#reader-rank')).toHaveText('Железный');
  await page.reload();
- await expect(page.locator('#reader-equipped-title')).toHaveText('Reviewer');
+ await expect(page.locator('#reader-equipped-title')).toHaveText('Рецензент');
  state.rankStats.approvedReviews=19;
  await page.reload();
  await expect(page.locator('[data-equip-title=reviewer]')).toBeDisabled();
- await expect(page.locator('#reader-equipped-title')).toHaveText('Novice Reader');
+ await expect(page.locator('#reader-equipped-title')).toHaveText('Новичок-читатель');
  expect(readerSafeRequests(state.requests)).toBe(true);
 });
 
@@ -670,7 +670,7 @@ test('achievement milestones and filters use verified statistics without awardin
  await expect(page.locator('#reader-advancement')).toHaveAttribute('data-status','ready');
  await expect(page.locator('[data-achievement-id]')).toHaveCount(13);
  await expect(page.locator('#reader-stat-achievements')).toHaveText('6');
- await expect(page.locator('#reader-achievements-summary')).toContainText('6 of 13');
+ await expect(page.locator('#reader-achievements-summary')).toContainText('6 из 13');
  await expect(page.locator('[data-achievement-id="first-world"]')).toHaveAttribute('data-unlocked','true');
  await expect(page.locator('[data-achievement-id="one-hundred-days"]')).toHaveAttribute('data-unlocked','false');
  await page.locator('[data-achievement-filter="unlocked"]').click();
@@ -681,7 +681,7 @@ test('achievement milestones and filters use verified statistics without awardin
  await expect(page.locator('[data-achievement-id]:visible')).toHaveCount(7);
  await page.locator('[data-achievement-filter="all"]').click();
  await expect(page.locator('[data-achievement-id]:visible')).toHaveCount(13);
- await expect(page.locator('#reader-level')).toHaveText('Level 1');
+ await expect(page.locator('#reader-level')).toHaveText('Уровень 1');
  expect(state.rankStats.total_xp).toBe(0);
  expect(readerSafeRequests(state.requests)).toBe(true);
 });
@@ -693,7 +693,7 @@ test('unlocked achievement filter explains an empty verified history',async({pag
  await page.locator('[data-achievement-filter="unlocked"]').click();
  await expect(page.locator('[data-achievement-id]:visible')).toHaveCount(0);
  await expect(page.locator('#reader-achievements-empty')).toBeVisible();
- await expect(page.locator('#reader-achievements-empty')).toContainText('No achievements match');
+ await expect(page.locator('#reader-achievements-empty')).toContainText('В этой категории достижений');
 });
 
 
@@ -710,8 +710,8 @@ test('next rank preview uses verified XP and advances at the exact rank boundary
  state.rankStats.last_rank_notified='iron';
  await loginFixture(page);
  await expect(page.locator('#reader-next-rank')).toBeVisible();
- await expect(page.locator('#reader-next-rank-name')).toHaveText('Bronze · Level 25');
- await expect(page.locator('#reader-next-rank-remaining')).toHaveText('1 verified XP remaining');
+ await expect(page.locator('#reader-next-rank-name')).toHaveText('Бронзовый · уровень 25');
+ await expect(page.locator('#reader-next-rank-remaining')).toHaveText('Осталось 1 подтверждённого XP');
  await expect(page.locator('#reader-next-rank-image')).toHaveAttribute('src','/images/ranks/bronze.svg');
  const amount=await page.locator('#reader-next-rank-progress').evaluate(
   (bar:HTMLProgressElement)=>({value:bar.value,max:bar.max}));
@@ -719,8 +719,8 @@ test('next rank preview uses verified XP and advances at the exact rank boundary
  state.rankStats.total_xp=toLevel(25);
  state.rankStats.last_rank_notified='bronze';
  await page.reload();
- await expect(page.locator('#reader-rank')).toHaveText('Bronze');
- await expect(page.locator('#reader-next-rank-name')).toHaveText('Silver · Level 60');
+ await expect(page.locator('#reader-rank')).toHaveText('Бронзовый');
+ await expect(page.locator('#reader-next-rank-name')).toHaveText('Серебряный · уровень 60');
  expect(readerSafeRequests(state.requests)).toBe(true);
 });
 
@@ -736,16 +736,16 @@ test('Dark Gold appears directly after Gold; Mythical has no next rank',async({p
  state.rankStats.total_xp=toLevel(110);
  state.rankStats.last_rank_notified='gold';
  await loginFixture(page);
- await expect(page.locator('#reader-rank')).toHaveText('Gold');
- await expect(page.locator('#reader-next-rank-name')).toHaveText('Dark Gold · Level 140');
+ await expect(page.locator('#reader-rank')).toHaveText('Золотой');
+ await expect(page.locator('#reader-next-rank-name')).toHaveText('Тёмно-золотой · уровень 140');
  await expect(page.locator('#reader-next-rank-image')).toHaveAttribute('src','/images/ranks/dark-gold.svg');
  state.rankStats.total_xp=toLevel(420);
  state.rankStats.last_rank_notified='mythical';
  await page.reload();
- await expect(page.locator('#reader-rank')).toHaveText('Mythical');
+ await expect(page.locator('#reader-rank')).toHaveText('Мифический');
  await expect(page.locator('#reader-next-rank')).toBeHidden();
  await expect(page.locator('#reader-highest-rank')).toBeVisible();
- await expect(page.locator('#reader-highest-rank')).toContainText('Keep reading toward level 500');
+ await expect(page.locator('#reader-highest-rank')).toContainText('Продолжайте путь до 500-го уровня');
 });
 
 
@@ -756,12 +756,12 @@ test('closest verified achievement updates from server progress without granting
  state.rankStats.readingDays=8;
  await loginFixture(page);
  await expect(page.locator('#reader-next-achievement')).toBeVisible();
- await expect(page.locator('#reader-next-achievement-name')).toHaveText('Page Voyager');
- await expect(page.locator('#reader-next-achievement-remaining')).toHaveText('49 chapters to unlock');
+ await expect(page.locator('#reader-next-achievement-name')).toHaveText('Путешественник по страницам');
+ await expect(page.locator('#reader-next-achievement-remaining')).toHaveText('49 глав до открытия');
  await expect(page.locator('#reader-next-achievement-progress')).toHaveJSProperty('value',51);
  await expect(page.locator('#reader-next-achievement-progress')).toHaveJSProperty('max',100);
  expect(state.rankStats.total_xp).toBe(0);
- await expect(page.locator('#reader-level')).toHaveText('Level 1');
+ await expect(page.locator('#reader-level')).toHaveText('Уровень 1');
  await expect(page.locator('#reader-all-achievements')).toBeHidden();
  await page.locator('[data-achievement-filter="unlocked"]').click();
  await expect(page.locator('#reader-next-achievement')).toBeVisible();
@@ -771,13 +771,13 @@ test('closest verified achievement updates from server progress without granting
 test('new readers see a first goal and fully completed readers see a completion state',async({page})=>{
  const state=await mockAuth(page);
  await loginFixture(page);
- await expect(page.locator('#reader-next-achievement-name')).toHaveText('First Chapter');
- await expect(page.locator('#reader-next-achievement-remaining')).toHaveText('1 chapter to unlock');
+ await expect(page.locator('#reader-next-achievement-name')).toHaveText('Первая глава');
+ await expect(page.locator('#reader-next-achievement-remaining')).toHaveText('1 глава до открытия');
  state.rankStats.chapters=500;
  state.rankStats.completedNovels=25;
  state.rankStats.readingDays=100;
  await page.reload();
  await expect(page.locator('#reader-next-achievement')).toBeHidden();
  await expect(page.locator('#reader-all-achievements')).toBeVisible();
- await expect(page.locator('#reader-achievements-summary')).toContainText('13 of 13');
+ await expect(page.locator('#reader-achievements-summary')).toContainText('13 из 13');
 });
