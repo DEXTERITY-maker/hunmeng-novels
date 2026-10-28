@@ -13,6 +13,16 @@ import { ranks,titles,achievements,rankImage } from '../lib/reader-progression';
       <p class="advancement-title-line">Equipped title: <strong id="reader-equipped-title">Novice Reader</strong></p>
       <div class="advancement-xp-label"><span id="reader-xp-numbers">0 / 500 XP</span><span id="reader-xp-remaining">500 XP to next level</span></div>
       <progress id="reader-xp-progress" aria-label="Experience toward next level" max="500" value="0"></progress>
+      <div id="reader-next-rank" class="reader-next-rank" hidden>
+        <img id="reader-next-rank-image" src={rankImage('bronze')} width="54" height="60" alt="Next rank emblem" loading="lazy" />
+        <div class="reader-next-rank-copy">
+          <span class="fine">Next rank</span>
+          <strong id="reader-next-rank-name">Bronze · Level 25</strong>
+          <small id="reader-next-rank-remaining">Loading verified XP…</small>
+          <progress id="reader-next-rank-progress" max="1" value="0" aria-label="Verified experience toward next reader rank"></progress>
+        </div>
+      </div>
+      <p id="reader-highest-rank" class="fine reader-highest-rank" hidden>Highest rank unlocked: Mythical. Keep reading toward level 500.</p>
       <p class="fine advancement-trust">Ranks and XP come from verified, account-linked chapter rewards. Browsing and scrolling alone do not earn XP.</p>
     </div>
   </section>

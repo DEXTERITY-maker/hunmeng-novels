@@ -153,3 +153,15 @@
 #reader-achievements-summary{margin:0 0 12px;color:var(--muted);font-variant-numeric:tabular-nums}
 #reader-achievements-empty{padding:14px;border:1px dashed var(--line);border-radius:12px}
 @media(max-width:440px){.achievement-filter{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}.achievement-filter button{padding:9px 7px;min-width:0}}
+
+/* Verified path to the next reader rank; decorative preview, not an XP source. */
+.reader-next-rank{display:grid;grid-template-columns:54px minmax(0,1fr);align-items:center;gap:12px;
+  margin-top:16px;padding:12px;border:1px solid color-mix(in srgb,var(--accent) 24%,var(--line));
+  background:color-mix(in srgb,var(--accent) 5%,var(--surface));border-radius:14px}
+.reader-next-rank img{width:54px;height:60px;object-fit:contain;filter:drop-shadow(0 4px 6px rgba(5,23,31,.16))}
+.reader-next-rank-copy{min-width:0;display:grid;gap:3px}
+.reader-next-rank-copy>span,.reader-next-rank-copy>small{font-size:.74rem;color:var(--muted)}
+.reader-next-rank-copy strong{font-size:.95rem;color:var(--ink);overflow-wrap:anywhere}
+.reader-next-rank progress{margin-top:5px;height:7px}
+.reader-highest-rank{margin:12px 0 0;color:var(--accent)}
+@media(max-width:440px){.reader-next-rank{gap:7px;padding:9px;grid-template-columns:42px minmax(0,1fr)}.reader-next-rank img{width:42px;height:50px}}
