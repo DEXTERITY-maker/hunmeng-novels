@@ -23,6 +23,7 @@ Related documents:
 
 - `docs/novel-request-schema-proposal.md` — revised proposal v2 for request storage, status transitions, rights authority, access model and server contract (design only, not applied).
 - `docs/proposals/novel-requests-schema-draft.sql` — SQL candidate for staging, explicitly marked as a draft (not a generated migration, never executed; the Supabase CLI is not available in this environment).
+- `docs/proposals/novel-requests-test-plan.md` — prepared executable test plan for a disposable staging database (not run; creating the test database needs separate owner approval).
 
 ## Integration before launch
 

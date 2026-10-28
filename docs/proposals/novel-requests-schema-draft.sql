@@ -1,32 +1,55 @@
 -- ============================================================================
 -- DRAFT — NOT A MIGRATION, NOT APPLIED, NOT EXECUTED.
 --
--- This file is a reviewable SQL candidate for the proposal in
--- docs/novel-request-schema-proposal.md (PR #62).
+-- Reviewable SQL candidate for docs/novel-request-schema-proposal.md (PR #62).
 --
 -- Why it is not a generated Supabase migration:
 --   the Supabase CLI is not installed in this environment and this repository
 --   has no `supabase/` project directory. The instruction is explicit: do not
 --   install the CLI, do not invent a migration name, and do not run SQL against
---   any database. Therefore this SQL lives in docs as an explicitly marked
---   draft. After owner review and a green light, it must be moved to
---   `supabase/migrations/<cli-generated-name>.sql` using the CLI and applied
---   only in a separate staging project.
+--   any database. This file therefore stays in docs as an explicitly marked
+--   draft. After owner review it must be moved to
+--   `supabase/migrations/<cli-generated-name>.sql` and applied only in a
+--   separate, disposable staging project.
 --
--- Status: static draft. NOT verified against a running Postgres.
--- Static review does not prove migration correctness, RLS behaviour or trigger
--- semantics. A staging transaction test and RLS role tests are still required.
+-- Status: static draft. NOT verified against a running Postgres. Static review
+-- does not prove migration correctness, trigger semantics or RLS behaviour.
 --
 -- Scope:
---   * additive structures, indexes, checks, RLS enablement and projections only;
---   * no changes to existing tables, existing RLS policies, grants of the
---     editorial tables, reader_* tables or XP;
---   * no adapters, no network calls, no server functions implemented here:
---     write paths are documented as TODO stubs only (see the bottom section);
---   * values in comments (limits, retention) are preliminary, not approved.
+--   * additive structures on NEW request_* tables only;
+--   * NO trigger, policy, grant or column change on existing tables
+--     (novel_sources, novel_translation_jobs, novel_staff, reader_* are read
+--     only, and only through links/joins);
+--   * no adapters, no network calls, no server functions implemented here;
+--     write paths are documented as TODO signatures at the bottom;
+--   * access stays closed by default: no grants to anon/authenticated except
+--     two explicitly reviewed read projections;
+--   * numbers, retention and role names in comments are preliminary and
+--     pending owner approval.
 -- ============================================================================
 
 create schema if not exists private;
+
+-- ----------------------------------------------------------------------------
+-- 0. Security model for this candidate (pending verification).
+--
+--   anon           : no access at all to request tables/views.
+--   authenticated  : SELECT on public.request_owner_view (own rows only) and
+--                    public.request_staff_view (novel_staff only). Both views
+--                    are owned by the migration owner role and their WHERE
+--                    clauses are the security boundary. No DML.
+--   service_role   : server jobs. SELECT on request tables, EXECUTE on the
+--                    diagnostic function only. NO INSERT/UPDATE/DELETE on
+--                    audit tables. Real writes are expected to happen inside
+--                    SECURITY DEFINER functions owned by the table owner.
+--   table owner    : owns tables/functions; can bypass triggers with DDL. This
+--                    is a documented exception, not a guarantee (see docs §6).
+--   superuser      : bypasses everything; out of scope of the guarantees.
+--
+--   A dedicated `request_owner` role creation is NOT included here: creating
+--   roles requires owner/superuser approval. Until that decision is made,
+--   functions would be owned by the migration role and access stays closed.
+-- ----------------------------------------------------------------------------
 
 -- ----------------------------------------------------------------------------
 -- 1. Request-side work identity (temporary staging concept; novel_sources stays
@@ -40,21 +63,21 @@ create table public.request_works (
   normalized_author text not null default '',
   state text not null default 'proposed'
     check (state in ('proposed', 'confirmed', 'converted', 'rejected')),
+  -- Link only; editorial data is never duplicated into request tables.
   novel_source_id uuid references public.novel_sources(id) on delete restrict,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   constraint request_works_converted_needs_source
     check (state <> 'converted' or novel_source_id is not null)
 );
-
--- One work can be converted into at most one editorial source.
+-- A novel_sources row may be linked by at most one request-side work, so a
+-- second request for the same source must reuse the existing work (no duplicate
+-- novel_sources, no duplicate work).
 create unique index request_works_one_source
   on public.request_works (novel_source_id)
   where novel_source_id is not null;
 create index request_works_state on public.request_works (state);
 
--- Alternative, translated and original titles. Created by a moderator decision,
--- never by automatic merging.
 create table public.request_work_titles (
   id uuid primary key default gen_random_uuid(),
   work_id uuid not null references public.request_works(id) on delete restrict,
@@ -67,7 +90,6 @@ create table public.request_work_titles (
   unique (work_id, normalized_title)
 );
 
--- Author spelling variants. An author match alone is never an exact identity.
 create table public.request_work_authors (
   id uuid primary key default gen_random_uuid(),
   work_id uuid not null references public.request_works(id) on delete restrict,
@@ -79,7 +101,7 @@ create table public.request_work_authors (
 
 -- ----------------------------------------------------------------------------
 -- 2. External source identity. (provider, external_id) is the uniqueness anchor
---    for "the same source"; raw user input is never stored here as canonical.
+--    for "the same source".
 -- ----------------------------------------------------------------------------
 create table public.request_external_sources (
   id uuid primary key default gen_random_uuid(),
@@ -96,13 +118,12 @@ create table public.request_external_sources (
 create index request_external_sources_work on public.request_external_sources (work_id);
 
 -- ----------------------------------------------------------------------------
--- 3. The request. No client writes: INSERT/UPDATE/DELETE are revoked below and
---    creation happens only through a SECURITY DEFINER server function (TODO).
+-- 3. The request. No client writes: creation only through a future SECURITY
+--    DEFINER function.
 -- ----------------------------------------------------------------------------
 create table public.novel_requests (
   id uuid primary key default gen_random_uuid(),
   requester_id uuid references auth.users(id) on delete set null,
-  -- Immutable pseudonymous reference, so audit survives user deletion.
   requester_ref text not null check (requester_ref ~ '^[0-9a-f]{64}$'),
   submitted_url text not null
     check (submitted_url ~ '^https://' and length(submitted_url) <= 2048),
@@ -112,17 +133,14 @@ create table public.novel_requests (
   status text not null default 'submitted'
     check (status in ('submitted', 'review', 'needs_rights', 'draft', 'converted', 'rejected')),
   idempotency_key text not null check (length(idempotency_key) between 8 and 128),
-  -- Server-computed sha256 of canonical URL + canonical client hints + note.
   request_fingerprint text not null check (request_fingerprint ~ '^[0-9a-f]{64}$'),
   client_note text not null default '' check (length(client_note) <= 2000),
   version integer not null default 1 check (version >= 1),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
-  -- Idempotency survives requester anonymisation through requester_ref.
   unique (requester_ref, idempotency_key)
 );
 
--- One open request per requester and external source.
 create unique index novel_requests_active_source
   on public.novel_requests (requester_ref, external_source_id)
   where status in ('submitted', 'review', 'needs_rights', 'draft');
@@ -133,8 +151,6 @@ create index novel_requests_requester
   on public.novel_requests (requester_ref, created_at desc);
 create index novel_requests_work on public.novel_requests (work_id);
 
--- User-provided hints. Untrusted, never used as match input or identity;
--- shown to moderators as "user hint" only.
 create table public.request_client_hints (
   request_id uuid primary key references public.novel_requests(id) on delete restrict,
   source text not null default 'requester' check (source = 'requester'),
@@ -142,8 +158,6 @@ create table public.request_client_hints (
   created_at timestamptz not null default now()
 );
 
--- Adapter-provided metadata with provenance. In this phase no adapter is
--- enabled, so this table stays empty; matching must read only from here.
 create table public.request_adapter_metadata (
   id uuid primary key default gen_random_uuid(),
   request_id uuid not null references public.novel_requests(id) on delete restrict,
@@ -195,8 +209,15 @@ create index request_moderation_decisions_request
   on public.request_moderation_decisions (request_id, decided_at);
 
 -- ----------------------------------------------------------------------------
--- 6. Draft with unverified rights. Rights are authoritative here only before
---    conversion; afterwards novel_sources is authoritative (mirror trigger).
+-- 6. Draft. It holds NO authoritative rights:
+--      * before conversion there is no novel_sources row at all, therefore
+--        rights are unverified by definition; the request layer only records
+--        that documentation exists (rights_documentation_state);
+--      * after conversion the only authoritative rights record is
+--        public.novel_sources, read at query time (views) and re-checked by the
+--        existing novel_guard_job at approval/publish time.
+--    `request_blocked` is a request-layer hold only. It is not evidence of
+--    permission and does not make anything publishable.
 -- ----------------------------------------------------------------------------
 create table public.request_drafts (
   id uuid primary key default gen_random_uuid(),
@@ -206,19 +227,19 @@ create table public.request_drafts (
     check (source_url ~ '^https://' and length(source_url) <= 2048),
   permitted_metadata jsonb not null default '{}'::jsonb
     check (jsonb_typeof(permitted_metadata) = 'object'),
-  rights_status text not null default 'pending'
-    check (rights_status in ('pending', 'verified', 'expired', 'revoked')),
+  rights_documentation_state text not null default 'none'
+    check (rights_documentation_state in ('none', 'documented', 'expired', 'revoked')),
   rights_evidence_id uuid,
   converted_source_id uuid references public.novel_sources(id) on delete restrict,
-  publication_blocked boolean not null default true,
+  request_blocked boolean not null default true,
   created_by uuid references auth.users(id) on delete set null,
   created_by_ref text check (created_by_ref is null or created_by_ref ~ '^[0-9a-f]{64}$'),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
-create unique index request_drafts_one_source
-  on public.request_drafts (converted_source_id)
-  where converted_source_id is not null;
+-- NOTE: deliberately NOT unique on converted_source_id. Several requests may be
+-- converted to the same existing novel_sources/work; duplicates of novel_sources
+-- must never be created to work around uniqueness.
 
 -- ----------------------------------------------------------------------------
 -- 7. Private rights evidence: no grants to anon/authenticated at all.
@@ -241,7 +262,7 @@ alter table public.request_drafts
   on delete restrict;
 
 -- ----------------------------------------------------------------------------
--- 8. Optional server-side rate-limit counters (preliminary; numbers pending).
+-- 8. Optional rate-limit counters (preliminary mechanism; numbers pending).
 -- ----------------------------------------------------------------------------
 create table public.request_rate_counters (
   bucket_key text not null check (length(bucket_key) between 1 and 200),
@@ -251,10 +272,7 @@ create table public.request_rate_counters (
 );
 
 -- ----------------------------------------------------------------------------
--- 9. RLS and grants. Tables are not directly readable by clients: projections
---    below are the only client-facing read paths. Views run with the owner's
---    rights, so their WHERE clauses are the security boundary and must be
---    reviewed and tested separately.
+-- 9. RLS, grants and projections. Closed by default.
 -- ----------------------------------------------------------------------------
 alter table public.request_works enable row level security;
 alter table public.request_work_titles enable row level security;
@@ -274,19 +292,24 @@ revoke all on public.request_works, public.request_work_titles,
   public.request_adapter_metadata, public.request_match_evidence,
   public.request_moderation_decisions, public.request_drafts,
   public.request_rate_counters
-  from anon, authenticated, public;
-revoke all on private.request_rights_evidence from anon, authenticated, public;
+  from anon, authenticated, public, service_role;
+revoke all on private.request_rights_evidence from anon, authenticated, public, service_role;
 
--- Background jobs (publication and future retention) keep service_role access.
-grant all on public.request_works, public.request_work_titles,
+-- service_role: read-only for jobs + diagnostic function; no DML on audit.
+grant select on public.request_works, public.request_work_titles,
   public.request_work_authors, public.request_external_sources,
   public.novel_requests, public.request_client_hints,
   public.request_adapter_metadata, public.request_match_evidence,
   public.request_moderation_decisions, public.request_drafts,
   public.request_rate_counters to service_role;
-grant all on private.request_rights_evidence to service_role;
+grant select on private.request_rights_evidence to service_role;
+grant usage on schema private to service_role;
 
--- Owner projection: only the requester's own request, no private columns.
+-- Owner projection: only the requester's own request. The view is owned by the
+-- migration owner role and runs with the owner's rights; the WHERE clause is the
+-- security boundary and must be covered by role tests in staging. Effective
+-- rights for a converted draft are read from novel_sources at query time, not
+-- from a cached request-layer flag.
 create view public.request_owner_view
 with (security_invoker = false) as
 select
@@ -295,9 +318,19 @@ select
   r.created_at,
   r.updated_at,
   e.host as source_host,
-  d.rights_status,
-  d.publication_blocked,
+  d.rights_documentation_state,
+  d.request_blocked,
   (d.converted_source_id is not null) as converted,
+  s.rights_status as source_rights_status,
+  s.rights_valid_until as source_rights_valid_until,
+  -- Advisory only. Publication authority remains novel_guard_job.
+  (s.rights_status = 'verified'
+   and s.permission_translate
+   and s.permission_publish
+   and s.verified_by is not null
+   and s.verified_at is not null
+   and length(btrim(coalesce(s.rights_evidence, ''))) >= 20
+   and (s.rights_valid_until is null or s.rights_valid_until >= current_date)) as advisory_source_rights_look_complete,
   coalesce((
     select jsonb_agg(jsonb_build_object('kind', me.kind, 'reasons', me.reasons))
     from public.request_match_evidence me
@@ -306,12 +339,13 @@ select
 from public.novel_requests r
 join public.request_external_sources e on e.id = r.external_source_id
 left join public.request_drafts d on d.request_id = r.id
+left join public.novel_sources s on s.id = d.converted_source_id
 where r.requester_id = auth.uid();
 revoke all on public.request_owner_view from anon, public;
 grant select on public.request_owner_view to authenticated;
 
--- Staff projection: only for a row in novel_staff. Role comes from the table,
--- never from JWT metadata.
+-- Staff projection: only for a novel_staff row. Role comes from the table,
+-- never from JWT metadata. Rights are joined from the authoritative record.
 create view public.request_staff_view
 with (security_invoker = false) as
 select
@@ -327,46 +361,98 @@ select
   e.host,
   r.work_id,
   d.id as draft_id,
-  d.rights_status,
-  d.publication_blocked,
-  d.converted_source_id
+  d.rights_documentation_state,
+  d.request_blocked,
+  d.converted_source_id,
+  s.rights_status as source_rights_status,
+  s.rights_valid_until as source_rights_valid_until,
+  (s.id is not null) as has_editorial_source
 from public.novel_requests r
 join public.request_external_sources e on e.id = r.external_source_id
 left join public.request_drafts d on d.request_id = r.id
+left join public.novel_sources s on s.id = d.converted_source_id
 where exists (
-  select 1 from public.novel_staff s
-  where s.user_id = auth.uid() and s.role in ('editor', 'admin')
+  select 1 from public.novel_staff st
+  where st.user_id = auth.uid() and st.role in ('editor', 'admin')
 );
 revoke all on public.request_staff_view from anon, public;
 grant select on public.request_staff_view to authenticated;
 
 -- ----------------------------------------------------------------------------
--- 10. Rights mirror and draft guard.
---   * Before conversion: request_drafts.rights_status is authoritative and is
---     written only by the (not yet implemented) admin rights function.
---   * After conversion: novel_sources.rights_status is authoritative; this
---     trigger projects it into the draft and prevents independent edits.
+-- 10. Integrity guards on NEW tables only (no trigger on existing tables).
+--     Deferred constraint triggers check cross-table links at COMMIT, so the
+--     conversion transaction can update several rows in any order.
 -- ----------------------------------------------------------------------------
-create or replace function private.request_draft_rights_mirror()
+create or replace function private.request_links_check()
 returns trigger
 language plpgsql
 security definer
 set search_path = ''
 as $$
+declare
+  req public.novel_requests%rowtype;
+  src_work uuid;
+  work_source uuid;
+  draft_source uuid;
 begin
-  update public.request_drafts
-     set rights_status = new.rights_status,
-         publication_blocked = (new.rights_status <> 'verified'),
-         updated_at = now()
-   where converted_source_id = new.id;
+  select * into req from public.novel_requests where id = new.request_id;
+
+  select work_id into src_work
+    from public.request_external_sources where id = req.external_source_id;
+  if req.work_id is not null and src_work is distinct from req.work_id then
+    raise exception 'External source is not linked to the request work';
+  end if;
+
+  if req.status = 'converted' then
+    if req.work_id is null then
+      raise exception 'Converted request must have a work';
+    end if;
+    select novel_source_id into work_source from public.request_works where id = req.work_id;
+    select converted_source_id into draft_source from public.request_drafts where request_id = req.id;
+    if draft_source is null or work_source is distinct from draft_source then
+      raise exception 'Conversion links request, work and novel_sources inconsistently';
+    end if;
+  end if;
   return new;
 end;
 $$;
 
-create trigger request_drafts_rights_mirror
-after update of rights_status on public.novel_sources
-for each row execute function private.request_draft_rights_mirror();
+create constraint trigger request_links_check_request
+after insert or update of status, work_id, external_source_id on public.novel_requests
+deferrable initially deferred
+for each row execute function private.request_links_check();
 
+create or replace function private.request_draft_links_check()
+returns trigger
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  req public.novel_requests%rowtype;
+  work_source uuid;
+begin
+  select * into req from public.novel_requests where id = new.request_id;
+  if new.work_id is not null and req.work_id is distinct from new.work_id then
+    raise exception 'Draft work differs from request work';
+  end if;
+  if new.converted_source_id is not null then
+    select novel_source_id into work_source from public.request_works where id = req.work_id;
+    if work_source is distinct from new.converted_source_id then
+      raise exception 'Draft source differs from the work source';
+    end if;
+  end if;
+  return new;
+end;
+$$;
+
+create constraint trigger request_draft_links_check
+after insert or update of work_id, converted_source_id on public.request_drafts
+deferrable initially deferred
+for each row execute function private.request_draft_links_check();
+
+-- Converted draft link is immutable; request-layer documentation state is not
+-- an authoritative rights status and cannot be used to bypass editorial checks.
 create or replace function private.request_draft_guard()
 returns trigger
 language plpgsql
@@ -374,20 +460,10 @@ security definer
 set search_path = ''
 as $$
 begin
-  -- The conversion function sets converted_source_id once; nothing may move it.
   if tg_op = 'UPDATE' and old.converted_source_id is not null
      and new.converted_source_id is distinct from old.converted_source_id then
     raise exception 'Converted draft link is immutable';
   end if;
-
-  -- After conversion the rights mirror is written only by the mirror trigger
-  -- (nested trigger depth > 1). Direct changes are rejected.
-  if tg_op = 'UPDATE' and old.converted_source_id is not null
-     and new.rights_status is distinct from old.rights_status
-     and pg_trigger_depth() = 1 then
-    raise exception 'Rights are authoritative in novel_sources after conversion';
-  end if;
-
   return new;
 end;
 $$;
@@ -397,7 +473,46 @@ before update on public.request_drafts
 for each row execute function private.request_draft_guard();
 
 -- ----------------------------------------------------------------------------
--- 11. Drift report. Must return zero rows in a healthy system.
+-- 11. Append-only audit: observable guarantees and documented exceptions.
+--     These triggers stop UPDATE/DELETE through normal SQL for every role that
+--     does not own the tables. The table owner (and any role with DDL rights or
+--     superuser) can disable/alter triggers; that is a documented exception, not
+--     a claim of cryptographic immutability. Use an external audit trail if the
+--     threat model includes privileged DB roles.
+-- ----------------------------------------------------------------------------
+create or replace function private.request_audit_immutable()
+returns trigger
+language plpgsql
+security definer
+set search_path = ''
+as $$
+begin
+  raise exception 'Append-only audit row cannot be % (except by documented privileged maintenance)', tg_op;
+end;
+$$;
+
+create trigger request_decisions_immutable
+before update or delete on public.request_moderation_decisions
+for each row execute function private.request_audit_immutable();
+create trigger request_match_evidence_immutable
+before update or delete on public.request_match_evidence
+for each row execute function private.request_audit_immutable();
+create trigger request_rights_evidence_immutable
+before update or delete on private.request_rights_evidence
+for each row execute function private.request_audit_immutable();
+create trigger request_client_hints_immutable
+before update or delete on public.request_client_hints
+for each row execute function private.request_audit_immutable();
+create trigger request_adapter_metadata_immutable
+before update or delete on public.request_adapter_metadata
+for each row execute function private.request_audit_immutable();
+
+-- ----------------------------------------------------------------------------
+-- 12. Drift report. Zero rows expected in a healthy system.
+--     Note: request_works(novel_source_id) uniqueness is already enforced by a
+--     unique index, so the report does not pretend to detect it with a group-by
+--     count over a single-row work. It checks link consistency that only
+--     multi-row queries can see.
 -- ----------------------------------------------------------------------------
 create or replace function public.request_consistency_report()
 returns table (issue text, request_id uuid, work_id uuid, source_id uuid)
@@ -420,71 +535,68 @@ as $$
         where d.request_id = r.id and d.converted_source_id is not null
      )
   union all
-  select 'rights_mirror_drift'::text, r.id, r.work_id, d.converted_source_id
-    from public.request_drafts d
-    join public.novel_sources s on s.id = d.converted_source_id
-    join public.novel_requests r on r.id = d.request_id
-   where d.rights_status <> s.rights_status
+  select 'converted_request_work_not_converted'::text, r.id, r.work_id, null::uuid
+    from public.novel_requests r
+    join public.request_works w on w.id = r.work_id
+   where r.status = 'converted' and w.state <> 'converted'
   union all
   select 'external_source_work_mismatch'::text, r.id, r.work_id, null::uuid
     from public.novel_requests r
     join public.request_external_sources e on e.id = r.external_source_id
-   where r.work_id is not null and e.work_id is distinct from r.work_id
-  union all
-  select 'work_with_multiple_sources'::text, null::uuid, w.id, null::uuid
-    from public.request_works w
-   group by w.id
-  having count(w.novel_source_id) > 1;
+   where r.work_id is not null and e.work_id is distinct from r.work_id;
 $$;
 revoke all on function public.request_consistency_report() from anon, authenticated, public;
 grant execute on function public.request_consistency_report() to service_role;
 
 -- ----------------------------------------------------------------------------
--- 12. Server functions: NOT IMPLEMENTED in this candidate.
+-- 13. Server functions: NOT IMPLEMENTED in this candidate.
 --
--- These write paths are deliberately absent. They must be implemented and
--- reviewed server-side (SECURITY DEFINER with `set search_path = ''`), with
--- explicit parameter allow-lists, rate limits, audit writes and transaction
--- boundaries. Signatures are recorded here so the SQL candidate and the server
--- contract stay aligned:
+-- These write paths are absent on purpose. They must be implemented and reviewed
+-- server-side (SECURITY DEFINER, `set search_path = ''`, parameter allow-lists,
+-- rate limits, audit writes, explicit transaction boundaries). Signatures are
+-- recorded so the SQL candidate and the server contract stay aligned:
 --
 -- private.request_create(p_url text, p_note text, p_idempotency_key text,
 --                        p_client_hints jsonb) returns jsonb
 --   - auth.uid() required; derive requester_ref; enforce rate limits;
 --   - recognize the URL only through an enabled adapter (none in this phase);
 --   - upsert request_external_sources on (provider, external_id);
---   - compute request_fingerprint server-side; on same key + same fingerprint
---     return the existing request; different fingerprint -> conflict;
---   - insert novel_requests (status submitted, version 1), hints and match
---     evidence; never accept status/source/work/rights from the caller.
+--   - compute request_fingerprint server-side; same key + same fingerprint ->
+--     return the existing request; same key + different fingerprint -> conflict;
+--   - insert novel_requests (status submitted, version 1), hints, adapter
+--     metadata and match evidence; never accept status/source/work/rights from
+--     the caller.
 --
 -- private.request_decide(p_request uuid, p_to text, p_reason text,
 --                         p_expected_version integer) returns jsonb
 --   - lock request FOR UPDATE; actor from novel_staff (editor/admin);
---   - validate the structural transition (same table as the docs/prototype);
+--   - validate the structural transition (same table as docs/prototype);
 --   - reject when version <> p_expected_version (409 semantics);
 --   - insert append-only decision; update status/version; create the draft on
---     review -> draft with rights_status='pending', publication_blocked=true.
+--     review -> draft with rights_documentation_state='none', request_blocked=true.
 --
--- private.request_set_rights(p_request uuid, p_status text, p_evidence text,
---                             p_valid_until date) returns jsonb
---   - admin only; allowed only before conversion;
---   - write private.request_rights_evidence, then draft rights_status; record
---     an audit decision; after conversion raise an exception.
+-- private.request_document_rights(p_request uuid, p_evidence text,
+--                                  p_valid_until date) returns jsonb
+--   - admin only, pre-conversion only; writes private evidence and sets
+--     rights_documentation_state='documented'; it NEVER turns rights into
+--     "verified" and never unblocks publication, because only novel_sources can.
 --
 -- private.request_convert(p_request uuid, p_source uuid,
 --                          p_expected_version integer) returns jsonb
---   - admin only, in one transaction: lock request; require status='draft';
+--   - admin only, one transaction: lock request; require status='draft';
 --     require work and external source linked to it; require novel_sources row;
---     require no other work/request uses that source; set request.status,
---     work.state='converted', work.novel_source_id, draft.converted_source_id,
---     copy source rights into the mirror, publication_blocked accordingly,
+--     reuse an existing work link if it already points to the same source
+--     (several requests for one source are allowed, duplicates are not);
+--     set request.status='converted', work.state='converted',
+--     work.novel_source_id, draft.converted_source_id, request_blocked=false,
 --     bump version, insert decision.
+--   - conversion does not verify rights and does not publish anything.
 --
--- Unresolved issues (owner decisions, see docs §12):
---   * retention periods and whether hard deletion is ever allowed;
---   * view ownership: definer views above must be reviewed for RLS bypass;
---     alternatively use security_invoker views plus column-level grants;
+-- Unresolved issues (owner decisions, docs §12):
+--   * dedicated request_owner role vs migration-role ownership for views and
+--     SECURITY DEFINER functions (until decided, access stays closed);
+--   * final retention policy and whether privileged hard deletion is allowed;
 --   * rate-limit numbers, account requirement, adapter allowlist;
---   * whether conversion is allowed while rights are still pending (proposal: yes).
+--   * whether conversion is allowed while rights are still pending (proposal: yes);
+--   * staging role tests for the two owner-rights views.
 -- ============================================================================

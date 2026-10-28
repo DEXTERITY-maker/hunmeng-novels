@@ -37,7 +37,7 @@ All names are prefixed `request_`; DDL is in the SQL candidate. `request_*` tabl
 - **`request_adapter_metadata`** — adapter-provided metadata with provenance: `provider`, `adapter_version`, `policy_id`, `metadata jsonb`, `provenance`, `obtained_at`; index on `request_id`. Empty in this phase (no adapters enabled); the only source for matching input.
 - **`request_match_evidence`** — advisory evidence: `request_id`, `kind ('exact','probable')`, `matched_work_id`, `matched_source_id`, `score`, `reasons jsonb`, `algorithm_version`, `catalog_version`, `created_at`; CHECK at least one target; append-only per computation (a re-evaluation appends, never rewrites).
 - **`request_moderation_decisions`** — append-only history: `request_id`, `actor_id` (`on delete set null`), `actor_ref`, `actor_role ('editor','admin','system')`, `from_status`, `to_status`, `reason`, `request_version`, `decided_at`; index `(request_id, decided_at)`. No update/delete grants.
-- **`request_drafts`** — local draft: `request_id` unique, `work_id`, `source_url`, `permitted_metadata jsonb` (allow-list only), `rights_status`, `rights_evidence_id → private.request_rights_evidence`, `converted_source_id → public.novel_sources` (unique partial), `publication_blocked`, `created_by/created_by_ref`, timestamps. Created only by the decision function after `review → draft`; never publishes.
+- **`request_drafts`** — local draft: `request_id` unique, `work_id`, `source_url`, `permitted_metadata jsonb` (allow-list only), `rights_documentation_state ('none','documented','expired','revoked')` — documentation only, never a verified-rights status, `rights_evidence_id → private.request_rights_evidence`, `converted_source_id → public.novel_sources` (not unique: several requests may convert to the same existing work/source), `request_blocked` (request-layer hold only; not evidence of permission), `created_by/created_by_ref`, timestamps. Created only by the decision function after `review → draft`; never publishes.
 - **`private.request_rights_evidence`** — private evidence body: `request_id`, `evidence_text` (≥ 20 chars), `stored_by` (`on delete set null`), `stored_by_ref`, `stored_at`, `valid_until`; no grants to `anon`/`authenticated`.
 - **`request_rate_counters`** — optional server-side counters: `bucket_key`, `window_start`, `count`; primary key `(bucket_key, window_start)`. Preliminary mechanism; numbers pending.
 
@@ -54,7 +54,7 @@ Rules fixed in v2:
 - Inside the function the server derives everything else: `requester_id := auth.uid()`, source identity from the explicit adapter registry (disabled in this phase), `status := 'submitted'`, `version := 1`, work and match evidence from server-side code, timestamps from the database.
 - The requester reads only from `request_owner_view` (see §7); staff read from `request_staff_view`. There are no direct `select` grants on base tables either, so even a mistaken future policy cannot expose extra columns.
 - Rate limiting is enforced before insert inside the function (per-authenticated-user; IP limits belong to the API layer, which passes a hashed key — preliminary values pending approval, §8.4).
-- `private.request_decide`, `private.request_convert`, `private.request_set_rights` are the only other write paths; each re-checks the actor in `novel_staff` inside the transaction.
+- `private.request_decide`, `private.request_convert`, `private.request_document_rights` are the only other write paths; each re-checks the actor in `novel_staff` inside the transaction.
 
 ## 4. Status transitions (one table shared by document, SQL candidate and prototype)
 
@@ -77,55 +77,76 @@ The structural transitions are identical in: this table, `src/lib/novel-requests
 
 The local prototype stops at `draft` because it has no database and no editorial role; `converted` is a server/database transition only. `src/lib/novel-requests/core.ts` includes `converted` in the structural transition table so the three sources cannot drift; the prototype never produces it on fictional data.
 
-### 4.1 Rights revoked after a draft exists
+### 4.1 Rights documentation expires or is revoked before conversion
 
-- `private.request_set_rights(request, 'revoked')` records a decision, sets the draft to `rights_status='revoked'`, `publication_blocked=true` and moves the request to `needs_rights` (allowed from `draft` via a rights-only path recorded as a decision from `draft` to `needs_rights`; this transition is not a moderator choice but a rights event, and is recorded with `actor_id`/`reason`).
-- The draft cannot publish; conversion stays blocked until rights are documented again and an admin returns the request to `review`/`draft`.
+- Before conversion there is **no verified rights state anywhere** for the request: no `novel_sources` row exists yet, so rights are unverified by definition. The request layer only records documentation: `private.request_document_rights` may store evidence and set `rights_documentation_state='documented'|'expired'|'revoked'`; this is not an authoritative rights status and cannot unblock publication.
+- Expired/revoked documentation moves the request to `needs_rights` through the decision path (`draft → needs_rights` is a rights event recorded with actor, reason and version). Conversion remains an editorial link operation and does not imply rights.
+- The draft keeps `request_blocked=true`; no publish path exists in the request layer.
 
 ### 4.2 Rights revoked after conversion
 
-- After conversion the request is terminal (`converted`); the authoritative rights record is `novel_sources.rights_status` (see §5).
-- The mirror in `request_drafts` is updated by the sync trigger; the draft becomes `publication_blocked=true`.
-- Publication is already blocked by the existing `novel_guard_job`/publisher checks, which re-read `novel_sources` at approval and at publish time. The request layer never overrides that; it only surfaces the change to staff and requester views.
+- After conversion the request is terminal (`converted`) and the only authoritative rights record is `public.novel_sources.rights_status` (see §5). There is no request-side mirror and no trigger on existing tables: values are read by joining `novel_sources` in the views.
+- Publication is already blocked by the existing `novel_guard_job`/publisher checks, which re-read `novel_sources` at approval and at publish time. A revocation therefore blocks publication in the existing pipeline; the request layer only surfaces `source_rights_status='revoked'` to staff and requester views. The request is not reopened — that is an editorial action, not a rights operation.
 
-## 5. Rights authority (no two independent truths)
+## 5. Rights authority (single authoritative record per stage)
 
-At any moment exactly one place is authoritative; the other is a projection with a named owner and a drift check.
+There is no request-layer "verified rights" value at all, so two independent truths cannot exist.
 
-| Stage | Authoritative | Projection / read model | Write path |
+| Stage | Authoritative record | What the request layer stores | How it is read |
 | --- | --- | --- | --- |
-| Before conversion (`submitted`…`draft`) | `request_drafts.rights_status` + `private.request_rights_evidence` (evidence body) | `request_owner_view.rights_status` | only `private.request_set_rights` (admin), which also writes evidence and an audit decision |
-| After conversion (`converted`) | `public.novel_sources.rights_status` (existing guards) | `request_drafts.rights_status` mirror, kept in sync by trigger `private.request_draft_rights_mirror()` | editorial flow only; request functions refuse to change rights once `converted_source_id` is set |
+| Before conversion (`submitted`…`draft`) | **None** — no `novel_sources` row exists; rights are unverified by definition | Evidence pointer and `rights_documentation_state` (`none/documented/expired/revoked`); `request_blocked` hold | Owner/staff views return the documentation state and `request_blocked`; nothing is presented as verified |
+| After conversion (`converted`) | `public.novel_sources.rights_status`, `permission_*`, `rights_evidence`, `verified_by`, `verified_at`, `rights_valid_until` | Only the link `converted_source_id`; no copied status | Views join `novel_sources` at query time and expose `source_rights_status`, `source_rights_valid_until`, plus an explicitly advisory `advisory_source_rights_look_complete` |
 
-Prevention of divergence:
+Rules:
 
-- `request_drafts.rights_status` has a CHECK limited to `pending/verified/expired/revoked`, and a trigger rejects changes when `converted_source_id is not null` unless the change comes from the mirror trigger.
-- At conversion the function copies `novel_sources.rights_status` into the draft inside the same transaction.
-- A consistency query (`request_consistency_report`, §9.3) must return zero rows: drafts converted to a source whose status differs, requests whose work/source links disagree, works with two sources, converted requests without a draft link.
-- The API never exposes a rights boolean derived from cached copies: before conversion it reads the draft, after conversion it reads `novel_sources` through the link.
+- `advisory_source_rights_look_complete` mirrors part of the existing predicate (verified, both permissions, evidence length, non-expired date) purely as UI/informational advice. It is **not** proof of rights and is not consulted for publication.
+- Publication authority is `novel_guard_job` plus the publisher (`publish-approved.mjs`), which re-check `novel_sources` at approval time and again immediately before push. Those checks remain mandatory and authoritative.
+- `rights_documentation_state='documented'` never means "verified"; the only values that can gate publication are the existing `novel_sources` fields and guards.
+- A consistency query can still detect a stale UI assumption; the drift report (§9.3) checks links, not rights, because rights live in one place only.
+- No trigger is created on `novel_sources` and no existing table is modified: the request layer only reads it through joins.
 
-## 6. Audit and retention (no CASCADE on audit)
+## 6. Audit, technical roles and retention
 
-v1 used `ON DELETE CASCADE`, which contradicts append-only audit. v2 separates identity from audit:
+Identity is separated from audit, and audit claims are limited to what SQL can actually show.
 
-- `novel_requests.requester_id → auth.users(id) ON DELETE SET NULL` plus immutable `requester_ref text` (a pseudonymous hash written at creation from `auth.uid()`), so deleting a user anonymizes the request but does not erase it.
-- `request_moderation_decisions.actor_id → auth.users(id) ON DELETE SET NULL` plus `actor_ref` and `actor_role` snapshots.
-- `private.request_rights_evidence.stored_by → auth.users(id) ON DELETE SET NULL` plus `stored_by_ref`.
-- Audit children reference the request with `ON DELETE RESTRICT` (decisions, evidence, match evidence), so a request cannot be deleted while its audit exists. Deleting a request is not a normal operation.
-- Default retention: keep anonymized requests, drafts, decisions and evidence indefinitely. Retention periods (preliminary, owner decides): requests/drafts 24 months after terminal state, audit decisions 36 months, rate counters 30 days, then anonymize or delete through an explicit retention job. Until the owner approves numbers, nothing purges automatically.
-- A future retention job runs as `service_role`, exports/audits first, deletes in the order evidence → decisions → matches → draft → request, and is itself audited.
+**No CASCADE on audit:**
 
-## 7. Field-level access (RLS does not hide columns)
+- `novel_requests.requester_id → auth.users(id) ON DELETE SET NULL` plus immutable `requester_ref` (pseudonymous hash written at creation), so deleting a user anonymizes the request but never erases it.
+- `request_moderation_decisions.actor_id → auth.users(id) ON DELETE SET NULL` plus `actor_ref` and `actor_role` snapshots; the same pattern is used for private evidence (`stored_by`/`stored_by_ref`) and draft creators.
+- Audit children reference the request with `ON DELETE RESTRICT` (decisions, evidence, match evidence, hints, adapter metadata, drafts), so a request cannot be deleted while its audit exists. Deleting a request is not a normal application operation.
+
+**Technical roles (proposed):**
+
+| Role | Access to request data | Notes |
+| --- | --- | --- |
+| `anon` | none | views/tables not granted |
+| `authenticated` | SELECT on `request_owner_view` (own rows) and `request_staff_view` (novel_staff only) | no DML; writes only through functions |
+| `service_role` | SELECT on request tables and private evidence; EXECUTE on the diagnostic function only | **no INSERT/UPDATE/DELETE** on request or audit tables |
+| table owner / migration role | owns tables and functions; can bypass guards with DDL | documented privileged exception |
+| `postgres`/superuser | full bypass | outside the guarantee |
+
+**Observable guarantees vs exceptions:**
+
+- INSERT/UPDATE/DELETE on audit tables is revoked from `anon`, `authenticated` and `service_role`. Normal application SQL cannot alter or delete history; `BEFORE UPDATE OR DELETE` triggers raise for these paths.
+- `SECURITY DEFINER` functions perform inserts on audit tables when implemented; they never update or delete existing audit rows.
+- **Not claimed:** absolute immutability. The table owner can `ALTER TABLE ... DISABLE TRIGGER`, a superuser bypasses everything, and a role with DDL rights can drop triggers. If the threat model includes privileged DB roles, an external audit trail (WAL shipping, log pipeline, periodic hash anchoring) must be added separately — out of scope for this candidate.
+- `service_role` is not a "superuser substitute": it is read-only here by design, and any future job needing writes must use a reviewed `SECURITY DEFINER` function with its own checks.
+
+**Retention (preliminary, owner decision):** default is to keep anonymized requests, drafts, decisions and evidence indefinitely; example periods under discussion are requests/drafts 24 months after a terminal state, audit 36 months, rate counters 30 days. Nothing purges automatically until the owner approves numbers and a retention job design (which would have to use privileged maintenance and be audited separately).
+
+## 7. Field-level access, views and function security
 
 RLS filters rows, not columns. Therefore:
 
-- No `select` grants on base request tables for `anon`/`authenticated`. Both read from views with explicit column lists.
-- `public.request_owner_view` (owner-rights view created by the migration role; its `WHERE r.requester_id = auth.uid()` clause is the security boundary and must be reviewed and tested) exposes to the owner: `id`, `status`, `created_at`, `updated_at`, `source_host`, `matches` summary (kind + reasons only, no other users' data), `rights_status` (as authoritative signal), `can_convert` boolean. It never exposes `client_note` of other users, internal notes, version internals, fingerprints or rights evidence.
-- `public.request_staff_view` (owner-rights view; `WHERE exists (select 1 from novel_staff ...)` is the security boundary) adds requester ref, algorithm/catalog versions, decision summary and editorial fields.
-- `client_note` is visible to its author and staff; hints are visible to staff only.
-- Private evidence: no grants at all to `anon`/`authenticated`; only a SECURITY DEFINER function with an admin check and audit returns it.
+- No `SELECT` grants on base request tables for `anon`/`authenticated`. Both read through two projections with explicit column lists. `anon` gets nothing.
+- `public.request_owner_view` — runs with the **owner role's** rights (`security_invoker = false`); its `WHERE r.requester_id = auth.uid()` clause is the security boundary. Columns: `id`, `status`, timestamps, `source_host`, `rights_documentation_state`, `request_blocked`, `converted`, `source_rights_status`, `source_rights_valid_until`, `advisory_source_rights_look_complete`, `matches` summary (kind + reasons only). It never exposes `client_note` of other users, internal notes, fingerprints, versions or rights evidence bodies.
+- `public.request_staff_view` — owner-rights view; `WHERE exists (select 1 from novel_staff ...)` is the security boundary. Adds `requester_ref`, provider/external id, `rights_documentation_state`, `converted_source_id`, `source_rights_status`, `has_editorial_source`. It does not expose private evidence.
+- `client_note` is visible to its author and to staff; hints are visible to staff only; private evidence is visible to no one through these views.
+- Base tables: all privileges revoked from `anon`, `authenticated`, `public` and `service_role`; only owner/table-owner functions write.
+- `SECURITY DEFINER` functions (future): each must set `search_path = ''`, schema-qualify every object, check `auth.uid()` and `novel_staff` inside, avoid dynamic SQL, and be granted `EXECUTE` only to the exact role that needs it (`authenticated` for `public.request_create`, staff wrappers for decisions, nothing for admin-only functions except admins via a wrapper that re-checks role). `revoke execute ... from public` is mandatory.
+- **Owner/role model is not final.** Two options are open: (a) owner-rights views and definer functions owned by a dedicated `request_owner` role with only the needed privileges (current SQL candidate documents this but does not create the role — creating roles needs owner/superuser approval); (b) `security_invoker` views plus column-level grants. Until the owner picks one and staging role tests pass, access remains closed by default: no UI, no production grant, no endpoint enabled.
+- Views with owner rights bypass RLS by design. They must be treated as security boundaries, covered by role tests (see the test plan), and never granted to `public`.
 - API responses follow the same projections; the server never serializes a whole row.
-- Views with owner rights bypass RLS by design: each view must be reviewed as a security boundary, covered by role tests in staging, and never exposed with `grant select ... to public`. The alternative (security_invoker views plus column-level grants) is listed as an open decision in §12.
 
 ## 8. Server contract (proposal)
 
@@ -169,7 +190,7 @@ Fingerprint: server computes `sha256(canonical_url || '\n' || canonical_json(cli
 
 `POST /api/novel-requests/:id/decisions` — editor/admin; body `{to, reason, expectedVersion}`.
 
-Inside one transaction: lock request `FOR UPDATE`; resolve actor from `novel_staff` server-side; validate the structural transition (same table as §4); if `to='converted'`, run conversion checks (§9); compare `expectedVersion` with the locked row, mismatch → `409 Conflict` with current version and winning decision; insert append-only decision; update status/version; create the draft with `rights_status='pending'` on `review → draft`.
+Inside one transaction: lock request `FOR UPDATE`; resolve actor from `novel_staff` server-side; validate the structural transition (same table as §4); if `to='converted'`, run conversion checks (§9); compare `expectedVersion` with the locked row, mismatch → `409 Conflict` with current version and winning decision; insert append-only decision; update status/version; create the draft with `rights_documentation_state='none'` and `request_blocked=true` on `review → draft`.
 
 Optimistic concurrency: `version` increments on every successful transition; two moderators starting at version 3 → the second receives `409` and must reload. No decision is overwritten.
 
@@ -195,38 +216,58 @@ Optimistic concurrency: `version` increments on every successful transition; two
 
 The request never publishes and never bypasses guards:
 
-1. Admin creates the editorial source through the existing `/admin` flow or REST with an admin JWT; it starts with `rights_status='pending'`.
-2. `private.request_convert(request, source, expectedVersion)` links it transactionally (§9).
-3. Rights are verified only through existing `novel_guard_source` (admin, evidence ≥ 20 chars, both permissions, validity date). The request layer cannot mark rights verified after conversion.
-4. Chapters go through `novel_translation_jobs` and `novel_guard_job`, then `publish-approved.yml` revalidates and publishes.
-5. Unverified/expired/revoked rights keep the draft blocked; revocation after conversion is reflected by the mirror trigger and by the existing publication checks.
+1. Admin creates the editorial source through the existing `/admin` flow or REST with an admin JWT; it starts with `rights_status='pending'` and is verified only by `novel_guard_source` (admin, evidence ≥ 20 chars, both permissions, validity date). The request layer cannot set `novel_sources` rights.
+2. `private.request_convert(request, source, expectedVersion)` links the request/work/draft to the existing source in one transaction (§9). Conversion neither verifies rights nor publishes; it may happen while rights are still `pending` (open decision §12).
+3. Effective rights are always read from `novel_sources` (views join it); the request layer stores no copied status and no trigger is placed on existing tables.
+4. Chapters go through `novel_translation_jobs` and `novel_guard_job`, then `publish-approved.yml` revalidates rights/QA immediately before push and writes `novel_publication_events`.
+5. Unverified/expired/revoked rights keep publication blocked by those existing guards; the request views only surface `source_rights_status`. Nothing in the request layer can make a chapter publishable.
 
 ## 9. Conversion consistency
 
-### 9.1 One transaction
+### 9.1 One transaction, several requests may share one work and source
 
 `private.request_convert(p_request uuid, p_source uuid, p_expected_version int)` (admin only) does all of the following or nothing:
 
-1. lock the request `FOR UPDATE`; require `status='draft'`, `version=p_expected_version`, a draft row exists, `draft.converted_source_id is null`;
-2. require `request.work_id is not null` and `request_external_sources.work_id = request.work_id` (the external source was linked to the work during moderation);
-3. verify `public.novel_sources(p_source)` exists; it may still have `rights_status='pending'` (conversion is editorial, not publication);
-4. reject if any other work already points at `p_source` (unique partial index) or if any request already converted to it;
-5. set `request.status='converted'`, `work.state='converted'`, `work.novel_source_id=p_source`, `draft.converted_source_id=p_source`, copy `source.rights_status` into the draft mirror, `publication_blocked := rights_status <> 'verified'`, `version := version + 1`;
-6. insert the conversion decision.
+1. lock the request `FOR UPDATE`; require `status='draft'`, `version=p_expected_version`, a draft exists, `draft.converted_source_id is null`, `request.work_id is not null`;
+2. require `request_external_sources.work_id = request.work_id`;
+3. require the `public.novel_sources(p_source)` row exists (rights may still be `pending`);
+4. reuse the existing work link: if `request_works.novel_source_id` is null, set it; if it already equals `p_source`, continue (another request was converted to the same editorial source); if it points to another source, raise an error. This lets several requests share one work and one source without duplicating `novel_sources`;
+5. set `request.status='converted'`, `work.state='converted'`, `draft.converted_source_id=p_source`, `request_blocked=false`, `version := version + 1`;
+6. insert the conversion decision (append-only).
 
-### 9.2 Constraints and checks
+No workaround creating a duplicate `novel_sources` row is allowed or needed.
 
-- unique partial index on `request_works(novel_source_id) where novel_source_id is not null`;
-- unique on `request_drafts.converted_source_id`;
-- CHECK: `request_works.state='converted'` requires `novel_source_id is not null`;
-- trigger `private.request_draft_guard()`: rejects setting `converted_source_id` outside the conversion function; rejects rights mirror edits outside the mirror trigger; rejects any change that would break `draft.converted_source_id = work.novel_source_id`;
-- `novel_requests.external_source_id` is fixed after creation; a trigger rejects changing it and changing `work_id` after `converted`;
-- no triggers or writes touch `novel_sources` except the existing editorial guards; the request layer only links and reads.
+### 9.2 What the database enforces vs what still depends on the future function
 
-### 9.3 Drift report
+| Guarantee | Enforced by |
+| --- | --- |
+| `(provider, external_id)` identifies one external source | unique index — DB |
+| One open request per requester + source | partial unique index — DB |
+| Idempotency key unique per requester ref | unique constraint — DB |
+| One work per `novel_sources` link | unique partial index — DB |
+| Converted work has a source; statuses valid | CHECK constraints — DB |
+| Request, external source and work link agree | deferred constraint trigger on new tables — DB (checked at commit) |
+| Draft work/source agree with request/work | deferred constraint trigger on new tables — DB (checked at commit) |
+| Converted draft link immutable | trigger on new table — DB |
+| Cross-request conversion reuses the existing work link | planned `request_convert` function — **not implemented** |
+| Only an admin converts; only staff decide; version check | planned functions — **not implemented** |
+| Actor/role resolution from `novel_staff` | planned functions — **not implemented** |
+| Conversion does not verify rights and cannot publish | existing guards + absence of rights writes — partly DB (guards), partly planned |
 
-`request_consistency_report()` (proposal) returns rows where:
-`draft.converted_source_id <> work.novel_source_id`, converted request without draft link, draft rights mirror differs from `novel_sources.rights_status`, external source not linked to its request's work, work with more than one `novel_sources` link. Expected result in a healthy system: zero rows.
+The failure of a deferred trigger aborts the whole transaction, so a conversion cannot leave half-updated links.
+
+### 9.3 Drift report (corrected)
+
+v1's last check grouped by work and used `count(novel_source_id)` over a single-row work row, which can never detect multiple sources — it was wrong. v2 removes it: one work per `novel_sources` link is already guaranteed by the unique partial index, so no group-by heuristic is needed.
+
+`public.request_consistency_report()` checks only what multi-row queries can see and what indexes cannot express:
+
+- `draft_source_differs_from_work` — converted draft link differs from the work link;
+- `converted_without_draft_link` — converted request has no converted draft;
+- `converted_request_work_not_converted` — request converted while the work state is not `converted`;
+- `external_source_work_mismatch` — external source is linked to a different work than the request.
+
+Expected result: zero rows. The report is diagnostic only, owned by the migration role, `search_path=''`, and its `EXECUTE` is revoked from `public`/`authenticated` (service_role only) until the owner model is decided.
 
 ## 10. Worked examples
 
@@ -251,11 +292,11 @@ The request never publishes and never bypasses guards:
 - Moderator 1 submits `{to:"review", expectedVersion:3}` → success, `version=4`, decision `d1`.
 - Moderator 2 submits `{to:"draft", expectedVersion:3}` → `409`, current version 4, winning decision `d1`; must reload. No history is lost or overwritten.
 
-### 10.4 Rights unverified or revoked
+### 10.4 Rights unverified, expired or revoked
 
-- Draft exists with `rights_status='pending'`, `publication_blocked=true`; requester sees "rights not verified", evidence body stays private; only an admin can document rights through `private.request_set_rights`, and only the editorial flow can verify against `novel_sources`.
-- Revoked before conversion: request returns to `needs_rights`, draft blocked, conversion refused.
-- Revoked after conversion: `novel_sources` is authoritative; the mirror updates the draft, existing guards block approval/publication, and staff/requester views surface `rights_status='revoked'`. The request itself stays `converted` (terminal) — reopening it is not a rights operation.
+- Before conversion no `novel_sources` row exists, so rights are unverified by definition. A draft may hold private evidence with `rights_documentation_state='documented'`, but that is documentation, not a verified status; `request_blocked` stays true. Requesters see "rights not verified"; evidence bodies stay private.
+- Expired or revoked documentation before conversion moves the request to `needs_rights` (recorded decision) and keeps it blocked. Conversion remains a separate editorial link step; per open decision §12.8 it may happen while rights are pending, but it never makes anything publishable.
+- After conversion, `novel_sources.rights_status` is authoritative. If it becomes `revoked` or `expired`, `novel_guard_job` blocks approval/publication, and the views surface `source_rights_status` and `source_rights_valid_until` to staff and requester. There is no request-side mirror to update: the value is joined at read time. The request stays `converted` (terminal); reopening it is an editorial action, not a rights operation.
 
 ## 11. Migration and rollout (proposal)
 
@@ -271,17 +312,22 @@ The request never publishes and never bypasses guards:
 1. `request_works`: temporary staging concept or long-term canonical identity? (proposal: temporary; `novel_sources` remains canonical.)
 2. Request visibility: requester + staff only, or a public "requested works" list?
 3. Rate limits, storage of IP hashes, and whether submissions require an account.
-4. Retention: periods for requests, audit, evidence, rate counters; anonymize vs hard delete.
+4. Retention: periods for requests, audit, evidence, rate counters; anonymize vs hard delete; whether any privileged hard deletion is allowed at all.
 5. Who may confirm work identity and create aliases — editors or admins only?
 6. Schema placement: `public` with `request_` prefix vs a dedicated schema (proposal: `public` prefix; private evidence in `private`).
 7. First adapter scope (metadata-only, manual review) and which hosts are allowed.
 8. Whether conversion may happen while rights are still `pending` (proposal: yes — conversion is editorial; publication is separate).
-9. Read-path hardening: owner-rights views (current proposal) vs `security_invoker` views plus column-level grants; whether staging role tests run before enabling any request UI.
+9. Owner/role model for views and `SECURITY DEFINER` functions: dedicated `request_owner` role (needs owner/superuser approval to create) vs `security_invoker` views with column grants; and whether owner-rights views are acceptable at all.
+10. `service_role` write policy: candidate keeps it read-only; any future background job that must write (retention, re-evaluation) needs a reviewed definer function or an explicitly privileged maintenance path.
+11. Approval to create a disposable staging database and run the prepared test plan (no test has been executed yet).
+12. Whether any tamper-evidence beyond SQL triggers is required (external audit trail for privileged DB roles).
 
 ## 13. Verification
 
-- Documentation revision + SQL candidate: static only. **The SQL was not executed against any Postgres** (no local/staging/production run, no Supabase CLI available), so static review does not prove migration correctness, trigger semantics or RLS behavior. A staging transaction test plus role tests are required before any application.
+- Documentation revision + SQL candidate: static only. **The SQL was not executed against any Postgres** (no local, staging or production run; no Supabase CLI available), so static review does not prove migration correctness, trigger semantics or RLS behaviour. The test plan in `docs/proposals/novel-requests-test-plan.md` is prepared but not run; creating a test database requires separate owner approval.
 - SQL candidate location: `docs/proposals/novel-requests-schema-draft.sql`, explicitly marked as a draft, not a generated migration; it must be moved to `supabase/migrations/` later via the CLI after owner approval.
-- Consistency with code: `src/lib/novel-requests/core.ts` transition table now includes `converted`; `tests/novel-request-scenario.test.mjs` asserts, for every status pair, exactly the transitions in §4. The local prototype remains fictional and stops at `draft` (no database, no editorial role); `converted` is a server-only transition.
-- Checks run for this revision: `node --test tests/novel-requests.test.mjs tests/novel-request-scenario.test.mjs` — 17/17 pass; `node --test tests/*.test.mjs` — 68/68 pass; `npm run build` — exit 0, 285 pages. Build was run because `core.ts` changed.
-- No database, RLS, grants, production, domains, Discord or XP were changed; no migration was applied.
+- Scope guard re-checked statically: the candidate creates no trigger, policy, grant or column change on existing tables; `novel_sources` is only referenced by FK and joined in views.
+- Consistency with code: `src/lib/novel-requests/core.ts` transition table includes `converted`; `tests/novel-request-scenario.test.mjs` asserts, for every status pair, exactly the transitions in §4. The local prototype remains fictional and stops at `draft`.
+- Static checks performed for this revision: table inventory vs SQL candidate table list; status list in SQL vs `core.ts`; transitions in `core.ts` vs §4; no existing table named in `create/alter/drop` statements; audit triggers and grants reviewed manually.
+- TypeScript checks (unchanged logic except the previous `converted` addition): `node --test tests/novel-requests.test.mjs tests/novel-request-scenario.test.mjs` — 17/17; `node --test tests/*.test.mjs` — 68/68; `npm run build` — exit 0, 285 pages.
+- No database, RLS, grants, production, `main`, domains, Discord or XP were changed; no migration was applied.
