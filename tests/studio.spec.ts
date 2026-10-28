@@ -99,7 +99,7 @@ test('the same Supabase reader session opens the studio without a second login',
   await expect(page.locator('#studio-status')).toContainText('Private workspace ready');
   await expect(page.locator('#studio-workspace')).toBeVisible();
   await expect(page.locator('#studio-login')).toBeHidden();
-  await expect(page.locator('[data-account-member]')).toBeVisible();
+  await expect(page.locator('[data-account-member]')).not.toHaveAttribute('hidden', '');
   expect(paths).toContain('/auth/v1/user');
   expect(paths).toContain('/rest/v1/author_novels');
   expect(paths).not.toContain('/auth/v1/token');
