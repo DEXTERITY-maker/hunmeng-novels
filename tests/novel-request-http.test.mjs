@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { handleRequestHttp } from '../src/lib/novel-requests/http.ts';
+import { createRequesterReferenceDeriver } from '../src/lib/novel-requests/handler.ts';
 import { identifySource } from '../src/lib/novel-requests/core.ts';
 import { fixtureAdapter, FIXTURE_PROVIDER_ARCHIVE } from '../src/lib/novel-requests/prototype-fixtures.ts';
 
@@ -10,6 +11,7 @@ function setup() {
   const records = [];
   const dependencies = {
     identity: { verify: async token => token === 'valid-token' ? { userId: 'fixture-user', role: 'user', active: true } : null },
+    requesterReferences: createRequesterReferenceDeriver(new Uint8Array(32).fill(7)), // fixture only
     allowedAdapters: [fixtureAdapter],
     sources: { recognize: async value => ({ source: identifySource(value, [fixtureAdapter]), metadata: {}, provenance: { provider: FIXTURE_PROVIDER_ARCHIVE, adapterVersion: '1', policyId: 'test' } }) },
     catalog: { works: async () => [] },

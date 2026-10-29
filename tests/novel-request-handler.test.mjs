@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { handleNovelRequest, requesterReference } from '../src/lib/novel-requests/handler.ts';
+import { handleNovelRequest, createRequesterReferenceDeriver } from '../src/lib/novel-requests/handler.ts';
 import { identifySource } from '../src/lib/novel-requests/core.ts';
 import {
   FIXTURE_PROVIDER_ARCHIVE,
@@ -10,6 +10,7 @@ import {
 } from '../src/lib/novel-requests/prototype-fixtures.ts';
 
 const archiveUrl = 'https://fiction-archive.test/work/4242';
+const referenceDeriver = createRequesterReferenceDeriver(new Uint8Array(32).fill(7)); // fixture only
 
 function makeRegistry(metadata = {}) {
   return {
@@ -89,6 +90,7 @@ const validBody = {
 function makeDeps(overrides = {}) {
   return {
     identity: makeIdentity(defaultIdentityMap),
+    requesterReferences: referenceDeriver,
     allowedAdapters: [fixtureAdapter],
     sources: makeRegistry({
       originalTitle: 'The Lantern of Ninth Street',
@@ -136,7 +138,7 @@ test('missing, invalid, inactive and unavailable identity fail closed', async ()
 });
 
 test('unconfigured dependencies fail closed instead of allowing the request', async () => {
-  for (const key of ['identity', 'sources', 'allowedAdapters', 'catalog', 'rateLimiter', 'store']) {
+  for (const key of ['identity', 'requesterReferences', 'sources', 'allowedAdapters', 'catalog', 'rateLimiter', 'store']) {
     const deps = makeDeps({ [key]: null });
     const result = await handleNovelRequest({ token: 'good', body: validBody }, deps);
     assert.equal(result.status, 503, `${key} must fail closed`);
@@ -294,14 +296,15 @@ test('response is a projection: no tokens, user ids, fingerprints, hints or fore
   const stored = deps.store.created[0];
   assert.match(stored.requesterRef, /^[0-9a-f]{64}$/);
   assert.notEqual(stored.requesterRef, 'user-1');
-  assert.equal(await requesterReference('user-1'), stored.requesterRef);
+  assert.equal(await referenceDeriver.derive('user-1'), stored.requesterRef);
+  assert.equal(stored.requesterId, 'user-1');
   assert.deepEqual(stored.hints, validBody.clientHints);
   assert.equal(stored.note, 'fixture note');
   assert.ok(stored.adapterMetadata.originalTitle);
 });
 
 test('another user cannot influence or read someone else request', async () => {
-  const otherRef = await requesterReference('user-2');
+  const otherRef = await referenceDeriver.derive('user-2');
   const otherRecord = {
     id: 'req-other',
     requesterRef: otherRef,
@@ -318,6 +321,28 @@ test('another user cannot influence or read someone else request', async () => {
   assert.equal(result.status, 201);
   assert.notEqual(result.body.requestId, 'req-other');
   assert.equal(store.created.length, 1);
+});
+
+test('requester pseudonyms require a secret, are stable and differ by key and identity', async () => {
+  assert.throws(() => createRequesterReferenceDeriver(new Uint8Array(31)));
+  const key = new Uint8Array(32).fill(3);
+  const first = createRequesterReferenceDeriver(key);
+  key.fill(9); // Mutating caller-owned bytes must not rotate an active deriver.
+  const stable = await first.derive('user-1');
+  assert.equal(stable, await createRequesterReferenceDeriver(new Uint8Array(32).fill(3)).derive('user-1'));
+  assert.notEqual(stable, await createRequesterReferenceDeriver(new Uint8Array(32).fill(4)).derive('user-1'));
+  assert.notEqual(stable, await first.derive('user-2'));
+  assert.match(stable, /^[0-9a-f]{64}$/);
+  await assert.rejects(first.derive(''));
+});
+
+test('missing or invalid requester derivation fails closed before storing', async () => {
+  for (const requesterReferences of [{ derive: async () => { throw new Error('down'); } }, { derive: async () => 'bad' }]) {
+    const { result, deps } = await call({ requesterReferences });
+    assert.equal(result.status, 503);
+    assert.equal(result.body.error, 'dependency-unavailable');
+    assert.equal(deps.store.created.length, 0);
+  }
 });
 
 test('oversized payload is rejected', async () => {

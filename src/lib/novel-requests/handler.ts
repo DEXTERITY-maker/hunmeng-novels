@@ -35,6 +35,11 @@ export type IdentityVerifier = {
   verify(token: string | null): Promise<AuthenticatedActor | null>;
 };
 
+/** Server-only stable pseudonym derived from a verified identity. */
+export type RequesterReferenceDeriver = {
+  derive(userId: string): Promise<string>;
+};
+
 /** Metadata obtained by an explicit source adapter. Separate from user hints. */
 export type AdapterMetadata = {
   readonly originalTitle?: string;
@@ -96,6 +101,8 @@ export type StoredRequest = {
 };
 
 export type NewRequest = Omit<StoredRequest, 'id' | 'createdAt'> & {
+  /** Verified server-side actor, never accepted from client data or returned. */
+  readonly requesterId: string;
   /** Kept by the store for the (requesterRef, idempotencyKey) uniqueness contract. */
   readonly idempotencyKey: string;
 };
@@ -117,6 +124,7 @@ export type RequestStore = {
 
 export type HandlerDependencies = {
   readonly identity: IdentityVerifier | null;
+  readonly requesterReferences: RequesterReferenceDeriver | null;
   readonly sources: SourceRegistry | null;
   /** Independently configured, trusted URL rules, never derived from registry output. */
   readonly allowedAdapters: readonly SourceAdapter[] | null;
@@ -221,9 +229,22 @@ async function sha256(value: string): Promise<string> {
   return toHex(digest);
 }
 
-/** Pseudonymous requester reference; the raw user id never leaves the identity layer. */
-export async function requesterReference(userId: string): Promise<string> {
-  return sha256(`requester:${userId}`);
+/**
+ * Derive a stable pseudonym using a server-managed key, never shipped to the
+ * browser. Key provisioning, rotation and migration are deployment concerns.
+ */
+export function createRequesterReferenceDeriver(secret: Uint8Array): RequesterReferenceDeriver {
+  if (!(secret instanceof Uint8Array) || secret.byteLength < 32)
+    throw new Error('Requester reference key must contain at least 32 bytes');
+  const material = new Uint8Array(secret);
+  const key = globalThis.crypto.subtle.importKey('raw', material, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+  return {
+    async derive(userId: string): Promise<string> {
+      if (typeof userId !== 'string' || !userId.trim() || userId.length > 256)
+        throw new Error('Invalid verified user identity');
+      return toHex(await globalThis.crypto.subtle.sign('HMAC', await key, new TextEncoder().encode(`hunmeng:requester:v1:${userId}`)));
+    },
+  };
 }
 
 function normalizeText(value: string, field: string): string {
@@ -320,7 +341,7 @@ function responseFor(record: StoredRequest, deduplicated: SubmitResponse['dedupl
 export async function handleNovelRequest(input: SubmitInput, dependencies: HandlerDependencies): Promise<HandlerResult> {
   const algorithmVersion = dependencies.algorithmVersion ?? DEFAULT_ALGORITHM_VERSION;
 
-  if (!dependencies.identity || !dependencies.sources || !dependencies.allowedAdapters || !dependencies.catalog || !dependencies.rateLimiter || !dependencies.store)
+  if (!dependencies.identity || !dependencies.requesterReferences || !dependencies.sources || !dependencies.allowedAdapters || !dependencies.catalog || !dependencies.rateLimiter || !dependencies.store)
     return fail(503, 'dependency-unavailable', 'Request intake is not configured.');
 
   let body: ValidatedBody;
@@ -339,7 +360,13 @@ export async function handleNovelRequest(input: SubmitInput, dependencies: Handl
   }
   if (!actor) return fail(401, 'unauthenticated', 'Sign in to submit a request.');
   if (!actor.active) return fail(403, 'inactive-account', 'This account cannot submit requests.');
-  const requesterRef = await requesterReference(actor.userId);
+  let requesterRef: string;
+  try {
+    requesterRef = await dependencies.requesterReferences.derive(actor.userId);
+    if (!/^[0-9a-f]{64}$/.test(requesterRef)) throw new Error('Invalid requester reference');
+  } catch {
+    return fail(503, 'dependency-unavailable', 'Requester identity is unavailable.');
+  }
 
   // 2. Rate limiting: user bucket and, when provided by the transport, IP bucket.
   try {
@@ -406,7 +433,7 @@ export async function handleNovelRequest(input: SubmitInput, dependencies: Handl
   // 7. Store enforces replay, conflict, source uniqueness and creation quota atomically.
   try {
     const result = await dependencies.store.submitAtomically({
-      requesterRef, idempotencyKey: body.idempotencyKey, source: recognition.source,
+      requesterId: actor.userId, requesterRef, idempotencyKey: body.idempotencyKey, source: recognition.source,
       fingerprint, note: body.note, hints: body.hints, adapterMetadata: recognition.metadata,
       matches, status: 'submitted',
     });
