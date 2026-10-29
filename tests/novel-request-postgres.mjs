@@ -90,9 +90,18 @@ async function run() {
     await b.query(`insert into public.novel_requests (requester_id, requester_ref, submitted_url, external_source_id, work_id, idempotency_key, request_fingerprint)
       values ('${userB}', repeat('c',64), 'https://fiction.test/work/2', '${raceSource}', '${workA}', 'race-key', repeat('d',64))`);
     await a.query('set constraints all immediate');
-    await b.query('set constraints all immediate');
+    // B may wait for A's source lock. Begin its check, commit A, then observe
+    // whether B is rejected or can safely commit against the new source state.
+    const bCheck = b.query('set constraints all immediate').then(
+      () => ({ ok: true }), error => ({ ok: false, error }),
+    );
     await a.query('commit');
-    await b.query('commit');
+    const outcome = await bCheck;
+    if (outcome.ok) await b.query('commit');
+    else {
+      assert.match(outcome.error.message, /External source is not linked/);
+      await b.query('rollback');
+    }
     const result = await pool.query(`select count(*)::int as n from public.request_consistency_report()
       where issue = 'external_source_work_mismatch'`);
     assert.equal(result.rows[0].n, 0, 'CONCURRENCY BLOCKER: concurrent transactions committed inconsistent source/work links');

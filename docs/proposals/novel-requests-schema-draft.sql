@@ -383,9 +383,9 @@ grant select on public.request_staff_view to authenticated;
 -- 10. Integrity guards on NEW tables only (no trigger on existing tables).
 --     Deferred constraint triggers check cross-table links at COMMIT, so the
 --     conversion transaction can update several rows in any order.
---     Related source/work updates also trigger checks. These are not proven
---     safe under concurrent transactions: future write functions must lock in
---     a reviewed order and be tested in real PostgreSQL with multiple sessions.
+--     Related source/work updates also trigger checks. Source/request checks
+--     serialize by source ID; other concurrency scenarios are not yet proven.
+--     Future write functions need reviewed lock ordering and multi-session tests.
 -- ----------------------------------------------------------------------------
 create or replace function private.request_links_check()
 returns trigger
@@ -405,6 +405,13 @@ begin
   -- Read the current row so deferred checks see the final transaction state.
   select * into req from public.novel_requests where id = new.id;
   if not found then return new; end if;
+
+  -- Serialize the source/request invariant across concurrent transactions.
+  -- Take the same transaction-scoped lock as the source update trigger before
+  -- reading the related source; collisions only serialize unrelated sources.
+  perform pg_catalog.pg_advisory_xact_lock(
+    pg_catalog.hashtextextended('request-source:' || req.external_source_id::text, 0)
+  );
 
   select work_id into src_work
     from public.request_external_sources where id = req.external_source_id;
@@ -481,6 +488,9 @@ for each row execute function private.request_draft_links_check();
 create or replace function private.request_external_source_links_check()
 returns trigger language plpgsql security definer set search_path = '' as $$
 begin
+  perform pg_catalog.pg_advisory_xact_lock(
+    pg_catalog.hashtextextended('request-source:' || new.id::text, 0)
+  );
   if exists (
     select 1 from public.novel_requests r
     join public.request_external_sources e on e.id = r.external_source_id
