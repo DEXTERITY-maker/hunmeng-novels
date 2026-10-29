@@ -1,0 +1,9 @@
+# Novel request HTTP transport (isolated draft)
+
+`src/lib/novel-requests/http.ts` adapts Web `Request`/`Response` to the existing submission handler. It is not registered as an Astro or Cloudflare route and does not enable requests on the site. All identities, sources, limiters, catalog and storage remain injected dependencies; no real implementations or URLs are shipped.
+
+The transport accepts POST, bearer authorization, JSON and an `Idempotency-Key` header. It requires a configured exact HTTPS origin allowlist and rejects a different `Origin`; requests without an Origin are allowed for non-browser API clients. It does not use cookies, forwarded IP headers or return CORS permission. It bounds actual streamed bytes to 32 KiB, rejects invalid UTF-8/JSON and server-owned or body-supplied idempotency fields, sets `Cache-Control: no-store`, and forwards safe retry information. It forwards no raw IP: IP-based throttling is not implemented. Database-backed atomicity, trustworthy proxy identity and limits on concurrent connections must be implemented and tested at the future hosting boundary.
+
+`tests/novel-request-http.test.mjs` exercises this transport with the real isolated handler and fictional in-memory dependencies. Tests are not proof of production authentication, CORS/CSRF behavior on a deployed edge, distributed rate limiting, or database isolation. No real metadata fetch, chapter text, image, rights approval or publication is implemented here.
+
+Before a real route: separately approve a hosting design, configure and test exact production origins, use verified server-side identity and atomic durable storage with reviewed RLS, implement trusted IP derivation and durable rate limiting, review SSRF protection and source rights, and execute role/concurrency tests against an isolated database. Staging and all database, deployment or production changes require owner approval. Do not deploy this transport as-is.
