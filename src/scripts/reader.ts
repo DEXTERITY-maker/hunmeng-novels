@@ -1,5 +1,6 @@
 import { repository, defaults, applySettings, type Settings } from '../lib/storage';
 import { recordVerifiedLibraryAdd } from '../lib/verified-library';
+import { initPersonalTerms } from './personal-terms';
 export async function initReader() {
   const main = document.querySelector<HTMLElement>('[data-reader]');
   if (!main) return;
@@ -11,6 +12,7 @@ export async function initReader() {
   blocks.forEach((b, i) => {
     b.id = `block-${i}`;
   });
+  initPersonalTerms(slug, article);
   const state = await repository.getState();
   let novelSpecific = Boolean(state.novelSettings?.[slug]);
   let settings = state.novelSettings?.[slug] ?? state.settings;

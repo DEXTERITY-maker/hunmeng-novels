@@ -236,6 +236,20 @@ const usesPlaceholder = n.cover === placeholderCover;
       </button>
       <p class="fine">Changes are saved automatically.</p>
     </form>
+    <details id="personal-terms" class="personal-terms" hidden>
+      <summary>Personal word replacements</summary>
+      <p class="fine">Exact, case-sensitive matches within the chapter text. Saved only on this device.</p>
+      {n.glossary.length > 0 && <p class="fine"><a href={`${n.url}#glossary-title`}>View this novel's glossary →</a></p>}
+      <form id="personal-terms-form">
+        <label for="personal-term-from">Find</label>
+        <input id="personal-term-from" type="text" maxlength="100" required autocomplete="off" />
+        <label for="personal-term-to">Replace with</label>
+        <input id="personal-term-to" type="text" maxlength="100" required autocomplete="off" />
+        <button type="submit" class="button secondary">Save replacement</button>
+      </form>
+      <p id="personal-terms-status" class="fine" role="status" aria-live="polite"></p>
+      <ul id="personal-terms-list"></ul>
+    </details>
   </dialog>
   <dialog id="reader-toc" class="reader-dialog" aria-labelledby="toc-title">
     <div class="dialog-heading">

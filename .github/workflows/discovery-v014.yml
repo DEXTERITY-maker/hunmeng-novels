@@ -7,10 +7,15 @@ on:
       - 'src/pages/novel/**'
       - 'src/scripts/catalog.ts'
       - 'src/scripts/library.ts'
+      - 'src/scripts/reader.ts'
+      - 'src/scripts/personal-terms.ts'
+      - 'src/lib/personal-terms.ts'
+      - 'src/components/ReaderView.astro'
       - 'src/styles/**'
       - 'src/content.config.ts'
       - 'src/lib/client-data.ts'
       - 'tests/v014-discovery.spec.ts'
+      - 'tests/personal-terms.spec.ts'
       - 'tests/demo/**'
       - '.github/workflows/discovery-v014.yml'
   workflow_dispatch:
@@ -31,7 +36,7 @@ jobs:
       - run: npm ci
       - run: npm run build:demo
       - run: npx playwright install --with-deps chromium
-      - run: npx playwright test tests/v014-discovery.spec.ts --workers=2
+      - run: npx playwright test tests/v014-discovery.spec.ts tests/personal-terms.spec.ts --workers=2
       - name: Save responsive screenshots
         if: always()
         uses: actions/upload-artifact@v4

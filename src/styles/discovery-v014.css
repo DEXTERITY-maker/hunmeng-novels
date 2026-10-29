@@ -9,6 +9,14 @@
 .novel-page .novel-tag-group h3 { font: 700 .85rem/1.4 var(--body-font, sans-serif); color: var(--muted); margin: 0 0 .3rem; }
 .library-search { display: grid; gap: .4rem; font-weight: 700; max-width: 36rem; margin: 1.25rem 0; }
 .library-search input { min-height: 48px; width: 100%; padding: .65rem .85rem; }
+.personal-terms { margin-top: 1.2rem; padding-top: 1rem; border-top: 1px solid var(--line); }
+.personal-terms summary { cursor: pointer; font-weight: 700; min-height: 44px; }
+.personal-terms form { display: grid; gap: .45rem; }
+.personal-terms input { min-height: 44px; padding: .55rem .7rem; width: 100%; }
+.personal-terms form .button { justify-self: start; margin-top: .4rem; }
+.personal-terms ul { list-style: none; padding: 0; margin: .7rem 0; display: grid; gap: .4rem; }
+.personal-terms li { display: flex; align-items: center; justify-content: space-between; gap: 1rem; overflow-wrap: anywhere; }
+.personal-terms li button { flex: none; min-height: 44px; background: transparent; color: var(--accent); border: 0; text-decoration: underline; }
 @media (max-width: 760px) {
   .active-filter { font-size: .85rem; }
   .library-search { max-width: none; }
