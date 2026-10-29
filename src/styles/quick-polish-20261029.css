@@ -113,11 +113,19 @@
   font-weight:700;
 }
 @media(max-width:760px) {
-  .catalog-page .catalog-search-row {grid-template-columns:1fr;gap:10px;}
+  /* Search and quick sort share the same row: the first book remains above the fold. */
+  .catalog-page .catalog-search-row {grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:8px;}
+  .catalog-page .catalog-search-row input {min-width:0;width:100%;}
+  .catalog-page .catalog-quick-sort select {font-size:.8rem;padding-inline:6px;}
   .catalog-page .catalog-results-heading .fine {max-width:100%;text-align:left;}
   .catalog-page .catalog-results-heading {gap:3px;}
   .novel-page .serial-publication-stats {gap:8px;margin-top:12px;}
 }
 @media(prefers-reduced-motion:reduce) {
   .home-page .home-hero-content,.home-page .home-hero-feature {animation:none!important;opacity:1!important;}
+}
+
+@media(max-width:350px) {
+  /* Very narrow devices prioritize a full-width search input. */
+  .catalog-page .catalog-search-row {grid-template-columns:minmax(0,1fr);}
 }
