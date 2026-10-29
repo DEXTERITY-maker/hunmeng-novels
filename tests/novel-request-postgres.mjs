@@ -51,6 +51,7 @@ async function run() {
     `);
     await setup.query(await readFile('docs/proposals/novel-requests-schema-draft.sql', 'utf8'));
     await setup.query(await readFile('docs/proposals/novel-requests-store-draft.sql', 'utf8'));
+    await setup.query(await readFile('docs/proposals/novel-requests-executor-draft.sql', 'utf8'));
     await setup.query(`
       insert into auth.users values ('${userA}'), ('${userB}');
       insert into public.request_works (id, canonical_title, normalized_title) values
@@ -117,7 +118,16 @@ async function run() {
   const auth = createSupabaseIdentityVerifier({ getUser: async token => token === 'test-token'
     ? { data: { user: { id: userA } }, error: null }
     : { data: { user: null }, error: { status: 401 } } });
-  const adapter = createPostgresRequestStore(pool);
+  // A dedicated NOLOGIN, NOINHERIT, non-BYPASSRLS role can only execute the
+  // two request functions. This fixture uses SET ROLE, not login credentials.
+  const restricted = await pool.connect();
+  await restricted.query('set role hunmeng_request_executor');
+  await assert.rejects(restricted.query('select * from public.novel_requests'), /permission denied/);
+  await assert.rejects(restricted.query('select * from public.request_client_hints'), /permission denied/);
+  await assert.rejects(restricted.query('select * from private.request_rights_evidence'), /permission denied/);
+  await assert.rejects(restricted.query('select * from auth.users'), /permission denied/);
+  await assert.rejects(restricted.query('delete from public.novel_requests'), /permission denied/);
+  const adapter = createPostgresRequestStore(restricted);
   const config = {
     allowedOrigins: ['https://hunmeng-novel.test'],
     dependencies: {
@@ -143,6 +153,11 @@ async function run() {
   assert.equal(saved.rows[0].requester_id, userA);
   assert.equal(saved.rows[0].client_note, 'synthetic note');
   assert.equal(JSON.stringify(firstBody).includes(userA), false);
+  const ref = await config.dependencies.requesterReferences.derive(userA);
+  const foreign = await restricted.query('select * from private.request_store_read($1,$2,$3)', [firstBody.requestId, userB, ref]);
+  assert.equal(foreign.rows.length, 0);
+  const wrongRef = await restricted.query('select * from private.request_store_read($1,$2,$3)', [firstBody.requestId, userA, '0'.repeat(64)]);
+  assert.equal(wrongRef.rows.length, 0);
   await pool.query("update public.novel_requests set status = 'review', version = version + 1 where id = $1", [firstBody.requestId]);
   const replayHttp = await handleRequestHttp(request('http-fixture-key'), config);
   assert.equal(replayHttp.status, 200);
@@ -156,7 +171,9 @@ async function run() {
   assert.equal((await handleRequestHttp(request('blocked-meta-key', 'test-token', 'https://fiction-archive.test/work/8228'), config)).status, 503);
   const noSilentLoss = await pool.query("select count(*)::int as n from public.request_external_sources where external_id = '8228' and provider = $1", [FIXTURE_PROVIDER_ARCHIVE]);
   assert.equal(noSilentLoss.rows[0].n, 0);
-  console.log('PASS HTTP, verified identity adapter and PostgreSQL storage integration (synthetic Auth)');
+  await restricted.query('reset role');
+  restricted.release();
+  console.log('PASS HTTP, synthetic Auth and PostgreSQL storage via restricted role');
 
   const activeRaceRef = '3'.repeat(64);
   const activeRace = await Promise.all([

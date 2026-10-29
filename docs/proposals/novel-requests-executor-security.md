@@ -1,0 +1,9 @@
+# Server database executor — isolated candidate
+
+The server-side executor validates a Supabase shared transaction-pooler URL, rejects URL parameters that could override TLS, requires a dedicated login name scoped to a project ref, sets certificate verification and bounded connection/query settings, and accepts only two fixed parameterized database calls. It takes a pool factory from the runtime; no connection string, login credential, Supabase key or production role is created here. Runtime-specific support and TLS trust must be verified in an isolated environment before deploying.
+
+The SQL candidate creates `hunmeng_request_executor` as NOLOGIN, NOINHERIT and NOBYPASSRLS, and grants only EXECUTE on two private functions plus schema USAGE. It does not create a login or grant membership. The read function requires a request ID, verified actor ID and derived requester reference and returns only that request's fields. All role changes and tests in the pull request run against disposable PostgreSQL with synthetic users.
+
+The database functions trust the server to validate the user's Supabase token and derive the reference. A stolen executor credential is therefore powerful enough to forge user IDs for new requests; the role reduces database scope but does not independently validate JWTs. Keep the credential exclusively server-side, restrict access, rotate it, and implement audited service identity and abuse controls. Never grant this role to anon, authenticated or a browser-facing client.
+
+Do not deploy this draft: real Supabase role inheritance, owner privileges, function ACLs, TLS and pooler compatibility need staging tests. The current SQL owner may be highly privileged and needs review. Match evidence and adapter metadata are still rejected, not saved. The application has no production route and no configured login, origin secrets or rate limiter. Rollout requires a reviewed migration and verified backups.
