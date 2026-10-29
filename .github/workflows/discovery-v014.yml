@@ -1,0 +1,42 @@
+name: Discovery and library browser checks
+on:
+  pull_request:
+    paths:
+      - 'src/pages/catalog*'
+      - 'src/pages/library.astro'
+      - 'src/pages/novel/**'
+      - 'src/scripts/catalog.ts'
+      - 'src/scripts/library.ts'
+      - 'src/styles/**'
+      - 'src/content.config.ts'
+      - 'src/lib/client-data.ts'
+      - 'tests/v014-discovery.spec.ts'
+      - 'tests/demo/**'
+      - '.github/workflows/discovery-v014.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run build:demo
+      - run: npx playwright install --with-deps chromium
+      - run: npx playwright test tests/v014-discovery.spec.ts --workers=2
+      - name: Save responsive screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v014-discovery-${{ github.run_id }}
+          path: test-results/**/hunmeng-v014-*.png
+          if-no-files-found: ignore
+          retention-days: 14
