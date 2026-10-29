@@ -20,7 +20,7 @@ import { shelves, site } from '../config/site';
         >
           <Icon name={(["book", "clock", "check", "ban"] as const)[i]} size={26} />
           <strong>{label}</strong>
-          <span data-shelf-count={value}>0</span>
+          <span data-shelf-count={value}>—</span>
           <Icon name="chevron" size={18} />
         </button>
       ))}

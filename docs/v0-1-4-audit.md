@@ -8,6 +8,8 @@ The current branch extends catalog search to optional alternative titles, multip
 
 The original request foundation and HTTP/moderation prototypes remain in draft PRs #62/#66, based on a different branch. They are not connected to the site. The mobile preview in #68 is also disconnected. Do not claim request submission, source suggestions, moderation or automatic translation is live. Further work needs a verified staging environment, supported-source policies, secure runtime and rate limits, source-suggestion model, user and moderation UI, and data-preserving migrations before release.
 
+A read-only catalog query against the connected production database on 29 October 2026 showed RLS enabled on the reader/editorial tables inspected; reader state policies use `auth.uid()` for ownership, public review selection is limited to approved reviews, and staff policies consult `novel_staff`. No request-layer tables were returned. This inspection read schema and policies only, not user records; it is not a complete security audit or proof of effective permissions for every role.
+
 Personal term replacement, multi-folder library membership, shared rating aggregates and scalable server-side discovery remain unimplemented. The pre-existing work glossary is read-only. XP and MP rules are deliberately unchanged; the current branch does not assert that the future independent MP system is fully implemented.
 
 The WTR-LAB public catalog and novel finder were inspected for UI ideas only: combined criteria, all/any matching, chapter bounds, visible statuses and grouping. No stories, descriptions, covers, logos, or application code were imported.

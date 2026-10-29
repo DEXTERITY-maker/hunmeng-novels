@@ -26,6 +26,7 @@ test('genre all, any, exclusion, URL restoration and reset are usable', async ({
   await page.getByRole('checkbox', { name: 'Exclude genre Adventure', exact: true }).check();
   await expect(page.locator('#result-count')).toHaveText('Novels found: 1');
   await expect(page.getByRole('button', { name: 'Remove Not genre: Adventure' })).toBeVisible();
+  await page.screenshot({ path: test.info().outputPath('hunmeng-v014-catalog.png'), fullPage: true });
   await page.reload();
   await expect(page.locator('#result-count')).toHaveText('Novels found: 1');
   await expect(page.getByRole('checkbox', { name: 'Exclude genre Adventure', exact: true })).toBeChecked();
@@ -56,6 +57,7 @@ test('library search preserves saved shelf and reading position', async ({ page 
   await page.getByLabel('Find in your library').fill('тихий маяк');
   await expect(page.locator('.library-row')).toHaveCount(1);
   await expect(page.locator('.library-row')).toContainText('Current chapter: 30%');
+  await page.screenshot({ path: test.info().outputPath('hunmeng-v014-library.png'), fullPage: true });
   await page.getByLabel('Find in your library').fill('not a book');
   await expect(page.locator('#library-no-results')).toBeVisible();
   await expect(page.locator('#library-empty')).toBeHidden();
