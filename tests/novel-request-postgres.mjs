@@ -85,7 +85,7 @@ async function run() {
 
     const acl = await setup.query(`select
       has_function_privilege('authenticated', 'private.request_store_create(uuid,text,text,text,text,text,text,text,text,jsonb,jsonb,text,text,jsonb,text)', 'execute') as authenticated,
-      has_function_privilege('anon', 'private.request_store_create(uuid,text,text,text,text,text,text,text,text,text,jsonb,jsonb,text,text,jsonb,text)', 'execute') as anonymous,
+      has_function_privilege('anon', 'private.request_store_create(uuid,text,text,text,text,text,text,text,text,jsonb,jsonb,text,text,jsonb,text)', 'execute') as anonymous,
       has_function_privilege('service_role', 'private.request_store_create(uuid,text,text,text,text,text,text,text,text,jsonb,jsonb,text,text,jsonb,text)', 'execute') as service`);
     assert.deepEqual(acl.rows[0], { authenticated: false, anonymous: false, service: false });
     console.log('PASS isolated store is not executable by public roles');
