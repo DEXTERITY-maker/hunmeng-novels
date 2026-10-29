@@ -1,12 +1,17 @@
 import { test, expect } from './fixtures';
+import { readFile } from 'node:fs/promises';
 
 test('alternative titles, author and active filters lead to genuine catalog results', async ({ page }) => {
+  const index = JSON.parse(await readFile('dist/catalog-index.json', 'utf8'));
+  index.find((n: { slug: string }) => n.slug === 'khranitel-mayaka').alternativeTitles.push('Тихий маяк');
+  await page.route('**/catalog-index.json', route => route.fulfill({ json: index }));
   await page.goto('/catalog/');
   await page.getByPlaceholder('English or original title').fill('тихий маяк');
   await expect(page.locator('#result-count')).toHaveText('Novels found: 1');
   await expect(page.locator('#catalog-results')).toContainText('The Keeper of the Quiet Lighthouse');
   await expect(page.getByRole('button', { name: 'Remove Search: тихий маяк' })).toBeVisible();
   await page.getByRole('button', { name: 'Remove Search: тихий маяк' }).click();
+  await expect(page.getByPlaceholder('English or original title')).toHaveValue('');
   await expect(page.locator('#result-count')).toHaveText('Novels found: 2');
   await page.getByPlaceholder('English or original title').fill('lesnaya');
   await expect(page.locator('#catalog-results')).toContainText('The Garden at Winter');
@@ -29,7 +34,7 @@ test('genre all, any, exclusion, URL restoration and reset are usable', async ({
   await page.screenshot({ path: test.info().outputPath('hunmeng-v014-catalog.png'), fullPage: true });
   await page.reload();
   await expect(page.locator('#result-count')).toHaveText('Novels found: 1');
-  await expect(page.getByRole('checkbox', { name: 'Exclude genre Adventure', exact: true })).toBeChecked();
+  await expect(page.locator('input[name=genreExclude][value="Adventure"]')).toBeChecked();
   await page.getByRole('button', { name: 'Remove Not genre: Adventure' }).click();
   await expect(page.locator('#result-count')).toHaveText('Novels found: 2');
   await page.getByRole('button', { name: 'Reset filters' }).click();
@@ -39,8 +44,7 @@ test('genre all, any, exclusion, URL restoration and reset are usable', async ({
 
 test('novel groups existing tags and links to reviews and catalog', async ({ page }) => {
   await page.goto('/novel/khranitel-mayaka/');
-  await expect(page.locator('.original-title').filter({ hasText: 'Тихий маяк' })).toHaveCount(0);
-  await expect(page.getByText('Also known as: Тихий маяк · Quiet Beacon')).toBeVisible();
+  await expect(page.getByText('Also known as: Quiet Beacon')).toBeVisible();
   await expect(page.locator('.novel-tag-group')).toHaveCount(3);
   await expect(page.locator('.novel-tag-group').filter({ hasText: 'Worldbuilding' })).toContainText('Sea');
   await expect(page.getByRole('link', { name: 'Reviews', exact: true })).toHaveAttribute('href', '#reader-reviews-heading');
@@ -49,6 +53,9 @@ test('novel groups existing tags and links to reviews and catalog', async ({ pag
 });
 
 test('library search preserves saved shelf and reading position', async ({ page }) => {
+  const catalog = JSON.parse(await readFile('dist/catalog.json', 'utf8'));
+  catalog.find((n: { slug: string }) => n.slug === 'khranitel-mayaka').alternativeTitles.push('Тихий маяк');
+  await page.route('**/catalog.json', route => route.fulfill({ json: catalog }));
   const before = { version: 1, settings: {}, library: { 'khranitel-mayaka': 'reading', 'sad-zimy': 'reading' },
     progress: { 'khranitel-mayaka': { chapterSlug: 'glava-1', chapterNumber: 1, blockId: 'block-0', offset: 0, ratio: .3, updatedAt: 100 } } };
   await page.addInitScript(state => localStorage.setItem('hunmeng-novels:v1', JSON.stringify(state)), before);

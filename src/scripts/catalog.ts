@@ -226,7 +226,11 @@ export async function initCatalog() {
       else onFilter();
     });
     form.addEventListener('change',(event) => {
-      if ((event.target as HTMLElement).id === 'catalog-tag-group') updateTagPicker();
+      const target = event.target as HTMLElement;
+      // Text and number inputs were already rendered on input. Re-rendering on
+      // blur can remove an active-filter button before its click is delivered.
+      if (target instanceof HTMLInputElement && (target.type === 'search' || target.type === 'number')) return;
+      if (target.id === 'catalog-tag-group') updateTagPicker();
       else onFilter();
     });
     // Native controls reset after the event. Re-render in the next task, including collapsed fields.
