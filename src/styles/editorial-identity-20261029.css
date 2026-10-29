@@ -417,7 +417,7 @@ body:not(.reader-page) summary:focus-visible {
     padding: 8px 8px;
     font-size: .875rem;
     min-width: 0;
-    min-height: 43px;
+    min-height: 44px;
     border-radius: 9px 9px 0 0;
   }
   .home-page .home-hero-copy { border-radius: 17px; }
