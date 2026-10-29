@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import { resolve } from 'node:path';
+import { createHmac } from 'node:crypto';
 import { createClient } from '@supabase/supabase-js';
 import { createSupabaseIdentityVerifier } from '../src/lib/novel-requests/supabase-identity.ts';
 import { createPostgresRequestStore } from '../src/lib/novel-requests/postgres-store.ts';
@@ -23,7 +24,8 @@ const apiUrl = env.API_URL;
 const dbUrl = env.DB_URL;
 const anonKey = env.ANON_KEY;
 const serviceKey = env.SERVICE_ROLE_KEY;
-if (!apiUrl || !dbUrl || !anonKey || !serviceKey) throw new Error('Local stack environment is incomplete');
+const jwtSecret = env.JWT_SECRET;
+if (!apiUrl || !dbUrl || !anonKey || !serviceKey || !jwtSecret) throw new Error('Local stack environment is incomplete');
 const api = new URL(apiUrl), database = new URL(dbUrl);
 if (api.protocol !== 'http:' || !['127.0.0.1', 'localhost'].includes(api.hostname) ||
     api.port !== '54321' || !['127.0.0.1', 'localhost'].includes(database.hostname) ||
@@ -78,6 +80,11 @@ try {
   const identity = createSupabaseIdentityVerifier(one.auth);
   assert.equal((await identity.verify(tokenOne)).userId, userOne);
   assert.equal(await identity.verify('invalid-fixture-token'), null);
+  const encode = value => Buffer.from(JSON.stringify(value)).toString('base64url');
+  const header = encode({ alg: 'HS256', typ: 'JWT' });
+  const payload = encode({ sub: userOne, role: 'authenticated', aud: 'authenticated', iat: 1, exp: 2 });
+  const signature = createHmac('sha256', jwtSecret).update(`${header}.${payload}`).digest('base64url');
+  assert.equal(await identity.verify(`${header}.${payload}.${signature}`), null);
 
   restricted = new Client({ host: '127.0.0.1', port: 54322, database: 'postgres',
     user: 'hunmeng_request_test_login', password: 'LocalOnly-NotARealSecret-123', connectionTimeoutMillis: 5000 });
@@ -115,7 +122,15 @@ try {
   assert.deepEqual(other, []);
   const { error: directError } = await one.from('novel_requests').select('id');
   assert.ok(directError, 'authenticated users cannot select base request table');
-  console.log('PASS local Supabase Auth, two-user view isolation and limited database login');
+  const banned = await admin.auth.admin.updateUserById(userOne, { ban_duration: '1h' });
+  if (banned.error) throw new Error('Local synthetic account ban failed');
+  const bannedIdentity = await identity.verify(tokenOne);
+  assert.ok(!bannedIdentity || !bannedIdentity.active, 'banned user cannot submit');
+  const removed = await admin.auth.admin.deleteUser(userOne);
+  if (removed.error) throw new Error('Local synthetic account deletion failed');
+  const deletedIdentity = await identity.verify(tokenOne);
+  assert.ok(!deletedIdentity || !deletedIdentity.active, 'deleted user cannot submit');
+  console.log('PASS local Supabase Auth (valid/expired/banned/deleted), two-user isolation and limited database login');
 } finally {
   if (restricted) await restricted.end().catch(() => {});
   await db.end();
