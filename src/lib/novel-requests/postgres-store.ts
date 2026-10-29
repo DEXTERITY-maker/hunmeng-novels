@@ -8,21 +8,21 @@ const statuses = new Set<RequestStatus>(['submitted', 'review', 'needs_rights', 
 
 /**
  * Trusted server DB executor only. The restricted role and SQL functions are
- * experimental and unprovisioned. Fails closed on match/metadata until persisted.
+ * experimental and unprovisioned. Candidate work IDs must be database UUIDs.
  */
 export function createPostgresRequestStore(db: QueryExecutor): RequestStore {
   return {
     async submitAtomically(input: NewRequest): Promise<StoreResult> {
-      if (input.matches.length || Object.keys(input.adapterMetadata).length)
-        throw new Error('Match and metadata persistence is not configured');
       const parsed = new URL(input.source.url);
       if (parsed.protocol !== 'https:' || parsed.username || parsed.password || parsed.port)
         throw new Error('Invalid canonical source');
       const result = await db.query(
-        'select private.request_store_create($1,$2,$3,$4,$5,$6,$7,$8,$9,$10::jsonb) as result',
+        'select private.request_store_create($1,$2,$3,$4,$5,$6,$7,$8,$9,$10::jsonb,$11::jsonb,$12,$13,$14::jsonb,$15) as result',
         [input.requesterId, input.requesterRef, input.source.provider, input.source.externalId,
           input.source.url, parsed.hostname, input.idempotencyKey, input.fingerprint,
-          input.note, JSON.stringify(input.hints)],
+          input.note, JSON.stringify(input.hints), JSON.stringify(input.adapterMetadata),
+          input.adapterProvenance.adapterVersion, input.adapterProvenance.policyId,
+          JSON.stringify(input.matches), input.algorithmVersion],
       );
       const data = result.rows[0]?.result;
       if (!data || typeof data !== 'object') throw new Error('Invalid storage result');
@@ -42,13 +42,19 @@ export function createPostgresRequestStore(db: QueryExecutor): RequestStore {
           typeof row.requester_ref !== 'string' || typeof row.request_fingerprint !== 'string' ||
           typeof row.client_note !== 'string' || typeof row.provider !== 'string' ||
           typeof row.external_id !== 'string' || typeof row.canonical_url !== 'string' ||
-          !row.payload || typeof row.payload !== 'object' || Array.isArray(row.payload))
+          !row.payload || typeof row.payload !== 'object' || Array.isArray(row.payload) ||
+          !row.metadata || typeof row.metadata !== 'object' || Array.isArray(row.metadata) ||
+          typeof row.algorithm_version !== 'string' || !Array.isArray(row.matches) || row.matches.length > 50 ||
+          row.matches.some(match => !match || typeof match !== 'object' || typeof match.workId !== 'string' ||
+            !['exact', 'probable'].includes(match.kind) || !Array.isArray(match.reasons) ||
+            match.reasons.some((reason: unknown) => typeof reason !== 'string')))
         throw new Error('Invalid saved request');
       const record: StoredRequest = {
         id: row.id, requesterRef: row.requester_ref, fingerprint: row.request_fingerprint,
         note: row.client_note, status: row.status as RequestStatus, createdAt: createdAt.toISOString(),
         source: { provider: row.provider, externalId: row.external_id, url: row.canonical_url },
-        hints: row.payload, adapterMetadata: {}, matches: [],
+        hints: row.payload, adapterMetadata: row.metadata, matches: row.matches,
+        algorithmVersion: row.algorithm_version,
       };
       return { kind: entry.kind as 'new' | 'replay' | 'active-request', record };
     },

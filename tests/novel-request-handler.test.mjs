@@ -92,6 +92,8 @@ function makeDeps(overrides = {}) {
     identity: makeIdentity(defaultIdentityMap),
     requesterReferences: referenceDeriver,
     allowedAdapters: [fixtureAdapter],
+    metadataPolicies: [{ provider: FIXTURE_PROVIDER_ARCHIVE, policyId: 'fixture-policy', adapterVersion: 'fixture-adapter-1',
+      allowedFields: ['originalTitle', 'alternativeTitles', 'authors', 'chapterTitles'], evidence: 'fictional fixture permission' }],
     sources: makeRegistry({
       originalTitle: 'The Lantern of Ninth Street',
       authors: ['A. Marlowe'],
@@ -334,6 +336,17 @@ test('requester pseudonyms require a secret, are stable and differ by key and id
   assert.notEqual(stable, await first.derive('user-2'));
   assert.match(stable, /^[0-9a-f]{64}$/);
   await assert.rejects(first.derive(''));
+});
+
+test('unapproved metadata fails closed and disallowed fields never enter matching', async () => {
+  const missing = await call({ metadataPolicies: [] });
+  assert.equal(missing.result.status, 503);
+  assert.equal(missing.deps.store.created.length, 0);
+  const onlyTitle = await call({ metadataPolicies: [{ provider: FIXTURE_PROVIDER_ARCHIVE, policyId: 'fixture-policy',
+    adapterVersion: 'fixture-adapter-1', allowedFields: ['originalTitle'], evidence: 'fixture policy' }] });
+  assert.equal(onlyTitle.result.status, 201);
+  assert.deepEqual(Object.keys(onlyTitle.deps.store.created[0].adapterMetadata), ['originalTitle']);
+  assert.equal(onlyTitle.deps.store.created[0].matches.some(match => match.reasons.includes('Matching author')), false);
 });
 
 test('missing or invalid requester derivation fails closed before storing', async () => {

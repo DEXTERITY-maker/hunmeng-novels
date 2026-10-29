@@ -2,7 +2,7 @@
 -- Depends on novel-requests-schema-draft.sql. All parameters are supplied by a
 -- trusted, server-only caller after identity and source verification. The
 -- function is deliberately not granted to authenticated, anon or service_role.
--- It does not implement a real source adapter, IP limit, match persistence,
+-- It does not implement a real source adapter, IP limit,
 -- review queue, notifications, rights verification or publication.
 
 create table private.request_idempotency_keys (
@@ -26,7 +26,12 @@ create function private.request_store_create(
   p_key text,
   p_fingerprint text,
   p_note text,
-  p_hints jsonb
+  p_hints jsonb,
+  p_metadata jsonb,
+  p_adapter_version text,
+  p_policy_id text,
+  p_matches jsonb,
+  p_algorithm_version text
 ) returns jsonb
 language plpgsql security definer set search_path = ''
 as $$
@@ -36,6 +41,7 @@ declare
   req public.novel_requests%rowtype;
   hour_count integer;
   day_count integer;
+  match_item jsonb;
 begin
   -- Caller must authenticate actor, derive ref using a reviewed keyed scheme,
   -- normalize and authorize the source, and compute the fingerprint. Nothing
@@ -50,7 +56,16 @@ begin
      or p_fingerprint is null or p_fingerprint !~ '^[0-9a-f]{64}$'
      or p_note is null or length(p_note) > 2000
      or p_hints is null or jsonb_typeof(p_hints) <> 'object' or octet_length(p_hints::text) > 20000
+     or p_metadata is null or jsonb_typeof(p_metadata) <> 'object' or octet_length(p_metadata::text) > 20000
+     or p_adapter_version is null or length(btrim(p_adapter_version)) not between 1 and 64
+     or p_policy_id is null or length(btrim(p_policy_id)) not between 1 and 128
+     or p_algorithm_version is null or length(btrim(p_algorithm_version)) not between 1 and 64
+     or p_matches is null or jsonb_typeof(p_matches) <> 'array'
   then raise exception 'Invalid request input' using errcode = '22023'; end if;
+  if jsonb_array_length(p_matches) > 50 or exists (
+    select 1 from jsonb_object_keys(p_metadata) k
+    where k not in ('originalTitle', 'alternativeTitles', 'authors', 'chapterTitles')
+  ) then raise exception 'Invalid adapter evidence' using errcode = '22023'; end if;
 
   -- This serializes quota, idempotency and active-source checks for one user.
   perform pg_catalog.pg_advisory_xact_lock(pg_catalog.hashtextextended('request-user:' || p_requester_ref, 0));
@@ -104,10 +119,24 @@ begin
     values (p_actor_id, p_requester_ref, p_canonical_url, src.id, src.work_id, p_key, p_fingerprint, p_note)
     returning * into req;
   insert into public.request_client_hints(request_id, payload) values (req.id, p_hints);
+  insert into public.request_adapter_metadata(request_id, provider, adapter_version, policy_id, algorithm_version, metadata, provenance)
+    values (req.id, p_provider, p_adapter_version, p_policy_id, p_algorithm_version, p_metadata, 'trusted-adapter');
+  for match_item in select value from jsonb_array_elements(p_matches) loop
+    if jsonb_typeof(match_item) <> 'object' or jsonb_typeof(match_item->'workId') <> 'string'
+       or (match_item->>'workId') !~* '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
+       or match_item->>'kind' not in ('exact', 'probable') or jsonb_typeof(match_item->'reasons') <> 'array'
+    then raise exception 'Invalid match evidence' using errcode = '22023'; end if;
+    if jsonb_array_length(match_item->'reasons') not between 1 and 8 or exists (
+      select 1 from jsonb_array_elements(match_item->'reasons') reason
+      where jsonb_typeof(reason) <> 'string' or length(reason #>> '{}') not between 1 and 200
+    ) then raise exception 'Invalid match reasons' using errcode = '22023'; end if;
+    insert into public.request_match_evidence(request_id, kind, matched_work_id, reasons, algorithm_version)
+      values (req.id, match_item->>'kind', (match_item->>'workId')::uuid, match_item->'reasons', p_algorithm_version);
+  end loop;
   insert into private.request_idempotency_keys(requester_ref, key, fingerprint, request_id)
     values (p_requester_ref, p_key, p_fingerprint, req.id);
   return jsonb_build_object('kind', 'new', 'request_id', req.id, 'status', req.status);
 end;
 $$;
-revoke all on function private.request_store_create(uuid, text, text, text, text, text, text, text, text, jsonb)
+revoke all on function private.request_store_create(uuid, text, text, text, text, text, text, text, text, jsonb, jsonb, text, text, jsonb, text)
   from public, anon, authenticated, service_role;

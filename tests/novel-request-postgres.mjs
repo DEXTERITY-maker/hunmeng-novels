@@ -84,16 +84,16 @@ async function run() {
     console.log('PASS synthetic requester isolation and private evidence denial');
 
     const acl = await setup.query(`select
-      has_function_privilege('authenticated', 'private.request_store_create(uuid,text,text,text,text,text,text,text,text,jsonb)', 'execute') as authenticated,
-      has_function_privilege('anon', 'private.request_store_create(uuid,text,text,text,text,text,text,text,text,jsonb)', 'execute') as anonymous,
-      has_function_privilege('service_role', 'private.request_store_create(uuid,text,text,text,text,text,text,text,text,jsonb)', 'execute') as service`);
+      has_function_privilege('authenticated', 'private.request_store_create(uuid,text,text,text,text,text,text,text,text,jsonb,jsonb,text,text,jsonb,text)', 'execute') as authenticated,
+      has_function_privilege('anon', 'private.request_store_create(uuid,text,text,text,text,text,text,text,text,text,jsonb,jsonb,text,text,jsonb,text)', 'execute') as anonymous,
+      has_function_privilege('service_role', 'private.request_store_create(uuid,text,text,text,text,text,text,text,text,jsonb,jsonb,text,text,jsonb,text)', 'execute') as service`);
     assert.deepEqual(acl.rows[0], { authenticated: false, anonymous: false, service: false });
     console.log('PASS isolated store is not executable by public roles');
   } finally { setup.release(); }
 
   const submit = async ({ actor = userA, ref = '9'.repeat(64), external = '4242', key = 'store-key-1', fingerprint = '8'.repeat(64), note = '' } = {}) => {
-    const params = [actor, ref, 'fixture', external, `https://fiction.test/work/${external}`, 'fiction.test', key, fingerprint, note, '{}'];
-    return (await pool.query('select private.request_store_create($1,$2,$3,$4,$5,$6,$7,$8,$9,$10::jsonb) as result', params)).rows[0].result;
+    const params = [actor, ref, 'fixture', external, `https://fiction.test/work/${external}`, 'fiction.test', key, fingerprint, note, '{}', '{}', '1', 'fixture', '[]', 'requests-match-v1'];
+    return (await pool.query('select private.request_store_create($1,$2,$3,$4,$5,$6,$7,$8,$9,$10::jsonb,$11::jsonb,$12,$13,$14::jsonb,$15) as result', params)).rows[0].result;
   };
   const simultaneous = await Promise.all([submit(), submit()]);
   assert.deepEqual(simultaneous.map(x => x.kind).sort(), ['new', 'replay']);
@@ -166,11 +166,33 @@ async function run() {
   assert.equal(replayBody.status, 'review');
   assert.equal((await handleRequestHttp(request('invalid-auth-key', 'invalid'), config)).status, 401);
   config.dependencies.sources = { recognize: async url => ({ source: identifySource(url, [fixtureAdapter]),
-    metadata: { originalTitle: 'Not persisted yet' },
+    metadata: { originalTitle: 'The Pale City', authors: ['A Writer'], description: 'not allowed' },
     provenance: { provider: FIXTURE_PROVIDER_ARCHIVE, adapterVersion: '1', policyId: 'fixture' } }) };
   assert.equal((await handleRequestHttp(request('blocked-meta-key', 'test-token', 'https://fiction-archive.test/work/8228'), config)).status, 503);
   const noSilentLoss = await pool.query("select count(*)::int as n from public.request_external_sources where external_id = '8228' and provider = $1", [FIXTURE_PROVIDER_ARCHIVE]);
   assert.equal(noSilentLoss.rows[0].n, 0);
+  config.dependencies.metadataPolicies = [{ provider: FIXTURE_PROVIDER_ARCHIVE, adapterVersion: '1', policyId: 'fixture',
+    allowedFields: ['originalTitle', 'authors'], evidence: 'fictional fixture permission' }];
+  config.dependencies.catalog = { works: async () => [{ id: workA, titles: ['The Pale City'], authors: ['A Writer'], sources: [], chapters: [] }] };
+  const matchedResponse = await handleRequestHttp(request('matched-meta-key', 'test-token', 'https://fiction-archive.test/work/8228'), config);
+  assert.equal(matchedResponse.status, 201);
+  const matchedBody = await matchedResponse.json();
+  assert.equal(matchedBody.matches[0].workId, workA);
+  assert.equal(matchedBody.matches[0].kind, 'probable');
+  const evidence = await pool.query('select metadata, policy_id, algorithm_version from public.request_adapter_metadata where request_id = $1', [matchedBody.requestId]);
+  assert.deepEqual(evidence.rows[0].metadata, { originalTitle: 'The Pale City', authors: ['A Writer'] });
+  assert.equal(evidence.rows[0].policy_id, 'fixture');
+  assert.equal(evidence.rows[0].algorithm_version, 'requests-match-v1');
+  config.dependencies.catalog = { works: async () => [] };
+  config.dependencies.algorithmVersion = 'requests-match-v2';
+  const savedReplay = await (await handleRequestHttp(request('matched-meta-key', 'test-token', 'https://fiction-archive.test/work/8228'), config)).json();
+  assert.deepEqual(savedReplay.matches, matchedBody.matches);
+  assert.equal(savedReplay.algorithmVersion, 'requests-match-v1');
+  config.dependencies.catalog = { works: async () => [{ id: '20000000-0000-4000-8000-999999999999', titles: ['The Pale City'], authors: ['A Writer'], sources: [], chapters: [] }] };
+  assert.equal((await handleRequestHttp(request('bad-work-id-key', 'test-token', 'https://fiction-archive.test/work/8338'), config)).status, 503);
+  const rolledBackEvidence = await pool.query("select count(*)::int as n from public.request_external_sources where external_id = '8338' and provider = $1", [FIXTURE_PROVIDER_ARCHIVE]);
+  assert.equal(rolledBackEvidence.rows[0].n, 0);
+  console.log('PASS approved metadata, advisory evidence, original replay and atomic rollback');
   await restricted.query('reset role');
   restricted.release();
   console.log('PASS HTTP, synthetic Auth and PostgreSQL storage via restricted role');
@@ -203,8 +225,8 @@ async function run() {
   const rollbackRef = '1'.repeat(64);
   try {
     await transaction.query('begin');
-    const params = [userA, rollbackRef, 'fixture', 'rollback', 'https://fiction.test/work/rollback', 'fiction.test', 'rollback-key', 'a'.repeat(64), '', '{}'];
-    const inserted = await transaction.query('select private.request_store_create($1,$2,$3,$4,$5,$6,$7,$8,$9,$10::jsonb) as result', params);
+    const params = [userA, rollbackRef, 'fixture', 'rollback', 'https://fiction.test/work/rollback', 'fiction.test', 'rollback-key', 'a'.repeat(64), '', '{}', '{}', '1', 'fixture', '[]', 'requests-match-v1'];
+    const inserted = await transaction.query('select private.request_store_create($1,$2,$3,$4,$5,$6,$7,$8,$9,$10::jsonb,$11::jsonb,$12,$13,$14::jsonb,$15) as result', params);
     assert.equal(inserted.rows[0].result.kind, 'new');
     await transaction.query('rollback');
     assert.equal((await submit({ ref: rollbackRef, external: 'rollback', key: 'rollback-key', fingerprint: 'a'.repeat(64) })).kind, 'new');

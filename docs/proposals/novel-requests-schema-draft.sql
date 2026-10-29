@@ -165,6 +165,7 @@ create table public.request_adapter_metadata (
   provider text not null check (provider ~ '^[a-z0-9][a-z0-9-]{1,39}$'),
   adapter_version text not null check (length(btrim(adapter_version)) between 1 and 64),
   policy_id text not null check (length(btrim(policy_id)) between 1 and 128),
+  algorithm_version text not null check (length(btrim(algorithm_version)) between 1 and 64),
   metadata jsonb not null check (jsonb_typeof(metadata) = 'object'),
   provenance text not null check (length(btrim(provenance)) between 1 and 500),
   obtained_at timestamptz not null default now()

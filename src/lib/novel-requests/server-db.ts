@@ -13,7 +13,7 @@ type PoolOptions = {
 type Pool = QueryExecutor & { end(): Promise<void> };
 type PoolFactory = (options: PoolOptions) => Pool;
 
-const CREATE = 'select private.request_store_create($1,$2,$3,$4,$5,$6,$7,$8,$9,$10::jsonb) as result';
+const CREATE = 'select private.request_store_create($1,$2,$3,$4,$5,$6,$7,$8,$9,$10::jsonb,$11::jsonb,$12,$13,$14::jsonb,$15) as result';
 const READ = 'select * from private.request_store_read($1,$2,$3)';
 
 /**

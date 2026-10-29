@@ -15,12 +15,15 @@
 import {
   findMatches,
   identifySource,
+  selectPermittedMetadata,
   type Chapter,
   type Match,
   type SourceAdapter,
   type SourceIdentity,
   type WorkEvidence,
   type RequestStatus,
+  type MetadataField,
+  type MetadataInput,
 } from './core.ts';
 
 export type ActorRole = 'user' | 'editor' | 'admin';
@@ -57,6 +60,15 @@ export type AdapterRecognition = {
     readonly adapterVersion: string;
     readonly policyId: string;
   };
+};
+
+/** Independently approved server configuration, never supplied by an adapter. */
+export type ApprovedMetadataPolicy = {
+  readonly provider: string;
+  readonly policyId: string;
+  readonly adapterVersion: string;
+  readonly allowedFields: readonly MetadataField[];
+  readonly evidence: string;
 };
 
 /**
@@ -97,6 +109,7 @@ export type StoredRequest = {
   readonly hints: ClientHints;
   readonly adapterMetadata: AdapterMetadata;
   readonly matches: readonly Match[];
+  readonly algorithmVersion: string;
   readonly status: RequestStatus;
   readonly createdAt: string;
 };
@@ -105,6 +118,7 @@ export type NewRequest = Omit<StoredRequest, 'id' | 'createdAt' | 'status'> & {
   readonly status: 'submitted';
   /** Verified server-side actor, never accepted from client data or returned. */
   readonly requesterId: string;
+  readonly adapterProvenance: AdapterRecognition['provenance'];
   /** Kept by the store for the (requesterRef, idempotencyKey) uniqueness contract. */
   readonly idempotencyKey: string;
 };
@@ -130,6 +144,7 @@ export type HandlerDependencies = {
   readonly sources: SourceRegistry | null;
   /** Independently configured, trusted URL rules, never derived from registry output. */
   readonly allowedAdapters: readonly SourceAdapter[] | null;
+  readonly metadataPolicies?: readonly ApprovedMetadataPolicy[];
   readonly catalog: CatalogReader | null;
   readonly rateLimiter: RateLimiter | null;
   readonly store: RequestStore | null;
@@ -321,7 +336,7 @@ function toMatchView(matches: readonly Match[]): readonly Match[] {
   return matches.map(match => ({ workId: match.workId, kind: match.kind, reasons: [...match.reasons] }));
 }
 
-function responseFor(record: StoredRequest, deduplicated: SubmitResponse['deduplicated'], algorithmVersion: string): HandlerSuccess {
+function responseFor(record: StoredRequest, deduplicated: SubmitResponse['deduplicated']): HandlerSuccess {
   return {
     status: deduplicated === 'new' ? 201 : 200,
     body: {
@@ -330,7 +345,7 @@ function responseFor(record: StoredRequest, deduplicated: SubmitResponse['dedupl
       deduplicated,
       matches: toMatchView(record.matches),
       rights: 'unverified',
-      algorithmVersion,
+      algorithmVersion: record.algorithmVersion,
       provisional: true,
     },
   };
@@ -404,6 +419,24 @@ export async function handleNovelRequest(input: SubmitInput, dependencies: Handl
     return fail(503, 'dependency-unavailable', 'Source recognition is unavailable.');
   }
 
+  // Only independently approved fields can enter matching or persistence.
+  // An adapter cannot approve its own rights or use client hints as metadata.
+  let permittedMetadata: AdapterMetadata = {};
+  try {
+    const provenance = recognition.provenance;
+    if (typeof provenance.adapterVersion !== 'string' || !provenance.adapterVersion.trim() || provenance.adapterVersion.length > 64 ||
+        typeof provenance.policyId !== 'string' || !provenance.policyId.trim() || provenance.policyId.length > 128 ||
+        !isRecord(recognition.metadata)) throw new Error('Invalid source provenance');
+    if (Object.keys(recognition.metadata).length) {
+      const policy = dependencies.metadataPolicies?.find(p => p.provider === recognition.source.provider &&
+        p.policyId === provenance.policyId && p.adapterVersion === provenance.adapterVersion);
+      if (!policy?.evidence.trim()) throw new Error('Source policy not approved');
+      permittedMetadata = selectPermittedMetadata(recognition.metadata as MetadataInput, policy);
+    }
+  } catch {
+    return fail(503, 'dependency-unavailable', 'Source metadata policy is unavailable.');
+  }
+
   // 4. Server-side fingerprint: canonical URL + validated hints + note.
   const fingerprint = await sha256(
     canonicalJson({
@@ -419,7 +452,7 @@ export async function handleNovelRequest(input: SubmitInput, dependencies: Handl
   let matches: readonly Match[];
   try {
     const catalog = await dependencies.catalog.works();
-    const metadata = recognition.metadata;
+    const metadata = permittedMetadata;
     const evidence: WorkEvidence = {
       id: 'pending-request',
       titles: [metadata.originalTitle ?? '', ...(metadata.alternativeTitles ?? [])].filter(Boolean),
@@ -436,12 +469,12 @@ export async function handleNovelRequest(input: SubmitInput, dependencies: Handl
   try {
     const result = await dependencies.store.submitAtomically({
       requesterId: actor.userId, requesterRef, idempotencyKey: body.idempotencyKey, source: recognition.source,
-      fingerprint, note: body.note, hints: body.hints, adapterMetadata: recognition.metadata,
-      matches, status: 'submitted',
+      fingerprint, note: body.note, hints: body.hints, adapterMetadata: permittedMetadata,
+      adapterProvenance: recognition.provenance, algorithmVersion, matches, status: 'submitted',
     });
     if (result.kind === 'conflict') return fail(409, 'idempotency-key-reused', 'This idempotency key was already used with different content.');
     if (result.kind === 'quota-exceeded') return fail(429, 'rate-limited', 'Too many submissions. Try again later.', { retryAfterSeconds: result.retryAfterSeconds });
-    return responseFor(result.record, result.kind, algorithmVersion);
+    return responseFor(result.record, result.kind);
   } catch {
     return fail(503, 'storage-unavailable', 'Request storage is unavailable.');
   }

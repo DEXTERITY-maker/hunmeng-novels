@@ -7,7 +7,7 @@
  * persistence and isolated Supabase role tests remain release blockers.
  */
 import { createServerSupabaseIdentity } from './server-supabase-auth.ts';
-import { createRequesterReferenceDeriver, type SourceRegistry, type CatalogReader, type RateLimiter } from './handler.ts';
+import { createRequesterReferenceDeriver, type SourceRegistry, type CatalogReader, type RateLimiter, type ApprovedMetadataPolicy } from './handler.ts';
 import { createPostgresRequestStore, type QueryExecutor } from './postgres-store.ts';
 import { handleRequestHttp } from './http.ts';
 import type { SourceAdapter } from './core.ts';
@@ -20,6 +20,7 @@ export type IsolatedRequestRuntimeConfig = {
   readonly database: QueryExecutor;
   readonly sources: SourceRegistry;
   readonly allowedAdapters: readonly SourceAdapter[];
+  readonly metadataPolicies?: readonly ApprovedMetadataPolicy[];
   readonly catalog: CatalogReader;
   readonly rateLimiter: RateLimiter;
 };
@@ -33,7 +34,7 @@ export function createIsolatedNovelRequestRuntime(config: IsolatedRequestRuntime
   const store = createPostgresRequestStore(config.database);
   const dependencies = {
     identity, requesterReferences, sources: config.sources,
-    allowedAdapters: config.allowedAdapters, catalog: config.catalog,
+    allowedAdapters: config.allowedAdapters, metadataPolicies: config.metadataPolicies, catalog: config.catalog,
     rateLimiter: config.rateLimiter, store,
   };
   return (request: Request) => handleRequestHttp(request, {
@@ -41,3 +42,4 @@ export function createIsolatedNovelRequestRuntime(config: IsolatedRequestRuntime
     dependencies,
   });
 }
+

@@ -4,7 +4,7 @@ import { createRequestDatabaseExecutor } from '../src/lib/novel-requests/server-
 
 const ref = 'abcdefghijklmnopqrst';
 const url = `postgresql://hunmeng_request_login.${ref}:fixture-password@aws-0-eu-central-1.pooler.supabase.com:6543/postgres`;
-const createQuery = 'select private.request_store_create($1,$2,$3,$4,$5,$6,$7,$8,$9,$10::jsonb) as result';
+const createQuery = 'select private.request_store_create($1,$2,$3,$4,$5,$6,$7,$8,$9,$10::jsonb,$11::jsonb,$12,$13,$14::jsonb,$15) as result';
 const readQuery = 'select * from private.request_store_read($1,$2,$3)';
 
 test('accepts only the intended pooler login with strict TLS and bounded pool', async () => {
