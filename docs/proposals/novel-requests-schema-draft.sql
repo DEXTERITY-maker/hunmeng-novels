@@ -302,8 +302,8 @@ grant select on public.request_works, public.request_work_titles,
   public.request_adapter_metadata, public.request_match_evidence,
   public.request_moderation_decisions, public.request_drafts,
   public.request_rate_counters to service_role;
-grant select on private.request_rights_evidence to service_role;
-grant usage on schema private to service_role;
+-- Private rights evidence remains inaccessible by direct grants. A future
+-- audited admin-only function must be designed and tested before any access.
 
 -- Owner projection: only the requester's own request. The view is owned by the
 -- migration owner role and runs with the owner's rights; the WHERE clause is the
@@ -395,7 +395,9 @@ declare
   work_source uuid;
   draft_source uuid;
 begin
-  select * into req from public.novel_requests where id = new.request_id;
+  -- This trigger is attached to novel_requests, whose primary key is id.
+  -- Read the current row so deferred checks see the final transaction state.
+  select * into req from public.novel_requests where id = new.id;
 
   select work_id into src_work
     from public.request_external_sources where id = req.external_source_id;
