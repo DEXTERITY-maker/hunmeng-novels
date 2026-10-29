@@ -4,6 +4,12 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import { resolve } from 'node:path';
+import { createSupabaseIdentityVerifier } from '../src/lib/novel-requests/supabase-identity.ts';
+import { createPostgresRequestStore } from '../src/lib/novel-requests/postgres-store.ts';
+import { createRequesterReferenceDeriver } from '../src/lib/novel-requests/handler.ts';
+import { handleRequestHttp } from '../src/lib/novel-requests/http.ts';
+import { identifySource } from '../src/lib/novel-requests/core.ts';
+import { fixtureAdapter, FIXTURE_PROVIDER_ARCHIVE } from '../src/lib/novel-requests/prototype-fixtures.ts';
 
 if (process.env.HUNMENG_DISPOSABLE_PG !== 'yes' || !process.env.PG_MODULE_DIR)
   throw new Error('Disposable PostgreSQL opt-in and PG_MODULE_DIR are required');
@@ -103,7 +109,54 @@ async function run() {
   const shared = await pool.query(`select count(*)::int as n from public.novel_requests r
     join public.request_external_sources e on e.id=r.external_source_id where e.provider='fixture' and e.external_id='4242'`);
   assert.equal(shared.rows[0].n, 2);
+  await assert.rejects(submit({ actor: userB, ref: '9'.repeat(64) }), /Request identity mismatch/);
   console.log('PASS concurrent replay, conflict, active request, and cross-user isolation');
+
+  // Real HTTP/handler/store/PostgreSQL path; Auth is a synthetic getUser double.
+  // No production Supabase, actual JWT, source fetch, or secrets are used.
+  const auth = createSupabaseIdentityVerifier({ getUser: async token => token === 'test-token'
+    ? { data: { user: { id: userA } }, error: null }
+    : { data: { user: null }, error: { status: 401 } } });
+  const adapter = createPostgresRequestStore(pool);
+  const config = {
+    allowedOrigins: ['https://hunmeng-novel.test'],
+    dependencies: {
+      identity: auth,
+      requesterReferences: createRequesterReferenceDeriver(new Uint8Array(32).fill(7)),
+      allowedAdapters: [fixtureAdapter],
+      sources: { recognize: async url => ({ source: identifySource(url, [fixtureAdapter]), metadata: {},
+        provenance: { provider: FIXTURE_PROVIDER_ARCHIVE, adapterVersion: '1', policyId: 'fixture' } }) },
+      catalog: { works: async () => [] },
+      rateLimiter: { check: async () => ({ allowed: true }) },
+      store: adapter,
+    },
+  };
+  const request = (key, token = 'test-token', url = 'https://fiction-archive.test/work/8118') => new Request('https://hunmeng-novel.test/api/novel-requests', {
+    method: 'POST', headers: { origin: 'https://hunmeng-novel.test', authorization: `Bearer ${token}`,
+      'content-type': 'application/json', 'idempotency-key': key },
+    body: JSON.stringify({ url, note: 'synthetic note' }),
+  });
+  const firstHttp = await handleRequestHttp(request('http-fixture-key'), config);
+  assert.equal(firstHttp.status, 201);
+  const firstBody = await firstHttp.json();
+  const saved = await pool.query('select requester_id, client_note from public.novel_requests where id = $1', [firstBody.requestId]);
+  assert.equal(saved.rows[0].requester_id, userA);
+  assert.equal(saved.rows[0].client_note, 'synthetic note');
+  assert.equal(JSON.stringify(firstBody).includes(userA), false);
+  await pool.query("update public.novel_requests set status = 'review', version = version + 1 where id = $1", [firstBody.requestId]);
+  const replayHttp = await handleRequestHttp(request('http-fixture-key'), config);
+  assert.equal(replayHttp.status, 200);
+  const replayBody = await replayHttp.json();
+  assert.equal(replayBody.deduplicated, 'replay');
+  assert.equal(replayBody.status, 'review');
+  assert.equal((await handleRequestHttp(request('invalid-auth-key', 'invalid'), config)).status, 401);
+  config.dependencies.sources = { recognize: async url => ({ source: identifySource(url, [fixtureAdapter]),
+    metadata: { originalTitle: 'Not persisted yet' },
+    provenance: { provider: FIXTURE_PROVIDER_ARCHIVE, adapterVersion: '1', policyId: 'fixture' } }) };
+  assert.equal((await handleRequestHttp(request('blocked-meta-key', 'test-token', 'https://fiction-archive.test/work/8228'), config)).status, 503);
+  const noSilentLoss = await pool.query("select count(*)::int as n from public.request_external_sources where external_id = '8228' and provider = $1", [FIXTURE_PROVIDER_ARCHIVE]);
+  assert.equal(noSilentLoss.rows[0].n, 0);
+  console.log('PASS HTTP, verified identity adapter and PostgreSQL storage integration (synthetic Auth)');
 
   const activeRaceRef = '3'.repeat(64);
   const activeRace = await Promise.all([

@@ -20,6 +20,7 @@ import {
   type SourceAdapter,
   type SourceIdentity,
   type WorkEvidence,
+  type RequestStatus,
 } from './core.ts';
 
 export type ActorRole = 'user' | 'editor' | 'admin';
@@ -96,11 +97,12 @@ export type StoredRequest = {
   readonly hints: ClientHints;
   readonly adapterMetadata: AdapterMetadata;
   readonly matches: readonly Match[];
-  readonly status: 'submitted';
+  readonly status: RequestStatus;
   readonly createdAt: string;
 };
 
-export type NewRequest = Omit<StoredRequest, 'id' | 'createdAt'> & {
+export type NewRequest = Omit<StoredRequest, 'id' | 'createdAt' | 'status'> & {
+  readonly status: 'submitted';
   /** Verified server-side actor, never accepted from client data or returned. */
   readonly requesterId: string;
   /** Kept by the store for the (requesterRef, idempotencyKey) uniqueness contract. */
@@ -114,7 +116,7 @@ export type NewRequest = Omit<StoredRequest, 'id' | 'createdAt'> & {
  */
 export type StoreResult =
   | { readonly kind: 'new' | 'replay' | 'active-request'; readonly record: StoredRequest }
-  | { readonly kind: 'conflict'; readonly existingRequestId: string }
+  | { readonly kind: 'conflict' }
   | { readonly kind: 'quota-exceeded'; readonly retryAfterSeconds?: number };
 /** A single transaction must check idempotency and active source, consume the
  * creation quota only for a new row, and persist it. HTTP throttling is separate. */
@@ -171,7 +173,7 @@ export type HandlerError = {
 
 export type SubmitResponse = {
   readonly requestId: string;
-  readonly status: 'submitted';
+  readonly status: RequestStatus;
   readonly deduplicated: 'new' | 'replay' | 'active-request';
   readonly matches: readonly Match[];
   readonly rights: 'unverified';
@@ -324,7 +326,7 @@ function responseFor(record: StoredRequest, deduplicated: SubmitResponse['dedupl
     status: deduplicated === 'new' ? 201 : 200,
     body: {
       requestId: record.id,
-      status: 'submitted',
+      status: record.status,
       deduplicated,
       matches: toMatchView(record.matches),
       rights: 'unverified',

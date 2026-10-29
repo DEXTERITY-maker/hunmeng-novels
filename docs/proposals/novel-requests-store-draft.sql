@@ -59,6 +59,9 @@ begin
   if found then
     if saved_key.fingerprint <> p_fingerprint then return jsonb_build_object('kind', 'conflict'); end if;
     select * into req from public.novel_requests where id = saved_key.request_id;
+    if not found or req.requester_id is distinct from p_actor_id then
+      raise exception 'Request identity mismatch' using errcode = '28000';
+    end if;
     return jsonb_build_object('kind', 'replay', 'request_id', req.id, 'status', req.status);
   end if;
 
@@ -72,6 +75,9 @@ begin
       where requester_ref = p_requester_ref and external_source_id = src.id
         and status in ('submitted', 'review', 'needs_rights', 'draft') limit 1;
     if found then
+      if req.requester_id is distinct from p_actor_id then
+        raise exception 'Request identity mismatch' using errcode = '28000';
+      end if;
       insert into private.request_idempotency_keys(requester_ref, key, fingerprint, request_id)
         values (p_requester_ref, p_key, p_fingerprint, req.id);
       return jsonb_build_object('kind', 'active-request', 'request_id', req.id, 'status', req.status);
