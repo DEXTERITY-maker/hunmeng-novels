@@ -106,6 +106,41 @@ async function run() {
       where issue = 'external_source_work_mismatch'`);
     assert.equal(result.rows[0].n, 0, 'CONCURRENCY BLOCKER: concurrent transactions committed inconsistent source/work links');
     console.log('PASS concurrency: no source/work mismatch');
+
+    // A second write-skew case: work's editorial link changes concurrently
+    // with a new draft that was validated against the old link.
+    const source3 = '10000000-0000-4000-8000-000000000003';
+    const request3 = '30000000-0000-4000-8000-000000000003';
+    const editorial1 = '50000000-0000-4000-8000-000000000001';
+    const editorial2 = '50000000-0000-4000-8000-000000000002';
+    await pool.query(`
+      insert into public.novel_sources(id) values ('${editorial1}'), ('${editorial2}');
+      update public.request_works set novel_source_id = '${editorial1}', state = 'converted' where id = '${workA}';
+      insert into public.request_external_sources (id, provider, external_id, canonical_url, host, work_id)
+        values ('${source3}', 'fixture', 'three', 'https://fiction.test/work/3', 'fiction.test', '${workA}');
+      insert into public.novel_requests (id, requester_id, requester_ref, submitted_url, external_source_id, work_id, idempotency_key, request_fingerprint)
+        values ('${request3}', '${userB}', repeat('e',64), 'https://fiction.test/work/3', '${source3}', '${workA}', 'work-race-key', repeat('f',64));
+    `);
+    await a.query('begin');
+    await b.query('begin');
+    await a.query(`update public.request_works set novel_source_id = '${editorial2}' where id = '${workA}'`);
+    await b.query(`insert into public.request_drafts (request_id, work_id, source_url, converted_source_id)
+      values ('${request3}', '${workA}', 'https://fiction.test/work/3', '${editorial1}')`);
+    await a.query('set constraints all immediate');
+    const draftCheck = b.query('set constraints all immediate').then(
+      () => ({ ok: true }), error => ({ ok: false, error }),
+    );
+    await a.query('commit');
+    const draftOutcome = await draftCheck;
+    if (draftOutcome.ok) await b.query('commit');
+    else {
+      assert.match(draftOutcome.error.message, /Draft source differs from the work source/);
+      await b.query('rollback');
+    }
+    const workDrift = await pool.query(`select count(*)::int as n from public.request_consistency_report()
+      where issue = 'draft_source_differs_from_work' and request_id = '${request3}'`);
+    assert.equal(workDrift.rows[0].n, 0, 'CONCURRENCY BLOCKER: work/draft links became inconsistent');
+    console.log('PASS concurrency: no work/draft mismatch');
   } finally {
     await a.query('rollback').catch(() => {});
     await b.query('rollback').catch(() => {});
