@@ -105,12 +105,41 @@ async function run() {
   assert.equal(shared.rows[0].n, 2);
   console.log('PASS concurrent replay, conflict, active request, and cross-user isolation');
 
+  const activeRaceRef = '3'.repeat(64);
+  const activeRace = await Promise.all([
+    submit({ ref: activeRaceRef, external: 'parallel-source', key: 'parallel-key-1' }),
+    submit({ ref: activeRaceRef, external: 'parallel-source', key: 'parallel-key-2' }),
+  ]);
+  assert.deepEqual(activeRace.map(x => x.kind).sort(), ['active-request', 'new']);
+  assert.equal(activeRace[0].request_id, activeRace[1].request_id);
+  assert.equal((await submit({ ref: activeRaceRef, external: 'parallel-source', key: 'parallel-key-2' })).kind, 'replay');
+  console.log('PASS concurrent different keys share one active request');
+
   const quotaRef = '4'.repeat(64);
   for (let i = 0; i < 5; i++)
     assert.equal((await submit({ ref: quotaRef, external: `quota-${i}`, key: `quota-key-${i}` })).kind, 'new');
   assert.equal((await submit({ ref: quotaRef, external: 'quota-0', key: 'quota-key-0' })).kind, 'replay');
   assert.equal((await submit({ ref: quotaRef, external: 'quota-6', key: 'quota-key-6' })).kind, 'quota-exceeded');
   console.log('PASS quota counts new requests only');
+
+  const parallelQuotaRef = '2'.repeat(64);
+  const quotas = await Promise.all(Array.from({ length: 8 }, (_, i) =>
+    submit({ ref: parallelQuotaRef, external: `parallel-quota-${i}`, key: `parallel-quota-key-${i}` })));
+  assert.equal(quotas.filter(x => x.kind === 'new').length, 5);
+  assert.equal(quotas.filter(x => x.kind === 'quota-exceeded').length, 3);
+  console.log('PASS concurrent submissions cannot exceed creation quota');
+
+  const transaction = await pool.connect();
+  const rollbackRef = '1'.repeat(64);
+  try {
+    await transaction.query('begin');
+    const params = [userA, rollbackRef, 'fixture', 'rollback', 'https://fiction.test/work/rollback', 'fiction.test', 'rollback-key', 'a'.repeat(64), '', '{}'];
+    const inserted = await transaction.query('select private.request_store_create($1,$2,$3,$4,$5,$6,$7,$8,$9,$10::jsonb) as result', params);
+    assert.equal(inserted.rows[0].result.kind, 'new');
+    await transaction.query('rollback');
+    assert.equal((await submit({ ref: rollbackRef, external: 'rollback', key: 'rollback-key', fingerprint: 'a'.repeat(64) })).kind, 'new');
+  } finally { transaction.release(); }
+  console.log('PASS rollback removes the request and idempotency binding');
 
   // Race audit: A reassigns a source while B inserts a request using the old
   // source/work link. Both force deferred checks before either commits. This
