@@ -95,6 +95,9 @@ async function run() {
     const bCheck = b.query('set constraints all immediate').then(
       () => ({ ok: true }), error => ({ ok: false, error }),
     );
+    // Allow B to reach the check while A remains uncommitted. If a lock exists,
+    // B must wait; without one, it may incorrectly accept a stale snapshot.
+    await Promise.race([bCheck, new Promise(resolve => setTimeout(resolve, 500))]);
     await a.query('commit');
     const outcome = await bCheck;
     if (outcome.ok) await b.query('commit');
@@ -130,6 +133,7 @@ async function run() {
     const draftCheck = b.query('set constraints all immediate').then(
       () => ({ ok: true }), error => ({ ok: false, error }),
     );
+    await Promise.race([draftCheck, new Promise(resolve => setTimeout(resolve, 500))]);
     await a.query('commit');
     const draftOutcome = await draftCheck;
     if (draftOutcome.ok) await b.query('commit');
