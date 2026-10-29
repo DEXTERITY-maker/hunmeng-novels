@@ -1,0 +1,11 @@
+# Moderation queue and decisions: isolated SQL prototype
+
+`novel-requests-moderation-draft.sql` is a candidate for a disposable database, not a migration. It creates a separate NOLOGIN moderation executor role, a paginated queue and one atomic decision function. Neither is wired to a public route or the production database.
+
+The trusted server must verify every actor through Supabase Auth before calling the functions, and derive the 64-character pseudonymous actor reference using a server-only secret. The database checks the actor against `novel_staff` for every call; it does **not** verify the JWT or derive the pseudonym. An attacker holding the executor credential can impersonate a known staff UUID, so identity of the caller and credential security are release blockers. This role may execute only the two moderation functions; it cannot directly read request tables or private rights evidence.
+
+The queue returns at most 50 active requests ordered by `(created_at, id)` and includes untrusted requester hints separately from approved adapter metadata and advisory matching reasons. The timestamp is returned as text to retain microseconds across clients; the cursor must preserve that value unchanged. Queue pagination is not a snapshot: records can change status while a moderator pages through it. Do not render hints or notes as HTML.
+
+The decision function locks the staff row and request row, checks the expected version, updates the status and appends one history record atomically. A competing moderator receives a conflict; role revocation and malformed input fail closed. Editors can start review or send requests for rights review; only admins can reject or reopen. Draft creation and conversion are intentionally disabled because they need additional atomic work and rights checks. No decision grants rights, merges works, or publishes material.
+
+The isolated PostgreSQL and local Supabase test workflows exercise these prototypes using fictional users and data. Hosted role membership, auth revocation semantics, TLS/pooler behavior, separate server configuration, rate limiting, complete queue access policy, durable audit and staging security review are unresolved. No real provider is enabled. Changes to production or database require a separate owner confirmation and a reviewed migration.

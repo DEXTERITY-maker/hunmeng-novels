@@ -52,8 +52,10 @@ async function run() {
     await setup.query(await readFile('docs/proposals/novel-requests-schema-draft.sql', 'utf8'));
     await setup.query(await readFile('docs/proposals/novel-requests-store-draft.sql', 'utf8'));
     await setup.query(await readFile('docs/proposals/novel-requests-executor-draft.sql', 'utf8'));
+    await setup.query(await readFile('docs/proposals/novel-requests-moderation-draft.sql', 'utf8'));
     await setup.query(`
       insert into auth.users values ('${userA}'), ('${userB}');
+      insert into public.novel_staff values ('${userA}', 'editor'), ('${userB}', 'admin');
       insert into public.request_works (id, canonical_title, normalized_title) values
         ('${workA}', 'Fixture A', 'fixture a'), ('${workB}', 'Fixture B', 'fixture b');
       insert into public.request_external_sources (id, provider, external_id, canonical_url, host, work_id) values
@@ -90,6 +92,62 @@ async function run() {
     assert.deepEqual(acl.rows[0], { authenticated: false, anonymous: false, service: false });
     console.log('PASS isolated store is not executable by public roles');
   } finally { setup.release(); }
+
+  // Test-only server role: database still trusts the server to authenticate
+  // the presented actor. These checks do not prove that a JWT is valid.
+  const moderator = await pool.connect();
+  const rival = await pool.connect();
+  try {
+    await moderator.query('set role hunmeng_moderation_executor');
+    await rival.query('set role hunmeng_moderation_executor');
+    await assert.rejects(moderator.query('select * from public.novel_requests'), /permission denied/);
+    await assert.rejects(moderator.query('select * from private.request_rights_evidence'), /permission denied/);
+    const queue = await moderator.query('select * from private.request_moderation_queue($1,$2,$3,$4)', [userA, null, null, 1]);
+    assert.equal(queue.rows.length, 1);
+    assert.equal(queue.rows[0].id, requestId);
+    assert.deepEqual(queue.rows[0].matches, []);
+    const nextPage = await moderator.query('select * from private.request_moderation_queue($1,$2,$3,$4)', [userA, queue.rows[0].created_at, requestId, 1]);
+    assert.equal(nextPage.rows.length, 0);
+    await assert.rejects(moderator.query('select * from private.request_moderation_queue($1,$2,$3,$4)', [userA, null, null, 51]), /Invalid queue/);
+    await assert.rejects(moderator.query('select * from private.request_moderation_queue($1,$2,$3,$4)', ['40000000-0000-4000-8000-000000000099', null, null, 1]), /Staff authorization/);
+    const decide = (client, actor, version, to, reason = 'fictional review') =>
+      client.query('select private.request_moderate($1,$2,$3,$4,$5,$6) as result', [actor, 'f'.repeat(64), requestId, version, to, reason]);
+    await assert.rejects(decide(moderator, userA, 1, 'rejected'), /Transition not permitted/);
+    await assert.rejects(decide(moderator, userA, 1, 'draft'), /Transition not permitted/);
+    await assert.rejects(decide(moderator, userA, 1, 'review', ' '), /Invalid moderation input/);
+    const race = await Promise.all([decide(moderator, userA, 1, 'review'), decide(rival, userB, 1, 'rejected')]);
+    assert.deepEqual(race.map(x => x.rows[0].result.kind).sort(), ['conflict', 'updated']);
+    const persisted = await pool.query('select status, version from public.novel_requests where id=$1', [requestId]);
+    const audit = await pool.query('select actor_role, from_status, to_status, request_version from public.request_moderation_decisions where request_id=$1', [requestId]);
+    assert.equal(persisted.rows[0].version, 2);
+    assert.equal(audit.rows.length, 1);
+    assert.equal(audit.rows[0].to_status, persisted.rows[0].status);
+    assert.equal(audit.rows[0].request_version, 2);
+    if (persisted.rows[0].status === 'rejected') {
+      assert.equal((await decide(rival, userB, 2, 'review')).rows[0].result.kind, 'updated');
+    }
+    const beforeRollback = await pool.query('select version from public.novel_requests where id=$1', [requestId]);
+    const version = beforeRollback.rows[0].version;
+    await moderator.query('begin');
+    assert.equal((await decide(moderator, userA, version, 'needs_rights')).rows[0].result.kind, 'updated');
+    await moderator.query('rollback');
+    const afterRollback = await pool.query('select status, version from public.novel_requests where id=$1', [requestId]);
+    assert.deepEqual(afterRollback.rows[0], { status: 'review', version });
+    const history = await pool.query('select count(*)::int as n from public.request_moderation_decisions where request_id=$1 and to_status=$2', [requestId, 'needs_rights']);
+    assert.equal(history.rows[0].n, 0);
+    await pool.query('delete from public.novel_staff where user_id=$1', [userA]);
+    await assert.rejects(decide(moderator, userA, version, 'needs_rights'), /Staff authorization/);
+    await pool.query('insert into public.novel_staff values ($1,$2)', [userA, 'editor']);
+    const permissions = await pool.query(`select
+      has_function_privilege('anon', 'private.request_moderate(uuid,text,uuid,integer,text,text)', 'execute') as anon,
+      has_function_privilege('authenticated', 'private.request_moderate(uuid,text,uuid,integer,text,text)', 'execute') as authenticated,
+      has_function_privilege('service_role', 'private.request_moderate(uuid,text,uuid,integer,text,text)', 'execute') as service`);
+    assert.deepEqual(permissions.rows[0], { anon: false, authenticated: false, service: false });
+    console.log('PASS moderation queue, roles, concurrent version conflict, audit and rollback');
+  } finally {
+    await moderator.query('reset role'); await rival.query('reset role');
+    moderator.release(); rival.release();
+  }
 
   const submit = async ({ actor = userA, ref = '9'.repeat(64), external = '4242', key = 'store-key-1', fingerprint = '8'.repeat(64), note = '' } = {}) => {
     const params = [actor, ref, 'fixture', external, `https://fiction.test/work/${external}`, 'fiction.test', key, fingerprint, note, '{}', '{}', '1', 'fixture', '[]', 'requests-match-v1'];

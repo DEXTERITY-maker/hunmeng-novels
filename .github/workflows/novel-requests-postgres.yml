@@ -5,6 +5,7 @@ on:
       - 'docs/proposals/novel-requests-schema-draft.sql'
       - 'docs/proposals/novel-requests-store-draft.sql'
       - 'docs/proposals/novel-requests-executor-draft.sql'
+      - 'docs/proposals/novel-requests-moderation-draft.sql'
       - 'tests/novel-request-postgres.mjs'
       - 'src/lib/novel-requests/**'
       - '.github/workflows/novel-requests-postgres.yml'

@@ -40,7 +40,7 @@ const admin = createClient(apiUrl, serviceKey, options);
 const one = createClient(apiUrl, anonKey, options);
 const two = createClient(apiUrl, anonKey, options);
 const pass = 'LocalSynthetic-Only-123456!';
-let restricted;
+let restricted, moderation;
 
 async function createTestUser(email) {
   const { data, error } = await admin.auth.admin.createUser({ email, password: pass, email_confirm: true });
@@ -68,7 +68,7 @@ try {
       permission_translate boolean, permission_publish boolean, verified_by uuid,
       verified_at timestamptz, rights_evidence text);
   `);
-  for (const name of ['novel-requests-schema-draft.sql', 'novel-requests-store-draft.sql', 'novel-requests-executor-draft.sql'])
+  for (const name of ['novel-requests-schema-draft.sql', 'novel-requests-store-draft.sql', 'novel-requests-executor-draft.sql', 'novel-requests-moderation-draft.sql'])
     await db.query(await readFile(`docs/proposals/${name}`, 'utf8'));
   await db.query("create role hunmeng_request_test_login login password 'LocalOnly-NotARealSecret-123'; grant hunmeng_request_executor to hunmeng_request_test_login");
   const workId = '20000000-0000-4000-8000-000000000001';
@@ -76,9 +76,9 @@ try {
   await db.query("notify pgrst, 'reload schema'");
 
   const userOne = await createTestUser('fixture-one@example.com');
-  await createTestUser('fixture-two@example.com');
+  const userTwo = await createTestUser('fixture-two@example.com');
   const tokenOne = await signIn(one, 'fixture-one@example.com');
-  await signIn(two, 'fixture-two@example.com');
+  const tokenTwo = await signIn(two, 'fixture-two@example.com');
   const identity = createSupabaseIdentityVerifier(one.auth);
   assert.equal((await identity.verify(tokenOne)).userId, userOne);
   assert.equal(await identity.verify('invalid-fixture-token'), null);
@@ -139,6 +139,26 @@ try {
   assert.deepEqual(other, []);
   const { error: directError } = await one.from('novel_requests').select('id');
   assert.ok(directError, 'authenticated users cannot select base request table');
+  await db.query('insert into public.novel_staff values ($1,$2)', [userOne, 'editor']);
+  await db.query("create role hunmeng_moderation_test_login login password 'LocalOnly-Moderation-123'; grant hunmeng_moderation_executor to hunmeng_moderation_test_login");
+  moderation = new Client({ host: '127.0.0.1', port: 54322, database: 'postgres',
+    user: 'hunmeng_moderation_test_login', password: 'LocalOnly-Moderation-123', connectionTimeoutMillis: 5000 });
+  await moderation.connect();
+  await assert.rejects(moderation.query('select * from public.novel_requests'), /permission denied/);
+  await assert.rejects(moderation.query('select * from private.request_rights_evidence'), /permission denied/);
+  const verifiedOne = await identity.verify(tokenOne);
+  const verifiedTwo = await identity.verify(tokenTwo);
+  assert.equal(verifiedTwo.userId, userTwo);
+  await assert.rejects(moderation.query('select * from private.request_moderation_queue($1,$2,$3,$4)', [verifiedTwo.userId, null, null, 10]), /Staff authorization/);
+  const queue = await moderation.query('select * from private.request_moderation_queue($1,$2,$3,$4)', [verifiedOne.userId, null, null, 10]);
+  assert.equal(queue.rows[0].id, requestId);
+  assert.equal(queue.rows[0].matches[0].workId, workId);
+  assert.equal(queue.rows[0].hints.originalTitle, 'Untrusted hint');
+  const decision = await moderation.query('select private.request_moderate($1,$2,$3,$4,$5,$6) as result',
+    [verifiedOne.userId, 'f'.repeat(64), requestId, 1, 'review', 'fictional local review']);
+  assert.deepEqual(decision.rows[0].result, { kind: 'updated', status: 'review', version: 2 });
+  const audit = await db.query('select actor_id, actor_role, from_status, to_status from public.request_moderation_decisions where request_id=$1', [requestId]);
+  assert.deepEqual(audit.rows[0], { actor_id: userOne, actor_role: 'editor', from_status: 'submitted', to_status: 'review' });
   const banned = await admin.auth.admin.updateUserById(userOne, { ban_duration: '1h' });
   if (banned.error) throw new Error('Local synthetic account ban failed');
   const bannedIdentity = await identity.verify(tokenOne);
@@ -149,6 +169,7 @@ try {
   assert.ok(!deletedIdentity || !deletedIdentity.active, 'deleted user cannot submit');
   console.log('PASS local Supabase Auth, isolation, restricted login and permitted match evidence');
 } finally {
+  if (moderation) await moderation.end().catch(() => {});
   if (restricted) await restricted.end().catch(() => {});
   await db.end();
 }
