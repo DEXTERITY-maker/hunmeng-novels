@@ -71,6 +71,8 @@ try {
   for (const name of ['novel-requests-schema-draft.sql', 'novel-requests-store-draft.sql', 'novel-requests-executor-draft.sql'])
     await db.query(await readFile(`docs/proposals/${name}`, 'utf8'));
   await db.query("create role hunmeng_request_test_login login password 'LocalOnly-NotARealSecret-123'; grant hunmeng_request_executor to hunmeng_request_test_login");
+  const workId = '20000000-0000-4000-8000-000000000001';
+  await db.query("insert into public.request_works (id, canonical_title, normalized_title) values ($1, 'The Pale City', 'the pale city')", [workId]);
   await db.query("notify pgrst, 'reload schema'");
 
   const userOne = await createTestUser('fixture-one@example.com');
@@ -99,23 +101,38 @@ try {
       identity,
       requesterReferences: createRequesterReferenceDeriver(new Uint8Array(32).fill(7)),
       allowedAdapters: [fixtureAdapter],
-      sources: { recognize: async url => ({ source: identifySource(url, [fixtureAdapter]), metadata: {},
+      metadataPolicies: [{ provider: FIXTURE_PROVIDER_ARCHIVE, adapterVersion: '1', policyId: 'fixture',
+        allowedFields: ['originalTitle', 'authors'], evidence: 'fictional fixture permission' }],
+      sources: { recognize: async url => ({ source: identifySource(url, [fixtureAdapter]),
+        metadata: { originalTitle: 'The Pale City', authors: ['A Writer'], description: 'must not be stored' },
         provenance: { provider: FIXTURE_PROVIDER_ARCHIVE, adapterVersion: '1', policyId: 'fixture' } }) },
-      catalog: { works: async () => [] }, rateLimiter: { check: async () => ({ allowed: true }) },
+      catalog: { works: async () => [{ id: workId, titles: ['The Pale City'], authors: ['A Writer'], sources: [], chapters: [] }] },
+      rateLimiter: { check: async () => ({ allowed: true }) },
       store: createPostgresRequestStore(restricted),
     },
   };
   const makeRequest = token => new Request('https://hunmeng-novel.test/api/novel-requests', {
     method: 'POST', headers: { origin: 'https://hunmeng-novel.test', authorization: `Bearer ${token}`,
       'content-type': 'application/json', 'idempotency-key': 'local-auth-test-key' },
-    body: JSON.stringify({ url: 'https://fiction-archive.test/work/8118' }),
+    body: JSON.stringify({ url: 'https://fiction-archive.test/work/8118', clientHints: { originalTitle: 'Untrusted hint' } }),
   });
   const response = await handleRequestHttp(makeRequest(tokenOne), config);
   assert.equal(response.status, 201);
-  const requestId = (await response.json()).requestId;
+  const submitted = await response.json();
+  const requestId = submitted.requestId;
+  assert.equal(submitted.matches[0].workId, workId);
+  assert.equal(submitted.matches[0].kind, 'probable');
+  const evidence = await db.query('select metadata, policy_id, algorithm_version from public.request_adapter_metadata where request_id = $1', [requestId]);
+  assert.deepEqual(evidence.rows[0].metadata, { originalTitle: 'The Pale City', authors: ['A Writer'] });
+  assert.equal(evidence.rows[0].policy_id, 'fixture');
+  const matches = await db.query('select matched_work_id, reasons from public.request_match_evidence where request_id = $1', [requestId]);
+  assert.equal(matches.rows[0].matched_work_id, workId);
+  assert.ok(matches.rows[0].reasons.length);
   const replay = await handleRequestHttp(makeRequest(tokenOne), config);
   assert.equal(replay.status, 200);
-  assert.equal((await replay.json()).deduplicated, 'replay');
+  const replayBody = await replay.json();
+  assert.equal(replayBody.deduplicated, 'replay');
+  assert.deepEqual(replayBody.matches, submitted.matches);
   const own = await visibleRequests(one);
   const other = await visibleRequests(two);
   assert.deepEqual(own.map(row => row.id), [requestId]);
@@ -130,7 +147,7 @@ try {
   if (removed.error) throw new Error('Local synthetic account deletion failed');
   const deletedIdentity = await identity.verify(tokenOne);
   assert.ok(!deletedIdentity || !deletedIdentity.active, 'deleted user cannot submit');
-  console.log('PASS local Supabase Auth (valid/expired/banned/deleted), two-user isolation and limited database login');
+  console.log('PASS local Supabase Auth, isolation, restricted login and permitted match evidence');
 } finally {
   if (restricted) await restricted.end().catch(() => {});
   await db.end();
