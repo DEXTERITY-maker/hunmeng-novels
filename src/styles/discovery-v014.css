@@ -9,4 +9,9 @@
 .novel-page .novel-tag-group h3 { font: 700 .85rem/1.4 var(--body-font, sans-serif); color: var(--muted); margin: 0 0 .3rem; }
 .library-search { display: grid; gap: .4rem; font-weight: 700; max-width: 36rem; margin: 1.25rem 0; }
 .library-search input { min-height: 48px; width: 100%; padding: .65rem .85rem; }
-@media (max-width: 760px) { .active-filter { font-size: .85rem; } .library-search { max-width: none; } }
+@media (max-width: 760px) {
+  .active-filter { font-size: .85rem; }
+  .library-search { max-width: none; }
+  .catalog-page .catalog-filter-header { display: flex; align-items: center; justify-content: space-between; gap: .5rem; margin-bottom: 12px; }
+  .catalog-page .catalog-filter-header h2 { font-size: 1.1rem; margin: 0; }
+}

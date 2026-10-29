@@ -99,3 +99,11 @@ test('failed catalog index is explicit and its unusable controls are disabled', 
   await expect(page.getByPlaceholder('English or original title')).toBeDisabled();
   await expect(page.locator('#catalog-results .novel-card')).toHaveCount(2);
 });
+
+test('mobile catalog keeps search and first result within reach', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/catalog/');
+  await expect(page.locator('#result-count')).toHaveText('Novels found: 2');
+  await expect(page.getByPlaceholder('English or original title')).toBeVisible();
+  expect((await page.locator('#catalog-results .novel-card').first().boundingBox())!.y).toBeLessThan(700);
+});
