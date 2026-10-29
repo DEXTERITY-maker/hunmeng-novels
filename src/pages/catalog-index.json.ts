@@ -11,6 +11,7 @@ export const GET: APIRoute = async () =>
         serial: serials.some(s => s.slug === n.slug),
         title: n.title,
         originalTitle: n.originalTitle,
+        alternativeTitles: n.alternativeTitles,
         author: n.author,
         cover: n.cover,
         description: n.description,

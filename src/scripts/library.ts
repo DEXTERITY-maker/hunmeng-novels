@@ -7,6 +7,7 @@ import { readingAction } from '../lib/reading-action';
 export async function initLibrary() {
   let active: Shelf = 'reading';
   const list = document.getElementById('library-list')!;
+  const search = document.querySelector<HTMLInputElement>('#library-search')!;
   try {
     const catalog = await getCatalog();
     const render = async () => {
@@ -19,7 +20,11 @@ export async function initLibrary() {
         document.querySelector(`[data-shelf-count="${shelf}"]`)!.textContent = String(
           catalog.filter((n) => state.library[n.slug] === shelf).length,
         );
-      for (const n of catalog.filter((n) => state.library[n.slug] === active)) {
+      const shelfNovels = catalog.filter((n) => state.library[n.slug] === active);
+      const q = search.value.normalize('NFKC').toLocaleLowerCase('en').trim();
+      const visible = shelfNovels.filter(n => !q || [n.title, n.originalTitle, n.author ?? '', ...(n.alternativeTitles ?? [])]
+        .some(value => value.normalize('NFKC').toLocaleLowerCase('en').includes(q)));
+      for (const n of visible) {
         const p = state.progress[n.slug],
           c = n.chapters.find((c) => c.slug === p?.chapterSlug);
         const action = readingAction(n, p);
@@ -87,9 +92,11 @@ export async function initLibrary() {
         row.append(img, body, label);
         list.append(row);
       }
-      document.getElementById('library-empty')!.hidden = !!list.children.length;
+      document.getElementById('library-loading')!.hidden = true;
+      document.getElementById('library-empty')!.hidden = shelfNovels.length > 0;
+      document.getElementById('library-no-results')!.hidden = !shelfNovels.length || visible.length > 0;
       document.getElementById('library-count')!.textContent =
-        `${shelves[active]}: ${list.children.length}`;
+        `${shelves[active]}: ${visible.length}${q ? ` of ${shelfNovels.length}` : ''}`;
     };
     document.querySelectorAll<HTMLButtonElement>('[data-shelf-tab]').forEach((b) =>
       b.addEventListener('click', () => {
@@ -97,11 +104,13 @@ export async function initLibrary() {
         void render();
       }),
     );
+    search.addEventListener('input', () => void render());
     await render();
     onStorageChange(() => void render());
     window.addEventListener(catalogUpdatedEvent, () => void render());
   } catch {
-    document.getElementById('library-empty')!.textContent =
-      'Unable to load your library. Refresh the page.';
+    document.getElementById('library-loading')!.hidden = true;
+    document.getElementById('library-empty')!.hidden = true;
+    document.getElementById('library-error')!.hidden = false;
   }
 }

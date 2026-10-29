@@ -8,6 +8,8 @@ const { genres, tags, groups } = getTaxonomy(novels);
 const categories = [...new Set(novels.flatMap((n) => n.categories))].sort((a, b) => a.localeCompare(b, 'en'));
 const pickerTags = [...tags].sort((a, b) => b.count - a.count || a.label.localeCompare(b.label, 'en'));
 const PAGE_SIZE = 24;
+const hasRatings = novels.some(n => n.rating);
+const hasViews = novels.some(n => typeof n.views === 'number');
 ---
 
 <Layout
@@ -28,7 +30,7 @@ const PAGE_SIZE = 24;
         </div>
         <div class="catalog-search-row">
           <label class="search-label">
-            Title or author
+            Title, alternative title or author
             <input type="search" name="search" placeholder="English or original title" autocomplete="off" />
           </label>
         </div>
@@ -68,6 +70,10 @@ const PAGE_SIZE = 24;
               <input type="number" name="minChapters" min="0" max="1000000" step="1" inputmode="numeric" placeholder="No minimum" />
             </label>
             <label>
+              Maximum chapters
+              <input type="number" name="maxChapters" min="0" max="1000000" step="1" inputmode="numeric" placeholder="No maximum" />
+            </label>
+            <label>
               Minimum rating
               <select name="minRating">
                 <option value="">Any rating</option>
@@ -76,6 +82,7 @@ const PAGE_SIZE = 24;
                 <option value="4.5">4.5 out of 5 or higher</option>
               </select>
             </label>
+            {!hasRatings && <p class="fine">No reader ratings are available yet.</p>}
             <label>
               Sort by
               <select name="sort">
@@ -83,8 +90,8 @@ const PAGE_SIZE = 24;
                 <option value="added">Recently added</option>
                 <option value="title">Title: A–Z</option>
                 <option value="chapters">Chapter count</option>
-                <option value="rating">Rating</option>
-                <option value="views">Views</option>
+                <option value="rating">{hasRatings ? 'Rating' : 'Rating (no data yet)'}</option>
+                <option value="views">{hasViews ? 'Views' : 'Views (no data yet)'}</option>
               </select>
             </label>
             <label>
@@ -95,6 +102,22 @@ const PAGE_SIZE = 24;
               </select>
             </label>
           </div>
+          <details class="genre-filters">
+            <summary>Include or exclude multiple genres</summary>
+            <label>Match included genres<select name="genreMode"><option value="all">All selected genres</option><option value="any">Any selected genre</option></select></label>
+            <p class="fine">Excluded genres always remove a book. The single-genre selection above also applies.</p>
+            <fieldset class="tag-picker">
+              <legend>Genre filters</legend>
+              <div class="tag-picker-head" aria-hidden="true"><span>Genre</span><span>Include</span><span>Exclude</span></div>
+              <div class="tag-picker-list" tabindex="0" role="region" aria-label="Available genres">
+                {genres.map(genre => <div class="tag-picker-row">
+                  <span>{genre.label} <small>({genre.count})</small></span>
+                  <label><span class="sr-only">Include genre {genre.label}</span><input type="checkbox" name="genreInclude" value={genre.label} /></label>
+                  <label><span class="sr-only">Exclude genre {genre.label}</span><input type="checkbox" name="genreExclude" value={genre.label} /></label>
+                </div>)}
+              </div>
+            </fieldset>
+          </details>
           <details class="tag-filters">
             <summary>Advanced tag filters</summary>
             <label>Match included tags<select name="tagMode"><option value="all">All selected tags</option><option value="any">Any selected tag</option></select></label>
@@ -126,6 +149,7 @@ const PAGE_SIZE = 24;
           <p id="result-count" role="status" aria-live="polite">Novels: {novels.length}</p>
           <p class="fine">Ratings and views appear only when data is available.</p>
         </div>
+        <div id="active-filters" class="active-filters" aria-label="Active filters" hidden></div>
         <div id="catalog-results" class="novel-grid">
           {novels.slice(0, PAGE_SIZE).map((novel) => <NovelCard novel={novel} />)}
         </div>
