@@ -10,6 +10,7 @@ import { createPostgresRequestStore } from '../src/lib/novel-requests/postgres-s
 import { createRequesterReferenceDeriver } from '../src/lib/novel-requests/handler.ts';
 import { handleRequestHttp } from '../src/lib/novel-requests/http.ts';
 import { identifySource } from '../src/lib/novel-requests/core.ts';
+import { listModerationQueue, submitModerationDecision } from '../src/lib/novel-requests/moderation.ts';
 import { fixtureAdapter, FIXTURE_PROVIDER_ARCHIVE } from '../src/lib/novel-requests/prototype-fixtures.ts';
 
 if (process.env.HUNMENG_LOCAL_SUPABASE !== 'yes' || !process.env.LOCAL_SUPABASE_ENV || !process.env.PG_MODULE_DIR)
@@ -159,6 +160,18 @@ try {
   assert.deepEqual(decision.rows[0].result, { kind: 'updated', status: 'review', version: 2 });
   const audit = await db.query('select actor_id, actor_role, from_status, to_status from public.request_moderation_decisions where request_id=$1', [requestId]);
   assert.deepEqual(audit.rows[0], { actor_id: userOne, actor_role: 'editor', from_status: 'submitted', to_status: 'review' });
+  const moderationDeps = { identity, actorReferences: createRequesterReferenceDeriver(new Uint8Array(32).fill(8)),
+    limiter: { check: async () => ({ allowed: true }) }, database: moderation };
+  assert.equal((await listModerationQueue(tokenTwo, {}, moderationDeps)).status, 403);
+  const appQueue = await listModerationQueue(tokenOne, {}, moderationDeps);
+  assert.equal(appQueue.status, 200);
+  assert.equal(appQueue.body.items[0].id, requestId);
+  const appDecision = await submitModerationDecision(tokenOne,
+    { requestId, expectedVersion: 2, to: 'needs_rights', reason: 'Review rights' }, moderationDeps);
+  assert.deepEqual(appDecision, { status: 200, body: { status: 'needs_rights', version: 3 } });
+  const appConflict = await submitModerationDecision(tokenOne,
+    { requestId, expectedVersion: 2, to: 'needs_rights', reason: 'Outdated review' }, moderationDeps);
+  assert.equal(appConflict.status, 409);
   const banned = await admin.auth.admin.updateUserById(userOne, { ban_duration: '1h' });
   if (banned.error) throw new Error('Local synthetic account ban failed');
   const bannedIdentity = await identity.verify(tokenOne);

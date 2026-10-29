@@ -2,6 +2,8 @@
 
 `novel-requests-moderation-draft.sql` is a candidate for a disposable database, not a migration. It creates a separate NOLOGIN moderation executor role, a paginated queue and one atomic decision function. Neither is wired to a public route or the production database.
 
+`src/lib/novel-requests/moderation.ts` provides a disconnected server orchestration layer: verified identity, server-derived actor reference, injected rate limiter and fixed parameterized SQL. The role comes from the database, not from user input or JWT metadata. It projects only queue fields and sanitizes database errors; no runtime route, moderation database pool or durable limiter is configured.
+
 The trusted server must verify every actor through Supabase Auth before calling the functions, and derive the 64-character pseudonymous actor reference using a server-only secret. The database checks the actor against `novel_staff` for every call; it does **not** verify the JWT or derive the pseudonym. An attacker holding the executor credential can impersonate a known staff UUID, so identity of the caller and credential security are release blockers. This role may execute only the two moderation functions; it cannot directly read request tables or private rights evidence.
 
 The queue returns at most 50 active requests ordered by `(created_at, id)` and includes untrusted requester hints separately from approved adapter metadata and advisory matching reasons. The timestamp is returned as text to retain microseconds across clients; the cursor must preserve that value unchanged. Queue pagination is not a snapshot: records can change status while a moderator pages through it. Do not render hints or notes as HTML.
