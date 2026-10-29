@@ -33,11 +33,11 @@ test('runtime is server-only, disconnected and rejects absent dependencies', asy
   const handler = createIsolatedNovelRequestRuntime(fakeServer);
   const response = await handler(new Request('https://hunmeng-novel.ru/api/novel-requests', {
     method: 'POST',
-    headers: { origin: 'https://hunmeng-novel.ru', authorization: 'Bearer invalid', 'content-type': 'application/json', 'idempotency-key': 'fixture-key' },
+    headers: { origin: 'https://hunmeng-novel.ru', 'content-type': 'application/json', 'idempotency-key': 'fixture-key' },
     body: JSON.stringify({url:'https://fiction.test/42'}),
   }));
   // No real token is used and there is no deployable API endpoint. The test
   // intentionally avoids network access; the real getUser(jwt) belongs to
   // a separate owner-approved Supabase staging integration suite.
-  assert.ok([401,503].includes(response.status));
+  assert.equal(response.status, 401);
 });
