@@ -383,8 +383,9 @@ grant select on public.request_staff_view to authenticated;
 -- 10. Integrity guards on NEW tables only (no trigger on existing tables).
 --     Deferred constraint triggers check cross-table links at COMMIT, so the
 --     conversion transaction can update several rows in any order.
---     Related source/work updates also trigger checks. Source/request checks
---     serialize by source ID; other concurrency scenarios are not yet proven.
+--     Related source/work updates also trigger checks. Source/request and
+--     work/draft checks serialize by source and work ID respectively; other
+--     concurrency scenarios are not yet proven.
 --     Future write functions need reviewed lock ordering and multi-session tests.
 -- ----------------------------------------------------------------------------
 create or replace function private.request_links_check()
@@ -412,6 +413,11 @@ begin
   perform pg_catalog.pg_advisory_xact_lock(
     pg_catalog.hashtextextended('request-source:' || req.external_source_id::text, 0)
   );
+  if req.work_id is not null then
+    perform pg_catalog.pg_advisory_xact_lock(
+      pg_catalog.hashtextextended('request-work:' || req.work_id::text, 0)
+    );
+  end if;
 
   select work_id into src_work
     from public.request_external_sources where id = req.external_source_id;
@@ -465,6 +471,11 @@ begin
   select * into current_draft from public.request_drafts where id = new.id;
   if not found then return new; end if;
   select * into req from public.novel_requests where id = current_draft.request_id;
+  if req.work_id is not null then
+    perform pg_catalog.pg_advisory_xact_lock(
+      pg_catalog.hashtextextended('request-work:' || req.work_id::text, 0)
+    );
+  end if;
   if current_draft.work_id is not null and req.work_id is distinct from current_draft.work_id then
     raise exception 'Draft work differs from request work';
   end if;
@@ -511,6 +522,9 @@ for each row execute function private.request_external_source_links_check();
 create or replace function private.request_work_links_check()
 returns trigger language plpgsql security definer set search_path = '' as $$
 begin
+  perform pg_catalog.pg_advisory_xact_lock(
+    pg_catalog.hashtextextended('request-work:' || new.id::text, 0)
+  );
   if exists (
     select 1 from public.request_works w
     join public.novel_requests r on r.work_id = w.id
