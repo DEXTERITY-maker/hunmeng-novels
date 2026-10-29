@@ -24,7 +24,7 @@ jobs:
     if: >-
       github.ref == 'refs/heads/main' &&
       (github.event_name == 'workflow_dispatch' ||
-       (github.event_name == 'push' && github.event.head_commit.message == 'fix(ui): publish mobile polish 2026-10-29 [deploy cloudflare]'))
+       (github.event_name == 'push' && startsWith(github.event.head_commit.message, 'fix(ui): publish mobile polish 2026-10-29 [deploy cloudflare]')))
     runs-on: ubuntu-latest
     environment: pages-production
     timeout-minutes: 30
