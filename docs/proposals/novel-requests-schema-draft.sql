@@ -382,6 +382,12 @@ grant select on public.request_staff_view to authenticated;
 -- 10. Integrity guards on NEW tables only (no trigger on existing tables).
 --     Deferred constraint triggers check cross-table links at COMMIT, so the
 --     conversion transaction can update several rows in any order.
+--     LIMITATION: these triggers fire on request/draft changes only. A change
+--     solely to request_external_sources.work_id or request_works.novel_source_id
+--     does not automatically recheck related requests/drafts. The diagnostic
+--     report can detect some drift after the fact; it does not prevent it.
+--     Do not use this candidate for real writes until this gap, concurrency and
+--     the intended invariant are implemented and tested.
 -- ----------------------------------------------------------------------------
 create or replace function private.request_links_check()
 returns trigger
@@ -432,15 +438,20 @@ set search_path = ''
 as $$
 declare
   req public.novel_requests%rowtype;
+  current_draft public.request_drafts%rowtype;
   work_source uuid;
 begin
-  select * into req from public.novel_requests where id = new.request_id;
-  if new.work_id is not null and req.work_id is distinct from new.work_id then
+  -- A deferred trigger may run after several updates to the same draft. Check
+  -- its final row, not the snapshot captured by an intermediate update.
+  select * into current_draft from public.request_drafts where id = new.id;
+  if not found then return new; end if;
+  select * into req from public.novel_requests where id = current_draft.request_id;
+  if current_draft.work_id is not null and req.work_id is distinct from current_draft.work_id then
     raise exception 'Draft work differs from request work';
   end if;
-  if new.converted_source_id is not null then
+  if current_draft.converted_source_id is not null then
     select novel_source_id into work_source from public.request_works where id = req.work_id;
-    if work_source is distinct from new.converted_source_id then
+    if work_source is distinct from current_draft.converted_source_id then
       raise exception 'Draft source differs from the work source';
     end if;
   end if;
