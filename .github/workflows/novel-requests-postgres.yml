@@ -3,6 +3,7 @@ on:
   pull_request:
     paths:
       - 'docs/proposals/novel-requests-schema-draft.sql'
+      - 'docs/proposals/novel-requests-store-draft.sql'
       - 'tests/novel-request-postgres.mjs'
       - '.github/workflows/novel-requests-postgres.yml'
   workflow_dispatch:

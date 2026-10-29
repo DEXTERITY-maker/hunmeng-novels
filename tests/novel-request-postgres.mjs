@@ -44,6 +44,7 @@ async function run() {
       );
     `);
     await setup.query(await readFile('docs/proposals/novel-requests-schema-draft.sql', 'utf8'));
+    await setup.query(await readFile('docs/proposals/novel-requests-store-draft.sql', 'utf8'));
     await setup.query(`
       insert into auth.users values ('${userA}'), ('${userB}');
       insert into public.request_works (id, canonical_title, normalized_title) values
@@ -74,7 +75,42 @@ async function run() {
     await assert.rejects(setup.query('select * from private.request_rights_evidence'), /permission denied/);
     await setup.query('reset role');
     console.log('PASS synthetic requester isolation and private evidence denial');
+
+    const acl = await setup.query(`select
+      has_function_privilege('authenticated', 'private.request_store_create(uuid,text,text,text,text,text,text,text,text,jsonb)', 'execute') as authenticated,
+      has_function_privilege('anon', 'private.request_store_create(uuid,text,text,text,text,text,text,text,text,jsonb)', 'execute') as anonymous,
+      has_function_privilege('service_role', 'private.request_store_create(uuid,text,text,text,text,text,text,text,text,jsonb)', 'execute') as service`);
+    assert.deepEqual(acl.rows[0], { authenticated: false, anonymous: false, service: false });
+    console.log('PASS isolated store is not executable by public roles');
   } finally { setup.release(); }
+
+  const submit = async ({ actor = userA, ref = '9'.repeat(64), external = '4242', key = 'store-key-1', fingerprint = '8'.repeat(64), note = '' } = {}) => {
+    const params = [actor, ref, 'fixture', external, `https://fiction.test/work/${external}`, 'fiction.test', key, fingerprint, note, '{}'];
+    return (await pool.query('select private.request_store_create($1,$2,$3,$4,$5,$6,$7,$8,$9,$10::jsonb) as result', params)).rows[0].result;
+  };
+  const simultaneous = await Promise.all([submit(), submit()]);
+  assert.deepEqual(simultaneous.map(x => x.kind).sort(), ['new', 'replay']);
+  assert.equal(simultaneous[0].request_id, simultaneous[1].request_id);
+  assert.equal((await submit({ fingerprint: '7'.repeat(64) })).kind, 'conflict');
+  const active = await submit({ key: 'store-key-2' });
+  assert.equal(active.kind, 'active-request');
+  assert.equal(active.request_id, simultaneous[0].request_id);
+  assert.equal((await submit({ key: 'store-key-2' })).kind, 'replay');
+  assert.equal((await submit({ key: 'store-key-2', fingerprint: '6'.repeat(64) })).kind, 'conflict');
+  const other = await submit({ actor: userB, ref: '5'.repeat(64), key: 'store-key-3' });
+  assert.equal(other.kind, 'new');
+  assert.notEqual(other.request_id, active.request_id);
+  const shared = await pool.query(`select count(*)::int as n from public.novel_requests r
+    join public.request_external_sources e on e.id=r.external_source_id where e.provider='fixture' and e.external_id='4242'`);
+  assert.equal(shared.rows[0].n, 2);
+  console.log('PASS concurrent replay, conflict, active request, and cross-user isolation');
+
+  const quotaRef = '4'.repeat(64);
+  for (let i = 0; i < 5; i++)
+    assert.equal((await submit({ ref: quotaRef, external: `quota-${i}`, key: `quota-key-${i}` })).kind, 'new');
+  assert.equal((await submit({ ref: quotaRef, external: 'quota-0', key: 'quota-key-0' })).kind, 'replay');
+  assert.equal((await submit({ ref: quotaRef, external: 'quota-6', key: 'quota-key-6' })).kind, 'quota-exceeded');
+  console.log('PASS quota counts new requests only');
 
   // Race audit: A reassigns a source while B inserts a request using the old
   // source/work link. Both force deferred checks before either commits. This
