@@ -44,3 +44,20 @@ test('replacement text is rendered as text, never HTML', async ({ page }) => {
   await expect(page.locator('#chapter-text')).toContainText('<img src=x>');
   await expect(page.locator('#chapter-text img')).toHaveCount(0);
 });
+
+test('a change in another tab updates the same novel without affecting its source', async ({ page, context }) => {
+  await page.goto('/novel/khranitel-mayaka/glava-1/');
+  const second = await context.newPage();
+  await second.goto('/novel/khranitel-mayaka/glava-2/');
+  await expect(second.locator('#chapter-text')).toContainText('Ilya');
+  await page.getByRole('button', { name: 'Reading settings', exact: true }).click();
+  const dialog = page.locator('#reader-settings');
+  await dialog.getByText('Personal word replacements', { exact: true }).click();
+  await dialog.getByLabel('Find', { exact: true }).fill('Ilya');
+  await dialog.getByLabel('Replace with', { exact: true }).fill('Mira');
+  await dialog.getByRole('button', { name: 'Save replacement', exact: true }).click();
+  await expect(second.locator('#chapter-text')).toContainText('Mira');
+  await dialog.getByRole('button', { name: 'Remove replacement for Ilya', exact: true }).click();
+  await expect(second.locator('#chapter-text')).toContainText('Ilya');
+  await second.close();
+});
