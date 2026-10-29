@@ -61,7 +61,13 @@ const usesPlaceholder = n.cover === placeholderCover;
           <LibraryControl slug={n.slug} />
           <a class="detail-contents-link" href="#contents-title">Contents <span aria-hidden="true">→</span></a>
         </div>
-        {serial && <p class="fine">{n.chapterCount} opening chapters published · {serial.totalChapters} planned. <a href={`${n.url}releases/`}>Release schedule</a></p>}
+        {serial && (
+          <div class="serial-publication-stats" aria-label="Chapter publication progress">
+            <span><strong>{n.chapterCount}</strong>&nbsp;published chapters</span>
+            <span><strong>{serial.totalChapters}</strong>&nbsp;planned in total</span>
+            <a href={`${n.url}releases/`}>Release schedule →</a>
+          </div>
+        )}
         <dl class="novel-facts">
           {n.original ? (
             <div>

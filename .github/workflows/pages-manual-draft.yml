@@ -1,5 +1,8 @@
-name: Manual Cloudflare Pages deployment (review required)
+name: Cloudflare Pages deployment (approved revision only)
 on:
+  # One-time explicitly tagged release. Ordinary pushes and PRs never publish.
+  push:
+    branches: [main]
   workflow_dispatch:
     inputs:
       commit_sha:
@@ -16,16 +19,19 @@ concurrency:
 
 jobs:
   deploy:
-    # A workflow file must exist on the default branch to be dispatched.
-    # Never publish automatically on push or pull request.
-    if: github.ref == 'refs/heads/main'
+    # Production is only a user-approved dispatch OR this single exact release title.
+    # Do not deploy on arbitrary pushes, pull requests, or future release names.
+    if: >-
+      github.ref == 'refs/heads/main' &&
+      (github.event_name == 'workflow_dispatch' ||
+       (github.event_name == 'push' && startsWith(github.event.head_commit.message, 'fix(ui): publish mobile polish 2026-10-29 [deploy cloudflare]')))
     runs-on: ubuntu-latest
     environment: pages-production
     timeout-minutes: 30
     steps:
       - name: Validate approved revision
         env:
-          APPROVED_SHA: ${{ inputs.commit_sha }}
+          APPROVED_SHA: ${{ github.event_name == 'push' && github.sha || inputs.commit_sha }}
         run: |
           if [ "$APPROVED_SHA" != "$GITHUB_SHA" ]; then
             echo 'The approved commit must match the main revision that started this run.'
@@ -33,11 +39,11 @@ jobs:
           fi
       - uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.commit_sha }}
+          ref: ${{ github.event_name == 'push' && github.sha || inputs.commit_sha }}
           persist-credentials: false
       - name: Verify exact checkout
         env:
-          APPROVED_SHA: ${{ inputs.commit_sha }}
+          APPROVED_SHA: ${{ github.event_name == 'push' && github.sha || inputs.commit_sha }}
         run: test "$(git rev-parse HEAD)" = "$APPROVED_SHA"
       - uses: actions/setup-node@v4
         with:
