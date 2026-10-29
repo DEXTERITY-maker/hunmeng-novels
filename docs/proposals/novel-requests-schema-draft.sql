@@ -476,8 +476,10 @@ for each row execute function private.request_draft_guard();
 
 -- ----------------------------------------------------------------------------
 -- 11. Append-only audit: observable guarantees and documented exceptions.
---     These triggers stop UPDATE/DELETE through normal SQL for every role that
---     does not own the tables. The table owner (and any role with DDL rights or
+--     These triggers stop ordinary UPDATE/DELETE. They permit only the narrow
+--     FK-driven removal of an actor's user ID when that auth user is deleted;
+--     pseudonymous refs and all other audit fields remain unchanged. The table
+--     owner (and any role with DDL rights or
 --     superuser) can disable/alter triggers; that is a documented exception, not
 --     a claim of cryptographic immutability. Use an external audit trail if the
 --     threat model includes privileged DB roles.
@@ -488,7 +490,29 @@ language plpgsql
 security definer
 set search_path = ''
 as $$
+declare
+  user_column text;
+  old_user uuid;
 begin
+  -- ON DELETE SET NULL on auth.users performs a nested referential action.
+  -- No UPDATE is allowed unless it only clears the relevant user ID and the
+  -- referenced user is no longer visible. Never clear the pseudonymous ref.
+  if tg_op = 'UPDATE' and pg_catalog.pg_trigger_depth() > 1 then
+    if tg_table_schema = 'public' and tg_table_name = 'request_moderation_decisions' then
+      user_column := 'actor_id';
+    elsif tg_table_schema = 'private' and tg_table_name = 'request_rights_evidence' then
+      user_column := 'stored_by';
+    end if;
+    if user_column is not null then
+      old_user := (pg_catalog.to_jsonb(old) ->> user_column)::uuid;
+      if old_user is not null
+         and (pg_catalog.to_jsonb(new) ->> user_column) is null
+         and (pg_catalog.to_jsonb(new) - user_column) = (pg_catalog.to_jsonb(old) - user_column)
+         and not exists (select 1 from auth.users where id = old_user) then
+        return new;
+      end if;
+    end if;
+  end if;
   raise exception 'Append-only audit row cannot be % (except by documented privileged maintenance)', tg_op;
 end;
 $$;
