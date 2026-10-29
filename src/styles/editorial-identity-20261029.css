@@ -1,0 +1,468 @@
+/* Hunmeng · Editorial Identity, October 2026
+ * A presentation-only layer: no changes to markup, data, auth, reading,
+ * requests, publication rights, or client-side feature behavior.
+ * Deliberately imported AFTER existing style sheets.
+ */
+
+/* Base surface tokens respect all three reading / appearance themes. */
+:root {
+  --ed-gold: #9d7545;
+  --ed-ink: #1a3c3b;
+  --ed-rule: color-mix(in srgb, var(--accent) 14%, var(--line));
+  --ed-soft: color-mix(in srgb, var(--surface) 84%, var(--bg));
+  --ed-accent-tint: color-mix(in srgb, var(--accent) 8%, var(--surface));
+  --ed-shadow: 0 2px 5px rgb(32 62 54 / .035), 0 13px 32px rgb(32 62 54 / .065);
+  --ed-shadow-raise: 0 5px 12px rgb(27 54 47 / .055), 0 22px 46px rgb(27 54 47 / .10);
+  --ed-round: 18px;
+}
+html[data-theme='dark'] {
+  --ed-gold: #d8b780;
+  --ed-ink: #deeadf;
+  --ed-shadow: 0 4px 22px rgb(0 0 0 / .24);
+  --ed-shadow-raise: 0 13px 34px rgb(0 0 0 / .32);
+}
+html[data-theme='sepia'] {
+  --ed-gold: #866038;
+  --ed-ink: #4c3b2b;
+  --ed-shadow: 0 4px 19px rgb(73 51 28 / .085);
+  --ed-shadow-raise: 0 14px 32px rgb(73 51 28 / .12);
+}
+@media (prefers-color-scheme: dark) {
+  html[data-theme='system'] {
+    --ed-gold: #d8b780;
+    --ed-ink: #deeadf;
+    --ed-shadow: 0 4px 22px rgb(0 0 0 / .24);
+    --ed-shadow-raise: 0 13px 34px rgb(0 0 0 / .32);
+  }
+}
+
+/* Paper-like background without external assets or changes to reading mode. */
+body:not(.reader-page) {
+  background:
+    radial-gradient(ellipse 55rem 30rem at 95% -3%, color-mix(in srgb, var(--accent) 7%, transparent), transparent 73%),
+    radial-gradient(ellipse 42rem 26rem at -18% 20%, color-mix(in srgb, var(--ed-gold) 5%, transparent), transparent 80%),
+    var(--bg);
+}
+body:not(.reader-page) :is(h1,h2,h3) { text-wrap: balance; }
+body:not(.reader-page) :is(.home-page,.catalog-page,.novel-page,.library-page,.news-page,.reader-account-page,.taxonomy-page) {
+  color: var(--ink);
+}
+body:not(.reader-page) a:focus-visible,
+body:not(.reader-page) button:focus-visible,
+body:not(.reader-page) summary:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* A distinct, fine-grained navigation bar rather than a heavy stacked header. */
+.site-header {
+  background: color-mix(in srgb, var(--surface) 91%, var(--bg));
+  border-bottom: 1px solid var(--ed-rule);
+  box-shadow: 0 3px 18px rgb(30 52 50 / .04);
+}
+.site-header .header-inner { max-width: 1340px; }
+.site-header .brand { letter-spacing: -.035em; }
+.site-header .brand-emblem {
+  border: 1px solid var(--ed-rule);
+  box-shadow: 0 3px 11px rgb(37 73 55 / .09);
+}
+.site-header .header-inner > nav a {
+  color: var(--muted);
+  position: relative;
+  border: 0;
+  border-radius: 999px;
+  padding: 10px 17px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 650;
+  transition: background .18s ease, color .18s ease;
+}
+.site-header .header-inner > nav a:hover {
+  background: var(--ed-accent-tint);
+  color: var(--accent);
+}
+.site-header .header-inner > nav a[aria-current='page'] {
+  background: color-mix(in srgb, var(--accent) 13%, var(--surface));
+  color: var(--ed-ink);
+  font-weight: 800;
+}
+.site-header .header-icon-button {
+  border: 1px solid transparent;
+  background: transparent;
+}
+.site-header .header-icon-button:hover {
+  border-color: var(--ed-rule);
+  background: var(--ed-accent-tint);
+}
+.header-panel {
+  border: 1px solid var(--ed-rule);
+  border-radius: 15px;
+  box-shadow: var(--ed-shadow-raise);
+}
+
+/* Confident typography and restrained interactive surfaces throughout. */
+:where(.home-page,.catalog-page,.novel-page,.library-page,.news-page,.reader-account-page) .eyebrow {
+  letter-spacing: .165em;
+  font-size: .69rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+:where(.home-page,.catalog-page,.novel-page,.library-page,.news-page,.reader-account-page) .button {
+  border-radius: 10px;
+  min-height: 46px;
+  font-weight: 750;
+  letter-spacing: -.012em;
+  box-shadow: 0 5px 13px color-mix(in srgb, var(--accent) 15%, transparent);
+}
+:where(.home-page,.catalog-page,.novel-page,.library-page,.news-page,.reader-account-page) .button:hover:not(:disabled) {
+  box-shadow: 0 9px 20px color-mix(in srgb, var(--accent) 21%, transparent);
+}
+:where(.home-page,.catalog-page,.novel-page,.library-page,.news-page,.reader-account-page) :is(input[type='search'],select,input[type='number']) {
+  border-radius: 10px;
+  border-color: var(--ed-rule);
+}
+:where(.home-page,.catalog-page,.novel-page,.library-page,.news-page,.reader-account-page) :is(input,select):focus-visible {
+  outline-offset: 2px;
+}
+
+/* Home: framed landscape, ivory editorial copy and dark-green featured novel. */
+.home-page .home-hero-copy {
+  border: 1px solid var(--ed-rule);
+  border-radius: 24px;
+  box-shadow: var(--ed-shadow);
+  overflow: hidden;
+  position: relative;
+  isolation: isolate;
+}
+.home-page .home-hero-copy::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: 12px;
+  border: 1px solid color-mix(in srgb, var(--ed-gold) 22%, transparent);
+  border-radius: 17px;
+  pointer-events: none;
+}
+.home-page .home-hero-kicker {
+  letter-spacing: .17em;
+  color: var(--ed-ink);
+}
+.home-page #home-title {
+  font-family: 'Lora Variable', Georgia, serif;
+  font-size: clamp(2.5rem, 4.55vw, 4.45rem);
+  line-height: 1.10;
+  letter-spacing: -.052em;
+  max-width: 700px;
+}
+.home-page #home-title em {
+  font-style: italic;
+  font-weight: 500;
+  color: var(--accent);
+}
+.home-page .home-hero-description {
+  max-width: 490px;
+  font-size: clamp(.94rem, 1.2vw, 1.075rem);
+  line-height: 1.66;
+}
+.home-page .home-search {
+  border: 1px solid var(--ed-rule);
+  background: var(--surface);
+  box-shadow: var(--ed-shadow);
+  border-radius: 14px;
+  overflow: hidden;
+}
+.home-page .home-search .button {
+  box-shadow: none;
+  border-radius: 10px;
+}
+.home-page .home-discover a {
+  background: color-mix(in srgb, var(--surface) 83%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 13%, var(--line));
+  border-radius: 11px;
+  box-shadow: 0 2px 8px rgb(25 50 42 / .03);
+}
+.home-page .home-discover a:hover {
+  background: var(--surface);
+  border-color: color-mix(in srgb, var(--accent) 28%, var(--line));
+}
+.home-page .home-hero-feature {
+  border: 1px solid rgb(225 214 178 / .36);
+  border-radius: 17px;
+  background: linear-gradient(145deg,#143e38 0%,#235547 54%,#183931 100%);
+  box-shadow: 0 17px 35px rgb(14 50 39 / .17);
+}
+.home-page .home-feature-cover img { border-radius: 7px; }
+.home-page .home-feature-kicker { color: #d9c49b; }
+.home-page .home-feature-details h2 { color: #fff9e9; }
+.home-page .home-feature-cta { color: #f1d6a2; }
+
+/* Chapter and news blocks have a consistent, legible rhythm. */
+.home-page .home-section { scroll-margin-top: 30px; }
+.home-page .home-section-heading {
+  border-bottom: 1px solid var(--ed-rule);
+  padding-bottom: 13px;
+  margin-bottom: 20px;
+}
+.home-page .home-section-heading h2 {
+  font-family: 'Lora Variable', Georgia, serif;
+  color: var(--ed-ink);
+  font-size: clamp(1.55rem,2.6vw,2.05rem);
+  letter-spacing: -.036em;
+}
+.home-page .home-section-heading > a {
+  color: var(--accent);
+  font-weight: 800;
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb,var(--accent) 27%,transparent);
+  text-underline-offset: 5px;
+}
+.home-page .home-editorial-columns {
+  border-block: none;
+  gap: 24px;
+  margin-top: 10px;
+}
+.home-page .home-chapter-grid .home-chapter-link,
+.home-page .home-news-list .news-card,
+.home-page .home-recommendation-card,
+.home-page .home-popular-list {
+  border: 1px solid var(--ed-rule);
+  border-radius: 15px;
+  background: var(--surface);
+  box-shadow: var(--ed-shadow);
+}
+.home-page .home-chapter-grid .home-chapter-link:hover,
+.home-page .home-news-list .news-card:hover,
+.home-page .home-recommendation-card:hover {
+  box-shadow: var(--ed-shadow-raise);
+}
+.home-page .home-news-list .news-card { border-left: 3px solid color-mix(in srgb, var(--ed-gold) 68%, var(--line)); }
+.home-page .home-recommendation-cover img { border-radius: 9px; }
+.home-page .home-recommendation-card h3 { font-family: 'Lora Variable', Georgia, serif; }
+.home-page .home-updates-button {
+  border: 1px solid var(--ed-rule);
+  border-radius: 11px;
+  background: var(--ed-accent-tint);
+}
+
+/* Catalog: panoramic scenic banner over a compact browsing workbench. */
+.catalog-page .catalog-heading,
+.news-page .news-heading,
+.library-page .landscape-banner,
+.reader-account-page .landscape-banner {
+  border-radius: 19px;
+  border: 1px solid var(--ed-rule);
+  box-shadow: var(--ed-shadow);
+  overflow: hidden;
+}
+.catalog-page .catalog-heading h1,
+.news-page .news-heading h1 {
+  font-family: 'Lora Variable', Georgia, serif;
+  font-size: clamp(2.3rem, 4vw, 3.6rem);
+  letter-spacing: -.045em;
+}
+.catalog-page .catalog-filter-panel {
+  border: 1px solid var(--ed-rule);
+  border-radius: 17px;
+  background: var(--surface);
+  box-shadow: var(--ed-shadow);
+}
+.catalog-page .catalog-filter-header h2 {
+  font-family: 'Lora Variable', Georgia, serif;
+  font-weight: 650;
+  color: var(--ed-ink);
+}
+.catalog-page .catalog-search-row { gap: 10px; }
+.catalog-page .catalog-quick-sort select { background: var(--ed-soft); }
+.catalog-page .catalog-options summary {
+  color: var(--ed-ink);
+  font-weight: 750;
+}
+.catalog-page .catalog-results-heading {
+  border-bottom: 1px solid var(--ed-rule);
+  padding-bottom: 12px;
+}
+.catalog-page #result-count { color: var(--ed-ink); }
+.catalog-page .catalog-novel-card {
+  border: 1px solid var(--ed-rule);
+  border-radius: var(--ed-round);
+  background: var(--surface);
+  box-shadow: var(--ed-shadow);
+  transition: box-shadow .17s ease, border-color .17s ease, transform .17s ease;
+}
+.catalog-page .catalog-novel-card:hover {
+  border-color: color-mix(in srgb,var(--accent) 30%,var(--line));
+  box-shadow: var(--ed-shadow-raise);
+  transform: translateY(-2px);
+}
+.catalog-page .catalog-novel-card .cover-link img {
+  border-radius: 9px;
+  box-shadow: 0 6px 16px rgb(20 39 33 / .14);
+}
+.catalog-page .catalog-novel-card h2 {
+  color: var(--ed-ink);
+  font-family: 'Lora Variable', Georgia, serif;
+  letter-spacing: -.033em;
+}
+.catalog-page .catalog-card-tags a {
+  background: var(--ed-accent-tint);
+  border: 1px solid var(--ed-rule);
+  border-radius: 7px;
+}
+.catalog-page .catalog-read-action { color: var(--accent); font-weight: 800; }
+
+/* Novel details: premium library bookplate with clear publishing facts. */
+.novel-page .novel-detail {
+  border: 1px solid var(--ed-rule);
+  border-radius: 20px;
+  box-shadow: var(--ed-shadow);
+  background: var(--surface);
+}
+.novel-page .detail-cover { box-shadow: 0 16px 32px rgb(21 41 36 / .18); }
+.novel-page .detail-copy h1 {
+  font-family: 'Lora Variable', Georgia, serif;
+  color: var(--ed-ink);
+  letter-spacing: -.04em;
+  line-height: 1.16;
+}
+.novel-page .genre-line { color: var(--accent); font-weight: 800; }
+.novel-page .serial-publication-stats span {
+  border: 1px solid var(--ed-rule);
+  background: var(--ed-accent-tint);
+  border-radius: 9px;
+  font-weight: 600;
+}
+.novel-page .serial-publication-stats strong { font-weight: 850; }
+.novel-page .novel-facts > div { border-color: var(--ed-rule); }
+.novel-page .novel-facts dd { color: var(--ed-ink); }
+.novel-page .chapter-list a:hover { background: var(--ed-accent-tint); }
+.novel-page .detail-contents-link { text-underline-offset: 4px; }
+
+/* Reading should stay a *reading* page, not take on dashboard shadows. */
+.reader-page .reader-toolbar {
+  border: 1px solid var(--ed-rule);
+  background: color-mix(in srgb,var(--surface) 94%,transparent);
+  box-shadow: 0 10px 28px rgb(15 40 35 / .12);
+  border-radius: 13px;
+}
+.reader-page .reader-chrome { font-family: 'Manrope Variable', sans-serif; }
+
+/* Account, shelves and announcements use matching editorial card surfaces. */
+.library-page .shelf-tab,
+.reader-account-page .profile-panel,
+.reader-account-page .profile-sidebar,
+.news-page .news-feed .news-card {
+  border: 1px solid var(--ed-rule);
+  border-radius: 16px;
+  box-shadow: var(--ed-shadow);
+  background: var(--surface);
+}
+.library-page .shelf-tab:hover { border-color: var(--accent); }
+.library-page .shelf-tab[aria-pressed='true'] {
+  background: linear-gradient(145deg,#1b5344,#33745b);
+  border-color: #1b5344;
+  color: #fff;
+}
+.library-page .library-empty {
+  border: 1px solid var(--ed-rule);
+  box-shadow: var(--ed-shadow);
+  border-radius: 18px;
+  background: var(--surface);
+}
+.news-page .news-feed .news-card { overflow: hidden; }
+.news-page .news-feed .news-card h3 {
+  font-family: 'Lora Variable', Georgia, serif;
+  letter-spacing: -.027em;
+  color: var(--ed-ink);
+}
+.news-page .news-card-image img { border-radius: 11px; }
+.news-card .news-category {
+  letter-spacing: .07em;
+  font-size: .72rem;
+  text-transform: uppercase;
+  font-weight: 800;
+}
+.news-page .news-filter-tabs a[aria-current='page'] { font-weight: 800; }
+.reader-account-page .profile-panel h2 { color: var(--ed-ink); }
+.reader-account-page .profile-sidebar nav a[aria-current='location'] {
+  border-radius: 10px;
+}
+
+/* Finishing detail: a structured footer and calm link hierarchy. */
+.site-footer {
+  border-top: 1px solid var(--ed-rule);
+  background: color-mix(in srgb,var(--surface) 36%,transparent);
+}
+.site-footer .brand-title { letter-spacing: -.05em; }
+.site-footer .footer-link-group h2 {
+  color: var(--ed-ink);
+  letter-spacing: .055em;
+  font-size: .82rem;
+  line-height: 1.25;
+  font-family: 'Manrope Variable', sans-serif;
+  font-weight: 800;
+}
+@media (min-width:761px) {
+  .site-footer { padding-block: 30px; }
+}
+.site-footer nav a:hover { color: var(--accent); text-decoration: underline; text-underline-offset: 4px; }
+
+/* Phone layout remains compact: preserve the tested first-catalog-result fold.
+ * Avoid fixed overlay navigation and any page-wide scale/zoom tricks. */
+@media (max-width:760px) {
+  .site-header .header-inner { padding: 10px 14px 0; gap: 4px 7px; }
+  .site-header .header-inner > nav { gap: 2px; }
+  .site-header .header-inner > nav a {
+    padding: 8px 8px;
+    font-size: .875rem;
+    min-width: 0;
+    min-height: 44px;
+    border-radius: 9px 9px 0 0;
+  }
+  .home-page .home-hero-copy { border-radius: 17px; }
+  .home-page .home-hero-copy::before { inset: 7px; border-radius: 12px; }
+  .home-page #home-title {
+    font-size: clamp(2rem,7.7vw,2.55rem);
+    line-height: 1.13;
+    letter-spacing: -.049em;
+  }
+  .home-page .home-hero-kicker { letter-spacing: .10em; font-size: .66rem; }
+  .home-page .home-hero-description { font-size: .91rem; }
+  .home-page .home-hero-feature {
+    border-radius: 13px;
+    box-shadow: 0 9px 18px rgb(14 50 39 / .14);
+  }
+  .home-page .home-section-heading { margin-bottom: 12px; padding-bottom: 10px; }
+  .home-page .home-section-heading h2 { font-size: 1.55rem; }
+  .home-page .home-news-list .news-card,
+  .home-page .home-chapter-grid .home-chapter-link,
+  .home-page .home-recommendation-card { border-radius: 13px; }
+  .catalog-page .catalog-heading {
+    min-height: 140px; padding: 12px 15px;
+    margin-bottom: 8px; border-radius: 13px;
+  }
+  .catalog-page .catalog-heading h1 {
+    font-size: clamp(1.85rem,7vw,2.3rem);
+    margin-bottom: 5px;
+  }
+  .catalog-page .catalog-filter-panel {
+    padding: 11px 13px;
+    border-radius: 13px;
+  }
+  .catalog-page .catalog-filter-header h2 { font-size: 1.14rem; }
+  .catalog-page .catalog-results-heading { padding-bottom: 7px; }
+  .catalog-page .catalog-novel-card { border-radius: 13px; }
+  .novel-page .novel-detail { border-radius: 15px; }
+  .news-page .news-feed .news-card { border-radius: 14px; }
+  .library-page .shelf-tab { border-radius: 12px; }
+}
+@media (max-width:375px) {
+  .site-header .header-inner > nav a { padding-inline: 4px; font-size:.875rem; }
+  .home-page #home-title { font-size:clamp(1.85rem,7.4vw,2.25rem); }
+}
+@media (prefers-reduced-motion:reduce) {
+  .catalog-page .catalog-novel-card,
+  .site-header .header-inner > nav a { transition:none; }
+  .catalog-page .catalog-novel-card:hover { transform:none; }
+}
