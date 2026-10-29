@@ -1,6 +1,6 @@
 name: Cloudflare Pages deployment (approved revision only)
 on:
-  # One-time explicitly tagged release. Ordinary pushes and PRs never publish.
+  # Only explicitly tagged, owner-approved releases. Ordinary pushes and PRs never publish.
   push:
     branches: [main]
   workflow_dispatch:
@@ -19,12 +19,14 @@ concurrency:
 
 jobs:
   deploy:
-    # Production is only a user-approved dispatch OR this single exact release title.
-    # Do not deploy on arbitrary pushes, pull requests, or future release names.
+    # Production is a user-approved dispatch or an explicitly approved release-title prefix.
+    # Never deploy on arbitrary pushes, pull requests, or unrelated commit titles.
     if: >-
       github.ref == 'refs/heads/main' &&
       (github.event_name == 'workflow_dispatch' ||
-       (github.event_name == 'push' && startsWith(github.event.head_commit.message, 'fix(ui): publish mobile polish 2026-10-29 [deploy cloudflare]')))
+       (github.event_name == 'push' &&
+        (startsWith(github.event.head_commit.message, 'fix(ui): publish mobile polish 2026-10-29 [deploy cloudflare]') ||
+         startsWith(github.event.head_commit.message, 'content(news): publish mobile polish note 2026-10-29 [deploy cloudflare]'))))
     runs-on: ubuntu-latest
     environment: pages-production
     timeout-minutes: 30

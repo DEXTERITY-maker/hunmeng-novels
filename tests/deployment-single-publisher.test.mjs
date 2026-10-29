@@ -19,12 +19,14 @@ test('production canonical URL points at the active custom domain', async () => 
 test('Cloudflare production deployment is explicit and SHA-pinned', async () => {
   const workflow = await readFile('.github/workflows/pages-manual-draft.yml', 'utf8');
   assert.match(workflow, /workflow_dispatch:/);
-  // One explicitly approved one-off release can be emitted by merging its
-  // exactly named commit. No untagged main push or pull_request may deploy.
+  // Only explicitly approved release titles can publish on push. Ordinary
+  // main pushes or pull requests may not trigger Cloudflare production.
   assert.match(workflow, /^\s+push:/m);
   assert.match(workflow, /github\.ref == 'refs\/heads\/main'/);
   assert.match(workflow, /github\.event_name == 'workflow_dispatch'/);
-  assert.match(workflow, /github\.event_name == 'push' && startsWith\(github\.event\.head_commit\.message,/);
+  assert.match(workflow, /github\.event_name == 'push' &&/);
+  assert.match(workflow, /startsWith\(github\.event\.head_commit\.message, 'fix\(ui\): publish mobile polish 2026-10-29 \[deploy cloudflare\]'/);
+  assert.match(workflow, /startsWith\(github\.event\.head_commit\.message, 'content\(news\): publish mobile polish note 2026-10-29 \[deploy cloudflare\]'/);
   assert.match(workflow, /fix\(ui\): publish mobile polish 2026-10-29 \[deploy cloudflare\]/);
   assert.doesNotMatch(workflow, /^\s+pull_request:/m);
   assert.match(workflow, /APPROVED_SHA.*GITHUB_SHA/);
