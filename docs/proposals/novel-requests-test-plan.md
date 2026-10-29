@@ -114,12 +114,10 @@ update public.request_works set novel_source_id = '<same-source>' where id = '<s
 
 The earlier proposed assertion that converting a work while a request stays
 submitted must fail was incorrect: multiple requests can refer to one work and
-have independent statuses. The current triggers run for changes to request or
-draft rows, not for changes solely to work or external-source rows. A separate
-write may therefore make an existing link inconsistent without a commit-time
-exception. `request_consistency_report()` detects some such cases after the
-fact; it is not a preventive constraint. This gap must be resolved before real
-writes and tested under concurrency.
+have independent statuses. New candidate triggers recheck links for updates to
+external sources and works, but have not yet been executed. Verify valid and
+invalid final states in one transaction as well as concurrency in a real
+two-session Postgres test. The diagnostic report is not a preventive constraint.
 
 Test invalid links by updating the request or draft itself, then confirm the
 deferred check raises at COMMIT and rolls the transaction back. Also test

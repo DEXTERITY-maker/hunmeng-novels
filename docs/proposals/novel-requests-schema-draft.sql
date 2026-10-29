@@ -150,6 +150,7 @@ create index novel_requests_queue
 create index novel_requests_requester
   on public.novel_requests (requester_ref, created_at desc);
 create index novel_requests_work on public.novel_requests (work_id);
+create index novel_requests_external_source on public.novel_requests (external_source_id);
 
 create table public.request_client_hints (
   request_id uuid primary key references public.novel_requests(id) on delete restrict,
@@ -382,12 +383,9 @@ grant select on public.request_staff_view to authenticated;
 -- 10. Integrity guards on NEW tables only (no trigger on existing tables).
 --     Deferred constraint triggers check cross-table links at COMMIT, so the
 --     conversion transaction can update several rows in any order.
---     LIMITATION: these triggers fire on request/draft changes only. A change
---     solely to request_external_sources.work_id or request_works.novel_source_id
---     does not automatically recheck related requests/drafts. The diagnostic
---     report can detect some drift after the fact; it does not prevent it.
---     Do not use this candidate for real writes until this gap, concurrency and
---     the intended invariant are implemented and tested.
+--     Related source/work updates also trigger checks. These are not proven
+--     safe under concurrent transactions: future write functions must lock in
+--     a reviewed order and be tested in real PostgreSQL with multiple sessions.
 -- ----------------------------------------------------------------------------
 create or replace function private.request_links_check()
 returns trigger
@@ -399,11 +397,14 @@ declare
   req public.novel_requests%rowtype;
   src_work uuid;
   work_source uuid;
+  work_state text;
+  draft_work uuid;
   draft_source uuid;
 begin
   -- This trigger is attached to novel_requests, whose primary key is id.
   -- Read the current row so deferred checks see the final transaction state.
   select * into req from public.novel_requests where id = new.id;
+  if not found then return new; end if;
 
   select work_id into src_work
     from public.request_external_sources where id = req.external_source_id;
@@ -411,13 +412,24 @@ begin
     raise exception 'External source is not linked to the request work';
   end if;
 
+  select work_id, converted_source_id into draft_work, draft_source
+    from public.request_drafts where request_id = req.id;
+  if draft_work is not null and draft_work is distinct from req.work_id then
+    raise exception 'Draft work differs from request work';
+  end if;
+  if draft_source is not null then
+    select novel_source_id into work_source from public.request_works where id = req.work_id;
+    if work_source is distinct from draft_source then
+      raise exception 'Draft source differs from the work source';
+    end if;
+  end if;
+
   if req.status = 'converted' then
     if req.work_id is null then
       raise exception 'Converted request must have a work';
     end if;
-    select novel_source_id into work_source from public.request_works where id = req.work_id;
-    select converted_source_id into draft_source from public.request_drafts where request_id = req.id;
-    if draft_source is null or work_source is distinct from draft_source then
+    select novel_source_id, state into work_source, work_state from public.request_works where id = req.work_id;
+    if work_state is distinct from 'converted' or draft_source is null or work_source is distinct from draft_source then
       raise exception 'Conversion links request, work and novel_sources inconsistently';
     end if;
   end if;
@@ -463,6 +475,52 @@ create constraint trigger request_draft_links_check
 after insert or update of work_id, converted_source_id on public.request_drafts
 deferrable initially deferred
 for each row execute function private.request_draft_links_check();
+
+-- Recheck requests when a source is reassigned, including updates which do not
+-- touch the requests themselves. Evaluate final state when the transaction ends.
+create or replace function private.request_external_source_links_check()
+returns trigger language plpgsql security definer set search_path = '' as $$
+begin
+  if exists (
+    select 1 from public.novel_requests r
+    join public.request_external_sources e on e.id = r.external_source_id
+    where e.id = new.id and r.work_id is not null and r.work_id is distinct from e.work_id
+  ) then
+    raise exception 'External source is not linked to the request work';
+  end if;
+  return new;
+end;
+$$;
+
+create constraint trigger request_external_source_links_check
+after update of work_id on public.request_external_sources
+deferrable initially deferred
+for each row execute function private.request_external_source_links_check();
+
+-- Changing a work can invalidate already linked drafts or converted requests.
+create or replace function private.request_work_links_check()
+returns trigger language plpgsql security definer set search_path = '' as $$
+begin
+  if exists (
+    select 1 from public.request_works w
+    join public.novel_requests r on r.work_id = w.id
+    left join public.request_drafts d on d.request_id = r.id
+    where w.id = new.id and (
+      (d.converted_source_id is not null and d.converted_source_id is distinct from w.novel_source_id)
+      or (r.status = 'converted' and (w.state <> 'converted' or d.converted_source_id is null
+          or d.converted_source_id is distinct from w.novel_source_id))
+    )
+  ) then
+    raise exception 'Work change conflicts with linked request or draft';
+  end if;
+  return new;
+end;
+$$;
+
+create constraint trigger request_work_links_check
+after update of state, novel_source_id on public.request_works
+deferrable initially deferred
+for each row execute function private.request_work_links_check();
 
 -- Converted draft link is immutable; request-layer documentation state is not
 -- an authoritative rights status and cannot be used to bypass editorial checks.
