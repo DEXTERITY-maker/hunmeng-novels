@@ -1,0 +1,7 @@
+# Request identity and PostgreSQL bridge
+
+The isolated transport can be composed with a Supabase Auth `getUser(jwt)` adapter, an HMAC requester-reference deriver and a PostgreSQL storage adapter. The real Auth server validates the token when an actual Supabase client is supplied; the disposable local Supabase integration test uses real local Auth and fictional accounts. The storage adapter calls the private atomic SQL prototype and re-reads the original request using the verified actor ID and keyed requester reference. Replays report the stored request's current status, and actor/reference mismatch fails closed.
+
+The SQL function and PostgreSQL read require a trusted server executor. No database URL, credential, grant or production role is provided. A restricted executor role and connection model are prototyped and tested locally; hosted pooler behavior and TLS remain unverified. The handler, SQL draft and bridge are not registered as a public route. Production Supabase, Auth and RLS have not been integration-tested.
+
+The draft bridge saves explicitly approved adapter metadata, provenance and advisory match explanations atomically; unapproved metadata is rejected. The catalog and source adapters used by tests are fictional. HTTP/IP throttling, moderation, actual source rights policy, retention, HMAC key provisioning/rotation, and hosted staging verification are required before release. SQL examples and the prototype are not production migrations.

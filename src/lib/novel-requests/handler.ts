@@ -15,11 +15,15 @@
 import {
   findMatches,
   identifySource,
+  selectPermittedMetadata,
   type Chapter,
   type Match,
   type SourceAdapter,
   type SourceIdentity,
   type WorkEvidence,
+  type RequestStatus,
+  type MetadataField,
+  type MetadataInput,
 } from './core.ts';
 
 export type ActorRole = 'user' | 'editor' | 'admin';
@@ -33,6 +37,11 @@ export type AuthenticatedActor = {
 
 export type IdentityVerifier = {
   verify(token: string | null): Promise<AuthenticatedActor | null>;
+};
+
+/** Server-only stable pseudonym derived from a verified identity. */
+export type RequesterReferenceDeriver = {
+  derive(userId: string): Promise<string>;
 };
 
 /** Metadata obtained by an explicit source adapter. Separate from user hints. */
@@ -53,6 +62,15 @@ export type AdapterRecognition = {
   };
 };
 
+/** Independently approved server configuration, never supplied by an adapter. */
+export type ApprovedMetadataPolicy = {
+  readonly provider: string;
+  readonly policyId: string;
+  readonly adapterVersion: string;
+  readonly allowedFields: readonly MetadataField[];
+  readonly evidence: string;
+};
+
 /**
  * Recognizes a URL through an explicit adapter. Implementations may be async,
  * but no adapter may fetch URLs on behalf of the handler in this phase.
@@ -65,7 +83,8 @@ export type SourceRegistry = {
 
 /** Read-only catalog used for advisory matching only. */
 export type CatalogReader = {
-  works(): Promise<readonly WorkEvidence[]>;
+  /** Must return a complete candidate set for the supplied evidence. */
+  works(evidence: WorkEvidence): Promise<readonly WorkEvidence[]>;
 };
 
 export type RateLimitDecision = { readonly allowed: boolean; readonly retryAfterSeconds?: number };
@@ -91,11 +110,16 @@ export type StoredRequest = {
   readonly hints: ClientHints;
   readonly adapterMetadata: AdapterMetadata;
   readonly matches: readonly Match[];
-  readonly status: 'submitted';
+  readonly algorithmVersion: string;
+  readonly status: RequestStatus;
   readonly createdAt: string;
 };
 
-export type NewRequest = Omit<StoredRequest, 'id' | 'createdAt'> & {
+export type NewRequest = Omit<StoredRequest, 'id' | 'createdAt' | 'status'> & {
+  readonly status: 'submitted';
+  /** Verified server-side actor, never accepted from client data or returned. */
+  readonly requesterId: string;
+  readonly adapterProvenance: AdapterRecognition['provenance'];
   /** Kept by the store for the (requesterRef, idempotencyKey) uniqueness contract. */
   readonly idempotencyKey: string;
 };
@@ -107,7 +131,7 @@ export type NewRequest = Omit<StoredRequest, 'id' | 'createdAt'> & {
  */
 export type StoreResult =
   | { readonly kind: 'new' | 'replay' | 'active-request'; readonly record: StoredRequest }
-  | { readonly kind: 'conflict'; readonly existingRequestId: string }
+  | { readonly kind: 'conflict' }
   | { readonly kind: 'quota-exceeded'; readonly retryAfterSeconds?: number };
 /** A single transaction must check idempotency and active source, consume the
  * creation quota only for a new row, and persist it. HTTP throttling is separate. */
@@ -117,9 +141,11 @@ export type RequestStore = {
 
 export type HandlerDependencies = {
   readonly identity: IdentityVerifier | null;
+  readonly requesterReferences: RequesterReferenceDeriver | null;
   readonly sources: SourceRegistry | null;
   /** Independently configured, trusted URL rules, never derived from registry output. */
   readonly allowedAdapters: readonly SourceAdapter[] | null;
+  readonly metadataPolicies?: readonly ApprovedMetadataPolicy[];
   readonly catalog: CatalogReader | null;
   readonly rateLimiter: RateLimiter | null;
   readonly store: RequestStore | null;
@@ -163,7 +189,7 @@ export type HandlerError = {
 
 export type SubmitResponse = {
   readonly requestId: string;
-  readonly status: 'submitted';
+  readonly status: RequestStatus;
   readonly deduplicated: 'new' | 'replay' | 'active-request';
   readonly matches: readonly Match[];
   readonly rights: 'unverified';
@@ -221,9 +247,22 @@ async function sha256(value: string): Promise<string> {
   return toHex(digest);
 }
 
-/** Pseudonymous requester reference; the raw user id never leaves the identity layer. */
-export async function requesterReference(userId: string): Promise<string> {
-  return sha256(`requester:${userId}`);
+/**
+ * Derive a stable pseudonym using a server-managed key, never shipped to the
+ * browser. Key provisioning, rotation and migration are deployment concerns.
+ */
+export function createRequesterReferenceDeriver(secret: Uint8Array): RequesterReferenceDeriver {
+  if (!(secret instanceof Uint8Array) || secret.byteLength < 32)
+    throw new Error('Requester reference key must contain at least 32 bytes');
+  const material = new Uint8Array(secret);
+  const key = globalThis.crypto.subtle.importKey('raw', material, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+  return {
+    async derive(userId: string): Promise<string> {
+      if (typeof userId !== 'string' || !userId.trim() || userId.length > 256)
+        throw new Error('Invalid verified user identity');
+      return toHex(await globalThis.crypto.subtle.sign('HMAC', await key, new TextEncoder().encode(`hunmeng:requester:v1:${userId}`)));
+    },
+  };
 }
 
 function normalizeText(value: string, field: string): string {
@@ -298,16 +337,16 @@ function toMatchView(matches: readonly Match[]): readonly Match[] {
   return matches.map(match => ({ workId: match.workId, kind: match.kind, reasons: [...match.reasons] }));
 }
 
-function responseFor(record: StoredRequest, deduplicated: SubmitResponse['deduplicated'], algorithmVersion: string): HandlerSuccess {
+function responseFor(record: StoredRequest, deduplicated: SubmitResponse['deduplicated']): HandlerSuccess {
   return {
     status: deduplicated === 'new' ? 201 : 200,
     body: {
       requestId: record.id,
-      status: 'submitted',
+      status: record.status,
       deduplicated,
       matches: toMatchView(record.matches),
       rights: 'unverified',
-      algorithmVersion,
+      algorithmVersion: record.algorithmVersion,
       provisional: true,
     },
   };
@@ -320,7 +359,7 @@ function responseFor(record: StoredRequest, deduplicated: SubmitResponse['dedupl
 export async function handleNovelRequest(input: SubmitInput, dependencies: HandlerDependencies): Promise<HandlerResult> {
   const algorithmVersion = dependencies.algorithmVersion ?? DEFAULT_ALGORITHM_VERSION;
 
-  if (!dependencies.identity || !dependencies.sources || !dependencies.allowedAdapters || !dependencies.catalog || !dependencies.rateLimiter || !dependencies.store)
+  if (!dependencies.identity || !dependencies.requesterReferences || !dependencies.sources || !dependencies.allowedAdapters || !dependencies.catalog || !dependencies.rateLimiter || !dependencies.store)
     return fail(503, 'dependency-unavailable', 'Request intake is not configured.');
 
   let body: ValidatedBody;
@@ -339,7 +378,13 @@ export async function handleNovelRequest(input: SubmitInput, dependencies: Handl
   }
   if (!actor) return fail(401, 'unauthenticated', 'Sign in to submit a request.');
   if (!actor.active) return fail(403, 'inactive-account', 'This account cannot submit requests.');
-  const requesterRef = await requesterReference(actor.userId);
+  let requesterRef: string;
+  try {
+    requesterRef = await dependencies.requesterReferences.derive(actor.userId);
+    if (!/^[0-9a-f]{64}$/.test(requesterRef)) throw new Error('Invalid requester reference');
+  } catch {
+    return fail(503, 'dependency-unavailable', 'Requester identity is unavailable.');
+  }
 
   // 2. Rate limiting: user bucket and, when provided by the transport, IP bucket.
   try {
@@ -375,6 +420,24 @@ export async function handleNovelRequest(input: SubmitInput, dependencies: Handl
     return fail(503, 'dependency-unavailable', 'Source recognition is unavailable.');
   }
 
+  // Only independently approved fields can enter matching or persistence.
+  // An adapter cannot approve its own rights or use client hints as metadata.
+  let permittedMetadata: AdapterMetadata = {};
+  try {
+    const provenance = recognition.provenance;
+    if (typeof provenance.adapterVersion !== 'string' || !provenance.adapterVersion.trim() || provenance.adapterVersion.length > 64 ||
+        typeof provenance.policyId !== 'string' || !provenance.policyId.trim() || provenance.policyId.length > 128 ||
+        !isRecord(recognition.metadata)) throw new Error('Invalid source provenance');
+    if (Object.keys(recognition.metadata).length) {
+      const policy = dependencies.metadataPolicies?.find(p => p.provider === recognition.source.provider &&
+        p.policyId === provenance.policyId && p.adapterVersion === provenance.adapterVersion);
+      if (!policy?.evidence.trim()) throw new Error('Source policy not approved');
+      permittedMetadata = selectPermittedMetadata(recognition.metadata as MetadataInput, policy);
+    }
+  } catch {
+    return fail(503, 'dependency-unavailable', 'Source metadata policy is unavailable.');
+  }
+
   // 4. Server-side fingerprint: canonical URL + validated hints + note.
   const fingerprint = await sha256(
     canonicalJson({
@@ -389,8 +452,7 @@ export async function handleNovelRequest(input: SubmitInput, dependencies: Handl
   // 6. Advisory matching uses adapter metadata only; client hints are never match input.
   let matches: readonly Match[];
   try {
-    const catalog = await dependencies.catalog.works();
-    const metadata = recognition.metadata;
+    const metadata = permittedMetadata;
     const evidence: WorkEvidence = {
       id: 'pending-request',
       titles: [metadata.originalTitle ?? '', ...(metadata.alternativeTitles ?? [])].filter(Boolean),
@@ -398,6 +460,7 @@ export async function handleNovelRequest(input: SubmitInput, dependencies: Handl
       sources: [recognition.source],
       chapters: [...(metadata.chapterTitles ?? [])],
     };
+    const catalog = await dependencies.catalog.works(evidence);
     matches = findMatches(evidence, catalog);
   } catch {
     return fail(503, 'dependency-unavailable', 'Matching catalog is unavailable.');
@@ -406,13 +469,13 @@ export async function handleNovelRequest(input: SubmitInput, dependencies: Handl
   // 7. Store enforces replay, conflict, source uniqueness and creation quota atomically.
   try {
     const result = await dependencies.store.submitAtomically({
-      requesterRef, idempotencyKey: body.idempotencyKey, source: recognition.source,
-      fingerprint, note: body.note, hints: body.hints, adapterMetadata: recognition.metadata,
-      matches, status: 'submitted',
+      requesterId: actor.userId, requesterRef, idempotencyKey: body.idempotencyKey, source: recognition.source,
+      fingerprint, note: body.note, hints: body.hints, adapterMetadata: permittedMetadata,
+      adapterProvenance: recognition.provenance, algorithmVersion, matches, status: 'submitted',
     });
     if (result.kind === 'conflict') return fail(409, 'idempotency-key-reused', 'This idempotency key was already used with different content.');
     if (result.kind === 'quota-exceeded') return fail(429, 'rate-limited', 'Too many submissions. Try again later.', { retryAfterSeconds: result.retryAfterSeconds });
-    return responseFor(result.record, result.kind, algorithmVersion);
+    return responseFor(result.record, result.kind);
   } catch {
     return fail(503, 'storage-unavailable', 'Request storage is unavailable.');
   }

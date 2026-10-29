@@ -1,0 +1,52 @@
+name: Novel requests isolated PostgreSQL tests
+on:
+  pull_request:
+    paths:
+      - 'docs/proposals/novel-requests-schema-draft.sql'
+      - 'docs/proposals/novel-requests-store-draft.sql'
+      - 'docs/proposals/novel-requests-executor-draft.sql'
+      - 'docs/proposals/novel-requests-moderation-draft.sql'
+      - 'tests/novel-request-postgres.mjs'
+      - 'src/lib/novel-requests/**'
+      - '.github/workflows/novel-requests-postgres.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  postgres:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: local-test-only
+          POSTGRES_DB: hunmeng_requests_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d hunmeng_requests_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      PGHOST: 127.0.0.1
+      PGPORT: '5432'
+      PGUSER: postgres
+      PGPASSWORD: local-test-only
+      PGDATABASE: hunmeng_requests_test
+      HUNMENG_DISPOSABLE_PG: 'yes'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Install isolated test client
+        run: npm install --prefix "$RUNNER_TEMP/request-pg-client" --ignore-scripts --no-audit --no-fund pg@8.16.3
+      - name: Test PostgreSQL roles, constraints, and concurrent writes
+        env:
+          PG_MODULE_DIR: ${{ runner.temp }}/request-pg-client
+        run: node tests/novel-request-postgres.mjs

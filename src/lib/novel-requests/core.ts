@@ -39,7 +39,7 @@ function names(values: string[]): Set<string> {
 function intersects(a: Set<string>, b: Set<string>): boolean {
   return [...a].some(value => b.has(value));
 }
-function chapterSignature(chapter: Chapter): string | null {
+export function chapterSignature(chapter: Chapter): string | null {
   if (!Number.isSafeInteger(chapter.number) || chapter.number < 1) return null;
   const title = normalizeName(chapter.title);
   // Numeric or generic chapter names are insufficient independent evidence.

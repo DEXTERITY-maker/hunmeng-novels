@@ -150,6 +150,7 @@ create index novel_requests_queue
 create index novel_requests_requester
   on public.novel_requests (requester_ref, created_at desc);
 create index novel_requests_work on public.novel_requests (work_id);
+create index novel_requests_external_source on public.novel_requests (external_source_id);
 
 create table public.request_client_hints (
   request_id uuid primary key references public.novel_requests(id) on delete restrict,
@@ -164,6 +165,7 @@ create table public.request_adapter_metadata (
   provider text not null check (provider ~ '^[a-z0-9][a-z0-9-]{1,39}$'),
   adapter_version text not null check (length(btrim(adapter_version)) between 1 and 64),
   policy_id text not null check (length(btrim(policy_id)) between 1 and 128),
+  algorithm_version text not null check (length(btrim(algorithm_version)) between 1 and 64),
   metadata jsonb not null check (jsonb_typeof(metadata) = 'object'),
   provenance text not null check (length(btrim(provenance)) between 1 and 500),
   obtained_at timestamptz not null default now()
@@ -302,8 +304,8 @@ grant select on public.request_works, public.request_work_titles,
   public.request_adapter_metadata, public.request_match_evidence,
   public.request_moderation_decisions, public.request_drafts,
   public.request_rate_counters to service_role;
-grant select on private.request_rights_evidence to service_role;
-grant usage on schema private to service_role;
+-- Private rights evidence remains inaccessible by direct grants. A future
+-- audited admin-only function must be designed and tested before any access.
 
 -- Owner projection: only the requester's own request. The view is owned by the
 -- migration owner role and runs with the owner's rights; the WHERE clause is the
@@ -382,6 +384,10 @@ grant select on public.request_staff_view to authenticated;
 -- 10. Integrity guards on NEW tables only (no trigger on existing tables).
 --     Deferred constraint triggers check cross-table links at COMMIT, so the
 --     conversion transaction can update several rows in any order.
+--     Related source/work updates also trigger checks. Source/request and
+--     work/draft checks serialize by source and work ID respectively; other
+--     concurrency scenarios are not yet proven.
+--     Future write functions need reviewed lock ordering and multi-session tests.
 -- ----------------------------------------------------------------------------
 create or replace function private.request_links_check()
 returns trigger
@@ -393,9 +399,26 @@ declare
   req public.novel_requests%rowtype;
   src_work uuid;
   work_source uuid;
+  work_state text;
+  draft_work uuid;
   draft_source uuid;
 begin
-  select * into req from public.novel_requests where id = new.request_id;
+  -- This trigger is attached to novel_requests, whose primary key is id.
+  -- Read the current row so deferred checks see the final transaction state.
+  select * into req from public.novel_requests where id = new.id;
+  if not found then return new; end if;
+
+  -- Serialize the source/request invariant across concurrent transactions.
+  -- Take the same transaction-scoped lock as the source update trigger before
+  -- reading the related source; collisions only serialize unrelated sources.
+  perform pg_catalog.pg_advisory_xact_lock(
+    pg_catalog.hashtextextended('request-source:' || req.external_source_id::text, 0)
+  );
+  if req.work_id is not null then
+    perform pg_catalog.pg_advisory_xact_lock(
+      pg_catalog.hashtextextended('request-work:' || req.work_id::text, 0)
+    );
+  end if;
 
   select work_id into src_work
     from public.request_external_sources where id = req.external_source_id;
@@ -403,13 +426,24 @@ begin
     raise exception 'External source is not linked to the request work';
   end if;
 
+  select work_id, converted_source_id into draft_work, draft_source
+    from public.request_drafts where request_id = req.id;
+  if draft_work is not null and draft_work is distinct from req.work_id then
+    raise exception 'Draft work differs from request work';
+  end if;
+  if draft_source is not null then
+    select novel_source_id into work_source from public.request_works where id = req.work_id;
+    if work_source is distinct from draft_source then
+      raise exception 'Draft source differs from the work source';
+    end if;
+  end if;
+
   if req.status = 'converted' then
     if req.work_id is null then
       raise exception 'Converted request must have a work';
     end if;
-    select novel_source_id into work_source from public.request_works where id = req.work_id;
-    select converted_source_id into draft_source from public.request_drafts where request_id = req.id;
-    if draft_source is null or work_source is distinct from draft_source then
+    select novel_source_id, state into work_source, work_state from public.request_works where id = req.work_id;
+    if work_state is distinct from 'converted' or draft_source is null or work_source is distinct from draft_source then
       raise exception 'Conversion links request, work and novel_sources inconsistently';
     end if;
   end if;
@@ -430,15 +464,25 @@ set search_path = ''
 as $$
 declare
   req public.novel_requests%rowtype;
+  current_draft public.request_drafts%rowtype;
   work_source uuid;
 begin
-  select * into req from public.novel_requests where id = new.request_id;
-  if new.work_id is not null and req.work_id is distinct from new.work_id then
+  -- A deferred trigger may run after several updates to the same draft. Check
+  -- its final row, not the snapshot captured by an intermediate update.
+  select * into current_draft from public.request_drafts where id = new.id;
+  if not found then return new; end if;
+  select * into req from public.novel_requests where id = current_draft.request_id;
+  if req.work_id is not null then
+    perform pg_catalog.pg_advisory_xact_lock(
+      pg_catalog.hashtextextended('request-work:' || req.work_id::text, 0)
+    );
+  end if;
+  if current_draft.work_id is not null and req.work_id is distinct from current_draft.work_id then
     raise exception 'Draft work differs from request work';
   end if;
-  if new.converted_source_id is not null then
+  if current_draft.converted_source_id is not null then
     select novel_source_id into work_source from public.request_works where id = req.work_id;
-    if work_source is distinct from new.converted_source_id then
+    if work_source is distinct from current_draft.converted_source_id then
       raise exception 'Draft source differs from the work source';
     end if;
   end if;
@@ -450,6 +494,58 @@ create constraint trigger request_draft_links_check
 after insert or update of work_id, converted_source_id on public.request_drafts
 deferrable initially deferred
 for each row execute function private.request_draft_links_check();
+
+-- Recheck requests when a source is reassigned, including updates which do not
+-- touch the requests themselves. Evaluate final state when the transaction ends.
+create or replace function private.request_external_source_links_check()
+returns trigger language plpgsql security definer set search_path = '' as $$
+begin
+  perform pg_catalog.pg_advisory_xact_lock(
+    pg_catalog.hashtextextended('request-source:' || new.id::text, 0)
+  );
+  if exists (
+    select 1 from public.novel_requests r
+    join public.request_external_sources e on e.id = r.external_source_id
+    where e.id = new.id and r.work_id is not null and r.work_id is distinct from e.work_id
+  ) then
+    raise exception 'External source is not linked to the request work';
+  end if;
+  return new;
+end;
+$$;
+
+create constraint trigger request_external_source_links_check
+after update of work_id on public.request_external_sources
+deferrable initially deferred
+for each row execute function private.request_external_source_links_check();
+
+-- Changing a work can invalidate already linked drafts or converted requests.
+create or replace function private.request_work_links_check()
+returns trigger language plpgsql security definer set search_path = '' as $$
+begin
+  perform pg_catalog.pg_advisory_xact_lock(
+    pg_catalog.hashtextextended('request-work:' || new.id::text, 0)
+  );
+  if exists (
+    select 1 from public.request_works w
+    join public.novel_requests r on r.work_id = w.id
+    left join public.request_drafts d on d.request_id = r.id
+    where w.id = new.id and (
+      (d.converted_source_id is not null and d.converted_source_id is distinct from w.novel_source_id)
+      or (r.status = 'converted' and (w.state <> 'converted' or d.converted_source_id is null
+          or d.converted_source_id is distinct from w.novel_source_id))
+    )
+  ) then
+    raise exception 'Work change conflicts with linked request or draft';
+  end if;
+  return new;
+end;
+$$;
+
+create constraint trigger request_work_links_check
+after update of state, novel_source_id on public.request_works
+deferrable initially deferred
+for each row execute function private.request_work_links_check();
 
 -- Converted draft link is immutable; request-layer documentation state is not
 -- an authoritative rights status and cannot be used to bypass editorial checks.
@@ -474,8 +570,10 @@ for each row execute function private.request_draft_guard();
 
 -- ----------------------------------------------------------------------------
 -- 11. Append-only audit: observable guarantees and documented exceptions.
---     These triggers stop UPDATE/DELETE through normal SQL for every role that
---     does not own the tables. The table owner (and any role with DDL rights or
+--     These triggers stop ordinary UPDATE/DELETE. They permit only the narrow
+--     FK-driven removal of an actor's user ID when that auth user is deleted;
+--     pseudonymous refs and all other audit fields remain unchanged. The table
+--     owner (and any role with DDL rights or
 --     superuser) can disable/alter triggers; that is a documented exception, not
 --     a claim of cryptographic immutability. Use an external audit trail if the
 --     threat model includes privileged DB roles.
@@ -486,7 +584,29 @@ language plpgsql
 security definer
 set search_path = ''
 as $$
+declare
+  user_column text;
+  old_user uuid;
 begin
+  -- ON DELETE SET NULL on auth.users performs a nested referential action.
+  -- No UPDATE is allowed unless it only clears the relevant user ID and the
+  -- referenced user is no longer visible. Never clear the pseudonymous ref.
+  if tg_op = 'UPDATE' and pg_catalog.pg_trigger_depth() > 1 then
+    if tg_table_schema = 'public' and tg_table_name = 'request_moderation_decisions' then
+      user_column := 'actor_id';
+    elsif tg_table_schema = 'private' and tg_table_name = 'request_rights_evidence' then
+      user_column := 'stored_by';
+    end if;
+    if user_column is not null then
+      old_user := (pg_catalog.to_jsonb(old) ->> user_column)::uuid;
+      if old_user is not null
+         and (pg_catalog.to_jsonb(new) ->> user_column) is null
+         and (pg_catalog.to_jsonb(new) - user_column) = (pg_catalog.to_jsonb(old) - user_column)
+         and not exists (select 1 from auth.users where id = old_user) then
+        return new;
+      end if;
+    end if;
+  end if;
   raise exception 'Append-only audit row cannot be % (except by documented privileged maintenance)', tg_op;
 end;
 $$;

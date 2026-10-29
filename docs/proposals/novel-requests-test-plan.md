@@ -112,16 +112,17 @@ update public.request_works set novel_source_id = '<same-source>' where id = '<s
 
 ### S5. Transaction abort and link integrity
 
-```sql
-begin;
--- create a request/work/source fixture, then try to set work.novel_source_id
--- without updating request.status or draft link; the deferred constraint trigger
--- must raise at commit and abort the whole transaction.
-update public.request_works set state='converted', novel_source_id='<src>' where id='<work>';
--- request.status remains 'submitted' in this transaction
-commit;  -- expected: exception, transaction rolled back
-rollback;
-```
+The earlier proposed assertion that converting a work while a request stays
+submitted must fail was incorrect: multiple requests can refer to one work and
+have independent statuses. New candidate triggers recheck links for updates to
+external sources and works, but have not yet been executed. Verify valid and
+invalid final states in one transaction as well as concurrency in a real
+two-session Postgres test. The diagnostic report is not a preventive constraint.
+
+Test invalid links by updating the request or draft itself, then confirm the
+deferred check raises at COMMIT and rolls the transaction back. Also test
+several changes to one draft in a single transaction: a consistent final state
+must succeed, and an inconsistent final state must fail.
 
 Also check: after an intentional abort, no partial rows remain (`select count(*)` equals the pre-transaction snapshot).
 
