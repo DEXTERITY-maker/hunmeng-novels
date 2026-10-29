@@ -6,6 +6,7 @@ import { getLibrary, dateLabel, chapterCount, chapterUrl } from '../../../lib/co
 import { chapterListUrl } from '../../../lib/pagination';
 import { novelStructuredData, placeholderCover, socialCover } from '../../../lib/seo';
 import { site } from '../../../config/site';
+import { getTaxonomy } from '../../../lib/taxonomy';
 import serials from '../../../data/serials.json';
 export async function getStaticPaths() {
   return (await getLibrary()).map((n) => ({ params: { slug: n.slug }, props: { novel: n } }));
@@ -25,6 +26,14 @@ const glossaryGroups = glossaryKinds.map(({ type, title }) => ({
 const structuredData = novelStructuredData(n, Astro.site || site.url);
 const coverIsSvg = n.cover.endsWith('.svg');
 const usesPlaceholder = n.cover === placeholderCover;
+const tagTaxonomy = getTaxonomy([n]).tags;
+const tagGroups = n.tags.reduce((groups: { name: string; tags: string[] }[], tag: string) => {
+  const group = tagTaxonomy.find(term => term.label.normalize('NFKC').toLocaleLowerCase('en') === tag.normalize('NFKC').toLocaleLowerCase('en'))?.group ?? 'Other';
+  let entry = groups.find(item => item.name === group);
+  if (!entry) { entry = { name: group, tags: [] }; groups.push(entry); }
+  entry.tags.push(tag);
+  return groups;
+}, []);
 ---
 
 <Layout
@@ -53,6 +62,7 @@ const usesPlaceholder = n.cover === placeholderCover;
         <p class="genre-line genre-links" aria-label="Genres">{n.genres.map(genre => <a href={`/catalog/?genre=${encodeURIComponent(genre)}`}>{genre}</a>)}</p>
         <h1>{n.title}</h1>
         {n.originalTitle !== n.title && <p class="original-title">{n.originalTitle}</p>}
+        {n.alternativeTitles.length > 0 && <p class="fine">Also known as: {n.alternativeTitles.join(' · ')}</p>}
         <p class="author">{n.author}</p>
         <div class="detail-actions">
           <a class="button" href={n.firstUrl} data-continue={n.slug}>
@@ -125,11 +135,12 @@ const usesPlaceholder = n.cover === placeholderCover;
     <section class="synopsis-panel" aria-labelledby="synopsis-title">
       <h2 id="synopsis-title">Synopsis</h2>
       <p class="detail-description">{n.description}</p>
-      <div class="tag-list">{n.tags.map(t => <a href={`/catalog/?include=${encodeURIComponent(t)}`}>{t}</a>)}</div>
+      {tagGroups.map(group => <div class="novel-tag-group"><h3>{group.name}</h3><div class="tag-list">{group.tags.map(t => <a href={`/catalog/?include=${encodeURIComponent(t)}`}>{t}</a>)}</div></div>)}
     </section>
     <nav class="novel-section-nav" aria-label="Novel sections">
       <a href="#contents-title">Contents</a>
       <a href="#author-title">About the author</a>
+      <a href="#reader-reviews-heading">Reviews</a>
       {glossaryGroups.length > 0 && <a href="#glossary-title">Glossary</a>}
     </nav>
     <section class="section contents-section" aria-labelledby="contents-title">

@@ -133,3 +133,20 @@ test('covers and text do not overlap and the header stays compact', async ({ pag
   expect(header.height).toBeLessThan(page.viewportSize()!.width > 760 ? 101 : 131);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
+
+test('catalog filter heading and help remain readable in the desktop sidebar', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/catalog/');
+  const header = page.locator('.catalog-filter-header');
+  const title = header.getByRole('heading', { name: 'Find your next read' });
+  const help = header.getByText('Search the library and refine your selection.');
+  const reset = header.getByRole('button', { name: 'Reset filters' });
+  const [titleBox, helpBox, resetBox, headerBox] = await Promise.all([
+    title.boundingBox(), help.boundingBox(), reset.boundingBox(), header.boundingBox(),
+  ]);
+  expect(titleBox && helpBox && resetBox && headerBox).toBeTruthy();
+  expect(titleBox!.width).toBeGreaterThan(150);
+  expect(helpBox!.y).toBeGreaterThanOrEqual(titleBox!.y + titleBox!.height - 1);
+  expect(resetBox!.y).toBeGreaterThanOrEqual(helpBox!.y + helpBox!.height - 1);
+  expect(resetBox!.x + resetBox!.width).toBeLessThanOrEqual(headerBox!.x + headerBox!.width + 1);
+});

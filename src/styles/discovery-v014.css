@@ -1,0 +1,17 @@
+.catalog-page .genre-filters { margin-top: 1rem; border-top: 1px solid var(--line); padding-top: .8rem; }
+.catalog-page .genre-filters summary { cursor: pointer; font-weight: 700; min-height: 44px; }
+.catalog-page .genre-filters > label { display: grid; gap: .35rem; margin: .6rem 0; font-size: .875rem; }
+.catalog-page .genre-filters select { min-height: 44px; width: 100%; }
+.active-filters:not([hidden]) { display: flex; flex-wrap: wrap; gap: .5rem; margin: 0 0 1rem; }
+.active-filter { border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 999px; min-height: 40px; padding: .45rem .8rem; overflow-wrap: anywhere; text-align: left; }
+.active-filter:hover { border-color: var(--accent); }
+.novel-page .novel-tag-group { margin-top: 1rem; }
+.novel-page .novel-tag-group h3 { font: 700 .85rem/1.4 var(--body-font, sans-serif); color: var(--muted); margin: 0 0 .3rem; }
+.library-search { display: grid; gap: .4rem; font-weight: 700; max-width: 36rem; margin: 1.25rem 0; }
+.library-search input { min-height: 48px; width: 100%; padding: .65rem .85rem; }
+@media (max-width: 760px) {
+  .active-filter { font-size: .85rem; }
+  .library-search { max-width: none; }
+  .catalog-page .catalog-filter-header { display: flex; align-items: center; justify-content: space-between; gap: .5rem; margin-bottom: 12px; }
+  .catalog-page .catalog-filter-header h2 { font-size: 1.1rem; margin: 0; }
+}

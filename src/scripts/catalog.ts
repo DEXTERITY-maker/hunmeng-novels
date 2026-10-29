@@ -83,14 +83,17 @@ export async function initCatalog() {
   const empty = document.getElementById('catalog-empty');
   if (!form || !container || !pager || !count || !empty) return;
 
+  let loadingQuery = false;
   const loadQuery = () => {
+    loadingQuery = true;
     form.reset();
+    loadingQuery = false;
     const params = new URLSearchParams(location.search);
-    for (const key of ['search','category','genre','status','originalStatus','sort','size','minChapters','minRating','tagMode']) {
+    for (const key of ['search','category','genre','status','originalStatus','sort','size','minChapters','maxChapters','minRating','tagMode','genreMode']) {
       const value = params.get(key);
       if (value !== null) validField(form.elements.namedItem(key), key === 'search' ? value : catalogFilterLabel(value));
     }
-    for (const key of ['include','exclude']) {
+    for (const key of ['include','exclude','genreInclude','genreExclude']) {
       for (const tag of params.getAll(key)) {
         const checkbox = Array.from(form.querySelectorAll<HTMLInputElement>('input[type="checkbox"]')).find((x) => x.name === key && fold(x.value) === fold(catalogFilterLabel(tag)));
         if (checkbox) checkbox.checked = true;
@@ -119,30 +122,42 @@ export async function initCatalog() {
     document.getElementById('tag-picker-empty')!.hidden = shown > 0;
   };
   updateTagPicker();
-  if (form.querySelector('input[type="checkbox"]:checked')) {
+  if (form.querySelector('input[name="include"]:checked, input[name="exclude"]:checked')) {
     form.querySelector<HTMLDetailsElement>('.tag-filters')!.open = true;
     if (options && !mobile.matches) options.open = true;
   }
+  if (form.querySelector('input[name="genreInclude"]:checked, input[name="genreExclude"]:checked'))
+    form.querySelector<HTMLDetailsElement>('.genre-filters')!.open = true;
+  count.textContent = 'Loading search…';
   try {
     const novels = await getCatalogIndex();
     const render = (syncUrl: boolean, requestedPage?: number) => {
       const f = new FormData(form);
       const q = fold(String(f.get('search') ?? ''));
       updateTagPicker();
-      const selected = [...f.entries()].filter(([key,value]) => value && !['search','sort','size','tagMode'].includes(key)).length;
+      const selected = [...f.entries()].filter(([key,value]) => value && !['search','sort','size','tagMode','genreMode'].includes(key)).length;
       const summary = document.getElementById('active-filter-count');
       if (summary) { summary.textContent = `Selected: ${selected}`; summary.hidden = selected === 0; }
       const required = f.getAll('include').map(String);
       const forbidden = f.getAll('exclude').map(String);
+      const requiredGenres = f.getAll('genreInclude').map(String);
+      const forbiddenGenres = f.getAll('genreExclude').map(String);
       const minChapters = Math.max(0, Number(f.get('minChapters') || 0));
+      const maximum = String(f.get('maxChapters') ?? '');
+      const maxChapters = maximum ? Math.max(0, Number(maximum)) : null;
       const minRating = Number(f.get('minRating') || 0);
       const filtered = novels.filter((n) =>
-        (!q || fold([n.title,n.originalTitle,n.author,...n.tags].join(' ')).includes(q)) &&
+        (!q || fold([n.title,n.originalTitle,...(n.alternativeTitles ?? []),n.author,...n.tags].join(' ')).includes(q)) &&
         (!f.get('category') || n.categories.includes(String(f.get('category')))) &&
         (!f.get('genre') || n.genres.some(genre => fold(genre) === fold(String(f.get('genre'))))) &&
+        (requiredGenres.length === 0 || (f.get('genreMode') === 'any'
+          ? requiredGenres.some(t => n.genres.some(genre => fold(genre) === fold(t)))
+          : requiredGenres.every(t => n.genres.some(genre => fold(genre) === fold(t))))) &&
+        forbiddenGenres.every(t => !n.genres.some(genre => fold(genre) === fold(t))) &&
         (!f.get('status') || n.translationStatus === f.get('status')) &&
         (!f.get('originalStatus') || n.originalStatus === f.get('originalStatus')) &&
         n.chapterCount >= minChapters &&
+        (maxChapters === null || n.chapterCount <= maxChapters) &&
         (!minRating || (n.rating !== null && n.rating.average >= minRating)) &&
         (required.length === 0 || (f.get('tagMode') === 'any'
           ? required.some((t) => n.tags.some(tag => fold(tag) === fold(t)))
@@ -167,6 +182,27 @@ export async function initCatalog() {
       const page = Number.isSafeInteger(desired) ? Math.max(1, Math.min(desired, pages)) : 1;
       container.replaceChildren(...filtered.slice((page - 1) * size, page * size).map(card));
       count.textContent = 'Novels found: ' + filtered.length;
+      const active = document.getElementById('active-filters');
+      if (active) {
+        active.replaceChildren();
+        const names: Record<string, string> = { search: 'Search', category: 'Category', genre: 'Genre', status: 'Translation', originalStatus: 'Original', minChapters: 'Min chapters', maxChapters: 'Max chapters', minRating: 'Min rating', include: 'Tag', exclude: 'Not tag', genreInclude: 'Genre', genreExclude: 'Not genre' };
+        for (const [key, value] of f.entries()) {
+          if (!value || !names[key]) continue;
+          const chip = make('button', `${names[key]}: ${String(value)} ×`, 'active-filter');
+          chip.type = 'button';
+          chip.setAttribute('aria-label', `Remove ${names[key]}: ${String(value)}`);
+          chip.addEventListener('click', () => {
+            const fields = Array.from(form.elements).filter((element): element is HTMLInputElement | HTMLSelectElement =>
+              (element instanceof HTMLInputElement || element instanceof HTMLSelectElement) && element.name === key);
+            const field = fields.find(element => element.value === value);
+            if (field instanceof HTMLInputElement && field.type === 'checkbox') field.checked = false;
+            else if (field) field.value = '';
+            render(true, 1);
+          });
+          active.append(chip);
+        }
+        active.hidden = !active.childElementCount;
+      }
       empty.hidden = filtered.length > 0;
       pager.replaceChildren();
       pager.hidden = pages <= 1;
@@ -190,11 +226,15 @@ export async function initCatalog() {
       else onFilter();
     });
     form.addEventListener('change',(event) => {
-      if ((event.target as HTMLElement).id === 'catalog-tag-group') updateTagPicker();
+      const target = event.target as HTMLElement;
+      // Text and number inputs were already rendered on input. Re-rendering on
+      // blur can remove an active-filter button before its click is delivered.
+      if (target instanceof HTMLInputElement && (target.type === 'search' || target.type === 'number')) return;
+      if (target.id === 'catalog-tag-group') updateTagPicker();
       else onFilter();
     });
     // Native controls reset after the event. Re-render in the next task, including collapsed fields.
-    form.addEventListener('reset',()=>setTimeout(onFilter,0));
+    form.addEventListener('reset',()=>{ if (!loadingQuery) setTimeout(onFilter,0); });
     pager.addEventListener('click',(e)=>{
       const a=(e.target as Element).closest('a');
       if (!a || !pager.contains(a)) return;
@@ -208,5 +248,6 @@ export async function initCatalog() {
     void refreshCatalogChapterCounts(novels).then(changed => { if (changed) render(false); });
   } catch {
     count.textContent='Advanced search is temporarily unavailable. Available novels are shown below.';
+    form.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLButtonElement>('input, select, button').forEach(control => { control.disabled = true; });
   }
 }

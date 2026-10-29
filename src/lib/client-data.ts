@@ -10,6 +10,7 @@ export interface ClientNovel {
   slug: string;
   title: string;
   originalTitle: string;
+  alternativeTitles?: string[];
   author?: string;
   categories?: string[];
   views?: number | null;
@@ -75,6 +76,7 @@ export interface CatalogIndexNovel {
   slug: string;
   title: string;
   originalTitle: string;
+  alternativeTitles?: string[];
   author: string;
   cover: string;
   description: string;

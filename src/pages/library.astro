@@ -20,14 +20,20 @@ import { shelves, site } from '../config/site';
         >
           <Icon name={(["book", "clock", "check", "ban"] as const)[i]} size={26} />
           <strong>{label}</strong>
-          <span data-shelf-count={value}>0</span>
+          <span data-shelf-count={value}>—</span>
           <Icon name="chevron" size={18} />
         </button>
       ))}
     </div>
+    <label class="library-search">Find in your library
+      <input id="library-search" type="search" placeholder="Title or author" autocomplete="off" />
+    </label>
     <p id="library-count" role="status" aria-live="polite"></p>
     <div id="library-list" class="library-list"></div>
-    <div id="library-empty" class="empty-state library-empty">
+    <p id="library-loading" class="fine" role="status">Loading your library…</p>
+    <p id="library-error" class="notice" role="alert" hidden>Unable to load your library. Refresh the page and try again.</p>
+    <p id="library-no-results" class="empty-state" hidden>No matching books on this shelf. Try another search.</p>
+    <div id="library-empty" class="empty-state library-empty" hidden>
       <img src="/images/library-empty.webp" width="300" height="200" alt="" loading="lazy" />
       <h2>This shelf is empty.</h2><p>Start a new story from our catalog and begin your reading journey.</p>
       <a class="button" href="/catalog/">Find a novel in the catalog <Icon name="arrow" size={18} /></a>
