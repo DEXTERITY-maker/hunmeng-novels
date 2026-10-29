@@ -83,7 +83,8 @@ export type SourceRegistry = {
 
 /** Read-only catalog used for advisory matching only. */
 export type CatalogReader = {
-  works(): Promise<readonly WorkEvidence[]>;
+  /** Must return a complete candidate set for the supplied evidence. */
+  works(evidence: WorkEvidence): Promise<readonly WorkEvidence[]>;
 };
 
 export type RateLimitDecision = { readonly allowed: boolean; readonly retryAfterSeconds?: number };
@@ -451,7 +452,6 @@ export async function handleNovelRequest(input: SubmitInput, dependencies: Handl
   // 6. Advisory matching uses adapter metadata only; client hints are never match input.
   let matches: readonly Match[];
   try {
-    const catalog = await dependencies.catalog.works();
     const metadata = permittedMetadata;
     const evidence: WorkEvidence = {
       id: 'pending-request',
@@ -460,6 +460,7 @@ export async function handleNovelRequest(input: SubmitInput, dependencies: Handl
       sources: [recognition.source],
       chapters: [...(metadata.chapterTitles ?? [])],
     };
+    const catalog = await dependencies.catalog.works(evidence);
     matches = findMatches(evidence, catalog);
   } catch {
     return fail(503, 'dependency-unavailable', 'Matching catalog is unavailable.');

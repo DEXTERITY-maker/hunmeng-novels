@@ -6,7 +6,7 @@
 
 - `src/lib/novel-requests/server-supabase-auth.ts`: constructs a **server-only**, non-persisting Supabase Auth SDK client using a **publishable** key; identity comes from `auth.getUser(jwt)`, never user-editable JWT metadata. No service-role or database secret is needed for Auth.
 - `src/lib/novel-requests/isolated-runtime.ts`: composes this verifier with the keyed requester reference, disconnected HTTP handler and PostgreSQL query-executor contract. It does not export a route and it does not create a database connection.
-- The existing `postgres-store.ts` **rejects nonempty source metadata or duplicate-match evidence** because the SQL prototype does not persist them. This is intentional fail-closed behavior, not feature completeness.
+- The draft store persists approved, allowlisted adapter metadata, provenance and advisory match evidence atomically. Missing policy approval fails closed. This uses fictional test sources; no real provider or policy is configured.
 
 ## Disposable local Supabase verification
 
@@ -16,7 +16,7 @@ GitHub Actions run [40831573615](https://github.com/DEXTERITY-maker/hunmeng-nove
 
 1. **Staging environment.** Create a separate throwaway database/project with independently generated secrets, using the owner's explicit approval. Do not run the draft against the shared production Supabase project. Local `getUser` tests cover valid, invalid, expired, deleted and banned accounts. Hosted staging still needs its own tests, including revoked sessions and tokens from another project.
 2. **Least-privilege SQL executor.** A NOLOGIN executor role and transaction-pooler adapter have been prototyped; a restricted local login passed the isolated Supabase test. Hosted role membership, privileges, credentials, TLS and pooler behavior remain unverified. Do not put `PGPASSWORD`, `DATABASE_URL`, HMAC material, or Supabase secret/service-role key in browser bundles or Git. The current private SQL function does not grant EXECUTE to `service_role` by design. Do not use an unrestricted privileged user as a shortcut.
-3. **Match evidence.** Persist adapter metadata, match candidates and provenance in one transaction with the request and the idempotency record. Freeze the source adapter policy revision. Do not silently discard this information. No automatic merging of works based on titles/chapters.
+3. **Match evidence.** Atomic persistence of allowlisted metadata, provenance and advisory candidates has been tested locally. Review the SQL and establish durable policy approval/versioning before use with any real source. Do not automatically merge works based on titles/chapters.
 4. **Abuse controls.** Enforce trusted edge-origin IP derivation (no attacker-controlled forwarding headers), durable per-user and per-IP rate limits, bounded concurrent bodies and logging/retention policies. Current prototype includes an atomic per-user creation quota; that does not replace edge throttling.
 5. **RLS, views and grants.** Test `anon`, `authenticated`, `service_role`, editors, dedicated writer and table-owner privileges against real Supabase. Review the two `security_invoker=false` views carefully: they must be proven isolated for each role, not assumed from ordinary RLS. Get fresh `auth.uid()` in every policy where needed.
 6. **Source rights, SSRF, moderation.** Use explicit allowlisted source adapters with allowed URL patterns, no arbitrary server fetch, confirmed publishing rights, human decisions for uncertain duplicates, append-only audit and a rollback plan.

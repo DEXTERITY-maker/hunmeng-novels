@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { handleNovelRequest, createRequesterReferenceDeriver } from '../src/lib/novel-requests/handler.ts';
 import { identifySource } from '../src/lib/novel-requests/core.ts';
+import { createWorkCandidateIndex } from '../src/lib/novel-requests/matching-index.ts';
 import {
   FIXTURE_PROVIDER_ARCHIVE,
   fixtureAdapter,
@@ -125,6 +126,13 @@ test('valid request is accepted with advisory matches and unverified rights', as
   assert.equal(result.body.algorithmVersion, 'requests-match-v1');
   assert.ok(result.body.matches.length >= 1);
   assert.equal(result.body.matches[0].kind, 'exact');
+});
+
+test('indexed catalog produces the same handler matches as the complete catalog', async () => {
+  const full = await call();
+  const indexed = await call({ catalog: createWorkCandidateIndex(fixtureCatalog).reader() });
+  assert.equal(indexed.result.status, 201);
+  assert.deepEqual(indexed.result.body.matches, full.result.body.matches);
 });
 
 test('missing, invalid, inactive and unavailable identity fail closed', async () => {
