@@ -13,6 +13,7 @@ test('personal terms affect only this novel and can be removed without changing 
   await expect(dialog.locator('#personal-terms-status')).toHaveText('Replacement saved on this device.');
   await expect(article).toContainText('Mira');
   await expect(article).not.toContainText('Ilya');
+  await page.screenshot({ path: test.info().outputPath('hunmeng-v014-reader-terms.png') });
   await dialog.getByRole('button', { name: 'Close settings', exact: true }).click();
   await page.goto('/novel/khranitel-mayaka/glava-2/');
   await expect(article).toContainText('Mira');
@@ -26,6 +27,7 @@ test('personal terms affect only this novel and can be removed without changing 
   await dialog.getByRole('button', { name: 'Remove replacement for Ilya', exact: true }).click();
   await expect(article).toContainText('Ilya');
   await expect(article).not.toContainText('Mira');
+  await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem('hunmeng-novels:v1')!).progress['khranitel-mayaka']?.chapterSlug)).toBe('glava-1');
   const state = await page.evaluate(() => JSON.parse(localStorage.getItem('hunmeng-novels:v1')!));
   expect(state.library['khranitel-mayaka']).toBe('reading');
   expect(state.progress['khranitel-mayaka'].chapterSlug).toBe('glava-1');

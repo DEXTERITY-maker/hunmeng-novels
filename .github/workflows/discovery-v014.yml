@@ -1,5 +1,8 @@
 name: Discovery and library browser checks
 on:
+  push:
+    branches:
+      - feat/hunmeng-v0-1-4-discovery
   pull_request:
     paths:
       - 'src/pages/catalog*'

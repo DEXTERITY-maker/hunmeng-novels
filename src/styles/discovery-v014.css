@@ -16,6 +16,7 @@
 .personal-terms form .button { justify-self: start; margin-top: .4rem; }
 .personal-terms ul { list-style: none; padding: 0; margin: .7rem 0; display: grid; gap: .4rem; }
 .personal-terms li { display: flex; align-items: center; justify-content: space-between; gap: 1rem; overflow-wrap: anywhere; }
+.personal-terms li span { min-width: 0; }
 .personal-terms li button { flex: none; min-height: 44px; background: transparent; color: var(--accent); border: 0; text-decoration: underline; }
 @media (max-width: 760px) {
   .active-filter { font-size: .85rem; }
