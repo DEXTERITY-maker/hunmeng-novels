@@ -19,15 +19,16 @@ concurrency:
 
 jobs:
   deploy:
-    # Production is a user-approved dispatch or an explicitly approved release-title prefix.
-    # Never deploy on arbitrary pushes, pull requests, or unrelated commit titles.
+    # Production is an owner-approved dispatch or an explicitly allowlisted release subject.
+    # GitHub squash-merge subjects may have a commit body; match the approved subject
+    # prefix, not the full multiline commit message. Never deploy untagged pushes.
     if: >-
       github.ref == 'refs/heads/main' &&
       (github.event_name == 'workflow_dispatch' ||
        (github.event_name == 'push' &&
         (startsWith(github.event.head_commit.message, 'fix(ui): publish mobile polish 2026-10-29 [deploy cloudflare]') ||
          startsWith(github.event.head_commit.message, 'content(news): publish mobile polish note 2026-10-29 [deploy cloudflare]') ||
-         github.event.head_commit.message == 'design(ui): publish Hunmeng editorial redesign 2026-10-29 [deploy cloudflare]')))
+         startsWith(github.event.head_commit.message, 'design(ui): publish Hunmeng editorial redesign 2026-10-29 [deploy cloudflare]'))))
     runs-on: ubuntu-latest
     environment: pages-production
     timeout-minutes: 30

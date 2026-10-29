@@ -20,7 +20,7 @@ test('redesign has an accurate news announcement and an explicit release gate',(
  assert.match(post,/^order: 600$/m);
  assert.match(post,/\[Explore the catalog\]\(\/catalog\/\)/);
  assert.match(post,/novel-request system is not part of this release/);
- assert.match(workflow,/head_commit\.message == 'design\(ui\): publish Hunmeng editorial redesign 2026-10-29 \[deploy cloudflare\]'/);
+ assert.match(workflow,/startsWith\(github\.event\.head_commit\.message, 'design\(ui\): publish Hunmeng editorial redesign 2026-10-29 \[deploy cloudflare\]'/);
  assert.match(workflow,/github\.ref == 'refs\/heads\/main'/);
  assert.match(workflow,/APPROVED_SHA.*GITHUB_SHA/);
 });
