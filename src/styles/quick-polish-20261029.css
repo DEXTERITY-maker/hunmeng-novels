@@ -129,3 +129,62 @@
   /* Very narrow devices prioritize a full-width search input. */
   .catalog-page .catalog-search-row {grid-template-columns:minmax(0,1fr);}
 }
+
+/* Keep the first result visible on a 390x844 phone without hiding controls.
+ * Compact only the catalog's decorative header and spacing. The search,
+ * one-tap sorting and expandable filters remain present and accessible. */
+@media (max-width:760px) {
+  .catalog-page .catalog-heading {
+    min-height:145px;
+    padding:12px 15px;
+    margin-bottom:8px;
+  }
+  .catalog-page .catalog-heading h1 {
+    font-size:clamp(1.88rem,7vw,2.3rem);
+    margin-bottom:5px;
+  }
+  .catalog-page .catalog-heading > p {
+    font-size:.84rem;
+    line-height:1.35;
+  }
+  .catalog-page .catalog-heading .taxonomy-nav {
+    margin-top:8px;
+    gap:7px;
+  }
+  .catalog-page .catalog-heading .taxonomy-nav a {
+    padding:5px 8px;
+  }
+  .catalog-page .catalog-filter-panel {
+    padding:11px 13px;
+  }
+  .catalog-page .catalog-filter-header {
+    margin-bottom:8px;
+  }
+  .catalog-page .catalog-filter-header h2 {
+    font-size:1.15rem;
+    margin-bottom:0;
+  }
+  .catalog-page .catalog-search-row {
+    margin-bottom:8px;
+  }
+  .catalog-page .catalog-search-row > label {
+    gap:4px;
+    font-size:.8rem;
+  }
+  .catalog-page .catalog-filter-panel input[type='search'],
+  .catalog-page .catalog-quick-sort select {
+    min-height:44px;
+  }
+  .catalog-page .catalog-options {
+    margin-top:6px;
+    padding-top:7px;
+  }
+  .catalog-page .catalog-options > summary {
+    min-height:42px;
+  }
+  .catalog-page .catalog-results-heading {
+    min-height:24px;
+    margin:6px 0 8px;
+    padding-bottom:6px;
+  }
+}
