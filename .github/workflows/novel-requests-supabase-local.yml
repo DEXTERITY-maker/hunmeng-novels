@@ -1,0 +1,44 @@
+name: Novel requests isolated Supabase Auth and access
+on:
+  pull_request:
+    paths:
+      - 'docs/proposals/novel-requests-*-draft.sql'
+      - 'src/lib/novel-requests/**'
+      - 'tests/novel-request-supabase-local.mjs'
+      - '.github/workflows/novel-requests-supabase-local.yml'
+permissions:
+  contents: read
+jobs:
+  local-supabase:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - uses: supabase/setup-cli@v3
+        with:
+          version: 2.84.2
+      - name: Start disposable local Supabase stack
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/hunmeng-local-supabase"
+          cd "$RUNNER_TEMP/hunmeng-local-supabase"
+          supabase init > "$RUNNER_TEMP/supabase-init.log" 2>&1
+          # Redirect the CLI output: it contains local-only keys and URLs.
+          supabase start -x realtime,storage-api,imgproxy,studio,edge-runtime,logflare,vector,supavisor,postgres-meta,mailpit > "$RUNNER_TEMP/supabase-start.log" 2>&1
+          supabase status -o env > "$RUNNER_TEMP/supabase-local.env"
+      - name: Install isolated PostgreSQL test driver
+        run: npm install --prefix "$RUNNER_TEMP/local-supabase-pg" --ignore-scripts --no-audit --no-fund pg@8.16.3
+      - name: Test real local Auth and restricted database access
+        env:
+          HUNMENG_LOCAL_SUPABASE: 'yes'
+          LOCAL_SUPABASE_ENV: ${{ runner.temp }}/supabase-local.env
+          PG_MODULE_DIR: ${{ runner.temp }}/local-supabase-pg
+        run: node tests/novel-request-supabase-local.mjs
