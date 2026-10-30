@@ -2419,3 +2419,223 @@ html[data-theme='sepia'] .home-page .home-hero-copy {
     background-position: center, center, 63% center;
   }
 }
+
+
+/* Reader chapter panorama: chapter prose stays on the original paper and column width.
+   Desktop artwork can extend beyond that column without changing reader progress anchors. */
+.reader-main > .reader-heading.reader-heading-with-art {
+  --reader-art: none;
+  box-sizing: border-box;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  width: min(1430px, calc(100vw - 64px));
+  max-width: none;
+  min-height: clamp(240px, 25vw, 345px);
+  margin: 0 0 clamp(27px, 4vw, 44px) 50%;
+  transform: translateX(-50%);
+  padding: clamp(22px, 3.6vw, 45px) clamp(28px, 7vw, 106px);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  border: 1px solid var(--hm-edge);
+  border-radius: 22px;
+  background-image:
+    linear-gradient(90deg,
+      var(--bg) 0%,
+      color-mix(in srgb, var(--bg) 98%, transparent) 28%,
+      color-mix(in srgb, var(--bg) 94%, transparent) 40%,
+      color-mix(in srgb, var(--bg) 12%, transparent) 67%,
+      transparent 82%),
+    var(--reader-art);
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 8px 25px rgb(20 40 34 / .07);
+}
+.reader-heading.reader-heading-with-art[data-art='comprehension'] {
+  --reader-art: url('/images/art/comprehension-day-1536.webp');
+}
+.reader-heading.reader-heading-with-art[data-art='latency'] {
+  --reader-art: url('/images/art/latency-night-1536.webp');
+}
+html[data-theme='dark'] .reader-heading.reader-heading-with-art[data-art='comprehension'] {
+  --reader-art: url('/images/art/comprehension-night-1536.webp');
+}
+@media (prefers-color-scheme: dark) {
+  html[data-theme='system'] .reader-heading.reader-heading-with-art[data-art='comprehension'] {
+    --reader-art: url('/images/art/comprehension-night-1536.webp');
+  }
+}
+html[data-theme='sepia'] .reader-heading.reader-heading-with-art {
+  background-image:
+    linear-gradient(rgb(166 111 54 / .1), rgb(166 111 54 / .1)),
+    linear-gradient(90deg, var(--bg) 0%, color-mix(in srgb, var(--bg) 98%, transparent) 28%,
+      color-mix(in srgb, var(--bg) 94%, transparent) 40%,
+      color-mix(in srgb, var(--bg) 12%, transparent) 67%, transparent 82%),
+    var(--reader-art);
+}
+.reader-heading.reader-heading-with-art > * {
+  position: relative;
+  z-index: 1;
+  width: auto;
+  max-width: min(510px, 46%);
+  margin-left: 0;
+  text-align: left;
+}
+.reader-heading.reader-heading-with-art h1 {
+  font-size: clamp(1.9rem, 3.6vw, 3.45rem);
+  line-height: 1.08;
+  margin-block: 7px 12px;
+  overflow-wrap: anywhere;
+}
+.reader-heading.reader-heading-with-art .reader-heading-novel { margin-bottom: 8px; }
+.reader-heading.reader-heading-with-art .reader-heading-eyebrow { margin-bottom: 4px; }
+.reader-heading.reader-heading-with-art .reader-heading-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin-top: 5px; }
+.reader-heading.reader-heading-with-art .reader-heading-meta time { display: inline-flex; gap: 6px; align-items: center; }
+.reader-heading.reader-heading-with-art [data-reader-words]:not([hidden])::before {
+  content: '▤';
+  margin-right: 6px;
+  font-size: 1.1em;
+}
+.reader-heading.reader-heading-with-art .reader-heading-ornament {
+  width: min(295px, 38%);
+  max-width: min(295px, 38%);
+  margin-top: 16px;
+}
+.reader-heading.reader-heading-with-art .reader-heading-ornament::before,
+.reader-heading.reader-heading-with-art .reader-heading-ornament::after { width: 42%; }
+
+/* Fades only while the existing toolbar is visible, without intercepting taps
+   or interfering with reader.ts auto-hide / dialog / keyboard behavior. */
+body.reader-page:not(.controls-hidden):not(.reader-focus-mode):has(.reader-toolbar:not([hidden]))::after {
+  content: '';
+  position: fixed;
+  pointer-events: none;
+  inset: auto 0 0;
+  height: 104px;
+  z-index: 18;
+  background: linear-gradient(to bottom, transparent, color-mix(in srgb, var(--bg) 85%, transparent) 90%, var(--bg));
+}
+.reader-page .reader-toolbar {
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 13px 38px rgb(12 32 32 / .17);
+  border-radius: 999px;
+}
+.reader-header-logo-placeholder { display: none; }
+
+/* The illustration is above, not under, the text on narrow screens. */
+@media (max-width: 600px) {
+  .reader-main > .reader-heading.reader-heading-with-art {
+    width: 100vw;
+    max-width: none;
+    box-sizing: border-box;
+    min-height: 0;
+    max-height: 33dvh;
+    margin: 0 0 20px 50%;
+    padding: 0 20px 11px;
+    border: 0;
+    border-radius: 0;
+    background: var(--bg);
+    box-shadow: none;
+    transform: translateX(-50%);
+  }
+  html[data-theme='sepia'] .reader-main > .reader-heading.reader-heading-with-art { background: var(--bg); }
+  .reader-heading.reader-heading-with-art::before {
+    content: '';
+    display: block;
+    flex: 0 0 auto;
+    width: calc(100% + 40px);
+    height: clamp(57px, 10dvh, 80px);
+    margin: 0 -20px 6px;
+    background-image: linear-gradient(to top, var(--bg), transparent 55%), var(--reader-art);
+    background-size: cover;
+    background-position: center 44%;
+  }
+  html[data-theme='sepia'] .reader-heading.reader-heading-with-art::before {
+    background-image:
+      linear-gradient(rgb(166 111 54 / .12), rgb(166 111 54 / .12)),
+      linear-gradient(to top, var(--bg), transparent 55%),
+      var(--reader-art);
+  }
+  .reader-heading.reader-heading-with-art[data-art='comprehension'] { --reader-art: url('/images/art/comprehension-day-960.webp'); }
+  .reader-heading.reader-heading-with-art[data-art='latency'] { --reader-art: url('/images/art/latency-night-960.webp'); }
+  html[data-theme='dark'] .reader-heading.reader-heading-with-art[data-art='comprehension'] { --reader-art: url('/images/art/comprehension-night-960.webp'); }
+  .reader-heading.reader-heading-with-art > * { max-width: 100%; }
+  .reader-heading.reader-heading-with-art h1 { font-size: clamp(1.4rem, 5.8vw, 2rem); line-height: 1.12; margin: 4px 0 7px; }
+  .reader-heading.reader-heading-with-art .reader-heading-novel { margin-bottom: 2px; font-size: .76rem; }
+  .reader-heading.reader-heading-with-art .reader-heading-eyebrow { font-size: .63rem; letter-spacing: .07em; margin-bottom: 0; }
+  .reader-heading.reader-heading-with-art .reader-heading-meta { font-size: .69rem; gap: 4px 11px; margin-top: 2px; }
+  .reader-heading.reader-heading-with-art .reader-heading-ornament { width: min(220px, 100%); max-width: 100%; margin-top: 5px; font-size: .73rem; }
+
+  /* One row: back arrow, empty logo square and the four original actions. */
+  .reader-header { flex-wrap: nowrap; overflow: visible; }
+  .reader-header .reader-novel-title {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    flex: 1 1 auto;
+    min-width: 38px;
+  }
+  .reader-header-logo-placeholder {
+    display: block;
+    width: 38px;
+    height: 38px;
+    flex: 0 0 38px;
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--soft) 85%, var(--surface));
+    border: 1px solid var(--line);
+  }
+  .reader-header .reader-novel-title :is(.reader-brand-label, .reader-book-label) { display: none; }
+  .reader-header-actions { display: flex; flex: none; white-space: nowrap; }
+  .reader-header :is(.reader-back, .icon-button, .reader-more summary.icon-button) { flex-shrink: 0; }
+  .reader-page .reader-toolbar { border-radius: 999px; }
+}
+@media (max-width: 600px) and (prefers-color-scheme: dark) {
+  html[data-theme='system'] .reader-heading.reader-heading-with-art[data-art='comprehension'] { --reader-art: url('/images/art/comprehension-night-960.webp'); }
+}
+/* In landscape, do not use the tall panoramic section as a barrier to reading. */
+@media (max-height: 560px) and (orientation: landscape) {
+  .reader-main > .reader-heading.reader-heading-with-art {
+    width: min(calc(100vw - 24px), 1000px);
+    min-height: 0;
+    max-height: 30dvh;
+    padding: 7px 18px;
+    border-radius: 12px;
+  }
+  .reader-heading.reader-heading-with-art::before { display: none; }
+  .reader-heading.reader-heading-with-art h1 { font-size: 1.22rem; margin: 2px 0; }
+  .reader-heading.reader-heading-with-art .reader-heading-novel { margin: 0; }
+  .reader-heading.reader-heading-with-art .reader-heading-eyebrow { margin: 0; }
+  .reader-heading.reader-heading-with-art .reader-heading-meta { margin: 2px 0; }
+  .reader-heading.reader-heading-with-art .reader-heading-ornament { display: none; }
+}
+@media print {
+  .reader-main > .reader-heading.reader-heading-with-art { width: 100%; margin-left: 0; transform: none; padding: 0; min-height: 0; background: transparent; box-shadow: none; }
+  body.reader-page::after { display: none !important; }
+}
+
+/* Without an optional art field, no generic fantasy scene is inserted. */
+.reader-main > .reader-heading:not(.reader-heading-with-art) {
+  background: var(--bg);
+}
+/* Focus mode removes illustration and keeps the familiar plain book heading. */
+.reader-focus-mode .reader-main > .reader-heading.reader-heading-with-art,
+.reader-focus-mode .reader-main > .reader-heading:not(.reader-heading-with-art) {
+  width: 100%;
+  max-width: none;
+  min-height: 0;
+  max-height: none;
+  margin: 0 0 30px;
+  padding: 15px 0 20px;
+  transform: none;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+.reader-focus-mode .reader-heading.reader-heading-with-art::before { display: none; }
+.reader-focus-mode .reader-heading.reader-heading-with-art > * { max-width: 100%; }
