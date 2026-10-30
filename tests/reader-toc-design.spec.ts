@@ -24,7 +24,7 @@ for (const { device, width, height } of cases) {
       await expect(dialog).toBeVisible();
       await expect(dialog.locator('.reader-toc-eyebrow')).toHaveText('✦ CONTENTS');
       await expect(dialog.getByRole('heading', { name: 'Contents', exact: true })).toBeVisible();
-      await expect(dialog.locator('.reader-toc-novel')).toHaveText('The Lighthouse Keeper');
+      await expect(dialog.locator('.reader-toc-novel')).toHaveText('The Keeper of the Quiet Lighthouse');
 
       const links = dialog.locator('.reader-toc-chapters a');
       await expect(links).toHaveCount(3);
