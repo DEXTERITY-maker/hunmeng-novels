@@ -32,7 +32,7 @@ test('reader audit — featured cover and mobile search field',async({page},info
  await page.waitForTimeout(1200);
  await save(page,info,'02-hero-cover-mobile');
  await page.locator('.home-search').screenshot({path:info.outputPath('07-search-field-mobile.png'),animations:'disabled'});
- await page.locator('.home-discover a').last().click();
+ await page.locator('.home-quick-card').last().click();
  await page.waitForTimeout(650);
  await save(page,info,'03-new-releases-after-click');
 });
