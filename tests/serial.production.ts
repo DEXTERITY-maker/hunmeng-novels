@@ -346,7 +346,7 @@ test('reader headings render correct art and retain real chapter layout on both 
         expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
         const back = (await page.locator('.reader-back').boundingBox())!;
         const mark = (await page.locator('.reader-logo-placeholder').boundingBox())!;
-        const actions = await page.locator('.reader-header-actions :is(button, summary)').all();
+        const actions = await page.locator('.reader-header-actions > button, .reader-header-actions > details > summary').all();
         expect(actions.length).toBe(4);
         expect(Math.abs(back.y - mark.y)).toBeLessThan(14);
         for (const action of actions) {
