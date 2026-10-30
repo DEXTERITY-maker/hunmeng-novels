@@ -2,7 +2,7 @@
 
 Generated in ChatGPT from Hunmeng prompts (October 2026). Owned by the site; no third-party art. Not referenced by any page yet — they are wired in stage by stage.
 
-Scene files are WebP, 3:2, in two widths: `-1536` for desktop and `-960` for phones (`srcset`). Quick-card files are 2:1 in `-720` and `-360`; their subject is on the right and the site fades the left edge into the card with a CSS mask, so they work in every theme.
+All files are WebP, 3:2, in two widths: `-1536` for desktop and `-960` for phones (`srcset`).
 
 | File | Where | Theme |
 | --- | --- | --- |
@@ -11,9 +11,6 @@ Scene files are WebP, 3:2, in two widths: `-1536` for desktop and `-960` for pho
 | `comprehension-day` | *Comprehension Against the Heavens*: novel page, chapter headers, catalog card art | light, sepia |
 | `comprehension-night` | same | dark |
 | `latency-night` | *The Latency of Tomorrow*: novel page, chapter headers, catalog card art | all themes (the scene is already at night) |
-| `quick-genres` | Home quick card "Browse genres" | all themes |
-| `quick-latest` | Home quick card "Latest chapters" | all themes |
-| `quick-new` | Home quick card "New releases" | all themes |
 
 Rules:
 
