@@ -82,8 +82,8 @@ test('new releases opens a recently-added catalog, and mobile search placeholder
   return textWidth<=space-8;
  });
  expect(fits).toBe(true);
- await expect(page.locator('.home-discover a').last()).toHaveAttribute('href','/catalog/?sort=added');
- await page.locator('.home-discover a').last().click();
+ await expect(page.locator('.home-quick-card').last()).toHaveAttribute('href','/catalog/?sort=added');
+ await page.locator('.home-quick-card').last().click();
  await expect(page).toHaveURL(/\/catalog\/\?sort=added/);
  await expect(page.locator('#catalog-filters select[name="sort"]')).toHaveValue('added');
 });
