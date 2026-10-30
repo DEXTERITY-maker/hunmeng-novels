@@ -1,6 +1,7 @@
 ---
 import Layout from '../../../layouts/Layout.astro';
 import LibraryControl from '../../../components/LibraryControl.astro';
+import Icon from '../../../components/Icon.astro';
 import ReaderReviews from '../../../components/ReaderReviews.astro';
 import { getLibrary, dateLabel, chapterCount, chapterUrl } from '../../../lib/content';
 import { chapterListUrl } from '../../../lib/pagination';
@@ -36,102 +37,91 @@ const usesPlaceholder = n.cover === placeholderCover;
   ogImageAlt={usesPlaceholder ? undefined : `Novel cover “${n.title}”`}
   structuredData={structuredData}
 >
-  <main id="main" class="page-shell novel-page">
-    <a class="back-link" href="/catalog/">
-      ← Catalog
-    </a>
+  {n.art && <div class="novel-art-band" data-novel-art={n.art} aria-hidden="true"></div>}
+  <main id="main" class:list={['page-shell', 'novel-page', n.art && 'novel-page-with-art']}>
     <article class="novel-detail" data-novel-detail={n.slug}>
-      <img
-        class="detail-cover"
-        src={n.cover}
-        alt={`Cover: ${n.title}`}
-        width="260"
-        height="380"
-        fetchpriority="high"
-      />
+      <nav class="novel-detail-breadcrumb" aria-label="Breadcrumb">
+        <a href="/catalog/"><span aria-hidden="true">←</span> Catalog</a>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">{n.title}</span>
+      </nav>
+      <div class="novel-book-shell">
+        <img
+          class="detail-cover"
+          src={n.cover}
+          alt={`Cover: ${n.title}`}
+          width="260"
+          height="380"
+          fetchpriority="high"
+        />
+      </div>
       <div class="detail-copy">
-        <p class="genre-line genre-links" aria-label="Genres">{n.genres.map(genre => <a href={`/catalog/?genre=${encodeURIComponent(genre)}`}>{genre}</a>)}</p>
+        <p class="genre-line genre-links" aria-label="Genres">
+          {n.genres.map(genre => <a href={`/catalog/?genre=${encodeURIComponent(genre)}`}>{genre}</a>)}
+        </p>
         <h1>{n.title}</h1>
         {n.originalTitle !== n.title && <p class="original-title">{n.originalTitle}</p>}
         <p class="author">{n.author}</p>
         <div class="detail-actions">
-          <a class="button" href={n.firstUrl} data-continue={n.slug}>
-            Start reading
+          <a class="button novel-primary-read" href={n.firstUrl} data-continue={n.slug}>
+            <Icon name="book" size={19} />
+            <span class="novel-read-label">Start reading</span>
+            <span aria-hidden="true">→</span>
           </a>
-          <LibraryControl slug={n.slug} />
+          <LibraryControl slug={n.slug} withIcon />
           <a class="detail-contents-link" href="#contents-title">Contents <span aria-hidden="true">→</span></a>
         </div>
-        {serial && (
-          <div class="serial-publication-stats" aria-label="Chapter publication progress">
-            <span><strong>{n.chapterCount}</strong>&nbsp;published chapters</span>
-            <span><strong>{serial.totalChapters}</strong>&nbsp;planned in total</span>
-            <a href={`${n.url}releases/`}>Release schedule →</a>
-          </div>
-        )}
-        <dl class="novel-facts">
-          {n.original ? (
-            <div>
-              <dt>Status</dt>
-              <dd>{n.originalStatus}</dd>
-            </div>
-          ) : (
-            <>
-              <div>
-                <dt>Original</dt>
-                <dd>{n.originalStatus}</dd>
-              </div>
-              <div>
-                <dt>Translation</dt>
-                <dd>{n.translationStatus}</dd>
-              </div>
-            </>
-          )}
-          <div>
-            <dt>Length</dt>
-            <dd>{chapterCount(n.chapterCount)}</dd>
-          </div>
-          {n.rating && (
-            <div>
-              <dt>Reader rating</dt>
-              <dd>★ {n.rating.average.toFixed(1)} / 5 · {n.rating.count} ratings</dd>
-            </div>
-          )}
-          {typeof n.views === 'number' && (
-            <div>
-              <dt>Views</dt>
-              <dd>{new Intl.NumberFormat('en-US').format(n.views)}</dd>
-            </div>
-          )}
-          <div>
-            <dt>Updated</dt>
-            <dd>
-              <time datetime={n.updatedAt}>{dateLabel(n.updatedAt)}</time>
-            </dd>
-          </div>
-        </dl>
-        <div class="work-categories" aria-label="Categories">
-          {n.categories.map((category) => (
-            <a href={`/catalog/?category=${encodeURIComponent(category)}`}>{category}</a>
-          ))}
+        <div class="serial-publication-stats" aria-label="Chapter publication progress">
+          <span><Icon name="book" size={18} /> <strong>{n.chapterCount}</strong> published chapters</span>
+          {serial && <>
+            <span><Icon name="layers" size={18} /> <strong>{serial.totalChapters}</strong> planned in total</span>
+            <a href={`${n.url}releases/`}><Icon name="clock" size={18} /> Release schedule <span aria-hidden="true">→</span></a>
+          </>}
         </div>
-        <div class="personal-rating" data-rating-novel={n.slug}>
-          <p class="personal-rating-title">Your rating</p>
-          <div class="personal-rating-stars" role="group" aria-label="Rate this novel">
-            {[1, 2, 3, 4, 5].map((star) => (
-              <button type="button" data-star={star} aria-label={`Rate ${star} out of 5`} aria-pressed="false">★</button>
+        <div class="novel-metadata-row">
+          <dl class="novel-facts">
+            {n.original ? (
+              <div>
+                <dt>Status</dt>
+                <dd><span class:list={['novel-status-dot', n.originalStatus === 'Ongoing' && 'is-ongoing']} aria-hidden="true"></span>{n.originalStatus}</dd>
+              </div>
+            ) : (
+              <>
+                <div><dt>Original</dt><dd><span class:list={['novel-status-dot', n.originalStatus === 'Ongoing' && 'is-ongoing']} aria-hidden="true"></span>{n.originalStatus}</dd></div>
+                <div><dt>Translation</dt><dd><span class:list={['novel-status-dot', n.translationStatus === 'Ongoing' && 'is-ongoing']} aria-hidden="true"></span>{n.translationStatus}</dd></div>
+              </>
+            )}
+            <div><dt>Length</dt><dd>{chapterCount(n.chapterCount)}</dd></div>
+            {n.rating && <div><dt>Reader rating</dt><dd>★ {n.rating.average.toFixed(1)} / 5 · {n.rating.count} ratings</dd></div>}
+            {typeof n.views === 'number' && <div><dt>Views</dt><dd>{new Intl.NumberFormat('en-US').format(n.views)}</dd></div>}
+            <div><dt>Updated</dt><dd><time datetime={n.updatedAt}>{dateLabel(n.updatedAt)}</time></dd></div>
+          </dl>
+          <div class="personal-rating" data-rating-novel={n.slug}>
+            <p class="personal-rating-title">Your rating</p>
+            <div class="personal-rating-stars" role="group" aria-label="Rate this novel">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <button type="button" data-star={star} aria-label={`Rate ${star} out of 5`} aria-pressed="false">☆</button>
+              ))}
+            </div>
+            <p class="fine" data-rating-status aria-live="polite">You have not rated this novel yet.</p>
+          </div>
+        </div>
+        <div class="tag-list novel-detail-tags" aria-label="Tags">
+          {n.tags.map(t => <a href={`/catalog/?include=${encodeURIComponent(t)}`}>{t}</a>)}
+        </div>
+        {n.categories.length > 0 && (
+          <div class="work-categories" aria-label="Categories">
+            {n.categories.map((category) => (
+              <a href={`/catalog/?category=${encodeURIComponent(category)}`}>{category}</a>
             ))}
           </div>
-          <p class="fine" data-rating-status aria-live="polite">Your rating is saved only on this device and does not affect the overall rating.</p>
-        </div>
-        {n.demo && (
-          <p class="fine">Demo novel. The story and author are fictional.</p>
         )}
+        {n.demo && <p class="fine">Demo novel. The story and author are fictional.</p>}
       </div>
     </article>
     <section class="synopsis-panel" aria-labelledby="synopsis-title">
-      <h2 id="synopsis-title">Synopsis</h2>
+      <h2 id="synopsis-title">Synopsis <span class="synopsis-ornament" aria-hidden="true">✦</span></h2>
       <p class="detail-description">{n.description}</p>
-      <div class="tag-list">{n.tags.map(t => <a href={`/catalog/?include=${encodeURIComponent(t)}`}>{t}</a>)}</div>
     </section>
     <nav class="novel-section-nav" aria-label="Novel sections">
       <a href="#contents-title">Contents</a>
