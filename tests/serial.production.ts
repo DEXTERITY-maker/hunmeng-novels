@@ -311,3 +311,66 @@ test('featured carousel lays out cover beside details and keeps keyboard focus',
   await expect(page.locator('[data-feature-cover] .home-feature-cover-fallback')).toHaveCount(await page.locator('.home-feature-slide').count());
 });
 
+
+test('reader headings render correct art and retain real chapter layout on both screen sizes', async ({ page }, info) => {
+  test.skip(info.project.name !== 'desktop', 'Capture both mobile and desktop in one deterministic production run.');
+  const novels = [
+    { slug: 'comprehension-against-the-heavens', chapter: 'chapter-1', art: 'comprehension', light: 'comprehension-day', dark: 'comprehension-night' },
+    { slug: 'the-latency-of-tomorrow', chapter: 'chapter-10', art: 'latency', light: 'latency-night', dark: 'latency-night' },
+  ];
+  for (const width of [1440, 390]) {
+    const device = width === 390 ? 'mobile' : 'desktop';
+    await page.setViewportSize({ width, height: width === 390 ? 844 : 900 });
+    for (const novel of novels) {
+      await page.goto('/novel/' + novel.slug + '/' + novel.chapter + '/');
+      const heading = page.locator('.reader-heading');
+      await expect(heading).toHaveAttribute('data-art', novel.art);
+      await expect(page.locator('.reader-heading-art')).toHaveCount(1);
+      await expect(page.locator('#chapter-text')).toBeVisible();
+      await expect(page.locator('.reader-heading-copy h1')).not.toBeEmpty();
+      await expect(page.locator('.reader-toolbar')).toBeVisible();
+      const image = page.locator('.reader-heading-art');
+      const copy = page.locator('.reader-heading-copy');
+      const textColumn = page.locator('#chapter-text');
+      const headerBox = (await heading.boundingBox())!;
+      const pictureBox = (await image.boundingBox())!;
+      const copyBox = (await copy.boundingBox())!;
+      if (width === 1440) {
+        const paragraphBox = (await textColumn.boundingBox())!;
+        expect(headerBox.width).toBeGreaterThan(paragraphBox.width * 1.5);
+        // The art is masked at its left edge. Text ends before visible image.
+        expect(copyBox.x + copyBox.width).toBeLessThan(pictureBox.x + pictureBox.width * .55);
+      } else {
+        expect(headerBox.height, novel.slug + ' heading must stay below one third of screen').toBeLessThan(844 / 3);
+        expect(pictureBox.y + pictureBox.height).toBeLessThanOrEqual(copyBox.y + 4);
+        expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+        const back = (await page.locator('.reader-back').boundingBox())!;
+        const mark = (await page.locator('.reader-logo-placeholder').boundingBox())!;
+        const actions = await page.locator('.reader-header-actions :is(button, summary)').all();
+        expect(actions.length).toBe(4);
+        expect(Math.abs(back.y - mark.y)).toBeLessThan(14);
+        for (const action of actions) {
+          const rect = (await action.boundingBox())!;
+          expect(Math.abs(rect.y - back.y)).toBeLessThan(12);
+        }
+      }
+      for (const theme of ['light', 'dark'] as const) {
+        await page.locator('html').evaluate((node, value) => { node.dataset.theme = value; }, theme);
+        const img = await image.evaluate((node) => getComputedStyle(node).backgroundImage);
+        const expected = novel[theme] + (width === 390 ? '-960.webp' : '-1536.webp');
+        expect(img, novel.art + ' ' + theme + ' ' + device).toContain(expected);
+        const render = await copy.evaluate(el => {
+          const box = el.getBoundingClientRect();
+          const first = el.querySelector('h1')!.getBoundingClientRect();
+          return { boxRight: box.right, titleRight: first.right };
+        });
+        expect(render.titleRight).toBeLessThanOrEqual(render.boxRight + 1);
+        await page.evaluate(() => document.fonts.ready);
+        await page.screenshot({
+          path: info.outputPath('hunmeng-reader-' + novel.art + '-' + device + '-' + theme + '.png'),
+          animations: 'disabled', fullPage: false,
+        });
+      }
+    }
+  }
+});
