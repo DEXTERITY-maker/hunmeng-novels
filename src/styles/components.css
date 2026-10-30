@@ -915,3 +915,22 @@ html[data-theme='sepia'] .reader-page .reader-heading[data-art]::after {
   .reader-page .reader-heading-art, .reader-page .reader-heading[data-art]::after,
   .reader-page .reader-toolbar::before { display: none; }
 }
+
+
+/* Use smaller WebP artwork for mobile chapter heads, including system-dark. */
+@media (max-width: 760px) {
+  .reader-page .reader-heading[data-art='comprehension'] {
+    --reader-chapter-image: url('/images/art/comprehension-day-960.webp');
+  }
+  .reader-page .reader-heading[data-art='latency'] {
+    --reader-chapter-image: url('/images/art/latency-night-960.webp');
+  }
+  html[data-theme='dark'] .reader-page .reader-heading[data-art='comprehension'] {
+    --reader-chapter-image: url('/images/art/comprehension-night-960.webp');
+  }
+}
+@media (max-width: 760px) and (prefers-color-scheme: dark) {
+  html[data-theme='system'] .reader-page .reader-heading[data-art='comprehension'] {
+    --reader-chapter-image: url('/images/art/comprehension-night-960.webp');
+  }
+}
