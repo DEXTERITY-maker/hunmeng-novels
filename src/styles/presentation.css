@@ -2344,3 +2344,7 @@ html[data-theme='sepia'] .home-page .home-hero-copy {
 @media (prefers-reduced-motion: reduce) {
   .home-page .home-quick-card { transition: none; }
 }
+
+/* Home-only translucent navigation over the landscape. */
+.site-header:has(.header-inner nav a[href='/'][aria-current='page']) { background: color-mix(in srgb, var(--bg) 82%, transparent); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); position: relative; z-index: 3; }
+.site-header:has(.header-inner nav a[href='/'][aria-current='page']) .header-inner nav a { color: var(--ink); }
