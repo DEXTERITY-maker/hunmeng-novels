@@ -2148,3 +2148,503 @@ html[data-theme='sepia'] .catalog-page .catalog-card-art { filter: sepia(.24) sa
 @media (max-width: 760px) and (prefers-color-scheme: dark) {
   html[data-theme='system'] .catalog-page .catalog-hero { --catalog-hero-image: url('/images/art/hunmeng-landscape-night-960.webp'); }
 }
+
+
+/* Home showcase: matching landscape art, progressive featured carousel, three distinct quick artworks. */
+body:has(.home-page) .site-header {
+  position: relative;
+  z-index: 10;
+  background: color-mix(in srgb, var(--surface) 89%, transparent);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 72%, transparent);
+}
+body:has(.home-page) .site-header :is(nav a,.header-icon-button,.brand) {
+  color: var(--ink);
+}
+.home-page .home-hero { display: block; padding: 0 0 8px; }
+.home-page .home-hero-copy {
+  --home-landscape: url('/images/art/hunmeng-landscape-day-1536.webp');
+  display: grid;
+  grid-template-columns: minmax(0,1.35fr) minmax(0,.93fr);
+  align-items: center;
+  min-width: 0;
+  min-height: 424px;
+  gap: clamp(13px,2.4vw,30px);
+  padding: 24px clamp(15px,1.7vw,24px);
+  border: 1px solid var(--line);
+  border-radius: 19px;
+  background-color: var(--bg);
+  background-image:
+    linear-gradient(90deg, transparent 0%, color-mix(in srgb,var(--bg) 84%,transparent) 15%, color-mix(in srgb,var(--bg) 95%,transparent) 31%, color-mix(in srgb,var(--bg) 48%,transparent) 55%, transparent 85%),
+    var(--home-landscape);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center, center 58%;
+  isolation: isolate;
+  box-shadow: 0 12px 32px rgb(17 39 34 / .12);
+  overflow: hidden;
+}
+.home-page .home-hero-copy::before { display: none; }
+.home-page .home-hero-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: stretch;
+  padding: 6px 0 10px clamp(34px,5.5vw,77px);
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  overflow: visible;
+  min-width: 0;
+  width: 100%;
+  isolation: auto;
+}
+.home-page .home-hero-content::after { display: none; }
+.home-page .home-hero-kicker { color: var(--ink); font-size: .69rem; letter-spacing: .15em; margin: 0 0 8px; }
+.home-page .home-hero-kicker span { color: var(--accent); }
+.home-page .home-hero h1 {
+  color: var(--ink);
+  font-family: 'Lora Variable',Georgia,serif;
+  font-size: clamp(2.35rem,4.2vw,3.8rem);
+  line-height: 1.08;
+  letter-spacing: -.054em;
+  margin: 0;
+  max-width: 680px;
+}
+.home-page .home-hero h1 em {
+  display: block;
+  font-style: italic;
+  font-weight: 500;
+  color: var(--accent);
+  text-shadow: none;
+}
+.home-page .home-hero-description { color: var(--ink); max-width: 480px; margin: 15px 0 0; font: 400 .95rem/1.5 'Manrope Variable',sans-serif; }
+.home-page .home-search {
+  max-width: 540px;
+  width: 100%;
+  min-height: 57px;
+  margin-top: 20px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: 0 6px 18px rgb(13 44 31 / .12);
+}
+.home-page .home-search .button {
+  background: #205b47;
+  border-color: #205b47;
+  color: #fff;
+}
+.home-page .home-search .button:hover { background: #154737; border-color: #154737; color: #fff; }
+html[data-theme='dark'] .home-page .home-hero-copy { --home-landscape: url('/images/art/hunmeng-landscape-night-1536.webp'); }
+@media (prefers-color-scheme: dark) {
+  html[data-theme='system'] .home-page .home-hero-copy { --home-landscape: url('/images/art/hunmeng-landscape-night-1536.webp'); }
+}
+html[data-theme='sepia'] .home-page .home-hero-copy {
+  background-image:
+    linear-gradient(rgb(169 105 37 / .10),rgb(169 105 37 / .10)),
+    linear-gradient(90deg,transparent 0%,color-mix(in srgb,var(--bg) 84%,transparent) 15%,color-mix(in srgb,var(--bg) 95%,transparent) 31%,color-mix(in srgb,var(--bg) 48%,transparent) 55%,transparent 85%),
+    var(--home-landscape);
+  background-position: center,center,center 58%;
+}
+
+/* Gold appears only on the selected novel's Read now link. */
+.home-page .home-hero-feature {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 11px;
+  min-width: 0;
+  min-height: 357px;
+  margin: 0;
+  padding: 20px clamp(13px,1.7vw,23px) 12px;
+  background: linear-gradient(155deg,#0b352e 0%,#124838 65%,#0d302c 100%);
+  border: 1px solid #a69b73;
+  border-radius: 17px;
+  color: #f4f4e9;
+  box-shadow: 0 14px 25px rgb(4 36 26 / .24);
+}
+.home-page .home-feature-kicker {
+  display: block;
+  margin: 0;
+  color: #e3d5b0;
+  letter-spacing: .12em;
+  font: 750 .7rem/1.3 'Manrope Variable',sans-serif;
+}
+.home-page .home-feature-slides { width: 100%; flex: 1; min-width: 0; display: flex; align-items: stretch; }
+.home-page .home-feature-slide {
+  display: grid;
+  grid-template-columns: minmax(96px,38%) minmax(0,1fr);
+  gap: clamp(12px,1.3vw,17px);
+  align-items: stretch;
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  color: #f4f4e9;
+}
+.home-page .home-feature-slide[hidden] { display: none !important; }
+.home-page .home-feature-visual {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+  min-width: 0;
+  border-radius: 10px;
+}
+.home-page .home-feature-cover {
+  display: block;
+  transform: none;
+  width: min(100%,165px);
+  aspect-ratio: 2/3;
+  min-height: 0;
+  border: 1px solid #c8ae78;
+  border-radius: 7px;
+  box-shadow: 0 8px 22px rgb(0 0 0 / .34);
+}
+.home-page .home-hero-feature:hover .home-feature-cover { transform: none; }
+.home-page .home-feature-cover img { height: 100%; width: 100%; border-radius: 6px; }
+.home-page .home-feature-details {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: stretch;
+  gap: 8px;
+  min-width: 0;
+}
+.home-page .home-feature-genres { color: #e2e4d5; font: 600 .73rem/1.3 'Manrope Variable',sans-serif; }
+.home-page .home-feature-details h2 {
+  color: #fff9e9;
+  font: 600 clamp(1.13rem,1.8vw,1.53rem)/1.22 'Lora Variable',Georgia,serif;
+  letter-spacing: -.035em;
+  overflow-wrap: anywhere;
+}
+.home-page .home-feature-author { color: #f0efe3; font-size: .79rem; line-height: 1.4; }
+.home-page .home-feature-description {
+  color: #e6e8dd !important;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  font: 400 .72rem/1.5 'Manrope Variable',sans-serif;
+  margin: 0;
+}
+.home-page .home-feature-stats { display: flex; flex-wrap: wrap; gap: 5px 12px; align-items: center; margin-top: 2px; }
+.home-page .home-feature-stats > span { display: inline-flex; align-items: center; gap: 5px; font: 600 .72rem/1.4 'Manrope Variable',sans-serif; color: #f5f3e9; }
+.home-page .home-feature-stats svg { flex: none; }
+.home-page .home-feature-read {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 13px;
+  width: 100%;
+  min-height: 44px;
+  padding: 9px 13px;
+  margin-top: 4px;
+  border: 1px solid #cfac69;
+  border-radius: 9px;
+  background: linear-gradient(180deg,#f8e2b5,#ebc787);
+  color: #17382f;
+  font: 800 .82rem/1.4 'Manrope Variable',sans-serif;
+  box-shadow: 0 4px 9px rgb(0 0 0 / .16);
+}
+.home-page .home-feature-read:hover { color: #102e25; background: #ffe8bd; }
+.home-page .home-feature-controls { display: flex; justify-content: center; align-items: center; gap: 12px; min-height: 33px; }
+.home-page .home-feature-controls[hidden],
+.home-page .home-hero-feature:has(.home-feature-slide:only-child) .home-feature-controls { display: none !important; }
+.home-page .home-feature-controls > button {
+  display: grid; place-items: center;
+  min-width: 36px; height: 36px; padding: 0;
+  border: 1px solid transparent; border-radius: 50%;
+  background: transparent; color: #f6efdc;
+  font: 400 1.7rem/1 'Manrope Variable',sans-serif;
+}
+.home-page .home-feature-controls > button:hover { background: rgb(255 255 255 / .12); }
+.home-page .home-feature-dots { display: flex; align-items: center; justify-content: center; gap: 4px; }
+.home-page .home-feature-dots button {
+  display: grid; place-items: center; width: 31px; height: 35px;
+  padding: 0; border-radius: 8px;
+  background: transparent;
+}
+.home-page .home-feature-dots button::before {
+  content: ''; display: block;
+  width: 9px; height: 9px; border-radius: 50%;
+  background: #8daca0;
+}
+.home-page .home-feature-dots button[aria-pressed='true']::before {
+  width: 17px; border-radius: 999px; background: #f1d49b;
+}
+.home-page .home-hero-feature :is(button,a):focus-visible { outline: 2px solid #fff3cb; outline-offset: 2px; }
+
+/* Quick links occupy their own row, not the hero's text gradient. */
+.home-page .home-discover {
+  display: grid;
+  grid-template-columns: repeat(3,minmax(0,1fr));
+  gap: 12px;
+  width: 100%;
+  margin: 2px 0 0;
+}
+.home-page .home-discover a {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  text-align: left;
+  gap: 14px;
+  padding: 14px 15px;
+  min-width: 0;
+  min-height: 84px;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: 0 5px 16px rgb(16 45 36 / .09);
+  overflow: hidden;
+  text-decoration: none;
+  transition: transform .18s ease,box-shadow .18s ease,border-color .18s ease;
+}
+.home-page .home-discover a > svg:first-child { flex: none; width: 27px; height: 27px; z-index: 1; color: var(--ink); }
+.home-page .home-discover a > span:not(.home-quick-art):not(.home-quick-arrow) {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  max-width: 66%;
+  z-index: 1;
+}
+.home-page .home-discover strong { color: var(--ink); font: 700 .95rem/1.25 'Lora Variable',Georgia,serif; }
+.home-page .home-discover small { color: var(--muted); font: 500 .7rem/1.3 'Manrope Variable',sans-serif; }
+.home-page .home-discover .home-quick-arrow {
+  display: grid;
+  place-items: center;
+  width: 35px; height: 35px;
+  min-width: 35px;
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: 0 2px 8px rgb(11 38 29 / .11);
+  position: absolute;
+  z-index: 2;
+  right: 28%;
+  font-size: 1.25rem;
+}
+.home-page .home-quick-art {
+  display: block;
+  position: absolute;
+  z-index: 0;
+  inset: 0 0 0 auto;
+  width: 45%;
+  pointer-events: none;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: 60% center;
+  -webkit-mask-image: linear-gradient(90deg,transparent,rgba(0,0,0,.35) 23%,#000 65%);
+  mask-image: linear-gradient(90deg,transparent,rgba(0,0,0,.35) 23%,#000 65%);
+}
+.home-page [data-quick-art='quick-genres'] .home-quick-art { background-image: url('/images/art/quick-genres-720.svg'); }
+.home-page [data-quick-art='quick-latest'] .home-quick-art { background-image: url('/images/art/quick-latest-720.svg'); }
+.home-page [data-quick-art='quick-new'] .home-quick-art { background-image: url('/images/art/quick-new-720.svg'); }
+.home-page .home-discover a:hover { transform: translateY(-3px); box-shadow: 0 9px 21px rgb(16 45 36 / .14); border-color: var(--accent); text-decoration: none; }
+html[data-theme='dark'] .home-page .home-quick-art { opacity: .36; }
+html[data-theme='sepia'] .home-page .home-quick-art { filter: sepia(.3); }
+@media (prefers-color-scheme: dark) { html[data-theme='system'] .home-page .home-quick-art { opacity: .36; } }
+
+/* Reuse SSR React island, but match its novel cards to the wider new-release bookplate. */
+.home-page .home-new-star { color: var(--accent); font-size: .75em; }
+.home-page .home-new-subtitle { color: var(--muted); font-size: .82rem; margin: 4px 0 0; }
+.home-page #new-novels { padding-top: 12px; }
+.home-page #new-novels .home-section-heading { display: flex; align-items: center; }
+.home-page #new-novels .home-cover-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 13px; }
+.home-page #new-novels .home-book-card {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding: 12px;
+  min-width: 0;
+  border-radius: 14px;
+  box-shadow: 0 6px 19px rgb(10 34 31 / .09);
+  background: var(--surface);
+}
+.home-page #new-novels .home-book-link {
+  display: grid;
+  position: relative;
+  z-index: 1;
+  grid-template-columns: minmax(85px,118px) minmax(0,1fr);
+  gap: 13px;
+  min-width: 0;
+  align-items: stretch;
+  height: 100%;
+  text-decoration: none;
+}
+.home-page #new-novels .home-book-cover { width: 100%; height: auto; border: 0; background: var(--soft); }
+.home-page #new-novels .home-book-cover img { width: 100%; height: 100%; aspect-ratio: 260/380; object-fit: cover; display: block; border-radius: 7px; }
+.home-page #new-novels .home-book-copy { align-items: flex-start; display: flex; flex-direction: column; min-width: 0; gap: 4px; }
+.home-page #new-novels .home-book-copy > :not(.home-book-read) { width: min(100%,calc(100% - 142px)); position: relative; z-index: 1; }
+.home-page #new-novels .home-book-genre { margin: 0; font-size: .72rem; line-height: 1.3; color: var(--accent); }
+.home-page #new-novels .home-book-title { margin: 0; font: 700 1rem/1.28 'Lora Variable',Georgia,serif; color: var(--ink); overflow-wrap: anywhere; display: block; }
+.home-page #new-novels .home-book-author { color: var(--muted); font-size: .73rem; }
+.home-page #new-novels .home-book-description {
+  display: -webkit-box; -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1; line-clamp: 1;
+  overflow: hidden; color: var(--muted); margin: 4px 0 0;
+  font-size: .77rem; line-height: 1.5;
+}
+.home-page #new-novels .home-book-meta { margin-top: auto; padding-top: 8px; color: var(--ink); font-size: .78rem; line-height: 1.45; border-top: 1px solid var(--line); }
+.home-page #new-novels .home-book-read {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  position: absolute;
+  z-index: 2;
+  right: 0;
+  bottom: 0;
+  width: 128px;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid #205b47;
+  border-radius: 9px;
+  background: #205b47;
+  color: #fff !important;
+  font: 700 .82rem/1.3 'Manrope Variable',sans-serif;
+}
+.home-page #new-novels .home-book-read:hover { background: #154737; }
+.home-page #new-novels .home-book-art {
+  position: absolute; z-index: -1; pointer-events: none;
+  right: 0; top: 0; bottom: 0; width: 42%;
+  background-size: cover; background-position: 55% center;
+  -webkit-mask-image: linear-gradient(90deg,transparent 0%,rgba(0,0,0,.20) 20%,#000 70%);
+  mask-image: linear-gradient(90deg,transparent 0%,rgba(0,0,0,.20) 20%,#000 70%);
+}
+.home-page #new-novels [data-art='comprehension'] { --home-release-art: url('/images/art/comprehension-day-960.webp'); }
+.home-page #new-novels [data-art='latency'] { --home-release-art: url('/images/art/latency-night-960.webp'); }
+.home-page #new-novels .home-book-art { background-image: var(--home-release-art); }
+html[data-theme='dark'] .home-page #new-novels [data-art='comprehension'] { --home-release-art: url('/images/art/comprehension-night-960.webp'); }
+html[data-theme='sepia'] .home-page #new-novels .home-book-art { filter: sepia(.28); }
+@media (prefers-color-scheme: dark) {
+  html[data-theme='system'] .home-page #new-novels [data-art='comprehension'] { --home-release-art: url('/images/art/comprehension-night-960.webp'); }
+}
+@media (max-width: 1050px) and (min-width: 761px) {
+  .home-page .home-hero-copy { grid-template-columns: minmax(0,1fr) minmax(300px,.90fr); gap: 13px; }
+  .home-page .home-hero-content { padding-left: 25px; }
+  .home-page .home-feature-slide { grid-template-columns: 95px minmax(0,1fr); gap: 10px; }
+  .home-page .home-discover a { gap: 8px; padding: 12px 10px; }
+  .home-page .home-discover strong { font-size: .84rem; }
+  .home-page .home-discover small { font-size: .68rem; }
+  .home-page .home-discover .home-quick-arrow { right: 21%; }
+  .home-page #new-novels .home-book-copy > :not(.home-book-read) { width: 100%; }
+  .home-page #new-novels .home-book-art { display: none; }
+  .home-page #new-novels .home-book-read { position: static; width: 100%; margin-top: 7px; }
+}
+@media (max-width: 760px) {
+  .home-page .home-hero { padding: 0 0 5px; }
+  .home-page .home-hero-copy {
+    --home-landscape: url('/images/art/hunmeng-landscape-day-960.webp');
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: stretch;
+    min-height: 0;
+    padding: 13px;
+    border-radius: 15px;
+    background-image:
+      linear-gradient(90deg,color-mix(in srgb,var(--bg) 96%,transparent),color-mix(in srgb,var(--bg) 88%,transparent) 58%,color-mix(in srgb,var(--bg) 62%,transparent)),
+      var(--home-landscape);
+    background-position: center, 58% center;
+    box-shadow: 0 6px 19px rgb(12 36 32 / .09);
+  }
+  html[data-theme='dark'] .home-page .home-hero-copy { --home-landscape: url('/images/art/hunmeng-landscape-night-960.webp'); }
+  .home-page .home-hero-content {
+    display: block;
+    min-width: 0;
+    padding: 4px 3px 0;
+    width: 100%;
+  }
+  .home-page .home-hero-kicker { margin: 0 0 4px; font-size: .62rem; }
+  .home-page .home-hero h1 { font-size: clamp(1.85rem,7.45vw,2.5rem); line-height: 1.08; max-width: 100%; letter-spacing: -.049em; }
+  .home-page .home-hero-description { margin: 8px 0 0; font-size: .83rem; line-height: 1.38; max-width: 300px; }
+  .home-page .home-search { margin-top: 11px; min-height: 46px; padding: 4px 5px; }
+  .home-page .home-search input[type='search'] { font-size: 14px; }
+  .home-page .home-search .button { min-height: 40px; }
+  .home-page .home-hero-feature {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-height: 0;
+    padding: 10px 12px 7px;
+    margin: 0;
+    gap: 6px;
+    border-radius: 12px;
+  }
+  .home-page .home-feature-kicker { font-size: .61rem; }
+  .home-page .home-feature-slide { grid-template-columns: 68px minmax(0,1fr); gap: 11px; align-items: center; }
+  .home-page .home-feature-visual { align-items: center; }
+  .home-page .home-feature-cover { width: 68px; min-height: 0; }
+  .home-page .home-feature-details { display: flex; flex-direction: column; gap: 4px; }
+  .home-page .home-feature-genres { font-size: .61rem; }
+  .home-page .home-feature-details h2 { font-size: 1rem; line-height: 1.2; }
+  .home-page .home-feature-author { font-size: .7rem; }
+  .home-page .home-feature-description { display: none; }
+  .home-page .home-feature-stats { gap: 4px 9px; margin: 0; }
+  .home-page .home-feature-stats > span { font-size: .65rem; }
+  .home-page .home-feature-stats svg { width: 14px; height: 14px; }
+  .home-page .home-feature-read { margin-top: 1px; min-height: 40px; padding: 7px 10px; font-size: .76rem; }
+  .home-page .home-feature-controls { min-height: 27px; gap: 8px; }
+  .home-page .home-feature-controls > button { height: 30px; min-width: 30px; }
+  .home-page .home-feature-dots button { height: 28px; width: 28px; }
+  .home-page .home-discover { grid-template-columns: repeat(3,minmax(0,1fr)); gap: 6px; margin-top: 0; }
+  .home-page .home-discover a {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    text-align: left;
+    min-width: 0;
+    min-height: 99px;
+    padding: 8px 7px 7px;
+    gap: 5px;
+    border-radius: 10px;
+  }
+  .home-page .home-discover a > svg:first-child { width: 18px; height: 18px; }
+  .home-page .home-discover a > span:not(.home-quick-art):not(.home-quick-arrow) { max-width: 100%; gap: 2px; }
+  .home-page .home-discover strong { font-size: .76rem; line-height: 1.16; }
+  .home-page .home-discover small { font-size: .63rem; line-height: 1.14; }
+  .home-page .home-quick-art { width: 57%; opacity: .26; background-position: 80% center; }
+  .home-page [data-quick-art='quick-genres'] .home-quick-art { background-image: url('/images/art/quick-genres-360.svg'); }
+  .home-page [data-quick-art='quick-latest'] .home-quick-art { background-image: url('/images/art/quick-latest-360.svg'); }
+  .home-page [data-quick-art='quick-new'] .home-quick-art { background-image: url('/images/art/quick-new-360.svg'); }
+  .home-page .home-discover .home-quick-arrow { right: 7px; top: 7px; width: 22px; height: 22px; min-width: 22px; font-size: .9rem; }
+  .home-page #new-novels { padding-top: 9px; }
+  .home-page #new-novels .home-cover-grid { display: grid; grid-template-columns: 1fr; gap: 9px; }
+  .home-page #new-novels .home-book-card { padding: 11px; }
+  .home-page #new-novels .home-book-link { grid-template-columns: 89px minmax(0,1fr); gap: 10px; }
+  .home-page #new-novels .home-book-cover { width: 89px; }
+  .home-page #new-novels .home-book-art { display: none; }
+  .home-page #new-novels .home-book-copy > :not(.home-book-read) { width: 100%; }
+  .home-page #new-novels .home-book-title { font-size: .98rem; line-height: 1.25; }
+  .home-page #new-novels .home-book-genre, .home-page #new-novels .home-book-meta { font-size: .875rem; }
+  .home-page #new-novels .home-book-author { font-size: .77rem; }
+  .home-page #new-novels .home-book-description { font-size: .75rem; }
+  .home-page #new-novels .home-book-meta { padding-top: 5px; }
+  .home-page #new-novels .home-book-read { position: static; width: 100%; min-height: 44px; margin-top: 4px; font-size: .8rem; }
+}
+@media (max-width: 760px) and (prefers-color-scheme: dark) {
+  html[data-theme='system'] .home-page .home-hero-copy { --home-landscape: url('/images/art/hunmeng-landscape-night-960.webp'); }
+}
+@media (max-width: 760px) {
+  html[data-theme='sepia'] .home-page .home-hero-copy {
+    background-image:
+      linear-gradient(rgb(169 105 37 / .10),rgb(169 105 37 / .10)),
+      linear-gradient(90deg,color-mix(in srgb,var(--bg) 96%,transparent),color-mix(in srgb,var(--bg) 88%,transparent) 58%,color-mix(in srgb,var(--bg) 62%,transparent)),
+      var(--home-landscape);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .home-page .home-discover a,
+  .home-page .home-book-card,
+  .home-page .home-feature-cover,
+  .home-page .home-feature-controls button { transition: none !important; animation: none !important; transform: none !important; }
+}
