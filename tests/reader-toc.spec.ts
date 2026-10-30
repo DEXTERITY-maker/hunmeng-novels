@@ -53,3 +53,17 @@ test('contents closes by x and backdrop, locks background and fits 390px viewpor
   await page.mouse.click(5, 5);
   await expect(dialog).toBeHidden();
 });
+
+test('contents keeps the chapter list usable on a short landscape screen', async ({ page }) => {
+  await page.setViewportSize({ width: 844, height: 320 });
+  await page.goto(chapter);
+  await page.getByRole('button', { name: 'Open contents' }).click();
+  const dialog = page.locator('#reader-toc');
+  await expect(dialog).toBeVisible();
+  const list = dialog.locator('.reader-toc-list');
+  expect(await list.evaluate((el) => el.clientHeight)).toBeGreaterThanOrEqual(96);
+  await expect(dialog.locator('.reader-toc-list a[aria-current="page"]')).toBeInViewport();
+  const rect = (await dialog.boundingBox())!;
+  expect(rect.y).toBeGreaterThanOrEqual(-1);
+  expect(rect.y + rect.height).toBeLessThanOrEqual(321);
+});

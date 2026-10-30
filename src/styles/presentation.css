@@ -1455,3 +1455,19 @@ html[data-theme='sepia'] #reader-toc .reader-toc-art {
     --toc-art-image: url('/images/art/comprehension-night-960.webp');
   }
 }
+/* Short screens (phones in landscape): the chapter list keeps its room. */
+@media (max-height: 560px) {
+  #reader-toc { max-height: calc(100dvh - 16px); }
+  #reader-toc .reader-toc-art { flex-basis: 56px; }
+  #reader-toc .reader-toc-heading { padding: 6px 24px 10px; }
+  #reader-toc:not([data-art]) .reader-toc-heading { padding-top: 16px; }
+  #reader-toc .reader-toc-eyebrow { display: none; }
+  #reader-toc #toc-title { font-size: 1.6rem; }
+  #reader-toc .reader-toc-list { min-height: 120px; }
+  #reader-toc .reader-toc-list a { min-height: 48px; }
+  #reader-toc .reader-toc-footer { padding-block: 4px; }
+}
+@media (max-height: 380px) {
+  #reader-toc .reader-toc-art { display: none; }
+  #reader-toc .reader-toc-heading { padding-top: 14px; }
+}
