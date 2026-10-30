@@ -2,6 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import Icon from '../components/Icon.astro';
 import MotionNovelGrid from '../components/MotionNovelGrid';
+import serials from '../data/serials.json';
 import ContinueReading from '../components/ContinueReading.astro';
 import { getLibrary, dateLabel, chapterCount } from '../lib/content';
 import { getLatestChapters } from '../lib/updates';
@@ -23,10 +24,13 @@ const recommendations = [...novels]
   .sort((a, b) => b.chapterCount - a.chapterCount || b.updatedAt.localeCompare(a.updatedAt))
   .slice(0, 4);
 const viewsLabel = new Intl.NumberFormat('en-US');
+const featured = recommendations.map((novel) => ({ ...novel, planned: serials.find((serial) => serial.slug === novel.slug)?.totalChapters }));
 const animatedNovels = newNovels.map((n) => ({
   slug: n.slug, url: n.url, title: n.title, author: n.author, cover: n.cover,
   description: n.description, genres: n.genres, chapters: chapterCount(n.chapterCount),
   translationStatus: n.translationStatus,
+  date: new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' }).format(new Date(n.addedAt ?? n.updatedAt)),
+  art: n.art,
 }));
 ---
 
@@ -47,41 +51,63 @@ const animatedNovels = newNovels.map((n) => ({
             <input id="home-search-input" type="search" name="search" placeholder="Title or author" autocomplete="off" required />
             <button class="button" type="submit">Search <Icon name="arrow" size={17} /></button>
           </form>
-          <nav class="home-discover" aria-label="Explore the library">
-            <a href="/genres/"><Icon name="layers" size={20} /> Browse genres <Icon name="arrow" size={15} /></a>
-            <a href="/updates/"><Icon name="clock" size={20} /> Latest chapters <Icon name="arrow" size={15} /></a>
-            <a href="/catalog/?sort=added"><Icon name="book" size={20} /> New releases <Icon name="arrow" size={15} /></a>
-          </nav>
         </div>
-        {recommendations[0] && (
-          <a class="home-hero-feature" href={recommendations[0].url} aria-label={'Discover featured novel: ' + recommendations[0].title}>
-            <div class="home-feature-top">
-              <span class="home-feature-kicker"><span aria-hidden="true">✧</span> FEATURED NOVEL</span>
-              <span class="home-feature-count">{chapterCount(recommendations[0].chapterCount)}</span>
+        {featured.length > 0 && (
+          <section class="home-hero-feature" data-feature-carousel role="region" aria-roledescription="carousel" aria-label="Featured novels" tabindex="0">
+            <p class="home-feature-kicker"><span aria-hidden="true">✧</span> FEATURED NOVEL</p>
+            <div class="home-feature-slides" aria-live="off">
+              {featured.map((novel, i) => (
+                <article class="home-feature-slide" data-feature-slide data-feature-index={i} aria-roledescription="slide" aria-label={`${i + 1} of ${featured.length}: ${novel.title}`} hidden={i !== 0}>
+                  <a class="home-feature-visual" href={novel.url} aria-label={`Open ${novel.title}`}>
+                    <span class="home-feature-cover" data-feature-cover>
+                      <img src={novel.cover} alt={`Cover of ${novel.title}`} width="250" height="375" fetchpriority={i === 0 ? 'high' : undefined} loading={i === 0 ? 'eager' : 'lazy'} decoding="async" />
+                      <span class="home-feature-cover-fallback" hidden aria-hidden="true">✦<small>Cover unavailable</small></span>
+                    </span>
+                  </a>
+                  <div class="home-feature-details">
+                    <p class="home-feature-genres">{novel.genres.slice(0, 2).join(' · ')}</p>
+                    <h2>{novel.title}</h2>
+                    <p class="home-feature-author">{novel.author}</p>
+                    <p class="home-feature-description">{novel.description}</p>
+                    <div class="home-feature-stats" aria-label="Published and planned chapters">
+                      <span><Icon name="book" size={17}/>{chapterCount(novel.chapterCount)}</span>
+                      {novel.planned && <span><Icon name="layers" size={17}/>{novel.planned} planned</span>}
+                    </div>
+                    <a class="home-feature-read" href={novel.url}>Read now <span aria-hidden="true">→</span></a>
+                  </div>
+                </article>
+              ))}
             </div>
-            <div class="home-feature-visual">
-              <span class="home-feature-cover" data-feature-cover>
-                <img src={recommendations[0].cover} alt={`Cover of ${recommendations[0].title}`} width="250" height="375" fetchpriority="high" decoding="async" />
-                <span class="home-feature-cover-fallback" hidden aria-hidden="true">✦<small>Cover unavailable</small></span>
-              </span>
-            </div>
-            <div class="home-feature-details">
-              <p>{recommendations[0].genres.slice(0, 2).join(' · ')}</p>
-              <h2>{recommendations[0].title}</h2>
-              <span class="home-feature-author">By {recommendations[0].author}</span>
-              <span class="home-feature-cta">Discover this story <Icon name="arrow" size={17} /></span>
-            </div>
-          </a>
+            {featured.length > 1 && (
+              <div class="home-feature-controls" data-feature-controls hidden>
+                <button type="button" data-feature-prev aria-label="Previous featured novel"><span aria-hidden="true">‹</span></button>
+                <div class="home-feature-dots" role="group" aria-label="Choose featured novel">
+                  {featured.map((novel, i) => (
+                    <button type="button" data-feature-dot={i} aria-label={`Show featured novel ${i + 1}: ${novel.title}`} aria-pressed={i === 0 ? 'true' : 'false'}></button>
+                  ))}
+                </div>
+                <button type="button" data-feature-next aria-label="Next featured novel"><span aria-hidden="true">›</span></button>
+              </div>
+            )}
+            <span class="home-sr-only" data-feature-status role="status" aria-live="polite"></span>
+          </section>
         )}
       </div>
     </section>
+
+    <nav class="home-discover" aria-label="Explore the library">
+      <a href="/genres/" data-quick-art="quick-genres"><Icon name="layers" size={25} /><span><strong>Browse genres</strong><small>Find stories you'll love</small></span><span class="home-quick-arrow" aria-hidden="true">→</span><span class="home-quick-art" aria-hidden="true"></span></a>
+      <a href="/updates/" data-quick-art="quick-latest"><Icon name="clock" size={25} /><span><strong>Latest chapters</strong><small>See what's new today</small></span><span class="home-quick-arrow" aria-hidden="true">→</span><span class="home-quick-art" aria-hidden="true"></span></a>
+      <a href="/catalog/?sort=added" data-quick-art="quick-new"><Icon name="book" size={25} /><span><strong>New releases</strong><small>Discover fresh stories</small></span><span class="home-quick-arrow" aria-hidden="true">→</span><span class="home-quick-art" aria-hidden="true"></span></a>
+    </nav>
 
     <ContinueReading />
 
     <section id="new-novels" class="section home-section" aria-labelledby="new-title">
       <div class="section-heading home-section-heading">
         <div>
-          <h2 id="new-title">New novels</h2>
+          <h2 id="new-title">New releases <span aria-hidden="true" class="home-new-star">✦</span></h2>
+          <p class="home-new-subtitle">Fresh stories, new worlds.</p>
         </div>
         <a href="/catalog/">View all <span aria-hidden="true">→</span></a>
       </div>
@@ -197,8 +223,10 @@ const animatedNovels = newNovels.map((n) => ({
     import { initPersonal } from '../scripts/personal';
     import { initHomeHeroMotion } from '../scripts/home-hero-motion';
     import { initFeaturedCover } from '../scripts/featured-cover';
+    import { initFeaturedCarousel } from '../scripts/featured-carousel';
     void initPersonal();
     initFeaturedCover();
+    initFeaturedCarousel();
     initHomeHeroMotion();
   </script>
 </Layout>
