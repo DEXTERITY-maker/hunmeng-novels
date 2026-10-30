@@ -2542,6 +2542,7 @@ body.reader-page:not(.controls-hidden):not(.reader-focus-mode):has(.reader-toolb
     box-shadow: none;
     transform: translateX(-50%);
   }
+  html[data-theme='sepia'] .reader-main > .reader-heading.reader-heading-with-art { background: var(--bg); }
   .reader-heading.reader-heading-with-art::before {
     content: '';
     display: block;
@@ -2552,6 +2553,12 @@ body.reader-page:not(.controls-hidden):not(.reader-focus-mode):has(.reader-toolb
     background-image: linear-gradient(to top, var(--bg), transparent 55%), var(--reader-art);
     background-size: cover;
     background-position: center 44%;
+  }
+  html[data-theme='sepia'] .reader-heading.reader-heading-with-art::before {
+    background-image:
+      linear-gradient(rgb(166 111 54 / .12), rgb(166 111 54 / .12)),
+      linear-gradient(to top, var(--bg), transparent 55%),
+      var(--reader-art);
   }
   .reader-heading.reader-heading-with-art[data-art='comprehension'] { --reader-art: url('/images/art/comprehension-day-960.webp'); }
   .reader-heading.reader-heading-with-art[data-art='latency'] { --reader-art: url('/images/art/latency-night-960.webp'); }
