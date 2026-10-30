@@ -1,3 +1,3 @@
 import base from './playwright.config';
 import { defineConfig } from '@playwright/test';
-export default defineConfig({ ...base, testMatch: '**/serial.production.ts' });
+export default defineConfig({ ...base, testMatch: '**/serial.production.ts', outputDir: 'test-results-production' });
