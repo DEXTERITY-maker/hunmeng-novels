@@ -610,3 +610,13 @@ test('брошенные и прочитанные полки не предла�
  }
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
 });
+
+test('novel without art keeps the original reader heading', async ({ page }) => {
+  await page.goto('/novel/khranitel-mayaka/glava-1/');
+  await expect(page.locator('.reader-heading')).toBeVisible();
+  await expect(page.locator('.reader-heading-with-art')).toHaveCount(0);
+  await expect(page.locator('.reader-heading')).not.toHaveAttribute('data-art', /.+/);
+  const image = await page.locator('.reader-heading').evaluate(el => getComputedStyle(el).backgroundImage);
+  expect(image).not.toContain('comprehension-');
+  expect(image).not.toContain('latency-');
+});
