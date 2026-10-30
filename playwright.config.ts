@@ -4,7 +4,8 @@ export default defineConfig({
   testMatch: '**/*.spec.ts',
   fullyParallel: true,
   workers: 2,
-  reporter: 'list',
+  // In GitHub Actions failures also appear as annotations on the PR checks.
+  reporter: process.env.CI ? [['list'], ['github']] : 'list',
   use: {
     baseURL: 'http://127.0.0.1:4321',
     launchOptions: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH
