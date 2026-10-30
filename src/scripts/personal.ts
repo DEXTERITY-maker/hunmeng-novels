@@ -15,7 +15,9 @@ export async function initPersonal() {
       if (n) {
         const action = readingAction(n, p);
         link.href = action.url;
-        link.textContent = action.label;
+        const label = link.querySelector<HTMLElement>('.novel-read-label');
+        if (label) label.textContent = action.label;
+        else link.textContent = action.label;
       }
       if (c) {
         document
