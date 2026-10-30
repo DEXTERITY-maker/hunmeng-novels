@@ -23,6 +23,7 @@ test('responsive layout keeps covers, featured shelf, footer and menus inside th
     await expect(page.locator('.home-hero-feature')).toBeVisible();
     const heroBounds = (await page.locator('.home-hero-content').boundingBox())!;
     for (const selector of ['.home-search button[type=submit]', '.home-discover a']) {
+      const container = selector.includes('home-discover') ? (await page.locator('.home-page').boundingBox())! : heroBounds;
       for (const element of await page.locator(selector).all()) {
         const box = (await element.boundingBox())!;
         expect(box.x, selector + ' left in hero').toBeGreaterThanOrEqual(heroBounds.x - 1);
