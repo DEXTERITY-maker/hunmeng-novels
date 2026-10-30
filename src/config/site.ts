@@ -5,7 +5,7 @@ export const site = {
   description: 'Hunmeng — web novels in English. Stories to enjoy at your own pace.',
   url: 'https://hunmeng-novel.ru',
   reportUrl: '',
-  contacts: { email: '', telegram: '', rightsEmail: '' },
+  contacts: { email: 'kirillfapsy@gmail.com', telegram: '@hunmeng_background', telegramChannel: 'https://t.me/hunmengnovels', rightsEmail: '' },
   features: { accounts: true, readerSync: true },
   logo: {
     light: '/images/logo-light.png',

@@ -3,6 +3,7 @@ import Layout from '../layouts/Layout.astro';
 import { site } from '../config/site';
 import { contactChannels } from '../lib/contacts';
 const channels = contactChannels(site.contacts);
+const reportChannels = channels.filter(channel => channel.label !== 'Telegram channel');
 ---
 
 <Layout title="Contact" description="Contact the Hunmeng team with site questions, suggestions, and error reports.">
@@ -12,7 +13,7 @@ const channels = contactChannels(site.contacts);
     </a>
     <h1>Contact</h1>
     <p>
-      Contact channels for the editorial team will be listed here for site questions, suggestions, and translation error reports.
+      Contact the editorial team with site questions, suggestions, and translation error reports.
     </p>
     {channels.length ? (
       <ul class="contact-channels">{channels.map(channel => (
@@ -22,6 +23,7 @@ const channels = contactChannels(site.contacts);
       <p class="notice">Contact channels have not been published yet. You cannot send a message through the site at this time.</p>
     )}
     <h2>Report an error</h2>
+    {reportChannels.length > 0 && <p>Send your report via {reportChannels.map((channel, index) => <>{index > 0 && (index === reportChannels.length - 1 ? ' or ' : ', ')}<a href={channel.href} rel="noopener noreferrer">{channel.value}</a></>)}.</p>}
     <p>Include the novel title, chapter number, and a short excerpt showing the error. For technical issues, include the page address and browser name. Do not send passwords or sign-in codes.</p>
     <p>For rights-related questions, see our <a href="/rights/">information for rights holders</a>.</p>
   </main>

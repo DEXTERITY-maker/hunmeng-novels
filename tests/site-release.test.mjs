@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 
-test('reader-facing release v0.1.0 has the correct version, category, date and real links', async () => {
+test('historical v0.1.0 release note and current package version are consistent', async () => {
   const [note, pkgText, lockText, versionRoute, homeText] = await Promise.all([
     fs.readFile('src/content/news/hunmeng-v0-1-0.md', 'utf8'),
     fs.readFile('package.json', 'utf8'),
@@ -12,7 +12,7 @@ test('reader-facing release v0.1.0 has the correct version, category, date and r
   ]);
   const pkg = JSON.parse(pkgText);
   const lock = JSON.parse(lockText);
-  assert.equal(pkg.version, '0.1.0');
+  assert.equal(pkg.version, '0.6.1');
   assert.equal(lock.version, pkg.version);
   assert.equal(lock.packages[''].version, pkg.version);
   assert.match(note, /^---\ntitle: "Hunmeng v0\.1\.0 — a new chapter for the website"/);
