@@ -412,6 +412,7 @@ test('reader panorama foreground text meets AA contrast in light, dark and sepia
     });
     for (const pair of result) expect(pair.ratio, theme + ' ' + pair.selector).toBeGreaterThanOrEqual(4.5);
     const art = await page.locator('.reader-heading-art').evaluate(el => getComputedStyle(el).backgroundImage);
-    expect(art).toContain(theme === 'dark' ? 'comprehension-night-1536.webp' : 'comprehension-day-1536.webp');
+    const artWidth = await page.evaluate(() => innerWidth <= 760 ? 960 : 1536);
+    expect(art).toContain((theme === 'dark' ? 'comprehension-night-' : 'comprehension-day-') + artWidth + '.webp');
   }
 });
