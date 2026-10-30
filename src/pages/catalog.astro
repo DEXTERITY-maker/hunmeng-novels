@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import NovelCard from '../components/NovelCard.astro';
+import CatalogHero from '../components/CatalogHero.astro';
 import { getLibrary } from '../lib/content';
 import { getTaxonomy } from '../lib/taxonomy';
 const novels = await getLibrary();
@@ -15,11 +16,7 @@ const PAGE_SIZE = 24;
   description="Explore Hunmeng novels by title, author, category, genre, tags, ratings, and recent updates."
 >
   <main id="main" class="page-shell catalog-page">
-    <div class="page-heading catalog-heading landscape-banner">
-      <span class="eyebrow">Explore your next world</span><h1>Novel catalog</h1>
-      <p>Search and filter for a story to match your mood.</p>
-      <nav class="taxonomy-nav" aria-label="Browse novels"><a href="/genres/">Browse genres</a><a href="/tags/">Browse tags</a></nav>
-    </div>
+    <CatalogHero />
     <div class="catalog-layout">
       <form id="catalog-filters" class="filter-panel catalog-filter-panel" role="search">
         <div class="catalog-filter-header">
