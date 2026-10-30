@@ -2421,114 +2421,192 @@ html[data-theme='sepia'] .home-page .home-hero-copy {
 }
 
 
-/* Reader chapter panorama: the art is decorative, never behind chapter prose. */
-.reader-heading.reader-heading-with-art {
+/* Reader chapter panorama: chapter prose stays on the original paper and column width.
+   Desktop artwork can extend beyond that column without changing reader progress anchors. */
+.reader-main > .reader-heading.reader-heading-with-art {
   --reader-art: none;
+  box-sizing: border-box;
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  border-radius: 22px;
-  min-height: clamp(235px, 25vw, 355px);
-  padding: clamp(20px, 4vw, 48px) clamp(22px, 7vw, 108px);
+  width: min(1430px, calc(100vw - 64px));
+  max-width: none;
+  min-height: clamp(240px, 25vw, 345px);
+  margin: 0 0 clamp(27px, 4vw, 44px) 50%;
+  transform: translateX(-50%);
+  padding: clamp(22px, 3.6vw, 45px) clamp(28px, 7vw, 106px);
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: flex-start;
-  text-align: left;
+  justify-content: center;
+  border: 1px solid var(--hm-edge);
+  border-radius: 22px;
   background-image:
-    linear-gradient(90deg, var(--bg) 0%, color-mix(in srgb, var(--bg) 98%, transparent) 28%, color-mix(in srgb, var(--bg) 91%, transparent) 42%, color-mix(in srgb, var(--bg) 18%, transparent) 66%, transparent 82%),
+    linear-gradient(90deg,
+      var(--bg) 0%,
+      color-mix(in srgb, var(--bg) 98%, transparent) 28%,
+      color-mix(in srgb, var(--bg) 94%, transparent) 40%,
+      color-mix(in srgb, var(--bg) 12%, transparent) 67%,
+      transparent 82%),
     var(--reader-art);
-  background-position: center, center;
   background-size: cover;
-  box-shadow: 0 10px 26px rgb(22 39 35 / .07);
+  background-position: center;
+  box-shadow: 0 8px 25px rgb(20 40 34 / .07);
 }
-.reader-heading-with-art[data-art='comprehension'] { --reader-art: url('/images/art/comprehension-day-1536.webp'); }
-.reader-heading-with-art[data-art='latency'] { --reader-art: url('/images/art/latency-night-1536.webp'); }
-html[data-theme='dark'] .reader-heading-with-art[data-art='comprehension'] { --reader-art: url('/images/art/comprehension-night-1536.webp'); }
+.reader-heading.reader-heading-with-art[data-art='comprehension'] {
+  --reader-art: url('/images/art/comprehension-day-1536.webp');
+}
+.reader-heading.reader-heading-with-art[data-art='latency'] {
+  --reader-art: url('/images/art/latency-night-1536.webp');
+}
+html[data-theme='dark'] .reader-heading.reader-heading-with-art[data-art='comprehension'] {
+  --reader-art: url('/images/art/comprehension-night-1536.webp');
+}
 @media (prefers-color-scheme: dark) {
-  html[data-theme='system'] .reader-heading-with-art[data-art='comprehension'] { --reader-art: url('/images/art/comprehension-night-1536.webp'); }
+  html[data-theme='system'] .reader-heading.reader-heading-with-art[data-art='comprehension'] {
+    --reader-art: url('/images/art/comprehension-night-1536.webp');
+  }
 }
-html[data-theme='sepia'] .reader-heading-with-art {
+html[data-theme='sepia'] .reader-heading.reader-heading-with-art {
   background-image:
-    linear-gradient(rgb(164 109 52 / .10), rgb(164 109 52 / .10)),
-    linear-gradient(90deg, var(--bg) 0%, color-mix(in srgb, var(--bg) 98%, transparent) 28%, color-mix(in srgb, var(--bg) 91%, transparent) 42%, color-mix(in srgb, var(--bg) 18%, transparent) 66%, transparent 82%),
+    linear-gradient(rgb(166 111 54 / .1), rgb(166 111 54 / .1)),
+    linear-gradient(90deg, var(--bg) 0%, color-mix(in srgb, var(--bg) 98%, transparent) 28%,
+      color-mix(in srgb, var(--bg) 94%, transparent) 40%,
+      color-mix(in srgb, var(--bg) 12%, transparent) 67%, transparent 82%),
     var(--reader-art);
 }
-.reader-heading-with-art > * { position: relative; z-index: 1; max-width: min(520px, 51%); margin-left: 0; text-align: left; }
-.reader-heading-with-art h1 { font-size: clamp(2rem, 3.6vw, 3.65rem); line-height: 1.04; margin: 12px 0; }
-.reader-heading-with-art .reader-heading-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
-.reader-heading-with-art .reader-heading-meta time { display: inline-flex; align-items: center; gap: 7px; }
-.reader-heading-with-art .reader-heading-divider { width: min(100%, 290px); }
-.reader-bottom-bar {
-  background: color-mix(in srgb, var(--surface) 91%, transparent);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  box-shadow: 0 12px 38px rgb(19 36 31 / .16);
+.reader-heading.reader-heading-with-art > * {
+  position: relative;
+  z-index: 1;
+  width: auto;
+  max-width: min(510px, 46%);
+  margin-left: 0;
+  text-align: left;
 }
+.reader-heading.reader-heading-with-art h1 {
+  font-size: clamp(1.9rem, 3.6vw, 3.45rem);
+  line-height: 1.08;
+  margin-block: 7px 12px;
+  overflow-wrap: anywhere;
+}
+.reader-heading.reader-heading-with-art .reader-heading-novel { margin-bottom: 8px; }
+.reader-heading.reader-heading-with-art .reader-heading-eyebrow { margin-bottom: 4px; }
+.reader-heading.reader-heading-with-art .reader-heading-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin-top: 5px; }
+.reader-heading.reader-heading-with-art .reader-heading-meta time { display: inline-flex; gap: 6px; align-items: center; }
+.reader-heading.reader-heading-with-art [data-reader-words]:not([hidden])::before {
+  content: '▤';
+  margin-right: 6px;
+  font-size: 1.1em;
+}
+.reader-heading.reader-heading-with-art .reader-heading-ornament {
+  width: min(295px, 38%);
+  max-width: min(295px, 38%);
+  margin-top: 16px;
+}
+.reader-heading.reader-heading-with-art .reader-heading-ornament::before,
+.reader-heading.reader-heading-with-art .reader-heading-ornament::after { width: 42%; }
+
+/* Fades only while the existing toolbar is visible, without intercepting taps
+   or interfering with reader.ts auto-hide / dialog / keyboard behavior. */
+body.reader-page:not(.controls-hidden):not(.reader-focus-mode):has(.reader-toolbar:not([hidden]))::after {
+  content: '';
+  position: fixed;
+  pointer-events: none;
+  inset: auto 0 0;
+  height: 104px;
+  z-index: 18;
+  background: linear-gradient(to bottom, transparent, color-mix(in srgb, var(--bg) 85%, transparent) 90%, var(--bg));
+}
+.reader-page .reader-toolbar {
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 13px 38px rgb(12 32 32 / .17);
+  border-radius: 999px;
+}
+.reader-header-logo-placeholder { display: none; }
+
+/* The illustration is above, not under, the text on narrow screens. */
 @media (max-width: 600px) {
-  .reader-heading.reader-heading-with-art {
+  .reader-main > .reader-heading.reader-heading-with-art {
+    width: 100vw;
+    max-width: none;
+    box-sizing: border-box;
     min-height: 0;
     max-height: 33dvh;
-    padding: 0 18px 12px;
+    margin: 0 0 20px 50%;
+    padding: 0 20px 11px;
+    border: 0;
     border-radius: 0;
-    background-image: none;
+    background: var(--bg);
     box-shadow: none;
+    transform: translateX(-50%);
   }
-  .reader-heading-with-art::before {
+  .reader-heading.reader-heading-with-art::before {
     content: '';
     display: block;
     flex: 0 0 auto;
-    height: clamp(64px, 11dvh, 94px);
-    width: calc(100% + 36px);
-    margin: 0 -18px 6px;
-    background-image: linear-gradient(0deg, var(--bg), transparent 42%), var(--reader-art);
+    width: calc(100% + 40px);
+    height: clamp(57px, 10dvh, 80px);
+    margin: 0 -20px 6px;
+    background-image: linear-gradient(to top, var(--bg), transparent 55%), var(--reader-art);
     background-size: cover;
-    background-position: center 48%;
+    background-position: center 44%;
   }
-  .reader-heading-with-art > * { max-width: 100%; }
-  .reader-heading-with-art h1 { font-size: clamp(1.5rem, 6.5vw, 2.2rem); line-height: 1.08; margin: 5px 0; }
-  .reader-heading-with-art .reader-heading-meta { gap: 6px; font-size: .72rem; }
-  .reader-heading-with-art .reader-heading-divider { margin: 5px 0 0; }
+  .reader-heading.reader-heading-with-art[data-art='comprehension'] { --reader-art: url('/images/art/comprehension-day-960.webp'); }
+  .reader-heading.reader-heading-with-art[data-art='latency'] { --reader-art: url('/images/art/latency-night-960.webp'); }
+  html[data-theme='dark'] .reader-heading.reader-heading-with-art[data-art='comprehension'] { --reader-art: url('/images/art/comprehension-night-960.webp'); }
+  .reader-heading.reader-heading-with-art > * { max-width: 100%; }
+  .reader-heading.reader-heading-with-art h1 { font-size: clamp(1.4rem, 5.8vw, 2rem); line-height: 1.12; margin: 4px 0 7px; }
+  .reader-heading.reader-heading-with-art .reader-heading-novel { margin-bottom: 2px; font-size: .76rem; }
+  .reader-heading.reader-heading-with-art .reader-heading-eyebrow { font-size: .63rem; letter-spacing: .07em; margin-bottom: 0; }
+  .reader-heading.reader-heading-with-art .reader-heading-meta { font-size: .69rem; gap: 4px 11px; margin-top: 2px; }
+  .reader-heading.reader-heading-with-art .reader-heading-ornament { width: min(220px, 100%); max-width: 100%; margin-top: 5px; font-size: .73rem; }
+
+  /* One row: back arrow, empty logo square and the four original actions. */
+  .reader-header { flex-wrap: nowrap; overflow: visible; }
+  .reader-header .reader-novel-title {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    flex: 1 1 auto;
+    min-width: 38px;
+  }
+  .reader-header-logo-placeholder {
+    display: block;
+    width: 38px;
+    height: 38px;
+    flex: 0 0 38px;
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--soft) 85%, var(--surface));
+    border: 1px solid var(--line);
+  }
+  .reader-header .reader-novel-title :is(.reader-brand-label, .reader-book-label) { display: none; }
+  .reader-header-actions { display: flex; flex: none; white-space: nowrap; }
+  .reader-header :is(.reader-back, .icon-button, .reader-more summary.icon-button) { flex-shrink: 0; }
+  .reader-page .reader-toolbar { border-radius: 999px; }
 }
+@media (max-width: 600px) and (prefers-color-scheme: dark) {
+  html[data-theme='system'] .reader-heading.reader-heading-with-art[data-art='comprehension'] { --reader-art: url('/images/art/comprehension-night-960.webp'); }
+}
+/* In landscape, do not use the tall panoramic section as a barrier to reading. */
 @media (max-height: 560px) and (orientation: landscape) {
-  .reader-heading.reader-heading-with-art { max-height: 30dvh; padding: 8px 14px; }
-  .reader-heading-with-art::before { display: none; }
-  .reader-heading-with-art h1 { font-size: 1.25rem; margin: 2px 0; }
+  .reader-main > .reader-heading.reader-heading-with-art {
+    width: min(calc(100vw - 24px), 1000px);
+    min-height: 0;
+    max-height: 30dvh;
+    padding: 7px 18px;
+    border-radius: 12px;
+  }
+  .reader-heading.reader-heading-with-art::before { display: none; }
+  .reader-heading.reader-heading-with-art h1 { font-size: 1.22rem; margin: 2px 0; }
+  .reader-heading.reader-heading-with-art .reader-heading-novel { margin: 0; }
+  .reader-heading.reader-heading-with-art .reader-heading-eyebrow { margin: 0; }
+  .reader-heading.reader-heading-with-art .reader-heading-meta { margin: 2px 0; }
+  .reader-heading.reader-heading-with-art .reader-heading-ornament { display: none; }
 }
-
-/* Chapter panorama refinements: keep all metadata and ornament in the text-safe area. */
-.reader-heading-with-art .reader-heading-meta time { display:inline-flex; align-items:center; gap:6px; }
-.reader-heading-with-art .reader-heading-ornament { width:min(290px, 48%); justify-content:center; margin:14px 0 0; }
-.reader-heading-with-art > * { max-width:min(520px, 51%); }
-.reader-heading-with-art .reader-heading-ornament::before,
-.reader-heading-with-art .reader-heading-ornament::after { width:42%; }
-.reader-toolbar {
-  background:color-mix(in srgb, var(--surface) 91%, transparent);
-  backdrop-filter:blur(20px);
-  -webkit-backdrop-filter:blur(20px);
-  box-shadow:0 12px 38px rgb(19 36 31 / .16);
-}
-@media (max-width:600px) {
-  .reader-heading-with-art > * { max-width:100%; }
-  .reader-heading-with-art .reader-heading-ornament { width:min(290px,100%); margin:5px 0 0; }
-  .reader-heading-with-art .reader-heading-novel { margin-bottom:3px; }
-  .reader-heading-with-art .reader-heading-eyebrow { margin-bottom:2px; font-size:.65rem; }
-  .reader-heading-with-art .reader-heading-meta { margin-top:5px; }
-  .reader-heading-with-art h1 { font-size:clamp(1.35rem,5.7vw,2rem); }
-  .reader-header { flex-wrap:nowrap; }
-  .reader-header .reader-novel-title { min-width:0; }
-}
-@media (max-height:560px) and (orientation:landscape) {
-  .reader-heading-with-art .reader-heading-novel { margin:0; }
-  .reader-heading-with-art .reader-heading-eyebrow { margin:0; }
-  .reader-heading-with-art .reader-heading-ornament { display:none; }
-}
-
-@media (max-width:600px) {
-  .reader-heading-with-art[data-art='comprehension'] { --reader-art:url('/images/art/comprehension-day-960.webp'); }
-  .reader-heading-with-art[data-art='latency'] { --reader-art:url('/images/art/latency-night-960.webp'); }
-  html[data-theme='dark'] .reader-heading-with-art[data-art='comprehension'] { --reader-art:url('/images/art/comprehension-night-960.webp'); }
-}
-@media (max-width:600px) and (prefers-color-scheme:dark) {
-  html[data-theme='system'] .reader-heading-with-art[data-art='comprehension'] { --reader-art:url('/images/art/comprehension-night-960.webp'); }
+@media print {
+  .reader-main > .reader-heading.reader-heading-with-art { width: 100%; margin-left: 0; transform: none; padding: 0; min-height: 0; background: transparent; box-shadow: none; }
+  body.reader-page::after { display: none !important; }
 }
