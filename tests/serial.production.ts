@@ -219,3 +219,19 @@ test('catalog server HTML and filtered results are the same illustrated card', a
   const clientHtml = await rows.first().evaluate(element => element.outerHTML);
   expect(clientHtml).toBe(serverHtml);
 });
+
+test('catalog card text stays clear of the visible artwork on desktop', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/catalog/');
+  const cards = await page.locator('.catalog-novel-card[data-art]').all();
+  expect(cards.length).toBe(2);
+  for (const card of cards) {
+    const art = (await card.locator('.catalog-card-art').boundingBox())!;
+    // Visible art starts where the mask reaches 45 % opacity.
+    const visibleFrom = art.x + art.width * 0.45;
+    for (const box of await card.locator('.card-description, .catalog-card-tags, h2').all()) {
+      const b = (await box.boundingBox())!;
+      expect(b.x + b.width).toBeLessThanOrEqual(visibleFrom);
+    }
+  }
+});

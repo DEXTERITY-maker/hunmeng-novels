@@ -1955,14 +1955,15 @@ html[data-theme='dark'] .catalog-page .catalog-novel-card[data-art='comprehensio
 .catalog-page .catalog-card-art {
   position: absolute;
   inset: 0 0 0 auto;
-  width: 47%;
+  width: 36%;
   z-index: -1;
   pointer-events: none;
   background-image: var(--catalog-card-image);
   background-size: cover;
   background-position: 65% center;
-  -webkit-mask-image: linear-gradient(90deg, transparent 0%, rgba(0,0,0,.1) 12%, #000 63%);
-  mask-image: linear-gradient(90deg, transparent 0%, rgba(0,0,0,.1) 12%, #000 63%);
+  /* The art only becomes visible to the right of the text column. */
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, transparent 22%, rgba(0,0,0,.45) 45%, #000 72%);
+  mask-image: linear-gradient(90deg, transparent 0%, transparent 22%, rgba(0,0,0,.45) 45%, #000 72%);
 }
 html[data-theme='sepia'] .catalog-page .catalog-card-art { filter: sepia(.24) saturate(.88); }
 .catalog-page .catalog-novel-card .cover-link {
@@ -1982,7 +1983,8 @@ html[data-theme='sepia'] .catalog-page .catalog-card-art { filter: sepia(.24) sa
 }
 .catalog-page .catalog-novel-card .novel-copy { position: static; min-width: 0; }
 .catalog-page .catalog-novel-card .novel-copy > :not(.catalog-read-action) {
-  width: min(100%, calc(100% - 175px));
+  /* Text stops before the visible part of the art. */
+  width: min(100%, calc(100% - 260px));
   position: relative;
   z-index: 1;
 }
@@ -2071,7 +2073,7 @@ html[data-theme='sepia'] .catalog-page .catalog-card-art { filter: sepia(.24) sa
 .catalog-page .catalog-novel-card .catalog-read-action:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
 
 /* Tight desktop cards prioritize readable copy if a sidebar leaves little space. */
-@media (min-width: 761px) and (max-width: 1110px) {
+@media (min-width: 761px) and (max-width: 1240px) {
   .catalog-page .catalog-card-art { display: none; }
   .catalog-page .catalog-novel-card .novel-copy > :not(.catalog-read-action) { width: 100%; }
   .catalog-page .catalog-novel-card .catalog-card-meta { width: 100%; padding-bottom: 50px; }
@@ -2084,6 +2086,17 @@ html[data-theme='sepia'] .catalog-page .catalog-card-art { filter: sepia(.24) sa
     margin-bottom: 8px;
     border-radius: 13px;
     background-position: center, 64% center;
+    /* On phones the text spans the banner, so the picture stays a soft backdrop. */
+    background-image:
+      linear-gradient(90deg, var(--bg) 0%, color-mix(in srgb, var(--bg) 93%, transparent) 50%, color-mix(in srgb, var(--bg) 62%, transparent) 100%),
+      var(--catalog-hero-image);
+  }
+  html[data-theme='sepia'] .catalog-page .catalog-hero {
+    background-image:
+      linear-gradient(rgb(175 120 56 / .11), rgb(175 120 56 / .11)),
+      linear-gradient(90deg, var(--bg) 0%, color-mix(in srgb, var(--bg) 93%, transparent) 50%, color-mix(in srgb, var(--bg) 62%, transparent) 100%),
+      var(--catalog-hero-image);
+    background-position: center, center, 64% center;
   }
   html[data-theme='dark'] .catalog-page .catalog-hero { --catalog-hero-image: url('/images/art/hunmeng-landscape-night-960.webp'); }
   .catalog-page .catalog-hero-copy { max-width: 100%; }

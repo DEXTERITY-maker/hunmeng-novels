@@ -65,3 +65,4 @@ test('catalog links and controls stay available in all themes', async ({ page })
     expect(colors, 'Read novel must meet WCAG AA in '+theme).toBeGreaterThanOrEqual(4.5);
   }
 });
+
