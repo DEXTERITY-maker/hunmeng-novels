@@ -75,12 +75,12 @@ const usesPlaceholder = n.cover === placeholderCover;
     data-chapter={c.data.slug}
     data-number={c.data.number}
   >
-    <div class="reader-heading">
+    <div class:list={["reader-heading", { "reader-heading-with-art": Boolean(n.art) }]} data-art={n.art || undefined}>
       <a class="reader-heading-novel" href={n.url}>{n.title}</a>
       <p class="reader-heading-eyebrow">Chapter {c.data.number} <span aria-hidden="true">·</span> {remote ? serial?.totalChapters : n.chapterCount} {remote ? 'planned' : 'published'} chapters</p>
       <h1>{c.data.title}</h1>
       <p class="reader-heading-meta">
-        {c.data.publishedAt && <time datetime={c.data.publishedAt}>{dateLabel(c.data.publishedAt)}</time>}
+        {c.data.publishedAt && <time datetime={c.data.publishedAt}><Icon name="calendar" size={16} /> {dateLabel(c.data.publishedAt)}</time>}
         <span data-reader-words hidden></span>
       </p>
       <div class="reader-heading-ornament" aria-hidden="true"><span>✦</span></div>
