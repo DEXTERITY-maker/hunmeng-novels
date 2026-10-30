@@ -311,3 +311,45 @@ test('featured carousel lays out cover beside details and keeps keyboard focus',
   await expect(page.locator('[data-feature-cover] .home-feature-cover-fallback')).toHaveCount(await page.locator('.home-feature-slide').count());
 });
 
+
+test('chapter art and responsive reader screenshots', async ({ page }, info) => {
+  test.skip(info.project.name !== 'desktop', 'Single screenshot project');
+  for (const novel of [
+    { slug: 'comprehension-against-the-heavens', number: 1, art: 'comprehension', day: 'comprehension-day', night: 'comprehension-night' },
+    { slug: 'the-latency-of-tomorrow', number: 10, art: 'latency', day: 'latency-night', night: 'latency-night' },
+  ]) {
+    for (const vp of [{ name: 'desktop', width: 1280, height: 800 }, { name: 'mobile', width: 390, height: 844 }]) {
+      await page.setViewportSize({ width: vp.width, height: vp.height });
+      for (const theme of ['light', 'dark', 'sepia'] as const) {
+        await page.goto('/novel/' + novel.slug + '/chapter-' + novel.number + '/');
+        await page.locator('html').evaluate((el, value) => { el.dataset.theme = value; }, theme);
+        const heading = page.locator('.reader-heading-with-art');
+        await expect(heading).toHaveAttribute('data-art', novel.art);
+        const expected = (theme === 'dark' ? novel.night : novel.day) + (vp.name === 'mobile' ? '-960.webp' : '-1536.webp');
+        const image = await heading.evaluate((el, mobile) => getComputedStyle(el, mobile ? '::before' : undefined).backgroundImage, vp.name === 'mobile');
+        expect(image).toContain(expected);
+        const box = await heading.boundingBox();
+        expect(box).toBeTruthy();
+        expect(box!.x).toBeGreaterThanOrEqual(-1);
+        expect(box!.x + box!.width).toBeLessThanOrEqual(vp.width + 1);
+        if (vp.name === 'mobile') {
+          expect(box!.height).toBeLessThanOrEqual(vp.height / 3 + 1);
+          expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+          await expect(page.locator('.reader-back')).toBeVisible();
+        } else {
+          const title = await heading.locator('h1').boundingBox();
+          expect(title).toBeTruthy();
+          expect(title!.x + title!.width).toBeLessThan(box!.x + box!.width * .68);
+        }
+        if (theme !== 'sepia') await page.screenshot({ path: info.outputPath('hunmeng-chapter-' + novel.art + '-' + vp.name + '-' + theme + '.png'), animations: 'disabled' });
+      }
+    }
+  }
+});
+test('plain chapter heading remains available when art is absent', async ({ page }) => {
+  await page.goto('/novel/comprehension-against-the-heavens/chapter-1/');
+  await page.locator('.reader-heading').evaluate(el => { el.classList.remove('reader-heading-with-art'); el.removeAttribute('data-art'); });
+  await expect(page.locator('.reader-heading-with-art')).toHaveCount(0);
+  const background = await page.locator('.reader-heading').evaluate(el => getComputedStyle(el).backgroundImage);
+  expect(background).toContain('reading-landscape.webp');
+});
