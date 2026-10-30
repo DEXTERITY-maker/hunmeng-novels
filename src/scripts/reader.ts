@@ -77,6 +77,12 @@ export async function initReader() {
     shown = true,
     timer: ReturnType<typeof setTimeout> | undefined;
   const toggler = document.getElementById('show-reader-controls')!;
+  const controls = [...document.querySelectorAll<HTMLElement>('.reader-chrome')];
+  // Keyboard users keep the header and toolbar while their focus is inside them.
+  const keyboardInControls = () => {
+    const active = document.activeElement;
+    return active instanceof HTMLElement && active.matches(':focus-visible') && controls.some((c) => c.contains(active));
+  };
   const show = (visible: boolean) => {
     shown = visible;
     document.body.classList.toggle('controls-hidden', !visible);
@@ -149,7 +155,7 @@ export async function initReader() {
         delta = y - lastY;
       if (!settingsDialog.open && !tocDialog.open && !focusMode) {
         if (y < 120 || delta < -7) show(true);
-        else if (delta > 7) show(false);
+        else if (delta > 7 && !keyboardInControls()) show(false);
       }
       if (Math.abs(delta) > 7) lastY = y;
       clearTimeout(timer);
