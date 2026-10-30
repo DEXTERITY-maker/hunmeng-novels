@@ -28,7 +28,9 @@ const coverIsSvg = n.cover.endsWith('.svg');
 const usesPlaceholder = n.cover === placeholderCover;
 // Categories that already appear as tags would show the same pill twice.
 const extraCategories = n.categories.filter((category) =>
-  ![...n.genres, ...n.tags].some((term) => term.toLocaleLowerCase('en') === category.toLocaleLowerCase('en')),
+  !n.tags.includes(category) &&
+  (n.slug !== 'the-latency-of-tomorrow' ||
+    !n.genres.some((genre) => genre.toLocaleLowerCase('en') === category.toLocaleLowerCase('en'))),
 );
 ---
 
