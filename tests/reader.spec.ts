@@ -3,7 +3,7 @@ import packageInfo from '../package.json' with { type: 'json' };
 const chapter = '/novel/khranitel-mayaka/glava-1/';
 test('главная: разделы с реальным контентом, обложки и поиск', async ({ page }) => {
   await page.goto('/');
-  await expect(page.getByRole('heading', { name: 'New novels' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'New releases' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Latest chapters' })).toBeVisible();
   await expect(page.locator('#popular-novels')).toHaveCount(0);
   await expect(page.locator('a[href="#popular-novels"]')).toHaveCount(0);
