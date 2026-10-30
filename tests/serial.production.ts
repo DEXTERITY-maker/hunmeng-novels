@@ -181,8 +181,6 @@ test('catalog has per-novel theme art, a mobile-first layout, and four screensho
       const heroBg = await hero.evaluate(el => getComputedStyle(el).backgroundImage);
       expect(heroBg).toContain('hunmeng-landscape-' + (theme === 'dark' ? 'night' : 'day') + '-' + (width === 390 ? '960' : '1536') + '.webp');
       for (const novel of novels) {
-        const card = cards.filter({ has: page.locator('[data-novel="' + novel.slug + '"]') });
-        // Filter by data-novel directly: nested has() is not needed for article.
         const row = page.locator('#catalog-results .catalog-novel-card[data-novel="' + novel.slug + '"]');
         await expect(row).toHaveAttribute('data-art', novel.art);
         await expect(row.locator('.catalog-card-art')).toHaveCount(1);
