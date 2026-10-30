@@ -1619,6 +1619,7 @@ html[data-theme='sepia'] .novel-art-band {
   color: #fff;
   border: 1px solid #205b47;
 }
+.novel-page .detail-actions .novel-primary-read::after { content: '→'; margin-left: 3px; font-size: 1.12em; }
 .novel-page .detail-actions .novel-primary-read:hover {
   background: #154737;
   border-color: #154737;
