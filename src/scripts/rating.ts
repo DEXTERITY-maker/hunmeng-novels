@@ -26,6 +26,7 @@ export function initPersonalRatings() {
       const star = Number(button.dataset.star);
       button.setAttribute('aria-pressed', String(star === value));
       button.classList.toggle('selected', star <= value);
+      button.textContent = star <= value ? '★' : '☆';
     }
     if (value) status.textContent = 'Your rating: ' + value + ' out of 5. Saved on this device.';
     else if (!status.textContent.includes('unavailable')) status.textContent = 'You have not rated this novel yet.';
