@@ -78,6 +78,7 @@ test('release service errors show retry without exposing a body', async ({ page 
 });
 
 test('reader contents picks its own art for each novel and switches by theme and viewport', async ({ page }, info) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
   const scenarios = [
     { slug: 'comprehension-against-the-heavens', chapter: 1, art: 'comprehension', light: 'comprehension-day', dark: 'comprehension-night' },
     { slug: 'the-latency-of-tomorrow', chapter: 10, art: 'latency', light: 'latency-night', dark: 'latency-night' },
