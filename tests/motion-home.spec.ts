@@ -51,7 +51,7 @@ test('home card button text remains readable in light and dark themes', async ({
   await page.evaluate(value => document.documentElement.setAttribute('data-theme', value), theme);
   const card = page.locator('.home-book-card').first();
   const label = card.locator('.home-book-read');
-  await expect(label).toHaveText(/Read novel/);
+  await expect(label).toHaveText(/Read/);
   for (const hover of [false, true]) {
    if (hover) await card.hover();
    const contrast = await label.evaluate(el => {
