@@ -204,20 +204,18 @@ test('catalog has per-novel theme art, a mobile-first layout, and four screensho
   await expect(page.locator('.genre-links a').filter({ hasText: 'Science fiction' })).toHaveCount(1);
 });
 
-test('catalog server HTML and filtered results are the same illustrated card', async ({ page }) => {
-  let releaseIndex: () => void = () => {};
-  const blockIndex = new Promise<void>(resolve => { releaseIndex = resolve; });
-  await page.route('**/catalog-index.json', async route => {
-    await blockIndex;
-    await route.continue();
-  });
+test('catalog server HTML and filtered results are the same illustrated card', async ({ page, request }) => {
+  const html = await (await request.get('/catalog/')).text();
+  const serverHtml = await page.evaluate(source => {
+    const documentFromServer = new DOMParser().parseFromString(source, 'text/html');
+    return documentFromServer.querySelector('.catalog-novel-card[data-novel="the-latency-of-tomorrow"]')?.outerHTML;
+  }, html);
+  expect(serverHtml).toBeTruthy();
   await page.goto('/catalog/');
-  const row = page.locator('.catalog-novel-card[data-novel="the-latency-of-tomorrow"]');
-  await expect(row).toBeVisible();
-  const serverHtml = await row.evaluate(el => el.outerHTML);
-  releaseIndex();
-  await page.locator('input[name="search"]').fill('The Latency of Tomorrow');
-  await expect(page.locator('#catalog-results .catalog-novel-card')).toHaveCount(1);
-  const clientHtml = await row.evaluate(el => el.outerHTML);
+  await page.locator('#catalog-filters input[name="search"]').fill('The Latency of Tomorrow');
+  const rows = page.locator('#catalog-results .catalog-novel-card');
+  await expect(rows).toHaveCount(1);
+  await expect(rows.first()).toHaveAttribute('data-novel', 'the-latency-of-tomorrow');
+  const clientHtml = await rows.first().evaluate(element => element.outerHTML);
   expect(clientHtml).toBe(serverHtml);
 });
