@@ -1083,7 +1083,7 @@ body:not(.reader-page) summary:focus-visible {
   border: 1px solid var(--ed-rule);
   border-radius: 7px;
 }
-.catalog-page .catalog-read-action { color: var(--accent); font-weight: 800; }
+.catalog-page .catalog-read-action { color: var(--bg); font-weight: 800; }
 
 /* Novel details: premium library bookplate with clear publishing facts. */
 .novel-page .novel-detail {
