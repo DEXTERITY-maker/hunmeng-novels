@@ -40,6 +40,7 @@ const usesPlaceholder = n.cover === placeholderCover;
     <a href={n.url} class="reader-back" aria-label="Back to novel" title="Back to novel">
       <span aria-hidden="true">←</span>
     </a>
+    <span class="reader-logo-placeholder" aria-hidden="true"></span>
     <a href={n.url} class="reader-novel-title" title={n.title}>
       <span class="reader-brand-label">Hunmeng <small>reading room</small></span>
       <span class="reader-book-label">{n.title}</span>
@@ -75,15 +76,18 @@ const usesPlaceholder = n.cover === placeholderCover;
     data-chapter={c.data.slug}
     data-number={c.data.number}
   >
-    <div class="reader-heading">
-      <a class="reader-heading-novel" href={n.url}>{n.title}</a>
-      <p class="reader-heading-eyebrow">Chapter {c.data.number} <span aria-hidden="true">·</span> {remote ? serial?.totalChapters : n.chapterCount} {remote ? 'planned' : 'published'} chapters</p>
-      <h1>{c.data.title}</h1>
-      <p class="reader-heading-meta">
-        {c.data.publishedAt && <time datetime={c.data.publishedAt}>{dateLabel(c.data.publishedAt)}</time>}
-        <span data-reader-words hidden></span>
-      </p>
-      <div class="reader-heading-ornament" aria-hidden="true"><span>✦</span></div>
+    <div class="reader-heading" data-art={n.art || undefined}>
+      {n.art && <div class="reader-heading-art" aria-hidden="true"></div>}
+      <div class="reader-heading-copy">
+        <a class="reader-heading-novel" href={n.url}>{n.title}</a>
+        <p class="reader-heading-eyebrow">Chapter {c.data.number} <span aria-hidden="true">·</span> {remote ? serial?.totalChapters : n.chapterCount} {remote ? 'planned' : 'published'} chapters</p>
+        <h1>{c.data.title}</h1>
+        <p class="reader-heading-meta">
+          {c.data.publishedAt && <span class="reader-heading-meta-item"><Icon name="clock" size={16} /><time datetime={c.data.publishedAt}>{dateLabel(c.data.publishedAt)}</time></span>}
+          <span class="reader-heading-meta-item reader-heading-word-group"><Icon name="book" size={16} /><span data-reader-words hidden></span></span>
+        </p>
+        <div class="reader-heading-ornament" aria-hidden="true"><span>✦</span></div>
+      </div>
     </div>
     {remote && <div id="serial-gate" class="notice">
       <p id="serial-status" role="status">Checking chapter availability…</p>
