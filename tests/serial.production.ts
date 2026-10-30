@@ -274,8 +274,8 @@ test('illustrated homepage has real featured stories and records four themed vie
   }
 });
 
-test('featured novel carousel works without JavaScript showing the first novel', async ({ browser }) => {
-  const context = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 1280, height: 800 } });
+test('featured novel carousel works without JavaScript showing the first novel', async ({ browser }, info) => {
+  const context = await browser.newContext({ baseURL: String(info.project.use.baseURL), javaScriptEnabled: false, viewport: { width: 1280, height: 800 } });
   const page = await context.newPage();
   try {
     await page.goto('/');
