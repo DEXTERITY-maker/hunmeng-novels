@@ -387,3 +387,31 @@ test('novel panoramas collapse to short readable headings on a landscape phone',
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
   }
 });
+
+
+test('reader panorama foreground text meets AA contrast in light, dark and sepia', async ({ page }) => {
+  await page.goto('/novel/comprehension-against-the-heavens/chapter-1/');
+  const heading = page.locator('.reader-heading');
+  for (const theme of ['light', 'dark', 'sepia']) {
+    await page.locator('html').evaluate((element, value) => { element.dataset.theme = value; }, theme);
+    const result = await heading.evaluate(root => {
+      const luminance = (color: string) => {
+        const values = Array.from(color.matchAll(/[\d.]+/g), m => Number(m[0])).slice(0, 3);
+        return values.reduce((total, value, index) => {
+          const c = value / 255;
+          return total + (c <= .04045 ? c / 12.92 : ((c + .055) / 1.055) ** 2.4) * [.2126, .7152, .0722][index];
+        }, 0);
+      };
+      const background = luminance(getComputedStyle(root).backgroundColor);
+      return ['.reader-heading-novel', '.reader-heading-eyebrow', 'h1', '.reader-heading-meta']
+        .map(selector => {
+          const node = root.querySelector<HTMLElement>(selector)!;
+          const foreground = luminance(getComputedStyle(node).color);
+          return { selector, ratio: (Math.max(background, foreground) + .05) / (Math.min(background, foreground) + .05) };
+        });
+    });
+    for (const pair of result) expect(pair.ratio, theme + ' ' + pair.selector).toBeGreaterThanOrEqual(4.5);
+    const art = await page.locator('.reader-heading-art').evaluate(el => getComputedStyle(el).backgroundImage);
+    expect(art).toContain(theme === 'dark' ? 'comprehension-night-1536.webp' : 'comprehension-day-1536.webp');
+  }
+});
