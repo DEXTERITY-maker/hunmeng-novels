@@ -32,7 +32,7 @@ test('contents without configured art keeps links, accessible names, nearby chap
 test('contents closes by x and backdrop, locks background and fits 390px viewport', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(chapter);
-  await page.evaluate(() => window.scrollTo(0, 300));
+  await page.evaluate(() => window.scrollTo(0, 80));
   const before = await page.evaluate(() => window.scrollY);
   await page.getByRole('button', { name: 'Open contents' }).click();
   const dialog = page.locator('#reader-toc');
