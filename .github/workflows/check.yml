@@ -25,7 +25,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: hunmeng-design-preview-${{ github.run_id }}
-          path: test-results/**/hunmeng-*.png
+          path: |
+            test-results/**/hunmeng-*.png
+            test-results-production/**/hunmeng-*.png
           if-no-files-found: warn
           retention-days: 14
 
