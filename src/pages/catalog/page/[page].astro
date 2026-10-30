@@ -1,6 +1,7 @@
 ---
 import Layout from '../../../layouts/Layout.astro';
 import NovelCard from '../../../components/NovelCard.astro';
+import CatalogHero from '../../../components/CatalogHero.astro';
 import { getLibrary } from '../../../lib/content';
 export async function getStaticPaths() {
   const PAGE_SIZE = 24;
@@ -19,10 +20,7 @@ const { novels, page, pages } = Astro.props;
 
 <Layout title={`Catalog — page ${page}`} description="Browse Hunmeng novels with pagination that works without JavaScript.">
   <main id="main" class="page-shell catalog-page">
-    <div class="page-heading">
-      <h1>Catalog — page {page}</h1>
-      <p>All novels. <a class="catalog-inline-link" href="/catalog/">Advanced search and filters</a>.</p>
-    </div>
+    <CatalogHero page={page} pages={pages} />
     <div class="novel-grid">
       {novels.map((novel) => <NovelCard novel={novel} />)}
     </div>

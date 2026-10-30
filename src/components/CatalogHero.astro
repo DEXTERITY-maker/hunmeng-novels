@@ -1,0 +1,17 @@
+---
+import Icon from './Icon.astro';
+interface Props { page?: number; pages?: number; }
+const { page, pages } = Astro.props;
+---
+<div class="page-heading catalog-heading landscape-banner catalog-hero" data-catalog-hero>
+  <div class="catalog-hero-copy">
+    <span class="eyebrow">EXPLORE YOUR NEXT WORLD <span aria-hidden="true">✦</span></span>
+    <h1>Novel <em>catalog</em></h1>
+    <p>Search and filter for a story to match your mood.</p>
+    <nav class="taxonomy-nav" aria-label="Browse novels">
+      <a class="catalog-hero-primary" href="/genres/"><Icon name="layers" size={19} />Browse genres <span aria-hidden="true">→</span></a>
+      <a class="catalog-hero-secondary" href="/tags/"><Icon name="tag" size={19} />Browse tags <span aria-hidden="true">→</span></a>
+    </nav>
+    {page && <p class="catalog-hero-page">Page {page}{pages && ' of ' + pages} · <a href="/catalog/">Search and filters</a></p>}
+  </div>
+</div>

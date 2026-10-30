@@ -160,3 +160,78 @@ test('illustrated novel pages use correct art in light/dark themes and capture d
     }
   }
 });
+
+
+test('catalog has per-novel theme art, a mobile-first layout, and four screenshot previews', async ({ page }, info) => {
+  test.skip(info.project.name !== 'desktop', 'One browser captures both responsive sizes and themes.');
+  const novels = [
+    { slug: 'comprehension-against-the-heavens', art: 'comprehension', day: 'comprehension-day', dark: 'comprehension-night' },
+    { slug: 'the-latency-of-tomorrow', art: 'latency', day: 'latency-night', dark: 'latency-night' },
+  ];
+  for (const width of [1440, 390]) {
+    const layout = width === 390 ? 'mobile' : 'desktop';
+    await page.setViewportSize({ width, height: width === 390 ? 844 : 900 });
+    await page.goto('/catalog/');
+    const cards = page.locator('#catalog-results .catalog-novel-card');
+    await expect(cards).toHaveCount(2);
+    for (const theme of ['light', 'dark'] as const) {
+      await page.locator('html').evaluate((el, value) => { el.dataset.theme = value; }, theme);
+      const hero = page.locator('[data-catalog-hero]');
+      await expect(hero).toBeVisible();
+      const heroBg = await hero.evaluate(el => getComputedStyle(el).backgroundImage);
+      expect(heroBg).toContain('hunmeng-landscape-' + (theme === 'dark' ? 'night' : 'day') + '-' + (width === 390 ? '960' : '1536') + '.webp');
+      for (const novel of novels) {
+        const row = page.locator('#catalog-results .catalog-novel-card[data-novel="' + novel.slug + '"]');
+        await expect(row).toHaveAttribute('data-art', novel.art);
+        await expect(row.locator('.catalog-card-art')).toHaveCount(1);
+        const bg = await row.locator('.catalog-card-art').evaluate(el => getComputedStyle(el).backgroundImage);
+        expect(bg).toContain((theme === 'dark' ? novel.dark : novel.day) + '-1536.webp');
+        const display = await row.locator('.catalog-card-art').evaluate(el => getComputedStyle(el).display);
+        expect(display).toBe(width === 390 ? 'none' : 'block');
+        await expect(row.locator('.catalog-card-meta > span')).toHaveCount(3);
+      }
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+      if (width === 390) expect((await cards.first().boundingBox())!.y).toBeLessThan(700);
+      await page.evaluate(() => document.fonts.ready);
+      await page.screenshot({
+        path: info.outputPath('hunmeng-catalog-' + layout + '-' + theme + '.png'),
+        animations: 'disabled', fullPage: false,
+      });
+    }
+  }
+  await page.goto('/novel/the-latency-of-tomorrow/');
+  await expect(page.locator('.detail-copy .work-categories a').filter({ hasText: 'Science fiction' })).toHaveCount(0);
+  await expect(page.locator('.genre-links a').filter({ hasText: 'Science fiction' })).toHaveCount(1);
+});
+
+test('catalog server HTML and filtered results are the same illustrated card', async ({ page, request }) => {
+  const html = await (await request.get('/catalog/')).text();
+  const serverHtml = await page.evaluate(source => {
+    const documentFromServer = new DOMParser().parseFromString(source, 'text/html');
+    return documentFromServer.querySelector('.catalog-novel-card[data-novel="the-latency-of-tomorrow"]')?.outerHTML;
+  }, html);
+  expect(serverHtml).toBeTruthy();
+  await page.goto('/catalog/');
+  await page.locator('#catalog-filters input[name="search"]').fill('The Latency of Tomorrow');
+  const rows = page.locator('#catalog-results .catalog-novel-card');
+  await expect(rows).toHaveCount(1);
+  await expect(rows.first()).toHaveAttribute('data-novel', 'the-latency-of-tomorrow');
+  const clientHtml = await rows.first().evaluate(element => element.outerHTML);
+  expect(clientHtml).toBe(serverHtml);
+});
+
+test('catalog card text stays clear of the visible artwork on desktop', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/catalog/');
+  const cards = await page.locator('.catalog-novel-card[data-art]').all();
+  expect(cards.length).toBe(2);
+  for (const card of cards) {
+    const art = (await card.locator('.catalog-card-art').boundingBox())!;
+    // Visible art starts where the mask reaches 45 % opacity.
+    const visibleFrom = art.x + art.width * 0.45;
+    for (const box of await card.locator('.card-description, .catalog-card-tags, h2').all()) {
+      const b = (await box.boundingBox())!;
+      expect(b.x + b.width).toBeLessThanOrEqual(visibleFrom);
+    }
+  }
+});

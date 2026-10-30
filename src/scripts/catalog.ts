@@ -1,10 +1,9 @@
 import { catalogFilterLabel } from '../lib/labels';
 import { getCatalogIndex, refreshCatalogChapterCounts, type CatalogIndexNovel } from '../lib/client-data';
-import { chapterCount } from '../lib/format';
+import { renderCatalogCard } from '../lib/catalog-card';
 
 const PAGE_SIZES = [24, 48];
 const fold = (s: string) => s.normalize('NFKC').toLocaleLowerCase('en').trim();
-const numberLabel = (x: number) => new Intl.NumberFormat('en-US').format(x);
 const make = <K extends keyof HTMLElementTagNameMap>(tag: K, text?: string, cls?: string) => {
   const node = document.createElement(tag);
   if (text !== undefined) node.textContent = text;
@@ -12,52 +11,9 @@ const make = <K extends keyof HTMLElementTagNameMap>(tag: K, text?: string, cls?
   return node;
 };
 function card(n: CatalogIndexNovel) {
-  const article = make('article', undefined, 'novel-card catalog-novel-card');
-  article.dataset.novel = n.slug;
-  const cover = make('a', undefined, 'cover-link');
-  cover.href = n.url;
-  cover.tabIndex = -1;
-  cover.setAttribute('aria-hidden', 'true');
-  const image = make('img');
-  image.src = n.cover;
-  image.alt = '';
-  image.width = 260;
-  image.height = 380;
-  image.loading = 'lazy';
-  cover.append(image);
-  const body = make('div', undefined, 'novel-copy');
-  body.append(make('p', n.genres.join(' · '), 'genre-line'));
-  const h2 = make('h2');
-  const title = make('a', n.title);
-  title.href = n.url;
-  h2.append(title);
-  body.append(h2, make('p', n.originalTitle === n.title ? n.author : n.originalTitle + ' · ' + n.author, 'original-title'));
-  body.append(make('p', n.description, 'card-description'));
-  if (n.tags.length) {
-    const tags = make('div', undefined, 'catalog-card-tags');
-    tags.setAttribute('aria-label', 'Story tags');
-    for (const tag of n.tags.slice(0, 3)) {
-      const link = make('a', tag);
-      link.href = '/catalog/?include=' + encodeURIComponent(tag);
-      tags.append(link);
-    }
-    body.append(tags);
-  }
-  const stats = make('p', undefined, 'catalog-card-stats');
-  if (n.rating) stats.append(make('span', '★ ' + n.rating.average.toFixed(1) + ' / 5 · ' + n.rating.count + ' ratings'));
-  if (n.views !== null) stats.append(make('span', '◉ ' + numberLabel(n.views) + ' views'));
-  if (stats.childElementCount) body.append(stats);
-  const meta = make('p', undefined, 'fine');
-  meta.append(document.createTextNode(chapterCount(n.chapterCount) + ' · ' + n.translationStatus + ' · '));
-  const time = make('time', new Intl.DateTimeFormat('en-US', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(n.updatedAt)));
-  time.dateTime = n.updatedAt;
-  meta.append(time);
-  body.append(meta);
-  const link = make('a', 'Read novel →', 'text-link catalog-read-action');
-  link.href = n.url;
-  body.append(link);
-  article.append(cover, body);
-  return article;
+  const template = document.createElement('template');
+  template.innerHTML = renderCatalogCard(n);
+  return template.content.firstElementChild as HTMLElement;
 }
 function validField(field: Element | RadioNodeList | null, value: string) {
   if (field instanceof HTMLInputElement) {

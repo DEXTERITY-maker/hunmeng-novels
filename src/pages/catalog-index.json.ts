@@ -9,6 +9,8 @@ export const GET: APIRoute = async () =>
       (await getLibrary()).map((n) => ({
         slug: n.slug,
         serial: serials.some(s => s.slug === n.slug),
+        original: n.original,
+        art: n.art,
         title: n.title,
         originalTitle: n.originalTitle,
         author: n.author,
