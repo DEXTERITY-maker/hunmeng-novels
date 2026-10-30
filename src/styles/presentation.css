@@ -2148,3 +2148,274 @@ html[data-theme='sepia'] .catalog-page .catalog-card-art { filter: sepia(.24) sa
 @media (max-width: 760px) and (prefers-color-scheme: dark) {
   html[data-theme='system'] .catalog-page .catalog-hero { --catalog-hero-image: url('/images/art/hunmeng-landscape-night-960.webp'); }
 }
+
+
+/* 2026-10-30 homepage scenic art: add to existing presentation layer. */
+.home-page .home-hero { padding-top: 0; }
+.home-page .home-hero-copy {
+  --home-landscape: url('/images/art/hunmeng-landscape-day-1536.webp');
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1.65fr) minmax(340px, .85fr);
+  align-items: center;
+  gap: clamp(12px, 2vw, 26px);
+  padding: clamp(24px, 3vw, 42px);
+  min-height: 445px;
+  background-color: var(--bg);
+  background-image: linear-gradient(90deg, color-mix(in srgb, var(--bg) 95%, transparent) 0%, color-mix(in srgb, var(--bg) 90%, transparent) 25%, color-mix(in srgb, var(--bg) 52%, transparent) 45%, transparent 66%), var(--home-landscape);
+  background-size: cover;
+  background-position: center, center 52%;
+}
+.home-page .home-hero-copy::before { display: none; }
+html[data-theme='dark'] .home-page .home-hero-copy { --home-landscape: url('/images/art/hunmeng-landscape-night-1536.webp'); }
+@media (prefers-color-scheme: dark) {
+  html[data-theme='system'] .home-page .home-hero-copy { --home-landscape: url('/images/art/hunmeng-landscape-night-1536.webp'); }
+}
+html[data-theme='sepia'] .home-page .home-hero-copy {
+  background-image: linear-gradient(rgb(168 113 54 / .10), rgb(168 113 54 / .10)), linear-gradient(90deg, color-mix(in srgb, var(--bg) 95%, transparent), color-mix(in srgb, var(--bg) 90%, transparent) 25%, color-mix(in srgb, var(--bg) 52%, transparent) 45%, transparent 66%), var(--home-landscape);
+}
+.home-page .home-hero-content {
+  padding: 0;
+  border: 0;
+  background: none;
+  border-radius: 0;
+  overflow: visible;
+  isolation: auto;
+}
+.home-page .home-hero-content::after { display: none; }
+.home-page .home-hero-kicker, .home-page .home-hero-description, .home-page #home-title { color: var(--ink); }
+.home-page .home-search { max-width: 570px; }
+.home-page .home-hero-feature {
+  padding: 20px 20px 15px;
+  min-width: 0;
+  border: 1px solid #b8a574;
+  border-radius: 17px;
+  background: linear-gradient(145deg, #092d26, #124536 58%, #092a24);
+  color: #fff;
+  box-shadow: 0 14px 32px rgb(4 23 18 / .23);
+}
+/* The carousel stacks kicker, slide and controls; drop the old single-card grid areas. */
+.home-page .home-hero-feature { display: block; grid-template-columns: none; grid-template-areas: none; }
+.home-page .home-hero-feature .home-feature-details,
+.home-page .home-hero-feature .home-feature-cover { grid-area: auto; }
+.home-page .home-feature-kicker { margin: 0 0 14px; color: #f4d99f; font-size: .69rem; font-weight: 800; }
+.home-page .home-feature-slides { min-width: 0; }
+.home-page .home-feature-slide { display: grid; grid-template-columns: minmax(105px, 40%) minmax(0,1fr); align-items: start; gap: 15px; }
+.home-page .home-feature-slide[hidden] { display: none !important; }
+.home-page .home-feature-cover {
+  display: block;
+  width: 100%;
+  aspect-ratio: 260 / 380;
+  transform: none;
+  border: 2px solid #bba36e;
+  border-radius: 9px;
+  box-shadow: 0 6px 17px rgb(0 0 0 / .25);
+}
+.home-page .home-hero-feature:hover .home-feature-cover { transform: none; }
+.home-page .home-feature-cover img { width: 100%; height: 100%; display: block; object-fit: cover; }
+.home-page .home-feature-details { display: flex; flex-direction: column; gap: 7px; min-width: 0; }
+.home-page .home-feature-genres { color: #d8e9de !important; font-size: .76rem; }
+.home-page .home-feature-details h2 { margin: 0; font-size: clamp(1.08rem, 1.7vw, 1.55rem); line-height: 1.2; }
+.home-page .home-feature-details h2 a { color: #fff; }
+.home-page .home-feature-author { color: #e0eadd; }
+.home-page .home-feature-summary {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  font-size: .78rem !important;
+  line-height: 1.5;
+  color: #e0eadd !important;
+}
+.home-page .home-feature-stats { display: flex; flex-wrap: wrap; gap: 8px; font-size: .76rem; color: #f4f4e9; }
+.home-page .home-feature-stats span { display: inline-flex; align-items: center; gap: 5px; }
+.home-page .home-feature-read {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 44px;
+  padding: 8px 12px;
+  margin-top: 6px;
+  border: 1px solid #9d7c3c;
+  border-radius: 9px;
+  background: #f0cb86;
+  color: #182a22;
+  font-size: .83rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+.home-page .home-feature-read:hover { background: #ffe2a5; color: #14251d; }
+.home-page .home-feature-read:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+.home-page .home-feature-controls { display: flex; justify-content: center; align-items: center; gap: 12px; margin-top: 12px; }
+.home-page .home-feature-controls > button { border: 0; background: none; color: #fff; font-size: 1.6rem; width: 44px; height: 44px; cursor: pointer; }
+.home-page .home-feature-dots { display: flex; gap: 3px; align-items: center; }
+.home-page .home-feature-dots button { display: grid; place-items: center; border: 0; background: none; padding: 10px; width: 32px; height: 40px; cursor: pointer; }
+.home-page .home-feature-dots span { display: block; width: 10px; height: 10px; border-radius: 50%; background: #9ab4a7; }
+.home-page .home-feature-dots [aria-current='true'] span { background: #ffe0a0; }
+.home-page .home-feature-controls button:focus-visible { outline: 2px solid #fff; outline-offset: 1px; }
+.home-page .home-quick-links {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0,1fr));
+  gap: 12px;
+  margin: -1px 0 18px;
+}
+.home-page .home-quick-card {
+  --quick-image: none;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  min-width: 0;
+  min-height: 90px;
+  padding: 14px;
+  isolation: isolate;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+  box-shadow: 0 5px 15px rgb(5 28 19 / .07);
+  text-decoration: none;
+  color: var(--ink);
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.home-page .home-quick-card[data-quick-art='quick-genres'] { --quick-image: url('/images/art/quick-genres-720.webp'); }
+.home-page .home-quick-card[data-quick-art='quick-latest'] { --quick-image: url('/images/art/quick-latest-720.webp'); }
+.home-page .home-quick-card[data-quick-art='quick-new'] { --quick-image: url('/images/art/quick-new-720.webp'); }
+.home-page .home-quick-image {
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: 34%;
+  z-index: -1;
+  background: var(--quick-image) center / cover no-repeat;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 68%);
+  mask-image: linear-gradient(90deg, transparent, #000 68%);
+  pointer-events: none;
+}
+.home-page .home-quick-icon { flex: none; color: var(--accent); }
+.home-page .home-quick-text { display: flex; flex-direction: column; gap: 4px; width: 45%; min-width: 0; }
+.home-page .home-quick-text strong { font: 650 clamp(.85rem,1.3vw,1.1rem)/1.3 'Lora Variable',Georgia,serif; }
+.home-page .home-quick-text small { color: var(--muted); font-size: .72rem; line-height: 1.35; }
+.home-page .home-quick-arrow { margin-left: auto; flex: none; display: grid; place-items: center; width: 31px; height: 31px; border-radius: 50%; background: var(--bg); color: var(--ink); font-size: 1.1rem; }
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .home-page .home-quick-card:hover { transform: translateY(-3px); box-shadow: 0 9px 23px rgb(5 28 19 / .12); }
+}
+.home-page .home-quick-card:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.home-page .home-hero ~ .home-quick-links { scroll-margin-top: 15px; }
+.home-page .home-cover-grid .home-book-read { color: #fff; background: #205b47; border-radius: 8px; padding: 8px 12px; min-height: 44px; }
+.home-page .home-cover-grid .home-book-read:hover { background: #154737; color: #fff; }
+.home-page .home-cover-grid .home-book-description { display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.home-page .home-cover-grid .home-book-read { font-size: 0; }
+.home-page .home-cover-grid .home-book-read::before { content: 'Read'; font-size: .82rem; }
+.home-page .home-cover-grid .home-book-read svg { width: 17px; }
+@media (max-width: 760px) {
+  .home-page .home-hero-copy {
+    --home-landscape: url('/images/art/hunmeng-landscape-day-960.webp');
+    grid-template-columns: minmax(0,1fr);
+    padding: 14px;
+    gap: 10px;
+    min-height: 0;
+    background-position: center, 63% center;
+  }
+  html[data-theme='dark'] .home-page .home-hero-copy { --home-landscape: url('/images/art/hunmeng-landscape-night-960.webp'); }
+  .home-page .home-hero-content { padding: 0; }
+  .home-page .home-hero-kicker { font-size: .63rem; }
+  .home-page #home-title { font-size: clamp(1.75rem,7vw,2.2rem); margin-top: 7px; }
+  .home-page .home-hero-description { margin: 6px 0 0; font-size: .76rem; line-height: 1.4; }
+  .home-page .home-search { margin-top: 8px; min-height: 45px; }
+  .home-page .home-hero-feature { padding: 11px; min-height: 0; display: block; }
+  .home-page .home-feature-kicker { margin-bottom: 7px; }
+  .home-page .home-feature-slide { grid-template-columns: 77px minmax(0,1fr); gap: 10px; }
+  .home-page .home-feature-cover { width: 77px; }
+  .home-page .home-feature-details { gap: 3px; }
+  .home-page .home-feature-details h2 { font-size: 1rem; }
+  .home-page .home-feature-summary { -webkit-line-clamp: 1; line-clamp: 1; }
+  .home-page .home-feature-stats { font-size: .71rem; }
+  .home-page .home-feature-read { min-height: 44px; margin-top: 3px; }
+  .home-page .home-feature-controls { margin-top: 3px; }
+  .home-page .home-quick-links { grid-template-columns: 1fr; gap: 7px; margin: 8px 0; }
+  .home-page .home-quick-card { min-height: 58px; padding: 7px 12px; gap: 11px; }
+  .home-page .home-quick-card[data-quick-art='quick-genres'] { --quick-image: url('/images/art/quick-genres-360.webp'); }
+  .home-page .home-quick-card[data-quick-art='quick-latest'] { --quick-image: url('/images/art/quick-latest-360.webp'); }
+  .home-page .home-quick-card[data-quick-art='quick-new'] { --quick-image: url('/images/art/quick-new-360.webp'); }
+  .home-page .home-quick-image { width: 30%; }
+  .home-page .home-quick-text { width: 48%; }
+  .home-page .home-quick-arrow { width: 27px; height: 27px; }
+}
+@media (max-width: 760px) and (prefers-color-scheme: dark) {
+  html[data-theme='system'] .home-page .home-hero-copy { --home-landscape: url('/images/art/hunmeng-landscape-night-960.webp'); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .home-page .home-quick-card { transition: none; }
+}
+
+/* Home-only translucent navigation over the landscape. */
+.site-header:has(.header-inner nav a[href='/'][aria-current='page']) { background: color-mix(in srgb, var(--bg) 82%, transparent); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); position: relative; z-index: 3; }
+.site-header:has(.header-inner nav a[href='/'][aria-current='page']) .header-inner nav a { color: var(--ink); }
+
+
+/* Keep the illustrated welcome compact enough to reach new releases quickly at 390px. */
+@media (max-width: 760px) {
+  .home-page .home-hero-copy { padding: 10px 12px; gap: 7px; min-height: 0; }
+  .home-page .home-hero-kicker { font-size: .6rem; letter-spacing: .10em; }
+  .home-page #home-title { font-size: clamp(1.55rem, 6.7vw, 1.9rem); line-height: 1.08; margin: 4px 0 0; }
+  .home-page .home-hero-description { font-size: .74rem; line-height: 1.25; margin: 4px 0 0; }
+  .home-page .home-search { min-height: 43px; margin: 7px 0 0; }
+  .home-page .home-hero-feature { padding: 8px 10px; min-height: 0; }
+  .home-page .home-feature-kicker { font-size: .61rem; margin: 0 0 4px; }
+  .home-page .home-feature-slide { grid-template-columns: 65px minmax(0, 1fr); gap: 9px; }
+  .home-page .home-feature-cover { width: 65px; min-height: 0; }
+  .home-page .home-feature-details { gap: 2px; }
+  .home-page .home-feature-genres { font-size: .67rem; line-height: 1.2; }
+  .home-page .home-feature-details h2 { font-size: .93rem; line-height: 1.15; }
+  .home-page .home-feature-author { font-size: .67rem; }
+  .home-page .home-feature-summary { font-size: .7rem !important; line-height: 1.25; }
+  .home-page .home-feature-stats { font-size: .67rem; line-height: 1.25; }
+  .home-page .home-feature-read { min-height: 44px; padding: 6px 9px; margin-top: 2px; }
+  .home-page .home-feature-controls { margin-top: 0; }
+}
+@media (min-width: 761px) {
+  .home-page .home-hero-copy { background-position: center, center 78%; }
+}
+
+
+
+/* A localized text backdrop leaves the traveler visible at the lower-left on desktop. */
+@media (min-width: 761px) {
+  .home-page .home-hero-copy {
+    background-image:
+      radial-gradient(ellipse 64% 90% at 16% 27%,
+        color-mix(in srgb, var(--bg) 98%, transparent) 0%,
+        color-mix(in srgb, var(--bg) 92%, transparent) 42%,
+        color-mix(in srgb, var(--bg) 35%, transparent) 68%,
+        transparent 95%),
+      var(--home-landscape);
+    background-position: center, center 78%;
+  }
+  html[data-theme='sepia'] .home-page .home-hero-copy {
+    background-image:
+      linear-gradient(rgb(168 113 54 / .09), rgb(168 113 54 / .09)),
+      radial-gradient(ellipse 64% 90% at 16% 27%,
+        color-mix(in srgb, var(--bg) 98%, transparent) 0%,
+        color-mix(in srgb, var(--bg) 92%, transparent) 42%,
+        color-mix(in srgb, var(--bg) 35%, transparent) 68%,
+        transparent 95%),
+      var(--home-landscape);
+    background-position: center, center, center 78%;
+  }
+}
+@media (max-width: 760px) {
+  .home-page .home-hero-copy {
+    background-image:
+      linear-gradient(90deg, color-mix(in srgb, var(--bg) 96%, transparent) 0%, color-mix(in srgb, var(--bg) 93%, transparent) 58%, color-mix(in srgb, var(--bg) 81%, transparent) 100%),
+      var(--home-landscape);
+    background-position: center, 63% center;
+  }
+  html[data-theme='sepia'] .home-page .home-hero-copy {
+    background-image:
+      linear-gradient(rgb(168 113 54 / .09), rgb(168 113 54 / .09)),
+      linear-gradient(90deg, color-mix(in srgb, var(--bg) 96%, transparent) 0%, color-mix(in srgb, var(--bg) 93%, transparent) 58%, color-mix(in srgb, var(--bg) 81%, transparent) 100%),
+      var(--home-landscape);
+    background-position: center, center, 63% center;
+  }
+}

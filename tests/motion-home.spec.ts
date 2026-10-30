@@ -27,7 +27,7 @@ test('reduced-motion keeps hero and cards accessible and native reading behaviou
  await page.goto('/');
  await expect(page.locator('#home-title')).toBeVisible();
  await expect(page.locator('.home-cover-grid .home-book-card')).toHaveCount(2);
- await expect(page.locator('.home-discover a')).toHaveCount(3);
+ await expect(page.locator('.home-quick-card')).toHaveCount(3);
  const hero=page.locator('#home-title');
  await expect.poll(()=>hero.evaluate(el=>getComputedStyle(el).opacity)).toBe('1');
  await page.locator('.home-book-card').first().scrollIntoViewIfNeeded();

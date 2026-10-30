@@ -22,7 +22,7 @@ test('responsive layout keeps covers, featured shelf, footer and menus inside th
     await page.goto('/');
     await expect(page.locator('.home-hero-feature')).toBeVisible();
     const heroBounds = (await page.locator('.home-hero-content').boundingBox())!;
-    for (const selector of ['.home-search button[type=submit]', '.home-discover a']) {
+    for (const selector of ['.home-search button[type=submit]']) {
       for (const element of await page.locator(selector).all()) {
         const box = (await element.boundingBox())!;
         expect(box.x, selector + ' left in hero').toBeGreaterThanOrEqual(heroBounds.x - 1);
@@ -73,7 +73,7 @@ test('editorial surfaces work in light, dark and sepia modes', async ({ page }) 
     expect(visual.background).toContain('gradient');
     expect(visual.color).not.toBe('rgba(0, 0, 0, 0)');
     backgrounds.push(visual.background);
-    await expect(page.locator('.home-feature-cover img')).toBeVisible();
+    await expect(page.locator('.home-feature-slide:not([hidden]) .home-feature-cover img')).toBeVisible();
   }
   expect(new Set(backgrounds).size).toBe(3);
 });

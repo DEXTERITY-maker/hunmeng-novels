@@ -25,8 +25,19 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: hunmeng-design-preview-${{ github.run_id }}
-          path: test-results/**/hunmeng-*.png
+          path: |
+            test-results/**/hunmeng-*.png
+            test-results-production/**/hunmeng-*.png
           if-no-files-found: warn
+          retention-days: 14
+
+      - name: Upload only homepage screenshots
+        if: always() && github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: hunmeng-homepage-preview-${{ github.run_id }}
+          path: test-results-production/**/hunmeng-home-*.png
+          if-no-files-found: error
           retention-days: 14
 
   deploy-timeweb:
