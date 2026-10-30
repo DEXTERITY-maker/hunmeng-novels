@@ -160,3 +160,66 @@ test('illustrated novel pages use correct art in light/dark themes and capture d
     }
   }
 });
+
+
+test('catalog has per-novel theme art, a mobile-first layout, and four screenshot previews', async ({ page }, info) => {
+  test.skip(info.project.name !== 'desktop', 'One browser captures both responsive sizes and themes.');
+  const novels = [
+    { slug: 'comprehension-against-the-heavens', art: 'comprehension', day: 'comprehension-day', dark: 'comprehension-night' },
+    { slug: 'the-latency-of-tomorrow', art: 'latency', day: 'latency-night', dark: 'latency-night' },
+  ];
+  for (const width of [1440, 390]) {
+    const layout = width === 390 ? 'mobile' : 'desktop';
+    await page.setViewportSize({ width, height: width === 390 ? 844 : 900 });
+    await page.goto('/catalog/');
+    const cards = page.locator('#catalog-results .catalog-novel-card');
+    await expect(cards).toHaveCount(2);
+    for (const theme of ['light', 'dark'] as const) {
+      await page.locator('html').evaluate((el, value) => { el.dataset.theme = value; }, theme);
+      const hero = page.locator('[data-catalog-hero]');
+      await expect(hero).toBeVisible();
+      const heroBg = await hero.evaluate(el => getComputedStyle(el).backgroundImage);
+      expect(heroBg).toContain('hunmeng-landscape-' + (theme === 'dark' ? 'night' : 'day') + '-' + (width === 390 ? '960' : '1536') + '.webp');
+      for (const novel of novels) {
+        const card = cards.filter({ has: page.locator('[data-novel="' + novel.slug + '"]') });
+        // Filter by data-novel directly: nested has() is not needed for article.
+        const row = page.locator('#catalog-results .catalog-novel-card[data-novel="' + novel.slug + '"]');
+        await expect(row).toHaveAttribute('data-art', novel.art);
+        await expect(row.locator('.catalog-card-art')).toHaveCount(1);
+        const bg = await row.locator('.catalog-card-art').evaluate(el => getComputedStyle(el).backgroundImage);
+        expect(bg).toContain((theme === 'dark' ? novel.dark : novel.day) + '-1536.webp');
+        const display = await row.locator('.catalog-card-art').evaluate(el => getComputedStyle(el).display);
+        expect(display).toBe(width === 390 ? 'none' : 'block');
+        await expect(row.locator('.catalog-card-meta > span')).toHaveCount(3);
+      }
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+      if (width === 390) expect((await cards.first().boundingBox())!.y).toBeLessThan(700);
+      await page.evaluate(() => document.fonts.ready);
+      await page.screenshot({
+        path: info.outputPath('hunmeng-catalog-' + layout + '-' + theme + '.png'),
+        animations: 'disabled', fullPage: false,
+      });
+    }
+  }
+  await page.goto('/novel/the-latency-of-tomorrow/');
+  await expect(page.locator('.detail-copy .work-categories a').filter({ hasText: 'Science fiction' })).toHaveCount(0);
+  await expect(page.locator('.genre-links a').filter({ hasText: 'Science fiction' })).toHaveCount(1);
+});
+
+test('catalog server HTML and filtered results are the same illustrated card', async ({ page }) => {
+  let releaseIndex: () => void = () => {};
+  const blockIndex = new Promise<void>(resolve => { releaseIndex = resolve; });
+  await page.route('**/catalog-index.json', async route => {
+    await blockIndex;
+    await route.continue();
+  });
+  await page.goto('/catalog/');
+  const row = page.locator('.catalog-novel-card[data-novel="the-latency-of-tomorrow"]');
+  await expect(row).toBeVisible();
+  const serverHtml = await row.evaluate(el => el.outerHTML);
+  releaseIndex();
+  await page.locator('input[name="search"]').fill('The Latency of Tomorrow');
+  await expect(page.locator('#catalog-results .catalog-novel-card')).toHaveCount(1);
+  const clientHtml = await row.evaluate(el => el.outerHTML);
+  expect(clientHtml).toBe(serverHtml);
+});
