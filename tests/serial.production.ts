@@ -235,3 +235,55 @@ test('catalog card text stays clear of the visible artwork on desktop', async ({
     }
   }
 });
+
+
+test('illustrated homepage has real featured stories and records four themed viewport screenshots', async ({ page, request }, info) => {
+  test.skip(info.project.name !== 'desktop', 'One browser records four screenshot variants.');
+  const available = await (await request.get('/catalog.json')).json() as Array<{ url: string; title: string }>;
+  for (const width of [1440, 390]) {
+    const device = width === 390 ? 'mobile' : 'desktop';
+    await page.setViewportSize({ width, height: width === 390 ? 844 : 900 });
+    await page.goto('/');
+    await expect(page.locator('#home-title')).toBeVisible();
+    const slides = page.locator('[data-feature-slide]');
+    await expect(slides).toHaveCount(2);
+    for (const slide of await slides.all()) {
+      const url = await slide.locator('.home-feature-read').getAttribute('href');
+      const title = await slide.locator('h2').innerText();
+      expect(available.some(n => n.url === url && n.title === title)).toBe(true);
+    }
+    await expect(page.locator('.home-discover a')).toHaveCount(3);
+    await expect(page.locator('#new-novels .home-book-card')).toHaveCount(2);
+    for (const theme of ['light', 'dark'] as const) {
+      await page.locator('html').evaluate((el, value) => { el.dataset.theme = value; }, theme);
+      const hero = page.locator('.home-hero-copy');
+      const heroBg = await hero.evaluate(el => getComputedStyle(el).backgroundImage);
+      expect(heroBg).toContain('hunmeng-landscape-' + (theme === 'dark' ? 'night' : 'day') + '-' + (width === 390 ? 960 : 1536) + '.webp');
+      const homeCards = page.locator('#new-novels .home-book-card');
+      await expect(homeCards).toHaveCount(2);
+      await expect(homeCards.filter({ has: page.locator('a[href="/novel/the-latency-of-tomorrow/"]') })).toHaveCount(1);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+      if (width === 390) expect((await hero.boundingBox())!.height).toBeLessThan(515);
+      await page.evaluate(() => document.fonts.ready);
+      await page.screenshot({
+        path: info.outputPath('hunmeng-home-' + device + '-' + theme + '.png'),
+        fullPage: false,
+        animations: 'disabled',
+      });
+    }
+  }
+});
+
+test('featured novel carousel works without JavaScript showing the first novel', async ({ browser }) => {
+  const context = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 1280, height: 800 } });
+  const page = await context.newPage();
+  try {
+    await page.goto('/');
+    await expect(page.locator('.home-feature-slide').first()).toBeVisible();
+    await expect(page.locator('.home-feature-slide').nth(1)).toBeHidden();
+    await expect(page.locator('[data-feature-controls]')).toBeHidden();
+    await expect(page.locator('.home-feature-slide').first().locator('.home-feature-read')).toHaveAttribute('href', /^\/novel\//);
+  } finally {
+    await context.close();
+  }
+});
