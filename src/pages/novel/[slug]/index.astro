@@ -88,7 +88,7 @@ const usesPlaceholder = n.cover === placeholderCover;
             ) : (
               <>
                 <div><dt>Original</dt><dd><span class:list={['novel-status-dot', n.originalStatus === 'Ongoing' && 'is-ongoing']} aria-hidden="true"></span>{n.originalStatus}</dd></div>
-                <div><dt>Translation</dt><dd><span class:list={['novel-status-dot', n.translationStatus === 'Ongoing' && 'is-ongoing']} aria-hidden="true"></span>{n.translationStatus}</dd></div>
+                <div><dt>Translation</dt><dd><span class:list={['novel-status-dot', n.translationStatus === 'In progress' && 'is-ongoing']} aria-hidden="true"></span>{n.translationStatus}</dd></div>
               </>
             )}
             <div><dt>Length</dt><dd>{chapterCount(n.chapterCount)}</dd></div>
