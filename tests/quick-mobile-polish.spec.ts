@@ -10,8 +10,14 @@ test('home hero is readable immediately and leaves room for the catalog', async 
   }
   const hero = await page.locator('.home-hero-copy').boundingBox();
   expect(hero).toBeTruthy();
-  expect(hero!.height).toBeLessThan(515);
+  // The new hero contains a full featured-story carousel; 515px was the
+  // compact static-card threshold. Keep its height bounded, and directly
+  // verify the first release needs only a short scroll on a 390px phone.
+  expect(hero!.height).toBeLessThan(570);
   await expect(page.locator('#new-title')).toBeAttached();
+  const firstRelease = await page.locator('.home-cover-grid .home-book-card').first().boundingBox();
+  expect(firstRelease).toBeTruthy();
+  expect(firstRelease!.y).toBeLessThan(1100);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
   await page.screenshot({path:info.outputPath('hunmeng-mobile-hero-after.png'),animations:'disabled',fullPage:false});
 });
