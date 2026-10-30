@@ -2523,3 +2523,12 @@ html[data-theme='sepia'] .reader-heading-with-art {
   .reader-heading-with-art .reader-heading-eyebrow { margin:0; }
   .reader-heading-with-art .reader-heading-ornament { display:none; }
 }
+
+@media (max-width:600px) {
+  .reader-heading-with-art[data-art='comprehension'] { --reader-art:url('/images/art/comprehension-day-960.webp'); }
+  .reader-heading-with-art[data-art='latency'] { --reader-art:url('/images/art/latency-night-960.webp'); }
+  html[data-theme='dark'] .reader-heading-with-art[data-art='comprehension'] { --reader-art:url('/images/art/comprehension-night-960.webp'); }
+}
+@media (max-width:600px) and (prefers-color-scheme:dark) {
+  html[data-theme='system'] .reader-heading-with-art[data-art='comprehension'] { --reader-art:url('/images/art/comprehension-night-960.webp'); }
+}
