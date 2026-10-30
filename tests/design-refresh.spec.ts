@@ -26,8 +26,8 @@ test('responsive layout keeps covers, featured shelf, footer and menus inside th
       const container = selector.includes('home-discover') ? (await page.locator('.home-page').boundingBox())! : heroBounds;
       for (const element of await page.locator(selector).all()) {
         const box = (await element.boundingBox())!;
-        expect(box.x, selector + ' left in hero').toBeGreaterThanOrEqual(heroBounds.x - 1);
-        expect(box.x + box.width, selector + ' right in hero').toBeLessThanOrEqual(heroBounds.x + heroBounds.width + 1);
+        expect(box.x, selector + ' left within page').toBeGreaterThanOrEqual(container.x - 1);
+        expect(box.x + box.width, selector + ' right within page').toBeLessThanOrEqual(container.x + container.width + 1);
       }
     }
     for (const selector of ['.home-hero-content', '.home-hero-feature', '.home-book-card', '.home-chapter-link', '.home-recommendation-card']) {
