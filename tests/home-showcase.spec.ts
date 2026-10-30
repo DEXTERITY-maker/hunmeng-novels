@@ -61,7 +61,7 @@ test('three quick cards keep separate illustrations away from their copy and use
     expect(css.background).toContain(families[i] + '-720.svg');
     expect(css.mask).toContain('gradient');
     const image = await art.boundingBox();
-    const copy = await card.locator('span').filter({ has: card.locator('strong') }).first().boundingBox();
+    const copy = await card.locator(':scope > span:not(.home-quick-art):not(.home-quick-arrow)').first().boundingBox();
     expect(image).not.toBeNull();
     expect(copy).not.toBeNull();
     expect(copy!.x + copy!.width).toBeLessThanOrEqual(image!.x + image!.width * .25);
