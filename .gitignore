@@ -5,3 +5,6 @@ dist/
 playwright-report/
 test-results/
 .DS_Store
+
+# Production-only Playwright screenshots, separate from demo test output.
+test-results-production/
