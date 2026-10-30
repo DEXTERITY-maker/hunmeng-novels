@@ -6,7 +6,7 @@ publishedAt: "2026-10-28"
 order: 300
 ---
 
-We refreshed Hunmeng's **reader rank system** so that the journey from your first chapter to the highest rank feels like a fantasy adventure.
+Hunmeng's **reader rank system** has been visually refreshed so that the journey from your first chapter to the highest rank feels like a fantasy adventure.
 
 ### What's changed
 

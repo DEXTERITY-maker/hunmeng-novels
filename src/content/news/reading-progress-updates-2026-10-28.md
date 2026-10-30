@@ -16,6 +16,6 @@ Hunmeng's profile now shows more than a nickname and settings: it helps readers 
 - **Optional library sync** — your library can be synchronized with your account, with conflict resolution for simultaneous changes.
 - **Reviews** — approved published reviews are counted separately from drafts or reviews awaiting moderation.
 
-Moving a novel onto the local **Completed** shelf never grants verified novel-completion XP automatically. We keep these metrics separate so readers can trust their statistics.
+Moving a novel onto the local **Completed** shelf never grants verified novel-completion XP automatically. These metrics remain separate to keep reading statistics accurate and trustworthy.
 
 [Visit your profile](/account/) · [Open your library](/library/).

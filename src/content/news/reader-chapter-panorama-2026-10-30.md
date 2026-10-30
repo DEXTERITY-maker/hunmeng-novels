@@ -1,13 +1,20 @@
 ---
 title: "A calmer chapter reading view"
-excerpt: "I added story artwork to chapter headings and made the reading controls softer without changing how reading works."
+excerpt: "Illustrated chapter headers and refined reading controls, with reading progress, text and settings preserved."
 category: changelog
 publishedAt: "2026-10-30"
 order: 717
 ---
 
-I updated the top of the chapter reader. Stories with their own artwork now have a wide illustrated heading that changes with the theme. On phones, the picture is shorter so the chapter title is easy to read. Stories without artwork keep their usual heading.
+The chapter reader now has a more polished appearance on desktop and mobile.
 
-I also gave the bottom reading controls a softer, slightly transparent background. The back button, settings, bookmark, chapter list and progress bar are still in their familiar places.
+### What's new
 
-I did not change the chapter text, font settings, text width or spacing. Reading progress still saves and returns when you come back. The next-chapter buttons, Read later, focus mode, scheduled chapters and reading rewards work the same way as before.
+- **Illustrated chapter headers.** Novels with their own artwork now display a panoramic chapter header that adapts to the selected theme.
+- **Improved mobile layout.** Artwork appears in a shorter header, keeping chapter titles readable and leaving more room for reading.
+- **Refined reading controls.** The bottom toolbar has a softer, slightly translucent appearance.
+- **Graceful fallback.** Novels without dedicated artwork retain a simple chapter header.
+
+### What stays the same
+
+Chapter text, fonts, line spacing, text width and saved reading settings remain unchanged. Reading position and progress continue to be saved and restored. The back button, settings, bookmarks, contents, next-chapter navigation, Read later, focus mode, release schedules and reading rewards continue to work as before.

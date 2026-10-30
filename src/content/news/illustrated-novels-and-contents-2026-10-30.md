@@ -1,35 +1,37 @@
 ---
-title: "Each novel gets its own art, a new contents window and a contact page that works"
-excerpt: "I gave every novel its own illustration, rebuilt the contents window and the novel pages, tidied the catalog filters and reading toolbar, and finally published ways to reach me."
+title: "Novel artwork, redesigned contents and contact updates"
+excerpt: "Story-specific illustrations, a redesigned contents window and novel pages, catalog fixes and updated contact information."
 category: changelog
 publishedAt: "2026-10-30"
 order: 700
 ---
 
-Today I spent the whole day on Hunmeng, and a lot of it is now live. Here is what changed.
+Several updates are now available across Hunmeng, with a focus on clearer reading and navigation.
 
-### Every novel has its own art
+### Story-specific illustrations
 
-I didn't want one castle picture on every page, so each story now has an illustration that matches it. *Comprehension Against the Heavens* opens with golden misty peaks and a pavilion above the clouds; at night it turns to moonlight and lanterns. *The Latency of Tomorrow* opens on a rainy Shenzhen riverside at night. The castle landscape stays where it belongs: on the home page and in the catalog.
+Each novel now has artwork suited to its setting. *Comprehension Against the Heavens* features golden misty mountains and a pavilion, with a moonlit version for the dark theme. *The Latency of Tomorrow* features a rainy Shenzhen riverside at night. The castle landscape remains on the homepage and in the catalog.
 
-### A new contents window
+### Updated chapter contents
 
-When you tap **Contents** while reading, you now get a window with your novel's art on top, numbered chapters and a **Reading** mark on the chapter you're in. It scrolls straight to your chapter, so in a long novel you don't have to hunt for it. On a phone it slides up from the bottom of the screen and also works when the phone is turned sideways.
+The **Contents** window now includes the current novel's artwork, numbered chapters and a **Reading** indicator for the active chapter. The list scrolls to the current chapter, while the mobile window opens from the bottom and supports landscape orientation.
 
-### Novel pages, redesigned
+### Redesigned novel pages
 
-Each novel page now starts with its illustration and a clear card: cover, genres, **Start reading**, **Add to library**, published and planned chapters, status, your rating and tags. The synopsis has its own panel and appears only once. While you're on a novel, **Catalog** stays highlighted in the menu, so you always know where you are.
+Novel pages now feature their own illustrations and a clearer information card with the cover, genres, **Start reading**, **Add to library**, chapter counts, status, rating and tags. Each synopsis appears once in a dedicated panel. **Catalog** remains highlighted in the navigation.
 
-### Small fixes I promised
+### Additional improvements
 
-- The green **Read novel** button in the catalog had text almost the same colour as the button. It's readable now.
-- On a computer, the filter panel heading no longer squeezes into one word per line, and the sort field isn't cut off.
-- The reading toolbar still hides when you scroll down and comes back when you scroll up, but it now stays put while you're using it with a keyboard.
+- Improved contrast for the green **Read novel** button in the catalog.
+- Fixed the catalog filter heading and clipped sort field on desktop.
+- Preserved automatic reader-toolbar hiding while keeping it visible during keyboard interaction.
 
-### You can reach me now
+### Contact information
 
-The [Contact page](/contacts/) finally lists an email address, my Telegram and the Hunmeng channel. If you find a mistake in a chapter, that's where to send it.
+The [Contact page](/contacts/) now lists an email address, Telegram contact and the Hunmeng channel for questions or chapter corrections.
 
-Nothing in this update touches your account, library, reading progress, ratings, XP or ranks. No new chapters were published with it.
+### What stays the same
 
-[Read The Latency of Tomorrow](/novel/the-latency-of-tomorrow/) · [Read Comprehension Against the Heavens](/novel/comprehension-against-the-heavens/) · [Contact me](/contacts/)
+Accounts, library shelves, reading progress, ratings, XP and ranks remain unchanged. No new chapters were published as part of these updates.
+
+[Read The Latency of Tomorrow](/novel/the-latency-of-tomorrow/) · [Read Comprehension Against the Heavens](/novel/comprehension-against-the-heavens/) · [Contact Hunmeng](/contacts/)

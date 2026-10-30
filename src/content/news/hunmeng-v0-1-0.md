@@ -1,12 +1,12 @@
 ---
 title: "Hunmeng v0.1.0 — a new chapter for the website"
-excerpt: "Our v0.1.0 update brings a refreshed design, a more comfortable reading experience, clearer account navigation, and improvements across the library."
+excerpt: "The v0.1.0 update brings a refreshed design, a more comfortable reading experience, clearer account navigation, and improvements across the library."
 category: changelog
 publishedAt: "2026-10-27"
 order: 100
 ---
 
-**Hunmeng v0.1.0** is here. We've refreshed the website to make discovering, reading, and managing stories feel calmer, clearer, and more consistent across phones, tablets, and computers.
+**Hunmeng v0.1.0** is here. The website has been refreshed to make discovering, reading, and managing stories feel calmer, clearer, and more consistent across phones, tablets, and computers.
 
 ### What's new
 
@@ -23,6 +23,6 @@ order: 100
 
 Your reading library and progress **remain stored in this browser**. Signing in does not currently sync them between devices. Existing novels and chapters remain available, and editorial permissions and publishing checks are unchanged.
 
-Thanks for reading with Hunmeng. We hope the refreshed experience makes it easier to return to the stories you love.
+Thanks for reading with Hunmeng. The refreshed experience is designed to make it easier to return to favorite stories.
 
 [Explore the catalog](/catalog/) · [Open your profile](/account/)

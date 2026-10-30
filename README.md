@@ -12,7 +12,7 @@ Hunmeng is a static Astro + TypeScript web novel library with an English interfa
 
 For visual changes, edit the existing stylesheets in `src/styles/` and preserve their cascade order. Do not add dated `polish` or `fixes` stylesheets.
 
-Every change readers can see ships with a news post in the same pull request: a new file in `src/content/news/` with `category: changelog` and today's `publishedAt`, written in English in the first person (as the site's author, "I"), in plain words, describing only what actually changed and what stayed the same. Several changes released on the same day can share one post.
+Every functional or visual release readers can see must include a news post in the same pull request: a file in `src/content/news/` with `category: changelog` and the release date in `publishedAt`. Write in clear, concise **official release-note style**, in English: e.g. "Added illustrated chapter headers", "Improved mobile reading controls", and "Reading progress remains unchanged". Avoid personal narration ("I", "we", "my"), AI-assistant references, invented features and claims about unverified work. State what changed and what remained unchanged. Multiple changes released on one day may share a single post. When correcting the wording of an existing announcement, edit that post rather than publish a duplicate.
 
 ## Historical release notes
 

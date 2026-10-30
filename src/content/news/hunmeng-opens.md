@@ -10,4 +10,4 @@ order: 0
 
 Translations are published only with permission from authors or other rights holders.
 
-Our library is growing. New novels and chapters will appear as translations are prepared and reviewed.
+The Hunmeng library continues to grow. New novels and chapters will appear as translations are prepared and reviewed.
