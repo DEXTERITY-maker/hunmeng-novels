@@ -1,15 +1,21 @@
 ---
 title: "A clearer catalog with artwork for each story"
-excerpt: "I refreshed the catalog banner and novel cards, while keeping the search, filters, shelves and reading progress as they were."
+excerpt: "Updated catalog artwork and cards, with search, filtering, pagination and saved reading data unchanged."
 category: changelog
 publishedAt: "2026-10-30"
 order: 715
 ---
 
-I gave the catalog a new look. The banner now shows our castle landscape, with a nighttime version when you use the dark theme. The two novels have their own illustrations on their catalog cards: golden mountains for *Comprehension Against the Heavens* and rainy Shenzhen for *The Latency of Tomorrow*.
+The catalog has received a visual refresh to make browsing novels easier.
 
-I also made the cards easier to scan. You can see the cover, genres, title, author, a short part of the description, up to three real tags, published chapter count, status and update date. The **Read novel** button is easier to find. On phones I keep the cards simpler, so the text and buttons have room.
+### What's new
 
-The artwork changes with the theme, but the stories and the information shown still come from the same novel data. I also removed a repeated "Science fiction" category on *The Latency of Tomorrow* page, because it is already listed as a genre.
+- **Themed catalog banner.** The castle landscape now has a nighttime version for the dark theme.
+- **Story-specific artwork.** *Comprehension Against the Heavens* displays golden mountains, while *The Latency of Tomorrow* displays rainy Shenzhen.
+- **Clearer novel cards.** Each card shows its cover, genres, title, author, a short description, up to three existing tags, chapter count, status and update date.
+- **Improved mobile cards.** Covers, text and **Read novel** buttons have more room on smaller screens.
+- **Less repeated information.** The duplicate **Science fiction** category was removed from the *The Latency of Tomorrow* page because it already appears as a genre.
 
-I did **not** change how search, sorting, tag inclusion and exclusion, URL filters, pagination or reset work. Your library, ratings, saved reading progress, accounts, XP and ranks remain the same. I did not add or publish any chapters with this update.
+### What stays the same
+
+Search, sorting, included and excluded tags, URL filters, pagination and reset controls continue to work as before. Library shelves, ratings, reading progress, accounts, XP and ranks remain unchanged. No new chapters were published as part of this update.
