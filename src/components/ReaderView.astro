@@ -80,7 +80,7 @@ const usesPlaceholder = n.cover === placeholderCover;
       <p class="reader-heading-eyebrow">Chapter {c.data.number} <span aria-hidden="true">·</span> {remote ? serial?.totalChapters : n.chapterCount} {remote ? 'planned' : 'published'} chapters</p>
       <h1>{c.data.title}</h1>
       <p class="reader-heading-meta">
-        {c.data.publishedAt && <time datetime={c.data.publishedAt}><Icon name="calendar" size={16} /> {dateLabel(c.data.publishedAt)}</time>}
+        {c.data.publishedAt && <time datetime={c.data.publishedAt}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 2v6M17 2v6M3 10h18"/></svg> {dateLabel(c.data.publishedAt)}</time>}
         <span data-reader-words hidden></span>
       </p>
       <div class="reader-heading-ornament" aria-hidden="true"><span>✦</span></div>
