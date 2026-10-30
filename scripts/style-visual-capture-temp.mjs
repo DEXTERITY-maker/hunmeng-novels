@@ -39,11 +39,16 @@ try {
   const response=await page.goto('http://127.0.0.1:4321'+path,{waitUntil:'load'});
   if(!response?.ok())throw Error(`Bad response ${path}: ${response?.status()}`);
   await page.locator('#main').waitFor({state:'visible'});
-  if(name==='profile') await page.locator('#auth-logged-in').waitFor({state:'visible',timeout:15000});
+  if(name==='profile') {
+   await page.locator('#auth-logged-in').waitFor({state:'visible',timeout:15000});
+   await page.waitForFunction(()=>document.querySelector('#reader-advancement')?.getAttribute('data-status')==='ready',null,{timeout:15000});
+   await page.waitForFunction(()=>!document.querySelector('#reader-xp-history-status')?.textContent?.includes('Loading'),null,{timeout:15000});
+  }
   if(name==='account') await page.waitForFunction(()=>!document.querySelector('#account-status')?.textContent?.includes('Checking your session'),null,{timeout:15000});
   if(name==='library') await page.waitForFunction(()=>document.querySelector('#library-count')?.textContent?.trim(),null,{timeout:15000});
   await page.locator('img').evaluateAll(nodes=>nodes.forEach(el=>{el.loading='eager'}));
-  await page.evaluate(async()=>{await document.fonts.ready;await Promise.all(Array.from(document.images,img=>img.complete?Promise.resolve():new Promise(resolve=>{img.addEventListener('load',resolve,{once:true});img.addEventListener('error',resolve,{once:true});setTimeout(resolve,3000);})));});
+  await page.evaluate(async()=>{await document.fonts.ready;await Promise.all(Array.from(document.images,img=>img.decode().catch(()=>{})));});
+  if(name==='profile' && !(await page.locator('.reader-mastery-emblem').evaluateAll(imgs=>imgs.length===6 && imgs.every(img=>img.complete && img.naturalWidth>0)))) throw Error('Profile emblems failed to load');
   const actual=await page.locator('html').getAttribute('data-theme');
   if(actual!==theme)throw Error(`Wrong theme for ${name}: ${actual} vs ${theme}`);
   await page.screenshot({path:resolve(output,`${viewport}-${theme}-${name}.png`),fullPage:true,animations:'disabled',caret:'hide'});
