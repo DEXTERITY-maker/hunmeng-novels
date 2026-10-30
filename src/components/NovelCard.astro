@@ -28,7 +28,7 @@ const updated = new Intl.DateTimeFormat('en-US', {
       {typeof n.views === 'number' && <span>◉ {new Intl.NumberFormat('en-US').format(n.views)} views</span>}
     </p>}
     <p class="catalog-card-meta fine">
-      <span class="catalog-meta-chapters"><Icon name="book" size={17} /> {n.chapterCount} chapters</span>
+      <span class="catalog-meta-chapters"><Icon name="book" size={17} /> {chapterCount(n.chapterCount)}</span>
       <span class="catalog-meta-status"><span class:list={['catalog-status-dot', n.originalStatus === 'Ongoing' && 'is-ongoing']} aria-hidden="true"></span>{n.originalStatus}<span class="catalog-translation-status sr-only"> Translation: {n.translationStatus}</span></span>
       <span class="catalog-meta-updated"><Icon name="clock" size={17} /> Updated <time datetime={n.updatedAt}>{updated}</time></span>
     </p>
