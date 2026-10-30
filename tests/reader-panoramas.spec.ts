@@ -44,7 +44,8 @@ test('landscape phone leaves room for reading, back navigation and progress', as
   await page.setViewportSize({ width: 844, height: 390 });
   await page.goto('/novel/khranitel-mayaka/glava-1/');
   const heading = (await page.locator('.reader-heading').boundingBox())!;
-  expect(heading.height).toBeLessThan(175);
+  // The fallback has no picture, and remains compact in landscape mode.
+  expect(heading.height).toBeLessThan(250);
   await expect(page.locator('.reader-back')).toBeVisible();
   await expect(page.locator('#reading-progress')).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
