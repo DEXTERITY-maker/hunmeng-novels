@@ -2419,3 +2419,79 @@ html[data-theme='sepia'] .home-page .home-hero-copy {
     background-position: center, center, 63% center;
   }
 }
+
+
+/* Reader chapter panorama: the art is decorative, never behind chapter prose. */
+.reader-heading.reader-heading-with-art {
+  --reader-art: none;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-radius: 22px;
+  min-height: clamp(235px, 25vw, 355px);
+  padding: clamp(20px, 4vw, 48px) clamp(22px, 7vw, 108px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  text-align: left;
+  background-image:
+    linear-gradient(90deg, var(--bg) 0%, color-mix(in srgb, var(--bg) 98%, transparent) 28%, color-mix(in srgb, var(--bg) 91%, transparent) 42%, color-mix(in srgb, var(--bg) 18%, transparent) 66%, transparent 82%),
+    var(--reader-art);
+  background-position: center, center;
+  background-size: cover;
+  box-shadow: 0 10px 26px rgb(22 39 35 / .07);
+}
+.reader-heading-with-art[data-art='comprehension'] { --reader-art: url('/images/art/comprehension-day-1536.webp'); }
+.reader-heading-with-art[data-art='latency'] { --reader-art: url('/images/art/latency-night-1536.webp'); }
+html[data-theme='dark'] .reader-heading-with-art[data-art='comprehension'] { --reader-art: url('/images/art/comprehension-night-1536.webp'); }
+@media (prefers-color-scheme: dark) {
+  html[data-theme='system'] .reader-heading-with-art[data-art='comprehension'] { --reader-art: url('/images/art/comprehension-night-1536.webp'); }
+}
+html[data-theme='sepia'] .reader-heading-with-art {
+  background-image:
+    linear-gradient(rgb(164 109 52 / .10), rgb(164 109 52 / .10)),
+    linear-gradient(90deg, var(--bg) 0%, color-mix(in srgb, var(--bg) 98%, transparent) 28%, color-mix(in srgb, var(--bg) 91%, transparent) 42%, color-mix(in srgb, var(--bg) 18%, transparent) 66%, transparent 82%),
+    var(--reader-art);
+}
+.reader-heading-with-art > * { position: relative; z-index: 1; max-width: min(520px, 51%); margin-left: 0; text-align: left; }
+.reader-heading-with-art h1 { font-size: clamp(2rem, 3.6vw, 3.65rem); line-height: 1.04; margin: 12px 0; }
+.reader-heading-with-art .reader-heading-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.reader-heading-with-art .reader-heading-meta time { display: inline-flex; align-items: center; gap: 7px; }
+.reader-heading-with-art .reader-heading-divider { width: min(100%, 290px); }
+.reader-bottom-bar {
+  background: color-mix(in srgb, var(--surface) 91%, transparent);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 12px 38px rgb(19 36 31 / .16);
+}
+@media (max-width: 600px) {
+  .reader-heading.reader-heading-with-art {
+    min-height: 0;
+    max-height: 33dvh;
+    padding: 0 18px 12px;
+    border-radius: 0;
+    background-image: none;
+    box-shadow: none;
+  }
+  .reader-heading-with-art::before {
+    content: '';
+    display: block;
+    flex: 0 0 auto;
+    height: clamp(64px, 11dvh, 94px);
+    width: calc(100% + 36px);
+    margin: 0 -18px 6px;
+    background-image: linear-gradient(0deg, var(--bg), transparent 42%), var(--reader-art);
+    background-size: cover;
+    background-position: center 48%;
+  }
+  .reader-heading-with-art > * { max-width: 100%; }
+  .reader-heading-with-art h1 { font-size: clamp(1.5rem, 6.5vw, 2.2rem); line-height: 1.08; margin: 5px 0; }
+  .reader-heading-with-art .reader-heading-meta { gap: 6px; font-size: .72rem; }
+  .reader-heading-with-art .reader-heading-divider { margin: 5px 0 0; }
+}
+@media (max-height: 560px) and (orientation: landscape) {
+  .reader-heading.reader-heading-with-art { max-height: 30dvh; padding: 8px 14px; }
+  .reader-heading-with-art::before { display: none; }
+  .reader-heading-with-art h1 { font-size: 1.25rem; margin: 2px 0; }
+}
