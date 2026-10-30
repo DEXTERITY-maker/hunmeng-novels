@@ -24,7 +24,7 @@ REPLACEMENTS={
    'width="640" height="640" loading="lazy" decoding="async"'),
   ('alt="New Reader\'s Path emblem" width="260" height="300"',
    'alt="New Reader\'s Path emblem" width="640" height="640"')],
- 'src/styles/fantasy-profile.css':[
+ 'src/styles/presentation.css':[
   ('max-width:100%;max-height:186px;aspect-ratio:260/300;object-fit:contain;',
    'max-width:100%;max-height:186px;aspect-ratio:1/1;object-fit:contain;')],
 }

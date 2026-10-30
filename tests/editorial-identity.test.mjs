@@ -4,9 +4,13 @@ import {readFileSync} from 'node:fs';
 
 test('editorial redesign is presentation-only and applied last',()=>{
  const layout=readFileSync('src/layouts/Layout.astro','utf8');
- const css=readFileSync('src/styles/editorial-identity-20261029.css','utf8');
- assert.match(layout,/import '\.\.\/styles\/editorial-identity-20261029\.css'/);
- assert.ok(layout.indexOf('quick-polish-20261029.css')<layout.indexOf('editorial-identity-20261029.css'));
+ const presentation=readFileSync('src/styles/presentation.css','utf8');
+ const marker='/* Section: editorial-identity-20261029';
+ assert.ok(presentation.includes(marker));
+ const css=presentation.slice(presentation.indexOf(marker));
+ assert.match(layout,/import '\.\.\/styles\/presentation\.css'/);
+ assert.ok(layout.indexOf('pages.css')<layout.indexOf('presentation.css'));
+ assert.ok(presentation.indexOf('/* Section: quick-polish-20261029')<presentation.indexOf(marker));
  assert.match(css,/html\[data-theme='dark'\]/);
  assert.match(css,/html\[data-theme='sepia'\]/);
  assert.match(css,/prefers-reduced-motion:reduce/);

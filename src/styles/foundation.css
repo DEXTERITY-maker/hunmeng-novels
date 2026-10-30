@@ -1,3 +1,4 @@
+/* Section: global — order retained for cascade compatibility. */
 * {
   box-sizing: border-box;
 }
@@ -110,7 +111,6 @@ p + p {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 24px;
 }
 .brand {
   display: flex;
@@ -158,7 +158,6 @@ p + p {
   justify-content: center;
   align-items: center;
   gap: 12px;
-  min-height: 46px;
   padding: 11px 20px;
   font-size: 0.875rem;
   font-weight: 650;
@@ -318,20 +317,17 @@ p + p {
   font-weight: 650;
 }
 .site-footer {
-  border-top: 1px solid var(--line);
   max-width: 1100px;
   margin: auto;
   padding: 32px 0 45px;
 }
 .site-footer > p {
   font-size: 0.85rem;
-  color: var(--muted);
   margin-top: 10px;
 }
 .site-footer nav {
   display: flex;
   gap: 22px;
-  flex-wrap: wrap;
   margin: 20px 0;
   font-size: 0.8rem;
 }
@@ -569,7 +565,6 @@ legend {
   flex-wrap: wrap;
 }
 .shelf-tab {
-  display: flex;
   gap: 10px;
   align-items: center;
   min-height: 46px;
@@ -581,8 +576,6 @@ legend {
   color: var(--muted);
 }
 .shelf-tab[aria-pressed='true'] {
-  background: var(--accent);
-  color: var(--bg);
   border-color: var(--accent);
 }
 .shelf-tab span {
@@ -597,7 +590,6 @@ legend {
 .library-row {
   display: grid;
   grid-template-columns: 78px 1fr 180px;
-  gap: 24px;
   padding: 22px 0;
   border-bottom: 1px solid var(--line);
   align-items: center;
@@ -733,7 +725,6 @@ progress::-moz-progress-bar {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  background: var(--bg);
   border-bottom: 1px solid var(--line);
   z-index: 20;
 }
@@ -772,17 +763,13 @@ progress::-moz-progress-bar {
   left: 0;
   right: 0;
   z-index: 25;
-  height: 3px;
   pointer-events: none;
 }
 .reading-progress progress {
   display: block;
-  height: 3px;
   border-radius: 0;
 }
 .reader-main {
-  max-width: var(--reader-width);
-  margin: 0 auto;
   padding: 112px 24px 150px;
   min-height: 100vh;
 }
@@ -803,10 +790,6 @@ progress::-moz-progress-bar {
 }
 .chapter-text {
   font-family: 'Noto Serif Variable', Georgia, serif;
-  font-size: var(--reader-size);
-  line-height: var(--reader-leading);
-  overflow-wrap: break-word;
-  hyphens: auto;
 }
 .chapter-text p {
   margin: 0 0 1.35em;
@@ -815,13 +798,11 @@ progress::-moz-progress-bar {
   border-left: 2px solid var(--accent);
   padding-left: 1em;
   margin-left: 0;
-  color: var(--muted);
 }
 .chapter-text img {
   height: auto;
 }
 .chapter-text pre {
-  white-space: pre-wrap;
 }
 .chapter-text a {
   text-decoration: underline;
@@ -845,20 +826,16 @@ html[data-reader-font='system'] .chapter-text {
   padding: 8px 12px;
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 14px;
   box-shadow: 0 4px 24px #0000000b;
   z-index: 20;
 }
 .reader-toolbar button {
-  display: flex;
   align-items: center;
   gap: 8px;
   background: none;
   border: 0;
   color: var(--ink);
   font-size: 0.8125rem;
-  min-height: 44px;
-  min-width: 44px;
   padding: 8px;
 }
 .reader-toolbar button > span {
@@ -916,7 +893,6 @@ html[data-reader-font='system'] .chapter-text {
 .chapter-end-nav {
   display: flex;
   justify-content: space-between;
-  gap: 12px;
   margin-top: 42px;
   padding-top: 24px;
   border-top: 1px solid var(--line);
@@ -932,7 +908,6 @@ html[data-reader-font='system'] .chapter-text {
   margin-top: 24px;
 }
 .reader-dialog {
-  background: var(--surface);
   color: var(--ink);
   border: 1px solid var(--line);
   border-radius: 16px;
@@ -1390,7 +1365,6 @@ html[data-reader-font='system'] .chapter-text {
 
 .brand-emblem {
   display: grid;
-  flex: none;
 }
 .brand-emblem img {
   grid-area: 1 / 1;
@@ -1510,7 +1484,6 @@ html[data-theme='dark'] .brand-logo-dark {
   gap: 10px;
   margin-top: 28px;
   padding: 7px 7px 7px 16px;
-  background: var(--surface);
   border: 1px solid var(--line);
   box-shadow: 0 10px 34px #0000000a;
   border-radius: 12px;
@@ -1521,7 +1494,6 @@ html[data-theme='dark'] .brand-logo-dark {
   outline-offset: 2px;
 }
 .home-search-symbol {
-  color: var(--muted);
   font-size: 1.8rem;
   line-height: 1;
 }
@@ -1656,9 +1628,6 @@ html[data-theme='dark'] .brand-logo-dark {
 }
 .home-book-cover img {
   display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
   transition: transform 0.2s ease;
 }
 .home-book-link:hover img {
@@ -1741,7 +1710,6 @@ html[data-theme='dark'] .brand-logo-dark {
 }
 .home-chapter-arrow {
   flex: none;
-  color: var(--accent);
   font-size: 1.05rem;
 }
 .home-popular-list {
@@ -1855,7 +1823,6 @@ html[data-theme='dark'] .brand-logo-dark {
   gap: 8px;
 }
 .home-recommendation-card h3 {
-  font-size: 1.05rem;
 }
 .home-recommendation-description {
   font-size: 0.76rem;
@@ -1992,7 +1959,6 @@ html[data-theme='dark'] .brand-logo-dark {
 
 /* Уплотнённая мобильная главная и доступные для чтения подписи. */
 .home-updates-button {
-  display: flex;
   align-items: center;
   justify-content: center;
   width: fit-content;
@@ -2001,7 +1967,6 @@ html[data-theme='dark'] .brand-logo-dark {
   margin: 16px auto 0;
   padding: 9px 20px;
   border: 1px solid var(--line);
-  border-radius: 9px;
   background: var(--surface);
   color: var(--accent);
   font-size: 0.875rem;
@@ -2176,7 +2141,6 @@ html[data-theme='dark'] .brand-logo-dark {
 }
 .catalog-filter-panel {
   padding: 19px;
-  position: sticky;
   top: 18px;
 }
 .catalog-filter-header {
@@ -2198,7 +2162,6 @@ html[data-theme='dark'] .brand-logo-dark {
 .catalog-controls {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: 12px;
 }
 .catalog-controls input[type='number'] {
   width: 100%;
@@ -2225,13 +2188,11 @@ html[data-theme='dark'] .brand-logo-dark {
 }
 .catalog-results-heading {
   display: flex;
-  align-items: center;
   justify-content: space-between;
   gap: 15px;
   margin-top: 4px;
 }
 .catalog-results-heading .fine {
-  text-align: right;
   max-width: 250px;
 }
 .catalog-main {
@@ -2345,7 +2306,6 @@ html[data-theme='dark'] .brand-logo-dark {
 .personal-rating {
   padding: 14px 0 9px;
   margin-top: 20px;
-  border-top: 1px solid var(--line);
 }
 .personal-rating-title {
   font-size: 0.9rem;
@@ -2496,9 +2456,6 @@ html[data-theme='dark'] .brand-logo-dark {
   display: inline-flex;
   padding: 3px 9px;
   line-height: 1.4;
-  border-radius: 6px;
-  color: var(--accent);
-  background: var(--soft);
   font-weight: 750;
   font-size: 0.7rem;
   text-decoration: none;
@@ -2563,7 +2520,6 @@ html[data-theme='dark'] .brand-logo-dark {
   display: flex;
   justify-content: space-between;
   gap: 22px;
-  align-items: center;
   padding: 14px 0 29px;
 }
 .news-heading h1 {
@@ -2591,19 +2547,15 @@ html[data-theme='dark'] .brand-logo-dark {
   align-items: center;
   padding: 8px 14px;
   border: 1px solid var(--line);
-  background: var(--surface);
   border-radius: 8px;
   color: var(--muted);
   font-size: 0.84rem;
   min-height: 43px;
 }
 .news-filter-tabs a[aria-current='page'] {
-  color: var(--bg);
   border-color: var(--accent);
-  background: var(--accent);
 }
 .news-feed {
-  display: grid;
   grid-template-columns: 1fr;
   gap: 0;
 }

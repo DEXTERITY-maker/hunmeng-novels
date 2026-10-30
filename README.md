@@ -8,6 +8,10 @@ Hunmeng is a static Astro + TypeScript web novel library with an English interfa
 - Install and build: `npm ci` and `npm run build` (output: `dist/`).
 - Checks: `node --test tests/*.test.mjs` and `npm run build`. For browser tests, run `npm run build:demo` followed by `npm test` with Chromium installed; do not deploy the demo build.
 
+## Development
+
+For visual changes, edit the existing stylesheets in `src/styles/` and preserve their cascade order. Do not add dated `polish` or `fixes` stylesheets.
+
 ## Historical release notes
 
 The notes below describe past releases and their settings. Addresses ending in `twc1.net`, references to `hunmeng.net`, and Timeweb deployment instructions are outdated and must not be used for the current website.
