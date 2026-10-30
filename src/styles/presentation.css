@@ -1389,6 +1389,7 @@ html[data-theme='sepia'] #reader-toc .reader-toc-art {
 }
 #reader-toc .reader-toc-list a[aria-current='page'] .reader-toc-number { background: var(--surface); color: var(--accent); }
 html[data-theme='dark'] #reader-toc .reader-toc-number { background: color-mix(in srgb, var(--ink) 12%, var(--surface)); }
+html[data-theme='sepia'] #reader-toc .reader-toc-number { background: color-mix(in srgb, var(--ink) 9%, var(--surface)); }
 @media (prefers-color-scheme: dark) {
   html[data-theme='system'] #reader-toc .reader-toc-number { background: color-mix(in srgb, var(--ink) 12%, var(--surface)); }
 }
