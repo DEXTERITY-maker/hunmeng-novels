@@ -1997,6 +1997,7 @@ html[data-theme='sepia'] .catalog-page .catalog-novel-card .catalog-card-art {
   min-height: 193px;
   padding-right: 35%;
 }
+.catalog-page .catalog-novel-card:not([data-art]) .novel-copy { padding-right: 145px; }
 .catalog-page .catalog-novel-card .genre-line {
   margin: 0 0 4px;
   color: var(--ink);
@@ -2128,7 +2129,8 @@ html[data-theme='sepia'] .catalog-page .catalog-novel-card .catalog-card-art {
   .catalog-page .catalog-novel-card .catalog-card-art { display: none; }
   .catalog-page .catalog-novel-card .cover-link { grid-column: 1; grid-row: 1 / 6; }
   .catalog-page .catalog-novel-card .cover-link img { width: 78px; }
-  .catalog-page .catalog-novel-card .novel-copy { display: contents; min-height: 0; padding: 0; }
+  .catalog-page .catalog-novel-card .novel-copy,
+  .catalog-page .catalog-novel-card:not([data-art]) .novel-copy { display: contents; min-height: 0; padding: 0; }
   .catalog-page .catalog-novel-card .novel-copy > :not(.catalog-read-action) { grid-column: 2; min-width: 0; }
   .catalog-page .catalog-novel-card .genre-line { font-size: .69rem; line-height: 1.35; }
   .catalog-page .catalog-novel-card .novel-copy h2 { font-size: 1.09rem; line-height: 1.25; margin-bottom: 0; }
