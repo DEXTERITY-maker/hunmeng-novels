@@ -235,3 +235,59 @@ test('catalog card text stays clear of the visible artwork on desktop', async ({
     }
   }
 });
+
+
+test('homepage recommendation carousel supports arrows, dots, keyboard and genuine novel links', async ({ page }) => {
+  await page.goto('/');
+  const root = page.locator('[data-feature-carousel]');
+  await expect(root).toBeVisible();
+  const slides = root.locator('[data-feature-slide]');
+  const count = await slides.count();
+  expect(count).toBeGreaterThan(0);
+  for (let i = 0; i < count; i++) {
+    const link = await slides.nth(i).locator('.home-feature-details h2 a').getAttribute('href');
+    expect(link).toMatch(/^\/novel\/[a-z0-9-]+\/$/);
+    const response = await page.request.get(link!);
+    expect(response.ok()).toBe(true);
+  }
+  if (count > 1) {
+    await expect(slides.nth(0)).toBeVisible();
+    await root.locator('[data-feature-next]').click();
+    await expect(slides.nth(1)).toBeVisible();
+    await expect(slides.nth(0)).toBeHidden();
+    await root.locator('[data-feature-dot="0"]').click();
+    await expect(slides.nth(0)).toBeVisible();
+    await root.focus();
+    await page.keyboard.press('ArrowLeft');
+    await expect(slides.nth(count - 1)).toBeVisible();
+    await expect(root.locator('[data-feature-dot][aria-current="true"]')).toHaveCount(1);
+  } else {
+    await expect(root.locator('[data-feature-prev], [data-feature-next], [data-feature-dot]')).toHaveCount(0);
+  }
+});
+
+test('homepage quick cards have separate art, safe text zones and mobile layout', async ({ page }, info) => {
+  for (const width of [1440, 390]) {
+    await page.setViewportSize({ width, height: width === 390 ? 844 : 900 });
+    await page.goto('/');
+    const cards = page.locator('.home-quick-card');
+    await expect(cards).toHaveCount(3);
+    for (const [index, art] of ['quick-genres', 'quick-latest', 'quick-new'].entries()) {
+      const card = cards.nth(index);
+      await expect(card).toHaveAttribute('data-quick-art', art);
+      const image = await card.locator('.home-quick-image').evaluate(el => getComputedStyle(el).backgroundImage);
+      expect(image).toContain(art + '-' + (width === 390 ? '360' : '720') + '.webp');
+      const text = await card.locator('.home-quick-text').boundingBox();
+      const artBox = await card.locator('.home-quick-image').boundingBox();
+      expect(text!.x + text!.width).toBeLessThanOrEqual(artBox!.x + 8);
+    }
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+    for (const theme of ['light', 'dark'] as const) {
+      await page.locator('html').evaluate((el, value) => { el.dataset.theme = value; }, theme);
+      const bg = await page.locator('.home-hero-copy').evaluate(el => getComputedStyle(el).backgroundImage);
+      expect(bg).toContain('hunmeng-landscape-' + (theme === 'light' ? 'day' : 'night') + '-' + (width === 390 ? '960' : '1536') + '.webp');
+      await page.evaluate(() => document.fonts.ready);
+      await page.screenshot({ path: info.outputPath('hunmeng-home-' + (width === 390 ? 'mobile' : 'desktop') + '-' + theme + '.png'), animations: 'disabled', fullPage: false });
+    }
+  }
+});
