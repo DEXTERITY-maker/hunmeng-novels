@@ -1,13 +1,16 @@
 ---
 import { shelves } from '../config/site';
+import Icon from './Icon.astro';
 interface Props {
   slug: string;
+  withIcon?: boolean;
 }
-const { slug } = Astro.props;
+const { slug, withIcon = false } = Astro.props;
 ---
 
 <div class="library-control" data-library-control data-slug={slug}>
   <button class="button secondary" type="button" data-add-library>
+    {withIcon && <Icon name="bookmark" size={18} />}
     Add to library
   </button>
   <label class="shelf-picker" hidden>

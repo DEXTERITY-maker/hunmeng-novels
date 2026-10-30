@@ -123,3 +123,40 @@ test('reader contents picks its own art for each novel and switches by theme and
     await page.setViewportSize({ width: 1280, height: 800 });
   }
 });
+
+test('illustrated novel pages use correct art in light/dark themes and capture desktop/mobile previews', async ({ page }, info) => {
+  test.skip(info.project.name !== 'desktop', 'One project records all eight viewport and theme combinations.');
+  const novels = [
+    { slug: 'comprehension-against-the-heavens', art: 'comprehension', day: 'comprehension-day', night: 'comprehension-night' },
+    { slug: 'the-latency-of-tomorrow', art: 'latency', day: 'latency-night', night: 'latency-night' },
+  ];
+  for (const novel of novels) {
+    const data = JSON.parse(readFileSync(new URL(`../src/content/novels/${novel.slug}.json`, import.meta.url), 'utf8'));
+    for (const width of [1440, 390]) {
+      const device = width === 390 ? 'mobile' : 'desktop';
+      await page.setViewportSize({ width, height: width === 390 ? 844 : 900 });
+      await page.goto(`/novel/${novel.slug}/`);
+      await expect(page.locator('.novel-detail')).toBeVisible();
+      await expect(page.locator('.novel-art-band')).toHaveAttribute('data-novel-art', novel.art);
+      await expect(page.locator('.site-header a[href="/catalog/"]')).toHaveAttribute('aria-current', 'page');
+      await expect(page.locator('.synopsis-panel .detail-description')).toHaveText(data.description);
+      await expect(page.locator('.detail-description')).toHaveCount(1);
+      await expect(page.locator('.personal-rating-stars button')).toHaveCount(5);
+      await expect(page.locator('.novel-detail-tags a')).toHaveCount(data.tags.length);
+      for (const theme of ['light', 'dark'] as const) {
+        await page.locator('html').evaluate((el, selected) => { el.dataset.theme = selected; }, theme);
+        const expected = theme === 'dark' ? novel.night : novel.day;
+        const bg = await page.locator('.novel-art-band').evaluate(el => getComputedStyle(el).backgroundImage);
+        expect(bg, `${novel.slug} ${device} ${theme}`).toContain(`${expected}-${width === 390 ? 960 : 1536}.webp`);
+        expect(bg).not.toContain('hunmeng-landscape');
+        expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
+        await page.evaluate(() => document.fonts.ready);
+        await page.screenshot({
+          path: info.outputPath(`hunmeng-novel-${novel.art}-${theme}-${device}.png`),
+          fullPage: false,
+          animations: 'disabled',
+        });
+      }
+    }
+  }
+});
