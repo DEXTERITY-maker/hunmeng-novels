@@ -8,6 +8,7 @@ import { getLibrary, dateLabel, chapterCount } from '../lib/content';
 import { getLatestChapters } from '../lib/updates';
 import NewsCard from '../components/NewsCard.astro';
 import { getNews } from '../lib/news';
+import serials from '../data/serials.json';
 
 const novels = await getLibrary();
 const latestNews = (await getNews()).slice(0, 3);
@@ -24,10 +25,11 @@ const recommendations = [...novels]
   .sort((a, b) => b.chapterCount - a.chapterCount || b.updatedAt.localeCompare(a.updatedAt))
   .slice(0, 4);
 const viewsLabel = new Intl.NumberFormat('en-US');
+const plannedChapters = new Map(serials.map((serial) => [serial.slug, serial.totalChapters]));
 const animatedNovels = newNovels.map((n) => ({
   slug: n.slug, url: n.url, title: n.title, author: n.author, cover: n.cover,
   description: n.description, genres: n.genres, chapters: chapterCount(n.chapterCount),
-  translationStatus: n.translationStatus,
+  translationStatus: n.translationStatus, date: dateLabel(n.addedAt ?? n.updatedAt),
 }));
 ---
 
@@ -55,7 +57,7 @@ const animatedNovels = newNovels.map((n) => ({
             <div class="home-feature-slides">
               {recommendations.map((novel, index) => (
                 <article class="home-feature-slide" data-feature-slide hidden={index !== 0} aria-hidden={index !== 0 ? 'true' : 'false'}>
-                  <a class="home-feature-cover" href={novel.url} aria-label={'Read ' + novel.title}>
+                  <a class="home-feature-cover" data-feature-cover={index === 0 ? '' : undefined} href={novel.url} aria-label={'Read ' + novel.title}>
                     <img src={novel.cover} alt="" width="260" height="380" loading={index === 0 ? 'eager' : 'lazy'} />
                   </a>
                   <div class="home-feature-details">
@@ -63,7 +65,7 @@ const animatedNovels = newNovels.map((n) => ({
                     <h2><a href={novel.url}>{novel.title}</a></h2>
                     <p class="home-feature-author">{novel.author}</p>
                     <p class="home-feature-summary">{novel.description}</p>
-                    <div class="home-feature-stats"><span><Icon name="book" size={17}/>{chapterCount(novel.chapterCount)}</span></div>
+                    <div class="home-feature-stats"><span><Icon name="book" size={17}/>{chapterCount(novel.chapterCount)}</span>{plannedChapters.has(novel.slug) && <span><Icon name="layers" size={17}/>{plannedChapters.get(novel.slug)} planned</span>}</div>
                     <a class="home-feature-read" href={novel.url}>Read now <span aria-hidden="true">→</span></a>
                   </div>
                 </article>
