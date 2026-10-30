@@ -1,5 +1,5 @@
 ---
-title: "Each novel gets its own art, a new contents window and a contact page that works"
+title: "Novel artwork, redesigned contents and contact updates"
 excerpt: "Story-specific illustrations, a redesigned contents window and novel pages, catalog fixes and updated contact information."
 category: changelog
 publishedAt: "2026-10-30"
