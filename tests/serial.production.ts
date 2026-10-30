@@ -336,6 +336,16 @@ test('chapter art and responsive reader screenshots', async ({ page }, info) => 
           expect(box!.height).toBeLessThanOrEqual(vp.height / 3 + 1);
           expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
           await expect(page.locator('.reader-back')).toBeVisible();
+          await expect(page.locator('.reader-header-logo-placeholder')).toBeVisible();
+          const row = await page.locator('.reader-header').evaluate(el => {
+            const rect = (selector: string) => el.querySelector(selector)!.getBoundingClientRect();
+            return [rect('.reader-back').top, rect('.reader-header-logo-placeholder').top, rect('.reader-header-actions').top];
+          });
+          expect(Math.max(...row) - Math.min(...row)).toBeLessThan(13);
+          const ornament = await heading.locator('.reader-heading-ornament').boundingBox();
+          expect(ornament!.y + ornament!.height).toBeLessThanOrEqual(box!.y + box!.height + 1);
+          const paper = await heading.evaluate(el => getComputedStyle(el).backgroundImage);
+          expect(paper, 'mobile text is not over an art background').toBe('none');
         } else {
           const title = await heading.locator('h1').boundingBox();
           expect(title).toBeTruthy();
@@ -352,4 +362,24 @@ test('plain chapter heading remains available when art is absent', async ({ page
   await expect(page.locator('.reader-heading-with-art')).toHaveCount(0);
   const background = await page.locator('.reader-heading').evaluate(el => getComputedStyle(el).backgroundImage);
   expect(background).toContain('reading-landscape.webp');
+});
+
+test('landscape phone keeps the illustrated heading below one third of the screen', async ({ page }) => {
+  await page.setViewportSize({ width: 844, height: 390 });
+  await page.goto('/novel/the-latency-of-tomorrow/chapter-10/');
+  const box = await page.locator('.reader-heading-with-art').boundingBox();
+  expect(box).toBeTruthy();
+  expect(box!.height).toBeLessThanOrEqual(390 / 3 + 1);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+  await expect(page.locator('.reader-back')).toBeVisible();
+});
+
+test('reading position still restores after reloading an illustrated chapter', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/novel/comprehension-against-the-heavens/chapter-1/');
+  await expect(page.locator('#block-0')).toBeVisible();
+  await page.evaluate(() => window.scrollTo(0, 500));
+  await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem('hunmeng-novels:v1') || '{}').progress?.['comprehension-against-the-heavens']?.blockId)).toMatch(/^block-/);
+  await page.reload();
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(200);
 });
