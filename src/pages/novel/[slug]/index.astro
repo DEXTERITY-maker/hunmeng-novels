@@ -26,6 +26,8 @@ const glossaryGroups = glossaryKinds.map(({ type, title }) => ({
 const structuredData = novelStructuredData(n, Astro.site || site.url);
 const coverIsSvg = n.cover.endsWith('.svg');
 const usesPlaceholder = n.cover === placeholderCover;
+// Categories that already appear as tags would show the same pill twice.
+const extraCategories = n.categories.filter((category) => !n.tags.includes(category));
 ---
 
 <Layout
@@ -108,9 +110,9 @@ const usesPlaceholder = n.cover === placeholderCover;
         <div class="tag-list novel-detail-tags" aria-label="Tags">
           {n.tags.map(t => <a href={`/catalog/?include=${encodeURIComponent(t)}`}>{t}</a>)}
         </div>
-        {n.categories.length > 0 && (
+        {extraCategories.length > 0 && (
           <div class="work-categories" aria-label="Categories">
-            {n.categories.map((category) => (
+            {extraCategories.map((category) => (
               <a href={`/catalog/?category=${encodeURIComponent(category)}`}>{category}</a>
             ))}
           </div>

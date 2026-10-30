@@ -1645,8 +1645,8 @@ html[data-theme='sepia'] .novel-art-band {
   gap: 8px;
   margin: 0 0 18px;
 }
-.novel-page .serial-publication-stats span,
-.novel-page .serial-publication-stats a {
+.novel-page .serial-publication-stats > span,
+.novel-page .serial-publication-stats > a {
   display: inline-flex;
   align-items: center;
   gap: 7px;

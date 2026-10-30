@@ -52,3 +52,12 @@ test('without art, the novel page remains within 390px in all three themes', asy
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), theme).toBe(true);
   }
 });
+
+test('novel page shows each tag or category pill once and keeps release arrow inside its pill', async ({ page }) => {
+  await page.goto('/novel/khranitel-mayaka/');
+  const pills = await page.locator('.novel-detail-tags a, .work-categories a').allInnerTexts();
+  expect(new Set(pills).size).toBe(pills.length);
+  const nested = await page.locator('.serial-publication-stats a span, .serial-publication-stats span span').evaluateAll(
+    (els) => els.filter((el) => getComputedStyle(el).borderTopWidth !== '0px').length);
+  expect(nested).toBe(0);
+});
