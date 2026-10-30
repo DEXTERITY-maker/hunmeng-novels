@@ -1,13 +1,20 @@
 ---
 title: "A fresh look for the Hunmeng homepage"
-excerpt: "I made the homepage easier to explore with a scenic banner, featured stories and three quick links."
+excerpt: "A themed landscape, featured-novel carousel and three illustrated shortcuts make the homepage easier to explore."
 category: changelog
 publishedAt: "2026-10-30"
 order: 716
 ---
 
-I updated the Hunmeng homepage to make it feel more like the stories we share. The castle landscape now fills the welcome banner, and it changes with the light, dark and sepia themes. On phones, the picture stays soft behind the text.
+The Hunmeng homepage has been refreshed with a more immersive design and clearer navigation.
 
-I added a featured-story carousel using novels already in the library. You can switch stories yourself using the arrows, dots, keyboard or a swipe. It does not move on its own. I also gave Browse genres, Latest chapters and New releases their own illustrated links, and renamed the new-story section to New releases.
+### What's new
 
-I kept the search, Continue reading, latest chapters, news, popular stories, recommendations and existing links. I did not add any made-up novels or chapters, and your library and reading progress are unchanged.
+- **Scenic welcome banner.** The castle landscape adapts to light, dark and sepia themes, with a softer appearance behind text on phones.
+- **Featured-novel carousel.** Browse existing recommended stories using arrows, dots, keyboard controls or a swipe. Slides do not advance automatically.
+- **Illustrated quick links.** Browse genres, Latest chapters and New releases each have a dedicated illustration.
+- **Clearer section name.** The new-story section is now called **New releases**.
+
+### What stays the same
+
+Search, Continue reading, the latest-chapter list, news, popular stories, recommendations and their existing links are preserved. Library data and reading progress remain unchanged. No additional novels or chapters were introduced as part of this visual update.
