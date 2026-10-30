@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Icon from '../components/Icon.astro';
+import '../scripts/home-carousel';
 import MotionNovelGrid from '../components/MotionNovelGrid';
 import ContinueReading from '../components/ContinueReading.astro';
 import { getLibrary, dateLabel, chapterCount } from '../lib/content';
@@ -47,41 +48,62 @@ const animatedNovels = newNovels.map((n) => ({
             <input id="home-search-input" type="search" name="search" placeholder="Title or author" autocomplete="off" required />
             <button class="button" type="submit">Search <Icon name="arrow" size={17} /></button>
           </form>
-          <nav class="home-discover" aria-label="Explore the library">
-            <a href="/genres/"><Icon name="layers" size={20} /> Browse genres <Icon name="arrow" size={15} /></a>
-            <a href="/updates/"><Icon name="clock" size={20} /> Latest chapters <Icon name="arrow" size={15} /></a>
-            <a href="/catalog/?sort=added"><Icon name="book" size={20} /> New releases <Icon name="arrow" size={15} /></a>
-          </nav>
         </div>
-        {recommendations[0] && (
-          <a class="home-hero-feature" href={recommendations[0].url} aria-label={'Discover featured novel: ' + recommendations[0].title}>
-            <div class="home-feature-top">
-              <span class="home-feature-kicker"><span aria-hidden="true">✧</span> FEATURED NOVEL</span>
-              <span class="home-feature-count">{chapterCount(recommendations[0].chapterCount)}</span>
+        {recommendations.length > 0 && (
+          <section class="home-hero-feature" aria-label="Featured novels" data-feature-carousel tabindex="0">
+            <p class="home-feature-kicker">✧ FEATURED NOVEL</p>
+            <div class="home-feature-slides">
+              {recommendations.map((novel, index) => (
+                <article class="home-feature-slide" data-feature-slide hidden={index !== 0} aria-hidden={index !== 0 ? 'true' : 'false'}>
+                  <a class="home-feature-cover" href={novel.url} aria-label={'Read ' + novel.title}>
+                    <img src={novel.cover} alt="" width="260" height="380" loading={index === 0 ? 'eager' : 'lazy'} />
+                  </a>
+                  <div class="home-feature-details">
+                    <p class="home-feature-genres">{novel.genres.slice(0,2).join(' · ')}</p>
+                    <h2><a href={novel.url}>{novel.title}</a></h2>
+                    <p class="home-feature-author">{novel.author}</p>
+                    <p class="home-feature-summary">{novel.description}</p>
+                    <div class="home-feature-stats"><span><Icon name="book" size={17}/>{chapterCount(novel.chapterCount)}</span>{novel.schedule?.plannedChapters && <span><Icon name="file" size={17}/>{novel.schedule.plannedChapters} planned</span>}</div>
+                    <a class="home-feature-read" href={novel.url}>Read now <span aria-hidden="true">→</span></a>
+                  </div>
+                </article>
+              ))}
             </div>
-            <div class="home-feature-visual">
-              <span class="home-feature-cover" data-feature-cover>
-                <img src={recommendations[0].cover} alt={`Cover of ${recommendations[0].title}`} width="250" height="375" fetchpriority="high" decoding="async" />
-                <span class="home-feature-cover-fallback" hidden aria-hidden="true">✦<small>Cover unavailable</small></span>
-              </span>
-            </div>
-            <div class="home-feature-details">
-              <p>{recommendations[0].genres.slice(0, 2).join(' · ')}</p>
-              <h2>{recommendations[0].title}</h2>
-              <span class="home-feature-author">By {recommendations[0].author}</span>
-              <span class="home-feature-cta">Discover this story <Icon name="arrow" size={17} /></span>
-            </div>
-          </a>
+            {recommendations.length > 1 && (
+              <nav class="home-feature-controls" aria-label="Choose featured novel">
+                <button type="button" data-feature-prev aria-label="Previous featured novel">‹</button>
+                <div class="home-feature-dots">
+                  {recommendations.map((novel, index) => <button type="button" data-feature-dot={index} aria-label={'Show ' + novel.title} aria-current={index === 0 ? 'true' : undefined}><span aria-hidden="true"></span></button>)}
+                </div>
+                <button type="button" data-feature-next aria-label="Next featured novel">›</button>
+              </nav>
+            )}
+          </section>
         )}
       </div>
     </section>
+
+    <nav class="home-quick-links" aria-label="Explore Hunmeng">
+      {[
+        { href: '/genres/', label: 'Browse genres', detail: "Find stories you'll love", icon: 'layers', art: 'quick-genres' },
+        { href: '/updates/', label: 'Latest chapters', detail: "See what's new today", icon: 'clock', art: 'quick-latest' },
+        { href: '/catalog/?sort=added', label: 'New releases', detail: 'Discover fresh stories', icon: 'book', art: 'quick-new' },
+      ].map(item => (
+        <a class="home-quick-card" href={item.href} data-quick-art={item.art}>
+          <span class="home-quick-image" aria-hidden="true"></span>
+          <span class="home-quick-icon"><Icon name={item.icon as any} size={30}/></span>
+          <span class="home-quick-text"><strong>{item.label}</strong><small>{item.detail}</small></span>
+          <span class="home-quick-arrow" aria-hidden="true">→</span>
+        </a>
+      ))}
+    </nav>
 
     <ContinueReading />
 
     <section id="new-novels" class="section home-section" aria-labelledby="new-title">
       <div class="section-heading home-section-heading">
         <div>
-          <h2 id="new-title">New novels</h2>
+          <h2 id="new-title">New releases</h2>
         </div>
         <a href="/catalog/">View all <span aria-hidden="true">→</span></a>
       </div>
