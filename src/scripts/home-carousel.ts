@@ -36,4 +36,6 @@ function initFeaturedCarousel(root: HTMLElement) {
     if (Math.abs(delta) > 45) show(active + (delta < 0 ? 1 : -1));
   }, { passive: true });
 }
-document.querySelectorAll<HTMLElement>('[data-feature-carousel]').forEach(initFeaturedCarousel);
+if (typeof document !== 'undefined') {
+  document.querySelectorAll<HTMLElement>('[data-feature-carousel]').forEach(initFeaturedCarousel);
+}
