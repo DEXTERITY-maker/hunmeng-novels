@@ -2617,3 +2617,25 @@ body.reader-page:not(.controls-hidden):not(.reader-focus-mode):has(.reader-toolb
   .reader-main > .reader-heading.reader-heading-with-art { width: 100%; margin-left: 0; transform: none; padding: 0; min-height: 0; background: transparent; box-shadow: none; }
   body.reader-page::after { display: none !important; }
 }
+
+/* Without an optional art field, no generic fantasy scene is inserted. */
+.reader-main > .reader-heading:not(.reader-heading-with-art) {
+  background: var(--bg);
+}
+/* Focus mode removes illustration and keeps the familiar plain book heading. */
+.reader-focus-mode .reader-main > .reader-heading.reader-heading-with-art,
+.reader-focus-mode .reader-main > .reader-heading:not(.reader-heading-with-art) {
+  width: 100%;
+  max-width: none;
+  min-height: 0;
+  max-height: none;
+  margin: 0 0 30px;
+  padding: 15px 0 20px;
+  transform: none;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+.reader-focus-mode .reader-heading.reader-heading-with-art::before { display: none; }
+.reader-focus-mode .reader-heading.reader-heading-with-art > * { max-width: 100%; }
