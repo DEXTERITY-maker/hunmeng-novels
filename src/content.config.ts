@@ -25,6 +25,8 @@ const novels = defineCollection({
     originalUrl: z.url().optional(),
     original: z.boolean().default(false),
     cover: z.string().regex(/^\/images\/[^?#]+\.(svg|webp|png|jpg)$/),
+    // Optional, approved artwork family for decorative reader imagery.
+    art: z.enum(['comprehension', 'latency']).optional(),
     description: z.string().min(20),
     genres: z.array(z.string()).min(1),
     tags: z.array(z.string()),

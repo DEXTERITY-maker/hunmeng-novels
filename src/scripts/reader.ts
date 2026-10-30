@@ -175,7 +175,11 @@ export async function initReader() {
   document.querySelectorAll<HTMLButtonElement>('[data-open]').forEach((button) =>
     button.addEventListener('click', () => {
       show(true);
-      (button.dataset.open?.startsWith('settings') ? settingsDialog : tocDialog).showModal();
+      const dialog = button.dataset.open?.startsWith('settings') ? settingsDialog : tocDialog;
+      dialog.showModal();
+      // The current chapter may sit below the visible part of the contents list.
+      if (dialog === tocDialog)
+        tocDialog.querySelector<HTMLElement>('a[aria-current="page"]')?.scrollIntoView({ block: 'center' });
     }),
   );
   for (const dialog of [settingsDialog, tocDialog]) {
