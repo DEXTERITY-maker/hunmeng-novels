@@ -27,7 +27,11 @@ const structuredData = novelStructuredData(n, Astro.site || site.url);
 const coverIsSvg = n.cover.endsWith('.svg');
 const usesPlaceholder = n.cover === placeholderCover;
 // Categories that already appear as tags would show the same pill twice.
-const extraCategories = n.categories.filter((category) => !n.tags.includes(category));
+const extraCategories = n.categories.filter((category) =>
+  !n.tags.includes(category) &&
+  (n.slug !== 'the-latency-of-tomorrow' ||
+    !n.genres.some((genre) => genre.toLocaleLowerCase('en') === category.toLocaleLowerCase('en'))),
+);
 ---
 
 <Layout

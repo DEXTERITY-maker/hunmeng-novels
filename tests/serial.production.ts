@@ -160,3 +160,65 @@ test('illustrated novel pages use correct art in light/dark themes and capture d
     }
   }
 });
+
+test('catalog artwork, live filtered cards and theme previews match the source on desktop and phone', async ({ page }, info) => {
+  test.skip(info.project.name !== 'desktop', 'One project captures both desktop and phone layouts.');
+  const novels = [
+    { slug: 'comprehension-against-the-heavens', art: 'comprehension', day: 'comprehension-day', night: 'comprehension-night' },
+    { slug: 'the-latency-of-tomorrow', art: 'latency', day: 'latency-night', night: 'latency-night' },
+  ];
+  for (const width of [1440, 390]) {
+    await page.setViewportSize({ width, height: width === 390 ? 844 : 900 });
+    await page.goto('/catalog/');
+    await expect(page.locator('#catalog-results .catalog-novel-card')).toHaveCount(2);
+    await expect(page.locator('#result-count')).toHaveText('Novels found: 2');
+    for (const novel of novels) {
+      const card = page.locator(`#catalog-results .catalog-novel-card[data-novel="${novel.slug}"]`);
+      await expect(card).toHaveAttribute('data-art', novel.art);
+      await expect(card.locator('.catalog-card-art')).toHaveCount(1);
+      await expect(card.locator('.catalog-card-tags a')).toHaveCount(3);
+      await expect(card.locator('.catalog-card-meta > span')).toHaveCount(3);
+    }
+    for (const theme of ['light', 'dark'] as const) {
+      await page.locator('html').evaluate((el, current) => { el.dataset.theme = current; }, theme);
+      const size = width === 390 ? '960' : '1536';
+      const banner = await page.locator('.catalog-art-hero').evaluate(el => getComputedStyle(el).backgroundImage);
+      expect(banner).toContain(`hunmeng-landscape-${theme === 'dark' ? 'night' : 'day'}-${size}.webp`);
+      for (const novel of novels) {
+        const card = page.locator(`#catalog-results .catalog-novel-card[data-novel="${novel.slug}"]`);
+        const art = card.locator('.catalog-card-art');
+        const expected = theme === 'dark' ? novel.night : novel.day;
+        expect(await art.evaluate(el => getComputedStyle(el).backgroundImage)).toContain(`${expected}-1536.webp`);
+        if (width > 760) await expect(art).toBeVisible();
+        else await expect(art).toBeHidden();
+      }
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+      await page.evaluate(() => document.fonts.ready);
+      await page.screenshot({
+        path: info.outputPath(`hunmeng-catalog-${theme}-${width === 390 ? 'mobile' : 'desktop'}.png`),
+        animations: 'disabled', fullPage: false,
+      });
+    }
+    // Filtering replaces server-rendered cards; compare their structure and art for the same novel.
+    const latency = page.locator('#catalog-results .catalog-novel-card[data-novel="the-latency-of-tomorrow"]');
+    const snapshot = async () => latency.evaluate(card => ({
+      cls: card.className,
+      art: card.getAttribute('data-art'),
+      children: [...card.children].map(el => el.className),
+      copy: [...card.querySelector('.novel-copy')!.children].map(el => el.className || el.tagName.toLowerCase()),
+      tags: card.querySelectorAll('.catalog-card-tags a').length,
+      icons: card.querySelectorAll('.catalog-card-meta svg').length,
+    }));
+    const before = await snapshot();
+    await page.locator('#catalog-filters input[name="search"]').fill('Latency');
+    await expect(page.locator('#catalog-results .catalog-novel-card')).toHaveCount(1);
+    await expect(page.locator('#result-count')).toHaveText('Novels found: 1');
+    expect(await snapshot()).toEqual(before);
+    await expect(latency.locator('.catalog-read-action')).toHaveAttribute('href', '/novel/the-latency-of-tomorrow/');
+    await page.locator('#catalog-filters button[type="reset"]').click();
+    await expect(page.locator('#result-count')).toHaveText('Novels found: 2');
+  }
+  await page.goto('/novel/the-latency-of-tomorrow/');
+  await expect(page.locator('.novel-detail .genre-links')).toContainText('Science fiction');
+  await expect(page.locator('.novel-detail .work-categories')).toHaveCount(0);
+});

@@ -11,9 +11,45 @@ const make = <K extends keyof HTMLElementTagNameMap>(tag: K, text?: string, cls?
   if (cls) node.className = cls;
   return node;
 };
+const svgNS = 'http://www.w3.org/2000/svg';
+function metaIcon(kind: 'book' | 'clock') {
+  const svg = document.createElementNS(svgNS, 'svg');
+  svg.setAttribute('width', '17');
+  svg.setAttribute('height', '17');
+  svg.setAttribute('viewBox', '0 0 24 24');
+  svg.setAttribute('fill', 'none');
+  svg.setAttribute('stroke', 'currentColor');
+  svg.setAttribute('stroke-width', '1.7');
+  svg.setAttribute('stroke-linecap', 'round');
+  svg.setAttribute('stroke-linejoin', 'round');
+  svg.setAttribute('aria-hidden', 'true');
+  svg.setAttribute('focusable', 'false');
+  const path = document.createElementNS(svgNS, 'path');
+  path.setAttribute('d', kind === 'book'
+    ? 'M12 5.5C8.5 3.7 5 3.8 2.5 5v14c2.5-1.2 6-1.3 9.5.5 3.5-1.8 7-1.7 9.5-.5V5C19 3.8 15.5 3.7 12 5.5Z'
+    : 'M12 6v6h5');
+  if (kind === 'book') {
+    const seam = document.createElementNS(svgNS, 'path');
+    seam.setAttribute('d', 'M12 5.5v14');
+    svg.append(path, seam);
+  } else {
+    const circle = document.createElementNS(svgNS, 'circle');
+    circle.setAttribute('cx', '12');
+    circle.setAttribute('cy', '12');
+    circle.setAttribute('r', '9');
+    svg.append(circle, path);
+  }
+  return svg;
+}
 function card(n: CatalogIndexNovel) {
   const article = make('article', undefined, 'novel-card catalog-novel-card');
   article.dataset.novel = n.slug;
+  if (n.art === 'comprehension' || n.art === 'latency') {
+    article.dataset.art = n.art;
+    const art = make('div', undefined, 'catalog-card-art');
+    art.setAttribute('aria-hidden', 'true');
+    article.append(art);
+  }
   const cover = make('a', undefined, 'cover-link');
   cover.href = n.url;
   cover.tabIndex = -1;
@@ -47,16 +83,30 @@ function card(n: CatalogIndexNovel) {
   if (n.rating) stats.append(make('span', '★ ' + n.rating.average.toFixed(1) + ' / 5 · ' + n.rating.count + ' ratings'));
   if (n.views !== null) stats.append(make('span', '◉ ' + numberLabel(n.views) + ' views'));
   if (stats.childElementCount) body.append(stats);
-  const meta = make('p', undefined, 'fine');
-  meta.append(document.createTextNode(chapterCount(n.chapterCount) + ' · ' + n.translationStatus + ' · '));
-  const time = make('time', new Intl.DateTimeFormat('en-US', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(n.updatedAt)));
+
+  const meta = make('p', undefined, 'catalog-card-meta fine');
+  const chapters = make('span', undefined, 'catalog-meta-chapters');
+  chapters.append(metaIcon('book'), document.createTextNode(' ' + chapterCount(n.chapterCount)));
+  const status = make('span', undefined, 'catalog-meta-status');
+  const dot = make('span', undefined, 'catalog-status-dot' + (n.originalStatus === 'Ongoing' ? ' is-ongoing' : ''));
+  dot.setAttribute('aria-hidden', 'true');
+  const translation = make('span', ' Translation: ' + n.translationStatus, 'catalog-translation-status sr-only');
+  status.append(dot, document.createTextNode(n.originalStatus), translation);
+  const updated = make('span', undefined, 'catalog-meta-updated');
+  const date = new Intl.DateTimeFormat('en-US', {
+    month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC',
+  }).format(new Date(n.updatedAt));
+  const time = make('time', date);
   time.dateTime = n.updatedAt;
-  meta.append(time);
+  updated.append(metaIcon('clock'), document.createTextNode(' Updated '), time);
+  meta.append(chapters, status, updated);
   body.append(meta);
-  const link = make('a', 'Read novel →', 'text-link catalog-read-action');
+  const link = make('a', 'Read novel', 'text-link catalog-read-action');
   link.href = n.url;
-  body.append(link);
-  article.append(cover, body);
+  const arrow = make('span', '→');
+  arrow.setAttribute('aria-hidden', 'true');
+  link.append(document.createTextNode(' '), arrow);
+  article.append(cover, body, link);
   return article;
 }
 function validField(field: Element | RadioNodeList | null, value: string) {

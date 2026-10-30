@@ -13,6 +13,7 @@ export const GET: APIRoute = async () =>
         originalTitle: n.originalTitle,
         author: n.author,
         cover: n.cover,
+        art: n.art ?? null,
         description: n.description,
         genres: n.genres,
         categories: n.categories,

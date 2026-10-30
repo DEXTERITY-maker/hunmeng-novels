@@ -1,12 +1,17 @@
 ---
-import { dateLabel, chapterCount, type Novel } from '../lib/content';
+import Icon from './Icon.astro';
+import { chapterCount, type Novel } from '../lib/content';
 interface Props {
   novel: Novel;
 }
 const { novel: n } = Astro.props;
+const updated = new Intl.DateTimeFormat('en-US', {
+  month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC',
+}).format(new Date(n.updatedAt));
 ---
 
-<article class="novel-card catalog-novel-card" data-novel={n.slug}>
+<article class="novel-card catalog-novel-card" data-novel={n.slug} data-art={n.art}>
+  {n.art && <div class="catalog-card-art" aria-hidden="true"></div>}
   <a class="cover-link" href={n.url} tabindex="-1" aria-hidden="true">
     <img src={n.cover} alt="" width="260" height="380" loading="lazy" />
   </a>
@@ -22,10 +27,11 @@ const { novel: n } = Astro.props;
       {n.rating && <span>★ {n.rating.average.toFixed(1)} / 5 · {n.rating.count} ratings</span>}
       {typeof n.views === 'number' && <span>◉ {new Intl.NumberFormat('en-US').format(n.views)} views</span>}
     </p>}
-    <p class="fine">
-      {chapterCount(n.chapterCount)} · {n.translationStatus} ·{' '}
-      <time datetime={n.updatedAt}>{dateLabel(n.updatedAt)}</time>
+    <p class="catalog-card-meta fine">
+      <span class="catalog-meta-chapters"><Icon name="book" size={17} /> {chapterCount(n.chapterCount)}</span>
+      <span class="catalog-meta-status"><span class:list={['catalog-status-dot', n.originalStatus === 'Ongoing' && 'is-ongoing']} aria-hidden="true"></span>{n.originalStatus}<span class="catalog-translation-status sr-only"> Translation: {n.translationStatus}</span></span>
+      <span class="catalog-meta-updated"><Icon name="clock" size={17} /> Updated <time datetime={n.updatedAt}>{updated}</time></span>
     </p>
-    <a class="text-link catalog-read-action" href={n.url}>Read novel <span aria-hidden="true">→</span></a>
   </div>
+  <a class="text-link catalog-read-action" href={n.url}>Read novel <span aria-hidden="true">→</span></a>
 </article>
