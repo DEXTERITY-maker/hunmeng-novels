@@ -2230,3 +2230,216 @@ html[data-reader-font='literary'] .chapter-text,
   background:var(--hm-forest);
   border-radius:8px;
 }
+
+/* Reader contents — editorial hierarchy, native dialog and real chapter data.
+ * Scoped to #reader-toc so the reader settings dialog remains unchanged. */
+#reader-toc {
+  box-sizing: border-box;
+  width: min(560px, calc(100vw - 32px));
+  max-width: min(560px, calc(100vw - 32px));
+  max-height: min(760px, calc(100dvh - 40px));
+  padding: clamp(18px, 3vw, 30px);
+  overflow: hidden;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+}
+#reader-toc[open] {
+  display: flex;
+  flex-direction: column;
+}
+#reader-toc .reader-toc-heading {
+  position: relative;
+  flex: none;
+  min-width: 0;
+  padding: 0 52px 18px 0;
+}
+#reader-toc .reader-toc-eyebrow {
+  margin: 0 0 8px;
+  color: var(--accent);
+  font: 800 .72rem/1.35 'Manrope Variable', sans-serif;
+  letter-spacing: .19em;
+}
+#reader-toc .dialog-heading {
+  margin: 0;
+}
+#reader-toc .dialog-heading h2 {
+  margin: 0;
+  color: var(--ink);
+  font: 700 clamp(1.9rem, 4vw, 2.45rem)/1.14 'Lora Variable', Georgia, serif;
+  letter-spacing: -.035em;
+}
+#reader-toc .reader-toc-novel {
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: .9rem;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+#reader-toc .reader-toc-close {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  color: var(--ink);
+  background: var(--soft);
+  font-size: 1.45rem;
+  line-height: 1;
+}
+#reader-toc .reader-toc-close:hover {
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, var(--surface));
+}
+#reader-toc .reader-toc-chapters {
+  flex: 0 1 auto;
+  min-height: 0;
+  max-height: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  border-top: 0;
+  padding: 0 2px 0 0;
+}
+#reader-toc .reader-toc-chapters li {
+  min-width: 0;
+  border-bottom: 1px solid var(--line);
+}
+#reader-toc .reader-toc-chapters li:last-child {
+  border-bottom: 0;
+}
+#reader-toc .reader-toc-chapters a {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) 22px;
+  align-items: center;
+  justify-content: stretch;
+  gap: 14px;
+  min-width: 0;
+  min-height: 80px;
+  padding: 12px 14px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  color: var(--ink);
+  text-decoration: none;
+  background: transparent;
+  font-size: .92rem;
+  line-height: 1.45;
+}
+#reader-toc .reader-toc-chapters a:hover {
+  background: var(--soft);
+}
+#reader-toc .reader-toc-chapters a[aria-current="page"] {
+  background: var(--soft);
+  background: color-mix(in srgb, var(--accent) 11%, var(--surface));
+  border-color: color-mix(in srgb, var(--accent) 32%, var(--line));
+  color: var(--ink);
+}
+#reader-toc .reader-toc-chapters a:focus-visible,
+#reader-toc .reader-toc-close:focus-visible,
+#reader-toc .reader-toc-all:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: -2px;
+}
+#reader-toc .reader-toc-marker {
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  align-self: center;
+  color: var(--muted);
+  font: 500 1.18rem/1.2 'Lora Variable', Georgia, serif;
+  font-variant-numeric: tabular-nums;
+}
+#reader-toc a[aria-current="page"] .reader-toc-marker {
+  color: var(--accent);
+}
+#reader-toc .reader-toc-chapter {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 2px;
+  overflow-wrap: anywhere;
+}
+#reader-toc .reader-toc-chapter-label {
+  color: var(--ink);
+  font-weight: 750;
+  line-height: 1.35;
+}
+#reader-toc .reader-toc-chapter-title {
+  min-width: 0;
+  color: var(--muted);
+  line-height: 1.48;
+  overflow-wrap: anywhere;
+}
+#reader-toc .reader-toc-arrow {
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+}
+#reader-toc .reader-toc-chapters a:hover .reader-toc-arrow,
+#reader-toc .reader-toc-chapters a[aria-current="page"] .reader-toc-arrow {
+  color: var(--accent);
+}
+#reader-toc .reader-toc-footer {
+  flex: none;
+  display: grid;
+  justify-items: center;
+  padding-top: 12px;
+}
+#reader-toc .reader-toc-ornament {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  color: var(--accent);
+  font-size: .85rem;
+}
+#reader-toc .reader-toc-ornament::before,
+#reader-toc .reader-toc-ornament::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+#reader-toc .reader-toc-all {
+  display: inline-flex;
+  justify-content: center;
+  text-align: center;
+  max-width: 100%;
+  min-height: 44px;
+  align-items: center;
+  padding: 11px 5px 3px;
+  font-weight: 750;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 760px) {
+  #reader-toc {
+    width: 100%;
+    max-width: 100%;
+    max-height: min(85dvh, 760px);
+    margin: 0;
+    padding: 20px 16px calc(16px + env(safe-area-inset-bottom));
+    border-radius: 18px 18px 0 0;
+  }
+  #reader-toc .reader-toc-heading { padding-bottom: 14px; }
+  #reader-toc .reader-toc-chapters a {
+    grid-template-columns: 34px minmax(0, 1fr) 20px;
+    flex-direction: initial;
+    align-items: center;
+    gap: 10px;
+    min-height: 73px;
+    padding: 10px 9px;
+  }
+  #reader-toc .reader-toc-marker { font-size: 1.08rem; }
+  #reader-toc .reader-toc-chapter-title { font-size: .85rem; }
+}
+@media (max-width: 360px) {
+  #reader-toc .reader-toc-chapters a {
+    grid-template-columns: 30px minmax(0, 1fr) 18px;
+    gap: 8px;
+  }
+}

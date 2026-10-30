@@ -238,26 +238,39 @@ const usesPlaceholder = n.cover === placeholderCover;
     </form>
   </dialog>
   <dialog id="reader-toc" class="reader-dialog" aria-labelledby="toc-title">
-    <div class="dialog-heading">
-      <h2 id="toc-title">Contents</h2>
-      <button type="button" class="icon-button" data-close aria-label="Close contents">
-        ×
-      </button>
+    <div class="reader-toc-heading">
+      <p class="reader-toc-eyebrow" aria-hidden="true">✦ CONTENTS</p>
+      <div class="dialog-heading">
+        <h2 id="toc-title">Contents</h2>
+        <button type="button" class="icon-button reader-toc-close" data-close aria-label="Close contents">
+          ×
+        </button>
+      </div>
+      <p class="reader-toc-novel">{n.title}</p>
     </div>
-    <p>{n.title}</p>
-    <ol class="chapter-list">
+    <ol class="chapter-list reader-toc-chapters">
       {nearby.map((ch) => (
         <li>
           <a
             href={chapterUrl(n.slug, ch.data.slug)}
             aria-current={ch.data.slug === c.data.slug ? 'page' : undefined}
           >
-            Chapter {ch.data.number}. {ch.data.title}
+            <span class="reader-toc-marker" aria-hidden="true">
+              {ch.data.slug === c.data.slug ? <Icon name="book" size={23} /> : ch.data.number}
+            </span>
+            <span class="reader-toc-chapter">
+              <span class="reader-toc-chapter-label">Chapter {ch.data.number}.</span>
+              <span class="reader-toc-chapter-title">{ch.data.title}</span>
+            </span>
+            <span class="reader-toc-arrow" aria-hidden="true"><Icon name="chevron" size={19} /></span>
           </a>
         </li>
       ))}
     </ol>
-    <a class="reader-toc-all" href={remote ? `${n.url}releases/` : chapterListUrl(n.slug, tocPage)}>Full contents ({chapterCount(n.chapterCount)}) →</a>
+    <div class="reader-toc-footer">
+      <div class="reader-toc-ornament" aria-hidden="true"><span>✦</span></div>
+      <a class="reader-toc-all" href={remote ? `${n.url}releases/` : chapterListUrl(n.slug, tocPage)}>Full contents ({chapterCount(n.chapterCount)}) →</a>
+    </div>
   </dialog>
   <noscript>
     <p class="notice">
