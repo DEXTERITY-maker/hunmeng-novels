@@ -86,7 +86,7 @@ function card(n: CatalogIndexNovel) {
 
   const meta = make('p', undefined, 'catalog-card-meta fine');
   const chapters = make('span', undefined, 'catalog-meta-chapters');
-  chapters.append(metaIcon('book'), document.createTextNode(' ' + n.chapterCount + ' chapters'));
+  chapters.append(metaIcon('book'), document.createTextNode(' ' + chapterCount(n.chapterCount)));
   const status = make('span', undefined, 'catalog-meta-status');
   const dot = make('span', undefined, 'catalog-status-dot' + (n.originalStatus === 'Ongoing' ? ' is-ongoing' : ''));
   dot.setAttribute('aria-hidden', 'true');
