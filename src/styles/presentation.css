@@ -1388,6 +1388,10 @@ html[data-theme='sepia'] #reader-toc .reader-toc-art {
   color: var(--ink);
 }
 #reader-toc .reader-toc-list a[aria-current='page'] .reader-toc-number { background: var(--surface); color: var(--accent); }
+html[data-theme='dark'] #reader-toc .reader-toc-number { background: color-mix(in srgb, var(--ink) 12%, var(--surface)); }
+@media (prefers-color-scheme: dark) {
+  html[data-theme='system'] #reader-toc .reader-toc-number { background: color-mix(in srgb, var(--ink) 12%, var(--surface)); }
+}
 #reader-toc .reader-toc-name { min-width: 0; overflow-wrap: anywhere; }
 #reader-toc .reader-toc-reading {
   padding: 5px 11px;
@@ -1397,6 +1401,7 @@ html[data-theme='sepia'] #reader-toc .reader-toc-art {
   font: 600 .72rem/1.25 'Manrope Variable', sans-serif;
 }
 #reader-toc .reader-toc-chevron {
+  grid-column: 4;
   font: 400 1.5rem/1 'Manrope Variable', sans-serif;
   color: var(--ink);
   text-align: right;

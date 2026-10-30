@@ -93,6 +93,9 @@ test('reader contents picks its own art for each novel and switches by theme and
     const art = dialog.locator('.reader-toc-art');
     await expect(art).toBeVisible();
     await expect(dialog.locator('.reader-toc-list a[aria-current="page"]')).toHaveCount(1);
+    await expect(dialog.locator('.reader-toc-list a[aria-current="page"]')).toBeInViewport();
+    const chevrons = await dialog.locator('.reader-toc-chevron').evaluateAll(els => els.map(el => Math.round(el.getBoundingClientRect().right)));
+    expect(new Set(chevrons).size, 'chevrons share one column').toBe(1);
     for (const theme of ['light', 'dark', 'sepia'] as const) {
       await page.locator('html').evaluate((el, value) => { el.dataset.theme = value; }, theme);
       const expected = theme === 'dark' ? scenario.dark : scenario.light;
