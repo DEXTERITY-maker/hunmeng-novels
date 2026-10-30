@@ -2348,3 +2348,28 @@ html[data-theme='sepia'] .home-page .home-hero-copy {
 /* Home-only translucent navigation over the landscape. */
 .site-header:has(.header-inner nav a[href='/'][aria-current='page']) { background: color-mix(in srgb, var(--bg) 82%, transparent); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); position: relative; z-index: 3; }
 .site-header:has(.header-inner nav a[href='/'][aria-current='page']) .header-inner nav a { color: var(--ink); }
+
+
+/* Keep the illustrated welcome compact enough to reach new releases quickly at 390px. */
+@media (max-width: 760px) {
+  .home-page .home-hero-copy { padding: 10px 12px; gap: 7px; min-height: 0; }
+  .home-page .home-hero-kicker { font-size: .6rem; letter-spacing: .10em; }
+  .home-page #home-title { font-size: clamp(1.55rem, 6.7vw, 1.9rem); line-height: 1.08; margin: 4px 0 0; }
+  .home-page .home-hero-description { font-size: .74rem; line-height: 1.25; margin: 4px 0 0; }
+  .home-page .home-search { min-height: 43px; margin: 7px 0 0; }
+  .home-page .home-hero-feature { padding: 8px 10px; min-height: 0; }
+  .home-page .home-feature-kicker { font-size: .61rem; margin: 0 0 4px; }
+  .home-page .home-feature-slide { grid-template-columns: 65px minmax(0, 1fr); gap: 9px; }
+  .home-page .home-feature-cover { width: 65px; min-height: 0; }
+  .home-page .home-feature-details { gap: 2px; }
+  .home-page .home-feature-genres { font-size: .67rem; line-height: 1.2; }
+  .home-page .home-feature-details h2 { font-size: .93rem; line-height: 1.15; }
+  .home-page .home-feature-author { font-size: .67rem; }
+  .home-page .home-feature-summary { font-size: .7rem !important; line-height: 1.25; }
+  .home-page .home-feature-stats { font-size: .67rem; line-height: 1.25; }
+  .home-page .home-feature-read { min-height: 44px; padding: 6px 9px; margin-top: 2px; }
+  .home-page .home-feature-controls { margin-top: 0; }
+}
+@media (min-width: 761px) {
+  .home-page .home-hero-copy { background-position: center, center 78%; }
+}
