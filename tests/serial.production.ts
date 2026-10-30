@@ -291,3 +291,23 @@ test('homepage quick cards have separate art, safe text zones and mobile layout'
     }
   }
 });
+
+test('featured carousel lays out cover beside details and keeps keyboard focus', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/');
+  const slide = page.locator('.home-feature-slide:not([hidden])');
+  const cover = (await slide.locator('.home-feature-cover').boundingBox())!;
+  const title = slide.locator('h2');
+  const t = (await title.boundingBox())!;
+  // Details sit to the right of the cover, and the title is not broken letter by letter.
+  expect(t.x).toBeGreaterThan(cover.x + cover.width - 1);
+  expect(t.width).toBeGreaterThan(120);
+  const kicker = (await page.locator('.home-feature-kicker').boundingBox())!;
+  expect(kicker.y).toBeLessThan(cover.y);
+  await expect(page.locator('.home-feature-controls')).toBeVisible();
+  await slide.locator('.home-feature-read').focus();
+  await page.keyboard.press('ArrowRight');
+  await expect(page.locator('.home-feature-slide:not([hidden]) .home-feature-read')).toBeFocused();
+  await expect(page.locator('[data-feature-cover] .home-feature-cover-fallback')).toHaveCount(await page.locator('.home-feature-slide').count());
+});
+

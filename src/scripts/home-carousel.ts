@@ -5,6 +5,13 @@ function initFeaturedCarousel(root: HTMLElement) {
   if (slides.length < 2) return;
   let active = 0;
   const show = (next: number) => {
+    // If focus sits on a link inside the slide being hidden, move it to the same
+    // kind of link in the new slide so keyboard users stay in the carousel.
+    const focused = document.activeElement as HTMLElement | null;
+    const leaving = slides[active];
+    const focusKind = focused && leaving.contains(focused)
+      ? (focused.closest('.home-feature-cover') ? '.home-feature-cover' : focused.closest('h2') ? 'h2 a' : '.home-feature-read')
+      : null;
     active = (next + slides.length) % slides.length;
     slides.forEach((slide, index) => {
       slide.hidden = index !== active;
@@ -14,6 +21,7 @@ function initFeaturedCarousel(root: HTMLElement) {
       if (index === active) dot.setAttribute('aria-current', 'true');
       else dot.removeAttribute('aria-current');
     });
+    if (focusKind) slides[active].querySelector<HTMLElement>(focusKind)?.focus();
   };
   root.querySelector('[data-feature-prev]')?.addEventListener('click', () => show(active - 1));
   root.querySelector('[data-feature-next]')?.addEventListener('click', () => show(active + 1));

@@ -2194,6 +2194,10 @@ html[data-theme='sepia'] .home-page .home-hero-copy {
   color: #fff;
   box-shadow: 0 14px 32px rgb(4 23 18 / .23);
 }
+/* The carousel stacks kicker, slide and controls; drop the old single-card grid areas. */
+.home-page .home-hero-feature { display: block; grid-template-columns: none; grid-template-areas: none; }
+.home-page .home-hero-feature .home-feature-details,
+.home-page .home-hero-feature .home-feature-cover { grid-area: auto; }
 .home-page .home-feature-kicker { margin: 0 0 14px; color: #f4d99f; font-size: .69rem; font-weight: 800; }
 .home-page .home-feature-slides { min-width: 0; }
 .home-page .home-feature-slide { display: grid; grid-template-columns: minmax(105px, 40%) minmax(0,1fr); align-items: start; gap: 15px; }

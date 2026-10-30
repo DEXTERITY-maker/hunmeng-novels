@@ -57,8 +57,9 @@ const animatedNovels = newNovels.map((n) => ({
             <div class="home-feature-slides">
               {recommendations.map((novel, index) => (
                 <article class="home-feature-slide" data-feature-slide hidden={index !== 0} aria-hidden={index !== 0 ? 'true' : 'false'}>
-                  <a class="home-feature-cover" data-feature-cover={index === 0 ? '' : undefined} href={novel.url} aria-label={'Read ' + novel.title}>
+                  <a class="home-feature-cover" data-feature-cover href={novel.url} aria-label={'Read ' + novel.title}>
                     <img src={novel.cover} alt="" width="260" height="380" loading={index === 0 ? 'eager' : 'lazy'} />
+                    <span class="home-feature-cover-fallback" hidden aria-hidden="true">✦<small>Cover unavailable</small></span>
                   </a>
                   <div class="home-feature-details">
                     <p class="home-feature-genres">{novel.genres.slice(0,2).join(' · ')}</p>
