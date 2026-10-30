@@ -1,7 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Icon from '../components/Icon.astro';
-import '../scripts/home-carousel';
+
 import MotionNovelGrid from '../components/MotionNovelGrid';
 import ContinueReading from '../components/ContinueReading.astro';
 import { getLibrary, dateLabel, chapterCount } from '../lib/content';
@@ -224,3 +224,5 @@ const animatedNovels = newNovels.map((n) => ({
     initHomeHeroMotion();
   </script>
 </Layout>
+
+<script>import '../scripts/home-carousel';</script>
