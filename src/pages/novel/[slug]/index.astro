@@ -63,7 +63,7 @@ const usesPlaceholder = n.cover === placeholderCover;
         {n.originalTitle !== n.title && <p class="original-title">{n.originalTitle}</p>}
         <p class="author">{n.author}</p>
         <div class="detail-actions">
-          <a class="button novel-primary-read" href={n.firstUrl} data-continue={n.slug}>
+          <a class="button novel-primary-read" href={n.firstUrl} data-continue={n.slug} aria-label="Start reading">
             <Icon name="book" size={19} />
             <span class="novel-read-label">Start reading</span>
           </a>
