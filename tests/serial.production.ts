@@ -374,3 +374,16 @@ test('reader headings render correct art and retain real chapter layout on both 
     }
   }
 });
+
+
+test('novel panoramas collapse to short readable headings on a landscape phone', async ({ page }) => {
+  await page.setViewportSize({ width: 844, height: 390 });
+  for (const slug of ['comprehension-against-the-heavens/chapter-1', 'the-latency-of-tomorrow/chapter-10']) {
+    await page.goto('/novel/' + slug + '/');
+    const heading = (await page.locator('.reader-heading').boundingBox())!;
+    expect(heading.height, slug).toBeLessThan(390 / 3);
+    await expect(page.locator('.reader-heading-copy h1')).toBeVisible();
+    await expect(page.locator('.reader-back')).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+  }
+});
