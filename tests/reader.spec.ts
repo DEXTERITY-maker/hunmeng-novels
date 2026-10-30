@@ -540,13 +540,18 @@ test('склонение после клиентского поиска и в п
   await page.getByRole('button', { name:'Open contents', exact:true }).click();
   await expect(page.locator('.reader-toc-all')).toHaveText('Full contents (4 chapters) →');
 });
-test('контакты без выдуманных каналов и технических заглушек', async ({page}) => {
+test('контакты и страница правообладателей показывают проверенные каналы', async ({page}) => {
   for (const route of ['/contacts/','/rights/']) {
     await page.goto(route);
     await expect(page.locator('main')).not.toContainText('Placeholder page');
-    await expect(page.locator('main a[href^="mailto:"], main a[href^="https://t.me/"]')).toHaveCount(0);
-    await expect(page.locator('main')).toContainText('not been published yet');
+    await expect(page.locator('main').getByRole('link', {name: 'kirillfapsy@gmail.com'}).first()).toHaveAttribute('href', 'mailto:kirillfapsy@gmail.com');
+    await expect(page.locator('main').getByRole('link', {name: '@hunmeng_background'}).first()).toHaveAttribute('href', 'https://t.me/hunmeng_background');
+    await expect(page.locator('main')).not.toContainText('not been published yet');
   }
+  await page.goto('/contacts/');
+  await expect(page.locator('main').getByRole('link', {name: '@hunmengnovels'}).first()).toHaveAttribute('href', 'https://t.me/hunmengnovels');
+  await expect(page.locator('h2', {hasText: 'Report an error'}).locator('xpath=following-sibling::p[1]')).toContainText('kirillfapsy@gmail.com');
+  await expect(page.locator('h2', {hasText: 'Report an error'}).locator('xpath=following-sibling::p[1]')).toContainText('@hunmeng_background');
 });
 test('метка версии и исключение всей редакции из sitemap', async ({page}) => {
   const version = await page.goto('/version.json');

@@ -1,12 +1,20 @@
 # Hunmeng Novels · English edition · v0.6.1
 
-Hunmeng is a static Astro + TypeScript web novel library. The default and only interface language is now **English**, including reader and editorial tools, auth errors, form validation, demo fiction, news, catalog filters, PWA metadata, structured data, covers, and social preview images.
+Hunmeng is a static Astro + TypeScript web novel library with an English interface.
+
+- Website: https://hunmeng-novel.ru/
+- Hosting: Cloudflare Pages. Timeweb is no longer used.
+- Requirements: Node.js 24 (minimum 22.12) and npm.
+- Install and build: `npm ci` and `npm run build` (output: `dist/`).
+- Checks: `node --test tests/*.test.mjs` and `npm run build`. For browser tests, run `npm run build:demo` followed by `npm test` with Chromium installed; do not deploy the demo build.
+
+## Historical release notes
+
+The notes below describe past releases and their settings. Addresses ending in `twc1.net`, references to `hunmeng.net`, and Timeweb deployment instructions are outdated and must not be used for the current website.
 
 - Genre and tag directories: `/genres/` and `/tags/`, with searchable groups, local book counts, and catalog links. The catalog supports all/any included tags plus exclusions. Vocabulary and reference notes: [docs/taxonomy.md](docs/taxonomy.md).
 - 0.6.1: compact header with four navigation sections, quick title/author search and genre/tag links, a keyboard-accessible theme panel, and an avatar menu for sign-in, profile, reading settings and local sign-out. On mobile the brand/actions and navigation occupy two compact rows. Library, reading progress and preferences are preserved.
 - 0.6.0: refreshed discovery pages, larger covers, early reading actions and contents links, a persistent header appearance selector, useful genre/tag defaults, shareable directory searches, and catalog search that stays responsive while chapter counts refresh.
-- Production: https://dexterity-maker-hunmeng-novels-f1c8.twc1.net/
-- Node.js 24 (minimum 22.12), `npm ci`, `npm run build`; publish `dist` on Timeweb.
 - Validate: `node --test tests/*.test.mjs`, then `npm run build:demo` and `npm test` (Chromium required). Browser tests need the demo build; do not deploy it.
 - Routes, novel/chapter slugs, browser storage keys, accounts, and permissions are preserved. Existing reading progress and shelves survive this release. User-entered nicknames and bios are not translated.
 - Database enums and legacy column names such as `title_ru` remain unchanged for compatibility. The editorial form accepts the English title and description in those columns; `src/lib/labels.ts` provides English labels for stored statuses and glossary types. No database migration is needed.
@@ -21,7 +29,7 @@ Hunmeng is a static Astro + TypeScript web novel library. The default and only i
 - 0.4.2: The two demo stories are removed from the site. Their content and covers now live only in `tests/demo/` and are used by `npm run build:demo` (env `HUNMENG_DEMO_CONTENT=1`) for the browser tests. The production build (`npm run build`) reads only real novels from `src/content/`; until one is added, the catalog is empty. Older Russian notes below that mention the demo stories in `src/content/` describe earlier releases.
 - 0.4.1: English quotation marks “…” replace leftover Russian «…» in cover alt texts and link labels. The default genre for new `novel_sources` rows is `Fantasy` (was `Фэнтези`) in `backend/schema.sql` and in the live Supabase project `kvgnjsntumofwqhywiea` (applied as migration `novel_sources_english_default_genre`). Stored status and glossary-type values are unchanged.
 
-The release notes below are historical Russian documentation. Current language behavior is described above; earlier references to a Russian interface apply to those releases.
+The Russian notes below are historical documentation. Their old domains, Timeweb deployment instructions, interface descriptions, and settings describe past releases.
 
 ---
 
@@ -29,7 +37,7 @@ The release notes below are historical Russian documentation. Current language b
 
 Латиницей: **Hunmeng Novels**. Версия **0.3.1**. Мобильные улучшения — в разделе 0.3.1, оформление и профиль — в разделе 0.3.0; вход читателей — в разделе 0.2.3, редакция и развёртывание — в разделе 0.2.2.
 
-Текущий публичный адрес: **https://dexterity-maker-hunmeng-novels-364c.twc1.net/**. До подключения hunmeng.net он используется для canonical, OG и sitemap; `SITE_URL` при сборке имеет приоритет над `site.url`.
+Исторический адрес (больше не актуален): **https://dexterity-maker-hunmeng-novels-364c.twc1.net/**. До подключения hunmeng.net он используется для canonical, OG и sitemap; `SITE_URL` при сборке имеет приоритет над `site.url`.
 
 Статический Astro-фронтенд: новеллы, главы, глоссарии и новости лежат в репозитории. Читательские аккаунты **включены** (`site.features.accounts: true`), но синхронизация **выключена** (`readerSync: false`): библиотека, настройки и прогресс сохраняются локально. Отдельный вход редакции `/admin/login/` работает по email/паролю и проверяет роль сотрудника; пользовательская регистрация не даёт редакторских полномочий. Google OAuth не включён.
 
