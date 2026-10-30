@@ -84,13 +84,14 @@ function card(n: CatalogIndexNovel) {
   if (n.views !== null) stats.append(make('span', '◉ ' + numberLabel(n.views) + ' views'));
   if (stats.childElementCount) body.append(stats);
 
-  const meta = make('p', undefined, 'catalog-card-meta');
+  const meta = make('p', undefined, 'catalog-card-meta fine');
   const chapters = make('span', undefined, 'catalog-meta-chapters');
   chapters.append(metaIcon('book'), document.createTextNode(' ' + n.chapterCount + ' chapters'));
   const status = make('span', undefined, 'catalog-meta-status');
   const dot = make('span', undefined, 'catalog-status-dot' + (n.originalStatus === 'Ongoing' ? ' is-ongoing' : ''));
   dot.setAttribute('aria-hidden', 'true');
-  status.append(dot, document.createTextNode(n.originalStatus));
+  const translation = make('span', ' Translation: ' + n.translationStatus, 'catalog-translation-status sr-only');
+  status.append(dot, document.createTextNode(n.originalStatus), translation);
   const updated = make('span', undefined, 'catalog-meta-updated');
   const date = new Intl.DateTimeFormat('en-US', {
     month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC',
@@ -105,8 +106,7 @@ function card(n: CatalogIndexNovel) {
   const arrow = make('span', '→');
   arrow.setAttribute('aria-hidden', 'true');
   link.append(document.createTextNode(' '), arrow);
-  body.append(link);
-  article.append(cover, body);
+  article.append(cover, body, link);
   return article;
 }
 function validField(field: Element | RadioNodeList | null, value: string) {
