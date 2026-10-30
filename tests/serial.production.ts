@@ -189,7 +189,8 @@ test('catalog artwork, live filtered cards and theme previews match the source o
         const art = card.locator('.catalog-card-art');
         const expected = theme === 'dark' ? novel.night : novel.day;
         expect(await art.evaluate(el => getComputedStyle(el).backgroundImage)).toContain(`${expected}-1536.webp`);
-        await expect(art).toBeVisible({ visible: width > 760 });
+        if (width > 760) await expect(art).toBeVisible();
+        else await expect(art).toBeHidden();
       }
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
       await page.evaluate(() => document.fonts.ready);
