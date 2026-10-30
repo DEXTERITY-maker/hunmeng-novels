@@ -2106,14 +2106,14 @@ html[data-theme='sepia'] .catalog-page .catalog-card-art { filter: sepia(.24) sa
     padding: 12px;
   }
   .catalog-page .catalog-novel-card .catalog-card-art { display: none; }
-  .catalog-page .catalog-novel-card .cover-link { grid-column: 1; grid-row: 1 / span 4; width: 92px; }
+  .catalog-page .catalog-novel-card .cover-link { grid-column: 1; grid-row: 1; width: 92px; }
   .catalog-page .catalog-novel-card .cover-link img { width: 92px; }
-  .catalog-page .catalog-novel-card .novel-copy { display: contents; }
-  .catalog-page .catalog-novel-card .novel-copy > :not(.catalog-read-action) { width: auto; position: relative; }
+  .catalog-page .catalog-novel-card .novel-copy { display: block; grid-column: 2; min-width: 0; }
+  .catalog-page .catalog-novel-card .novel-copy > :not(.catalog-read-action) { width: 100%; position: relative; }
   .catalog-page .catalog-novel-card .genre-line,
   .catalog-page .catalog-novel-card .novel-copy h2,
   .catalog-page .catalog-novel-card .original-title,
-  .catalog-page .catalog-novel-card .card-description { grid-column: 2; min-width: 0; }
+  .catalog-page .catalog-novel-card .card-description { min-width: 0; }
   .catalog-page .catalog-novel-card .genre-line { font-size: .65rem; margin: 0; }
   .catalog-page .catalog-novel-card .novel-copy h2 { font-size: 1.05rem; margin: 0; }
   .catalog-page .catalog-novel-card .original-title { font-size: .72rem; margin: 0; }
@@ -2121,16 +2121,15 @@ html[data-theme='sepia'] .catalog-page .catalog-card-art { filter: sepia(.24) sa
   .catalog-page .catalog-novel-card .catalog-card-tags,
   .catalog-page .catalog-novel-card .catalog-card-stats,
   .catalog-page .catalog-novel-card .catalog-card-meta,
-  .catalog-page .catalog-novel-card .catalog-read-action { grid-column: 1 / -1; min-width: 0; }
+  .catalog-page .catalog-novel-card .catalog-read-action { min-width: 0; }
   .catalog-page .catalog-novel-card .catalog-card-tags { margin: 5px 0 0; }
   .catalog-page .catalog-novel-card .catalog-card-tags a { min-height: 30px; font-size: .69rem; }
   .catalog-page .catalog-novel-card .catalog-card-meta { width: 100%; margin: 4px 0 0; padding: 7px 0 0; font-size: .7rem; }
   .catalog-page .catalog-novel-card .catalog-read-action {
     position: static;
-    width: 100%;
+    width: calc(100% + 104px);
     min-height: 44px;
-    margin-top: 5px;
-    grid-column: 1 / -1;
+    margin: 8px 0 0 -104px;
   }
 }
 @media (max-width: 760px) and (prefers-color-scheme: dark) {
