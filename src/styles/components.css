@@ -947,3 +947,19 @@ html[data-theme='sepia'] .reader-page .reader-heading[data-art]::after {
   }
   .reader-page .reader-heading[data-art] .reader-heading-copy { width: 100%; }
 }
+
+
+/* The presentation stylesheet is imported after components.css. Keep these
+ * chrome details more specific than its earlier reader-toolbar overrides. */
+.reader-page.reader-page .reader-toolbar {
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--surface) 96%, transparent);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 12px 34px rgb(9 30 32 / .17);
+}
+@media (max-width: 760px) {
+  .reader-page.reader-page .reader-toolbar {
+    background: color-mix(in srgb, var(--surface) 97%, transparent);
+  }
+}
