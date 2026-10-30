@@ -40,7 +40,8 @@ const usesPlaceholder = n.cover === placeholderCover;
     <a href={n.url} class="reader-back" aria-label="Back to novel" title="Back to novel">
       <span aria-hidden="true">←</span>
     </a>
-    <a href={n.url} class="reader-novel-title" title={n.title}>
+    <a href={n.url} class="reader-novel-title" title={n.title} aria-label={`Back to ${n.title}`}>
+      <span class="reader-header-logo-placeholder" aria-hidden="true"></span>
       <span class="reader-brand-label">Hunmeng <small>reading room</small></span>
       <span class="reader-book-label">{n.title}</span>
     </a>
