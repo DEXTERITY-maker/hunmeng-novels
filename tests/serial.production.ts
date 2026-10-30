@@ -76,3 +76,46 @@ test('release service errors show retry without exposing a body', async ({ page 
   await expect(page.getByRole('button', { name: 'Check availability' })).toBeEnabled();
   await expect(page.locator('#chapter-text')).toBeEmpty();
 });
+
+test('reader contents picks its own art for each novel and switches by theme and viewport', async ({ page }, info) => {
+  const scenarios = [
+    { slug: 'comprehension-against-the-heavens', chapter: 1, art: 'comprehension', light: 'comprehension-day', dark: 'comprehension-night' },
+    { slug: 'the-latency-of-tomorrow', chapter: 10, art: 'latency', light: 'latency-night', dark: 'latency-night' },
+  ];
+  for (const scenario of scenarios) {
+    await page.goto(`/novel/${scenario.slug}/chapter-${scenario.chapter}/`);
+    await expect(page.getByRole('button', { name: 'Open contents' })).toBeVisible();
+    await page.getByRole('button', { name: 'Open contents' }).click();
+    const dialog = page.locator('#reader-toc');
+    await expect(dialog).toBeVisible();
+    await expect(dialog).toHaveAttribute('data-art', scenario.art);
+    const art = dialog.locator('.reader-toc-art');
+    await expect(art).toBeVisible();
+    await expect(dialog.locator('.reader-toc-list a[aria-current="page"]')).toHaveCount(1);
+    for (const theme of ['light', 'dark', 'sepia'] as const) {
+      await page.locator('html').evaluate((el, value) => { el.dataset.theme = value; }, theme);
+      const expected = theme === 'dark' ? scenario.dark : scenario.light;
+      const background = await art.evaluate(el => getComputedStyle(el).backgroundImage);
+      expect(background, `${scenario.slug} ${theme}`).toContain(`${expected}-1536.webp`);
+      await page.screenshot({ path: info.outputPath(`hunmeng-toc-${scenario.art}-${theme}-desktop.png`), animations: 'disabled' });
+    }
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.locator('html').evaluate(el => { el.dataset.theme = 'dark'; });
+    const mobileImage = await art.evaluate(el => getComputedStyle(el).backgroundImage);
+    expect(mobileImage).toContain(`${scenario.dark}-960.webp`);
+    const rect = await dialog.boundingBox();
+    expect(rect).not.toBeNull();
+    expect(rect!.x).toBeGreaterThanOrEqual(-1);
+    expect(rect!.x + rect!.width).toBeLessThanOrEqual(391);
+    expect(rect!.y).toBeGreaterThanOrEqual(-1);
+    if (scenario.art === 'latency') {
+      expect(await dialog.locator('.reader-toc-list').evaluate(el => el.scrollHeight > el.clientHeight)).toBe(true);
+      await dialog.locator('.reader-toc-list').evaluate(el => { el.scrollTop = el.scrollHeight; });
+      expect(await dialog.locator('.reader-toc-list').evaluate(el => el.scrollTop)).toBeGreaterThan(0);
+    }
+    await page.screenshot({ path: info.outputPath(`hunmeng-toc-${scenario.art}-mobile.png`), animations: 'disabled' });
+    await dialog.getByRole('button', { name: 'Close contents' }).click();
+    await expect(dialog).toBeHidden();
+    await page.setViewportSize({ width: 1280, height: 800 });
+  }
+});
