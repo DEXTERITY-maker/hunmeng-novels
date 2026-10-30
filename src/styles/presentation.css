@@ -1836,3 +1836,303 @@ html[data-theme='sepia'] .novel-art-band {
     --novel-art-image: url('/images/art/comprehension-night-960.webp');
   }
 }
+
+
+/* Catalog illustration system: the same markup renders on SSR and after filtering. */
+.catalog-page .catalog-hero.catalog-heading {
+  --catalog-hero-image: url('/images/art/hunmeng-landscape-day-1536.webp');
+  display: block;
+  position: relative;
+  min-height: 268px;
+  padding: 28px clamp(20px, 3.5vw, 42px);
+  margin-bottom: 16px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background-color: var(--bg);
+  background-image:
+    linear-gradient(90deg, var(--bg) 0%, color-mix(in srgb, var(--bg) 97%, transparent) 22%, color-mix(in srgb, var(--bg) 87%, transparent) 36%, color-mix(in srgb, var(--bg) 28%, transparent) 64%, transparent 88%),
+    var(--catalog-hero-image);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center, center 52%;
+  overflow: hidden;
+  isolation: isolate;
+}
+.catalog-page .catalog-hero-copy { position: relative; z-index: 1; max-width: min(590px, 65%); min-width: 0; }
+.catalog-page .catalog-hero .eyebrow {
+  display: block;
+  margin: 0 0 8px;
+  color: var(--ink);
+  font: 800 .68rem/1.4 'Manrope Variable', sans-serif;
+  letter-spacing: .16em;
+}
+.catalog-page .catalog-hero .eyebrow span { color: var(--accent); }
+.catalog-page .catalog-hero h1 {
+  margin: 0;
+  color: var(--ink);
+  font: 600 clamp(2.15rem, 4vw, 3.9rem)/1.12 'Lora Variable', Georgia, serif;
+  letter-spacing: -.045em;
+}
+.catalog-page .catalog-hero h1 em { color: var(--accent); font-style: italic; }
+.catalog-page .catalog-hero .catalog-hero-copy > p:not(.catalog-hero-page) {
+  margin: 10px 0 0;
+  max-width: 550px;
+  color: var(--ink);
+  font: 400 .94rem/1.5 'Manrope Variable', sans-serif;
+}
+.catalog-page .catalog-hero .taxonomy-nav {
+  display: flex;
+  grid-column: auto;
+  grid-row: auto;
+  align-self: auto;
+  flex-wrap: wrap;
+  margin: 17px 0 0;
+  gap: 10px;
+}
+.catalog-page .catalog-hero .taxonomy-nav a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 45px;
+  padding: 8px 17px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--ink);
+  text-decoration: none;
+  font: 750 .84rem/1.4 'Manrope Variable', sans-serif;
+  box-shadow: 0 3px 12px rgb(6 26 20 / .08);
+}
+.catalog-page .catalog-hero .taxonomy-nav .catalog-hero-primary {
+  background: #205b47;
+  border-color: #205b47;
+  color: #fff;
+}
+.catalog-page .catalog-hero .taxonomy-nav .catalog-hero-primary:hover { background: #154737; border-color: #154737; color: #fff; }
+.catalog-page .catalog-hero .taxonomy-nav .catalog-hero-secondary:hover { border-color: var(--accent); background: var(--soft); }
+.catalog-page .catalog-hero .taxonomy-nav a:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+.catalog-page .catalog-hero .catalog-hero-page { margin: 10px 0 0; font-size: .79rem; color: var(--ink); }
+.catalog-page .catalog-hero .catalog-hero-page a { text-decoration: underline; text-underline-offset: 3px; color: var(--ink); }
+
+html[data-theme='dark'] .catalog-page .catalog-hero { --catalog-hero-image: url('/images/art/hunmeng-landscape-night-1536.webp'); }
+@media (prefers-color-scheme: dark) {
+  html[data-theme='system'] .catalog-page .catalog-hero { --catalog-hero-image: url('/images/art/hunmeng-landscape-night-1536.webp'); }
+}
+html[data-theme='sepia'] .catalog-page .catalog-hero {
+  background-image:
+    linear-gradient(rgb(175 120 56 / .11), rgb(175 120 56 / .11)),
+    linear-gradient(90deg, var(--bg) 0%, color-mix(in srgb, var(--bg) 97%, transparent) 22%, color-mix(in srgb, var(--bg) 87%, transparent) 36%, color-mix(in srgb, var(--bg) 28%, transparent) 64%, transparent 88%),
+    var(--catalog-hero-image);
+  background-position: center, center, center 52%;
+}
+
+/* Catalog card art never contains text and dissolves into the bookplate. */
+.catalog-page .catalog-novel-card {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: 135px minmax(0, 1fr);
+  align-items: start;
+  gap: 18px;
+  min-width: 0;
+  min-height: 235px;
+  padding: 17px;
+  overflow: hidden;
+  border-radius: 16px;
+  background: var(--surface);
+}
+.catalog-page .catalog-novel-card[data-art='comprehension'] { --catalog-card-image: url('/images/art/comprehension-day-1536.webp'); }
+.catalog-page .catalog-novel-card[data-art='latency'] { --catalog-card-image: url('/images/art/latency-night-1536.webp'); }
+html[data-theme='dark'] .catalog-page .catalog-novel-card[data-art='comprehension'] {
+  --catalog-card-image: url('/images/art/comprehension-night-1536.webp');
+}
+@media (prefers-color-scheme: dark) {
+  html[data-theme='system'] .catalog-page .catalog-novel-card[data-art='comprehension'] {
+    --catalog-card-image: url('/images/art/comprehension-night-1536.webp');
+  }
+}
+.catalog-page .catalog-card-art {
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: 47%;
+  z-index: -1;
+  pointer-events: none;
+  background-image: var(--catalog-card-image);
+  background-size: cover;
+  background-position: 65% center;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, rgba(0,0,0,.1) 12%, #000 63%);
+  mask-image: linear-gradient(90deg, transparent 0%, rgba(0,0,0,.1) 12%, #000 63%);
+}
+html[data-theme='sepia'] .catalog-page .catalog-card-art { filter: sepia(.24) saturate(.88); }
+.catalog-page .catalog-novel-card .cover-link {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 135px;
+  min-width: 0;
+}
+.catalog-page .catalog-novel-card .cover-link img {
+  display: block;
+  width: 135px;
+  height: auto;
+  aspect-ratio: 260 / 380;
+  border-radius: 9px;
+  object-fit: cover;
+}
+.catalog-page .catalog-novel-card .novel-copy { position: static; min-width: 0; }
+.catalog-page .catalog-novel-card .novel-copy > :not(.catalog-read-action) {
+  width: min(100%, calc(100% - 175px));
+  position: relative;
+  z-index: 1;
+}
+.catalog-page .catalog-novel-card .genre-line {
+  margin: 1px 0 6px;
+  color: var(--accent);
+  font: 700 .75rem/1.4 'Manrope Variable', sans-serif;
+  letter-spacing: 0;
+}
+.catalog-page .catalog-novel-card .novel-copy h2 {
+  margin: 0;
+  color: var(--ink);
+  font: 650 clamp(1.13rem, 1.8vw, 1.45rem)/1.27 'Lora Variable', Georgia, serif;
+  letter-spacing: -.025em;
+  overflow-wrap: anywhere;
+}
+.catalog-page .catalog-novel-card h2 a { color: inherit; }
+.catalog-page .catalog-novel-card .original-title { margin: 4px 0 7px; color: var(--muted); font-size: .78rem; }
+.catalog-page .catalog-novel-card .card-description {
+  margin: 0 0 9px;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  color: var(--muted);
+  font: 400 .81rem/1.5 'Manrope Variable', sans-serif;
+}
+.catalog-page .catalog-novel-card .catalog-card-tags { display: flex; flex-wrap: wrap; gap: 5px; margin: 7px 0; }
+.catalog-page .catalog-novel-card .catalog-card-tags a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 4px 8px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--soft);
+  color: var(--ink);
+  font: 600 .7rem/1.3 'Manrope Variable', sans-serif;
+  text-decoration: none;
+}
+.catalog-page .catalog-novel-card .catalog-card-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  margin: 6px 0;
+  color: var(--ink);
+  font-size: .72rem;
+}
+.catalog-page .catalog-novel-card .catalog-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 13px;
+  align-items: center;
+  width: calc(100% - 165px);
+  margin: 12px 0 0;
+  padding: 9px 0 0;
+  border-top: 1px solid var(--line);
+  color: var(--ink);
+  font: 600 .72rem/1.5 'Manrope Variable', sans-serif;
+}
+.catalog-page .catalog-novel-card .catalog-card-meta span { display: inline-flex; gap: 5px; align-items: center; }
+.catalog-page .catalog-novel-card .catalog-card-meta svg { color: var(--accent); flex: none; }
+.catalog-page .catalog-novel-card .catalog-read-action {
+  position: absolute;
+  z-index: 2;
+  right: 16px;
+  bottom: 16px;
+  width: auto;
+  min-width: 142px;
+  min-height: 44px;
+  margin: 0;
+  display: inline-flex !important;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 14px;
+  border: 1px solid #205b47;
+  border-radius: 9px;
+  background: #205b47;
+  color: #fff;
+  font: 750 .81rem/1.4 'Manrope Variable', sans-serif;
+  box-shadow: 0 4px 12px rgb(3 25 18 / .15);
+}
+.catalog-page .catalog-novel-card .catalog-read-action:hover { background: #154737; border-color: #154737; color: #fff; filter: none; }
+.catalog-page .catalog-novel-card .catalog-read-action:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+
+/* Tight desktop cards prioritize readable copy if a sidebar leaves little space. */
+@media (min-width: 761px) and (max-width: 1110px) {
+  .catalog-page .catalog-card-art { display: none; }
+  .catalog-page .catalog-novel-card .novel-copy > :not(.catalog-read-action) { width: 100%; }
+  .catalog-page .catalog-novel-card .catalog-card-meta { width: 100%; padding-bottom: 50px; }
+}
+@media (max-width: 760px) {
+  .catalog-page .catalog-hero.catalog-heading {
+    --catalog-hero-image: url('/images/art/hunmeng-landscape-day-960.webp');
+    min-height: 145px;
+    padding: 11px 14px 12px;
+    margin-bottom: 8px;
+    border-radius: 13px;
+    background-position: center, 64% center;
+  }
+  html[data-theme='dark'] .catalog-page .catalog-hero { --catalog-hero-image: url('/images/art/hunmeng-landscape-night-960.webp'); }
+  .catalog-page .catalog-hero-copy { max-width: 100%; }
+  .catalog-page .catalog-hero .eyebrow { margin-bottom: 3px; font-size: .56rem; }
+  .catalog-page .catalog-hero h1 { font-size: clamp(1.72rem, 7vw, 2rem); margin: 0; }
+  .catalog-page .catalog-hero .catalog-hero-copy > p:not(.catalog-hero-page) {
+    margin: 3px 0 0;
+    font-size: .73rem;
+    line-height: 1.3;
+    max-width: 285px;
+  }
+  .catalog-page .catalog-hero .taxonomy-nav { margin: 7px 0 0; gap: 6px; }
+  .catalog-page .catalog-hero .taxonomy-nav a { min-height: 36px; padding: 5px 8px; gap: 6px; font-size: .73rem; border-radius: 8px; }
+  .catalog-page .catalog-hero .taxonomy-nav a svg { width: 15px; height: 15px; }
+  .catalog-page .catalog-hero .catalog-hero-page { margin-top: 6px; font-size: .68rem; }
+  .catalog-page .catalog-novel-card {
+    grid-template-columns: 92px minmax(0,1fr);
+    gap: 4px 12px;
+    min-height: 0;
+    padding: 12px;
+  }
+  .catalog-page .catalog-novel-card .catalog-card-art { display: none; }
+  .catalog-page .catalog-novel-card .cover-link { grid-column: 1; grid-row: 1 / span 4; width: 92px; }
+  .catalog-page .catalog-novel-card .cover-link img { width: 92px; }
+  .catalog-page .catalog-novel-card .novel-copy { display: contents; }
+  .catalog-page .catalog-novel-card .novel-copy > :not(.catalog-read-action) { width: auto; position: relative; }
+  .catalog-page .catalog-novel-card .genre-line,
+  .catalog-page .catalog-novel-card .novel-copy h2,
+  .catalog-page .catalog-novel-card .original-title,
+  .catalog-page .catalog-novel-card .card-description { grid-column: 2; min-width: 0; }
+  .catalog-page .catalog-novel-card .genre-line { font-size: .65rem; margin: 0; }
+  .catalog-page .catalog-novel-card .novel-copy h2 { font-size: 1.05rem; margin: 0; }
+  .catalog-page .catalog-novel-card .original-title { font-size: .72rem; margin: 0; }
+  .catalog-page .catalog-novel-card .card-description { -webkit-line-clamp: 2; font-size: .73rem; margin: 0; }
+  .catalog-page .catalog-novel-card .catalog-card-tags,
+  .catalog-page .catalog-novel-card .catalog-card-stats,
+  .catalog-page .catalog-novel-card .catalog-card-meta,
+  .catalog-page .catalog-novel-card .catalog-read-action { grid-column: 1 / -1; min-width: 0; }
+  .catalog-page .catalog-novel-card .catalog-card-tags { margin: 5px 0 0; }
+  .catalog-page .catalog-novel-card .catalog-card-tags a { min-height: 30px; font-size: .69rem; }
+  .catalog-page .catalog-novel-card .catalog-card-meta { width: 100%; margin: 4px 0 0; padding: 7px 0 0; font-size: .7rem; }
+  .catalog-page .catalog-novel-card .catalog-read-action {
+    position: static;
+    width: 100%;
+    min-height: 44px;
+    margin-top: 5px;
+    grid-column: 1 / -1;
+  }
+}
+@media (max-width: 760px) and (prefers-color-scheme: dark) {
+  html[data-theme='system'] .catalog-page .catalog-hero { --catalog-hero-image: url('/images/art/hunmeng-landscape-night-960.webp'); }
+}
