@@ -11,6 +11,8 @@ export interface HomeNovel {
   genres: string[];
   chapters: string;
   translationStatus: string;
+  date: string;
+  art?: 'comprehension' | 'latency';
 }
 
 function BookCard({ novel }: { novel: HomeNovel }) {
@@ -38,6 +40,7 @@ function BookCard({ novel }: { novel: HomeNovel }) {
     <motion.article
       className="home-book-card hm-motion-book-card"
       data-novel={novel.slug}
+      data-art={novel.art}
       style={{ rotateX: reduceMotion ? 0 : rotateX, rotateY: reduceMotion ? 0 : rotateY, transformPerspective: 1050 }}
       onPointerMove={onMove}
       onPointerLeave={onLeave}
@@ -47,6 +50,7 @@ function BookCard({ novel }: { novel: HomeNovel }) {
       whileHover={reduceMotion ? undefined : 'hover'}
       transition={{ type: 'spring', stiffness: 260, damping: 27 }}
     >
+      {novel.art && <span className="home-book-art" aria-hidden="true" />}
       <a className="home-book-link" href={novel.url} aria-label={`View novel “${novel.title}”`}>
         <span className="home-book-cover">
           <motion.img
@@ -63,11 +67,11 @@ function BookCard({ novel }: { novel: HomeNovel }) {
         <div className="home-book-copy">
           <span className="home-book-genre">{novel.genres.join(' · ')}</span>
           <h3 className="home-book-title">{novel.title}</h3>
-          <span className="home-book-author">By {novel.author}</span>
+          <span className="home-book-author">{novel.author}</span>
           <span className="home-book-description">{novel.description}</span>
-          <span className="home-book-meta">{novel.chapters} · {novel.translationStatus}</span>
+          <span className="home-book-meta">{novel.chapters} · {novel.date}</span>
           <span className="home-book-read">
-            Read novel
+            Read
             <svg aria-hidden="true" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
               <path d="M4 12h16m-7-7 7 7-7 7" />
             </svg>
@@ -85,7 +89,7 @@ function BookCard({ novel }: { novel: HomeNovel }) {
  */
 export default function MotionNovelGrid({ novels }: { novels: HomeNovel[] }) {
   return (
-    <div className="home-cover-grid" aria-label="New novels">
+    <div className="home-cover-grid" aria-label="New releases">
       {novels.map((novel) => <BookCard key={novel.slug} novel={novel} />)}
     </div>
   );
