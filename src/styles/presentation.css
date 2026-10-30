@@ -2495,3 +2495,31 @@ html[data-theme='sepia'] .reader-heading-with-art {
   .reader-heading-with-art::before { display: none; }
   .reader-heading-with-art h1 { font-size: 1.25rem; margin: 2px 0; }
 }
+
+/* Chapter panorama refinements: keep all metadata and ornament in the text-safe area. */
+.reader-heading-with-art .reader-heading-meta time { display:inline-flex; align-items:center; gap:6px; }
+.reader-heading-with-art .reader-heading-ornament { width:min(290px, 48%); justify-content:center; margin:14px 0 0; }
+.reader-heading-with-art > * { max-width:min(520px, 51%); }
+.reader-heading-with-art .reader-heading-ornament::before,
+.reader-heading-with-art .reader-heading-ornament::after { width:42%; }
+.reader-toolbar {
+  background:color-mix(in srgb, var(--surface) 91%, transparent);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  box-shadow:0 12px 38px rgb(19 36 31 / .16);
+}
+@media (max-width:600px) {
+  .reader-heading-with-art > * { max-width:100%; }
+  .reader-heading-with-art .reader-heading-ornament { width:min(290px,100%); margin:5px 0 0; }
+  .reader-heading-with-art .reader-heading-novel { margin-bottom:3px; }
+  .reader-heading-with-art .reader-heading-eyebrow { margin-bottom:2px; font-size:.65rem; }
+  .reader-heading-with-art .reader-heading-meta { margin-top:5px; }
+  .reader-heading-with-art h1 { font-size:clamp(1.35rem,5.7vw,2rem); }
+  .reader-header { flex-wrap:nowrap; }
+  .reader-header .reader-novel-title { min-width:0; }
+}
+@media (max-height:560px) and (orientation:landscape) {
+  .reader-heading-with-art .reader-heading-novel { margin:0; }
+  .reader-heading-with-art .reader-heading-eyebrow { margin:0; }
+  .reader-heading-with-art .reader-heading-ornament { display:none; }
+}
