@@ -91,7 +91,7 @@ test('new releases opens a recently-added catalog, and mobile search placeholder
 test('the featured cover loads real artwork and guest studio has no large empty gap',async({page})=>{
  await page.setViewportSize({width:390,height:850});
  await page.goto('/');
- const cover=page.locator('[data-feature-cover] img');
+ const cover=page.locator('.home-feature-slide:not([hidden]) [data-feature-cover] img');
  await expect.poll(()=>cover.evaluate((img:HTMLImageElement)=>img.complete&&img.naturalWidth>0)).toBe(true);
  await page.goto('/studio/');
  await expect(page.locator('#studio-login')).toBeVisible();
