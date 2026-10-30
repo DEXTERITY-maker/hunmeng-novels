@@ -6,7 +6,7 @@ publishedAt: "2026-10-29"
 order: 500
 ---
 
-We've released a focused update to make **Hunmeng easier to use on phones**, from finding a novel to settling into a chapter.
+A focused update makes **Hunmeng easier to use on phones**, from finding a novel to settling into a chapter.
 
 ### What's improved
 
@@ -20,6 +20,6 @@ We've released a focused update to make **Hunmeng easier to use on phones**, fro
 
 This is a **layout and usability update**, not a change to the reading or reward systems. No novels or chapters were added as part of this release. Your library, reading progress, XP, ranks, and account data have not been migrated or reset. Requests for new novels are **not** enabled by this update.
 
-We hope these refinements make every visit a little more comfortable. Thanks for reading with Hunmeng!
+These improvements are designed to make browsing and reading more comfortable on every visit.
 
 [Explore the updated catalog](/catalog/) · [Return to the home page](/) · [Start reading](/novel/the-latency-of-tomorrow/)
