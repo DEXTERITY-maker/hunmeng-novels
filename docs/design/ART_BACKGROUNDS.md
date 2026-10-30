@@ -20,3 +20,19 @@ Rules:
 - Sepia uses the day image with a warm overlay; there are no separate sepia files.
 - Decorative only: `alt=""` or CSS backgrounds, lazy-loaded below the fold, and the layout must stay usable if an image fails to load.
 - `comprehension-night` was produced by recolouring `comprehension-day` so the two align exactly.
+
+
+### Homepage quick-link illustrations
+
+The homepage also includes three original lightweight SVG illustrations. They
+are decorative only and never contain copy, logos, or controls:
+
+| Artwork family | Subject | Desktop | Phone |
+| --- | --- | --- | --- |
+| `quick-genres` | Gold-embossed old books and leaves | `quick-genres-720.svg` | `quick-genres-360.svg` |
+| `quick-latest` | Sunlit tower and misty mountains | `quick-latest-720.svg` | `quick-latest-360.svg` |
+| `quick-new` | Pale arched colonnade over a mountain valley | `quick-new-720.svg` | `quick-new-360.svg` |
+
+These are scalable vector artwork (not WebP). Each subject stays in the right half of
+its card; CSS masking fades its left edge into the card's background.
+They do not replace the existing painterly full-width WebP landscapes.
