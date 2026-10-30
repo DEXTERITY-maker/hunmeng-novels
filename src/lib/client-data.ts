@@ -72,6 +72,8 @@ export function element<K extends keyof HTMLElementTagNameMap>(
 
 export interface CatalogIndexNovel {
   serial?: boolean;
+  original?: boolean;
+  art?: 'comprehension' | 'latency';
   slug: string;
   title: string;
   originalTitle: string;
