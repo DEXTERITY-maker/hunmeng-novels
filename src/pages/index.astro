@@ -63,7 +63,7 @@ const animatedNovels = newNovels.map((n) => ({
                     <h2><a href={novel.url}>{novel.title}</a></h2>
                     <p class="home-feature-author">{novel.author}</p>
                     <p class="home-feature-summary">{novel.description}</p>
-                    <div class="home-feature-stats"><span><Icon name="book" size={17}/>{chapterCount(novel.chapterCount)}</span>{novel.schedule?.plannedChapters && <span><Icon name="file" size={17}/>{novel.schedule.plannedChapters} planned</span>}</div>
+                    <div class="home-feature-stats"><span><Icon name="book" size={17}/>{chapterCount(novel.chapterCount)}</span></div>
                     <a class="home-feature-read" href={novel.url}>Read now <span aria-hidden="true">→</span></a>
                   </div>
                 </article>
