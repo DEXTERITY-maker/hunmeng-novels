@@ -361,7 +361,7 @@ test('plain chapter heading remains available when art is absent', async ({ page
   await page.locator('.reader-heading').evaluate(el => { el.classList.remove('reader-heading-with-art'); el.removeAttribute('data-art'); });
   await expect(page.locator('.reader-heading-with-art')).toHaveCount(0);
   const background = await page.locator('.reader-heading').evaluate(el => getComputedStyle(el).backgroundImage);
-  expect(background).toContain('reading-landscape.webp');
+  expect(background).toBe('none');
 });
 
 test('landscape phone keeps the illustrated heading below one third of the screen', async ({ page }) => {
