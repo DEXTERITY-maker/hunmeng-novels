@@ -620,3 +620,9 @@ html[data-theme='dark'] .library-page #library-empty a { color: var(--bg); }
   .header-panel, .header-search .search-panel { top: 60px; left: 16px; right: 16px; width: auto; }
   .appearance-panel, .account-panel { left: auto; width: 232px; max-width: calc(100% - 32px); }
 }
+
+/* Keep New releases buttons legible through all hover/focus states in dark mode. */
+.home-page .home-cover-grid .hm-motion-book-card:hover .home-book-read,
+.home-page .home-cover-grid .hm-motion-book-card:focus-within .home-book-read,
+.home-page .home-cover-grid .home-book-link:hover .home-book-read,
+.home-page .home-cover-grid .home-book-link:focus-visible .home-book-read { color:#fff !important; }
