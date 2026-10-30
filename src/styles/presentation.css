@@ -2373,3 +2373,45 @@ html[data-theme='sepia'] .home-page .home-hero-copy {
 @media (min-width: 761px) {
   .home-page .home-hero-copy { background-position: center, center 78%; }
 }
+
+
+
+/* A localized text backdrop leaves the traveler visible at the lower-left on desktop. */
+@media (min-width: 761px) {
+  .home-page .home-hero-copy {
+    background-image:
+      radial-gradient(ellipse 64% 90% at 16% 27%,
+        color-mix(in srgb, var(--bg) 98%, transparent) 0%,
+        color-mix(in srgb, var(--bg) 92%, transparent) 42%,
+        color-mix(in srgb, var(--bg) 35%, transparent) 68%,
+        transparent 95%),
+      var(--home-landscape);
+    background-position: center, center 78%;
+  }
+  html[data-theme='sepia'] .home-page .home-hero-copy {
+    background-image:
+      linear-gradient(rgb(168 113 54 / .09), rgb(168 113 54 / .09)),
+      radial-gradient(ellipse 64% 90% at 16% 27%,
+        color-mix(in srgb, var(--bg) 98%, transparent) 0%,
+        color-mix(in srgb, var(--bg) 92%, transparent) 42%,
+        color-mix(in srgb, var(--bg) 35%, transparent) 68%,
+        transparent 95%),
+      var(--home-landscape);
+    background-position: center, center, center 78%;
+  }
+}
+@media (max-width: 760px) {
+  .home-page .home-hero-copy {
+    background-image:
+      linear-gradient(90deg, color-mix(in srgb, var(--bg) 96%, transparent) 0%, color-mix(in srgb, var(--bg) 93%, transparent) 58%, color-mix(in srgb, var(--bg) 81%, transparent) 100%),
+      var(--home-landscape);
+    background-position: center, 63% center;
+  }
+  html[data-theme='sepia'] .home-page .home-hero-copy {
+    background-image:
+      linear-gradient(rgb(168 113 54 / .09), rgb(168 113 54 / .09)),
+      linear-gradient(90deg, color-mix(in srgb, var(--bg) 96%, transparent) 0%, color-mix(in srgb, var(--bg) 93%, transparent) 58%, color-mix(in srgb, var(--bg) 81%, transparent) 100%),
+      var(--home-landscape);
+    background-position: center, center, 63% center;
+  }
+}
