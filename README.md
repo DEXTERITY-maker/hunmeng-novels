@@ -12,6 +12,8 @@ Hunmeng is a static Astro + TypeScript web novel library with an English interfa
 
 For visual changes, edit the existing stylesheets in `src/styles/` and preserve their cascade order. Do not add dated `polish` or `fixes` stylesheets.
 
+Every change readers can see ships with a news post in the same pull request: a new file in `src/content/news/` with `category: changelog` and today's `publishedAt`, written in English in the first person (as the site's author, "I"), in plain words, describing only what actually changed and what stayed the same. Several changes released on the same day can share one post.
+
 ## Historical release notes
 
 The notes below describe past releases and their settings. Addresses ending in `twc1.net`, references to `hunmeng.net`, and Timeweb deployment instructions are outdated and must not be used for the current website.
