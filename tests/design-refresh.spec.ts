@@ -74,7 +74,7 @@ test('editorial surfaces work in light, dark and sepia modes', async ({ page }) 
     expect(visual.background).toContain('gradient');
     expect(visual.color).not.toBe('rgba(0, 0, 0, 0)');
     backgrounds.push(visual.background);
-    await expect(page.locator('.home-feature-cover img')).toBeVisible();
+    await expect(page.locator('.home-feature-slide:not([hidden]) .home-feature-cover img')).toBeVisible();
   }
   expect(new Set(backgrounds).size).toBe(3);
 });
