@@ -31,6 +31,15 @@ jobs:
           if-no-files-found: warn
           retention-days: 14
 
+      - name: Upload only homepage screenshots
+        if: always() && github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: hunmeng-homepage-preview-${{ github.run_id }}
+          path: test-results-production/**/hunmeng-home-*.png
+          if-no-files-found: error
+          retention-days: 14
+
   deploy-timeweb:
     # Archived deployment path: Cloudflare Pages is the selected production host.
     # Remain disabled even on a push to main or a manual workflow dispatch.
