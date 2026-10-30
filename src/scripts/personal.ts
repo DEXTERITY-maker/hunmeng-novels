@@ -16,7 +16,10 @@ export async function initPersonal() {
         const action = readingAction(n, p);
         link.href = action.url;
         const label = link.querySelector<HTMLElement>('.novel-read-label');
-        if (label) label.textContent = action.label;
+        if (label) {
+          label.textContent = action.label;
+          link.setAttribute('aria-label', action.label);
+        }
         else link.textContent = action.label;
       }
       if (c) {
