@@ -934,3 +934,16 @@ html[data-theme='sepia'] .reader-page .reader-heading[data-art]::after {
     --reader-chapter-image: url('/images/art/comprehension-night-960.webp');
   }
 }
+
+
+/* In landscape, the art drops out so the chapter heading never occupies
+ * most of a short screen; content and the return control remain accessible. */
+@media (max-height: 480px) and (orientation: landscape) {
+  .reader-page .reader-main .reader-heading[data-art] {
+    display: block;
+    min-height: 0;
+    padding: 8px 15px;
+    margin-bottom: 16px;
+  }
+  .reader-page .reader-heading[data-art] .reader-heading-copy { width: 100%; }
+}
