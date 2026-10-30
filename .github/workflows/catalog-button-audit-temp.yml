@@ -1,0 +1,39 @@
+name: Catalog button contrast audit
+on:
+  push:
+    branches: ['audit/catalog-button-contrast']
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Build unmodified main
+        run: |
+          git worktree add --detach "$RUNNER_TEMP/catalog-before" cf26dce3e6c3e09ff3df31bdf3315f994fa23540
+          ln -s "$GITHUB_WORKSPACE/node_modules" "$RUNNER_TEMP/catalog-before/node_modules"
+          cd "$RUNNER_TEMP/catalog-before"
+          npm run build
+      - name: Capture before
+        run: node scripts/catalog-button-audit-temp.mjs "$RUNNER_TEMP/catalog-before/dist" before button-audit
+      - name: Build candidate
+        run: npm run build
+      - name: Capture and measure after
+        run: node scripts/catalog-button-audit-temp.mjs dist after button-audit
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: catalog-button-audit-${{ github.run_id }}
+          path: button-audit/
+          if-no-files-found: error
+          retention-days: 30
