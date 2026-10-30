@@ -2,7 +2,7 @@ import { test, expect } from './fixtures';
 
 /** Catalog filter header stacks without squeezing; reader controls respect keyboard focus. */
 for (const viewport of [{ width: 1366, height: 900 }, { width: 390, height: 844 }]) {
-  test(`catalog filter header stacks title, note and reset at ${viewport.width}px`, async ({ page }, info) => {
+  test(`catalog filter header is not squeezed at ${viewport.width}px`, async ({ page }, info) => {
     await page.setViewportSize(viewport);
     await page.goto('/catalog/');
     const header = page.locator('.catalog-filter-header');
@@ -10,13 +10,24 @@ for (const viewport of [{ width: 1366, height: 900 }, { width: 390, height: 844 
     const note = header.locator(':scope > p');
     const reset = header.getByRole('button', { name: 'Reset filters' });
     await expect(title).toBeVisible();
-    const [t, n, r] = await Promise.all([title.boundingBox(), note.boundingBox(), reset.boundingBox()]);
-    expect(t && n && r).toBeTruthy();
-    expect(n!.y).toBeGreaterThanOrEqual(t!.y + t!.height - 1);
-    expect(r!.y).toBeGreaterThanOrEqual(n!.y + n!.height - 1);
+    await expect(reset).toBeVisible();
+    const t = (await title.boundingBox())!;
+    const r = (await reset.boundingBox())!;
+    if (viewport.width > 760) {
+      // Desktop sidebar: title, note and reset sit one under another.
+      await expect(note).toBeVisible();
+      const n = (await note.boundingBox())!;
+      expect(n.y).toBeGreaterThanOrEqual(t.y + t.height - 1);
+      expect(r.y).toBeGreaterThanOrEqual(n.y + n.height - 1);
+    } else {
+      // Phones hide the note on purpose and keep title and reset on one row,
+      // so the first book stays above the fold.
+      await expect(note).toBeHidden();
+      expect(r.x).toBeGreaterThanOrEqual(t.x + t.width - 1);
+    }
     // The title keeps a single line instead of one word per line.
     const lineHeight = await title.evaluate((el) => Number.parseFloat(getComputedStyle(el).fontSize) * 1.6);
-    expect(t!.height).toBeLessThan(lineHeight);
+    expect(t.height).toBeLessThan(lineHeight);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
     if (viewport.width > 760) {
       const sort = await page.locator('.catalog-quick-sort select').evaluate((el) => (el as HTMLSelectElement).getBoundingClientRect().width);

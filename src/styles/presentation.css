@@ -1048,18 +1048,19 @@ body:not(.reader-page) summary:focus-visible {
 }
 .catalog-page .catalog-search-row { gap: 10px; }
 .catalog-page .catalog-quick-sort select { background: var(--ed-soft); }
-/* Filter header: title, note and reset stack vertically so the narrow panel never squeezes them. */
-.catalog-page .catalog-filter-header {
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-start;
-  gap: 4px;
-}
-.catalog-page .catalog-filter-header h2,
-.catalog-page .catalog-filter-header > p { margin: 0; }
-.catalog-page .catalog-filter-header .text-button { min-height: 44px; padding: 0; }
-/* In the desktop sidebar, search and sort each take the full width so labels are not cut off. */
+/* Desktop sidebar: title, note and reset stack vertically so the narrow panel never squeezes them,
+ * and search and sort each take the full width so the sort label is not cut off.
+ * Phones hide the note and keep title and reset on one row to save height. */
 @media (min-width: 761px) {
+  .catalog-page .catalog-filter-header {
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 4px;
+  }
+  .catalog-page .catalog-filter-header h2,
+  .catalog-page .catalog-filter-header > p { margin: 0; }
+  .catalog-page .catalog-filter-header .text-button { min-height: 44px; padding: 0; }
   .catalog-page .catalog-search-row { grid-template-columns: minmax(0, 1fr); }
 }
 .catalog-page .catalog-options summary {
