@@ -1254,3 +1254,362 @@ body:not(.reader-page) summary:focus-visible {
   .site-header .header-inner > nav a { transition:none; }
   .catalog-page .catalog-novel-card:hover { transform:none; }
 }
+
+
+/* Novel bookplate: art is decorative and stays behind opaque reading surfaces. */
+.novel-art-band {
+  height: clamp(230px, 27vw, 350px);
+  width: 100%;
+  background-image:
+    linear-gradient(to bottom, transparent 30%, var(--bg) 100%),
+    var(--novel-art-image);
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center 48%;
+}
+.novel-art-band[data-novel-art='comprehension'] { --novel-art-image: url('/images/art/comprehension-day-1536.webp'); }
+.novel-art-band[data-novel-art='latency'] { --novel-art-image: url('/images/art/latency-night-1536.webp'); }
+html[data-theme='dark'] .novel-art-band[data-novel-art='comprehension'] {
+  --novel-art-image: url('/images/art/comprehension-night-1536.webp');
+}
+@media (prefers-color-scheme: dark) {
+  html[data-theme='system'] .novel-art-band[data-novel-art='comprehension'] {
+    --novel-art-image: url('/images/art/comprehension-night-1536.webp');
+  }
+}
+html[data-theme='sepia'] .novel-art-band {
+  background-image:
+    linear-gradient(rgb(176 117 61 / .12), rgb(176 117 61 / .12)),
+    linear-gradient(to bottom, transparent 30%, var(--bg) 100%),
+    var(--novel-art-image);
+}
+.novel-page { position: relative; z-index: 1; padding-bottom: 80px; }
+.novel-page-with-art { margin-top: -110px; }
+.novel-page .novel-detail {
+  display: grid;
+  grid-template-columns: minmax(170px, 230px) minmax(0, 1fr);
+  align-items: start;
+  gap: 20px 36px;
+  padding: clamp(22px, 3vw, 40px);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: var(--surface);
+  box-shadow: 0 16px 42px rgb(12 35 44 / .14);
+}
+.novel-page .novel-detail-breadcrumb {
+  grid-column: 1 / -1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin: 0 0 3px;
+  color: var(--muted);
+  font: 500 .82rem/1.5 'Manrope Variable', sans-serif;
+  overflow-wrap: anywhere;
+}
+.novel-detail-breadcrumb a { color: var(--accent); display: inline-flex; align-items: center; min-height: 36px; gap: 7px; }
+.novel-detail-breadcrumb a:hover { text-decoration: underline; }
+.novel-page .novel-book-shell {
+  position: relative;
+  width: min(100%, 225px);
+  margin: 8px auto 0;
+  border-radius: 7px;
+  box-shadow: 9px 19px 29px rgb(15 30 40 / .19), -5px 5px 9px rgb(3 16 19 / .16);
+  transform: perspective(800px) rotateY(-3deg);
+  isolation: isolate;
+}
+.novel-page .novel-book-shell::before {
+  content: '';
+  position: absolute;
+  z-index: 2;
+  inset: 2px auto 2px 0;
+  width: 12px;
+  border-radius: 7px 0 0 7px;
+  background: linear-gradient(90deg, rgb(7 24 28 / .67), rgb(255 255 255 / .16), rgb(5 18 27 / .17));
+  box-shadow: inset -1px 0 rgb(0 0 0 / .26);
+  pointer-events: none;
+}
+.novel-page .novel-book-shell .detail-cover {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 260 / 380;
+  object-fit: cover;
+  margin: 0;
+  float: none;
+  border: 1px solid rgb(255 255 255 / .25);
+  border-radius: 7px;
+  box-shadow: none;
+}
+.novel-page .novel-detail .detail-copy { display: block; min-width: 0; }
+.novel-page .novel-detail .genre-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  grid-column: auto;
+  grid-row: auto;
+  margin: 3px 0 14px;
+  font: 600 .8rem/1.45 'Manrope Variable', sans-serif;
+}
+.novel-page .genre-links a {
+  color: var(--ink);
+  background: var(--soft);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 5px 12px;
+  text-decoration: none;
+}
+.novel-page .genre-links a:hover { border-color: var(--accent); }
+.novel-page .detail-copy h1 {
+  margin: 0;
+  color: var(--ink);
+  font: 600 clamp(2rem, 3.4vw, 3.2rem)/1.16 'Lora Variable', Georgia, serif;
+  letter-spacing: -.04em;
+  overflow-wrap: anywhere;
+}
+.novel-page .detail-copy .author {
+  margin: 8px 0 0;
+  color: var(--ink);
+  font: 500 1rem/1.5 'Manrope Variable', sans-serif;
+}
+.novel-page .detail-copy .detail-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  align-items: center;
+  margin: 24px 0 18px;
+  padding: 0;
+}
+.novel-page .detail-actions .novel-primary-read,
+.novel-page .detail-actions .library-control > button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 48px;
+  width: auto;
+  padding: 11px 18px;
+  font: 700 .89rem/1.35 'Manrope Variable', sans-serif;
+}
+.novel-page .detail-actions .novel-primary-read {
+  background: #205b47;
+  color: #fff;
+  border: 1px solid #205b47;
+}
+.novel-page .detail-actions .novel-primary-read:hover {
+  background: #154737;
+  border-color: #154737;
+  color: #fff;
+}
+.novel-page .detail-actions .novel-primary-read:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+.novel-page .detail-actions .library-control { min-width: 0; }
+.novel-page .detail-actions .library-control > button { border: 1px solid var(--line); background: var(--surface); color: var(--ink); }
+.novel-page .detail-actions .library-control > button:hover { border-color: var(--accent); background: var(--soft); }
+.novel-page .detail-actions .detail-contents-link {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  padding: 6px;
+  grid-column: auto;
+  color: var(--ink);
+  font-weight: 700;
+}
+.novel-page .serial-publication-stats {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 18px;
+}
+.novel-page .serial-publication-stats span,
+.novel-page .serial-publication-stats a {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 42px;
+  padding: 8px 11px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--surface);
+  color: var(--ink);
+  text-decoration: none;
+  font: 600 .78rem/1.45 'Manrope Variable', sans-serif;
+}
+.novel-page .serial-publication-stats strong { font-weight: 800; }
+.novel-page .serial-publication-stats a:hover { background: var(--soft); border-color: var(--accent); }
+.novel-page .novel-metadata-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 20px;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  padding: 14px 0;
+}
+.novel-page .novel-metadata-row .novel-facts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+  align-items: stretch;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.novel-page .novel-metadata-row .novel-facts > div {
+  padding: 3px 14px;
+  border: 0;
+  border-right: 1px solid var(--line);
+  min-width: 0;
+}
+.novel-page .novel-metadata-row .novel-facts > div:first-child { padding-left: 0; }
+.novel-page .novel-metadata-row .novel-facts dt {
+  margin: 0 0 7px;
+  color: var(--muted);
+  font: 500 .75rem/1.3 'Manrope Variable', sans-serif;
+}
+.novel-page .novel-metadata-row .novel-facts dd {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: 0;
+  color: var(--ink);
+  font: 700 .83rem/1.5 'Manrope Variable', sans-serif;
+  overflow-wrap: anywhere;
+}
+.novel-page .novel-status-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--muted);
+  flex: none;
+}
+.novel-page .novel-status-dot.is-ongoing { background: #16805a; }
+.novel-page .novel-metadata-row .personal-rating {
+  min-width: 215px;
+  max-width: 240px;
+  margin: 0;
+  padding: 2px 0 2px 18px;
+  border: 0;
+}
+.novel-page .personal-rating-title { margin: 0; font: 700 .78rem/1.3 'Manrope Variable', sans-serif; color: var(--ink); }
+.novel-page .personal-rating-stars { display: flex; flex-wrap: nowrap; gap: 4px; margin: 7px 0 2px; }
+.novel-page .personal-rating-stars button {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 37px;
+  height: 37px;
+  padding: 0;
+  color: var(--ink);
+  font-size: 1.45rem;
+  border-radius: 6px;
+}
+.novel-page .personal-rating-stars button.selected { color: var(--accent); }
+.novel-page .personal-rating .fine { font-size: .72rem; line-height: 1.45; color: var(--muted); margin: 5px 0 0; }
+.novel-page .novel-detail-tags { display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0 0; }
+.novel-page .novel-detail-tags a,
+.novel-page .detail-copy .work-categories a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 5px 10px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--soft);
+  color: var(--ink);
+  font: 600 .76rem/1.4 'Manrope Variable', sans-serif;
+  text-decoration: none;
+}
+.novel-page .novel-detail-tags a:hover,
+.novel-page .detail-copy .work-categories a:hover { border-color: var(--accent); }
+.novel-page .detail-copy .work-categories { margin-top: 12px; gap: 7px; }
+.novel-page .synopsis-panel {
+  margin-top: 20px;
+  padding: 28px clamp(20px, 3vw, 40px);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow: 0 7px 22px rgb(12 35 44 / .07);
+}
+.novel-page .synopsis-panel h2 {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin: 0 0 16px;
+  color: var(--ink);
+  font: 600 1.8rem/1.25 'Lora Variable', Georgia, serif;
+}
+.novel-page .synopsis-ornament {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  color: var(--accent);
+  font-size: 1rem;
+}
+.novel-page .synopsis-ornament::before { content: ''; display: block; width: min(120px, 20vw); border-top: 1px solid var(--line); }
+.novel-page .synopsis-panel .detail-description { margin: 0; color: var(--ink); font: 400 .97rem/1.8 'Noto Serif Variable', Georgia, serif; max-width: 100ch; }
+@media (max-width: 1050px) {
+  .novel-page .novel-metadata-row { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .novel-page .novel-metadata-row .personal-rating {
+    border-top: 1px solid var(--line);
+    padding: 12px 0 0;
+    min-width: 0;
+    max-width: none;
+  }
+}
+@media (max-width: 760px) {
+  .novel-art-band {
+    height: 210px;
+    background-position: center 44%;
+  }
+  .novel-art-band[data-novel-art='comprehension'] { --novel-art-image: url('/images/art/comprehension-day-960.webp'); }
+  .novel-art-band[data-novel-art='latency'] { --novel-art-image: url('/images/art/latency-night-960.webp'); }
+  html[data-theme='dark'] .novel-art-band[data-novel-art='comprehension'] {
+    --novel-art-image: url('/images/art/comprehension-night-960.webp');
+  }
+  .novel-page-with-art { margin-top: -65px; }
+  .novel-page .novel-detail {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 15px;
+    padding: 18px;
+    border-radius: 16px;
+  }
+  .novel-page .novel-detail-breadcrumb { margin-bottom: 0; font-size: .75rem; }
+  .novel-page .novel-book-shell { width: 132px; margin: 0 auto; }
+  .novel-page .novel-book-shell::before { width: 8px; }
+  .novel-page .novel-detail .detail-copy { display: block; min-width: 0; }
+  .novel-page .novel-detail .genre-links { margin: 0 0 10px; font-size: .76rem; }
+  .novel-page .detail-copy h1 { font-size: clamp(1.55rem, 6vw, 2rem); margin: 0; }
+  .novel-page .detail-copy .author { margin: 7px 0 0; }
+  .novel-page .detail-copy .detail-actions {
+    clear: none;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    margin: 18px 0;
+    padding: 0;
+    gap: 9px;
+  }
+  .novel-page .detail-actions .novel-primary-read,
+  .novel-page .detail-actions .library-control,
+  .novel-page .detail-actions .library-control > button,
+  .novel-page .detail-actions .detail-contents-link { width: 100%; }
+  .novel-page .detail-actions .detail-contents-link { justify-content: center; min-height: 44px; }
+  .novel-page .serial-publication-stats { margin-bottom: 13px; }
+  .novel-page .novel-metadata-row .novel-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 0; }
+  .novel-page .novel-metadata-row .novel-facts > div { padding: 2px 10px; }
+  .novel-page .novel-metadata-row .novel-facts > div:nth-child(odd) { padding-left: 0; }
+  .novel-page .novel-metadata-row .novel-facts > div:nth-child(even) { border-right: 0; }
+  .novel-page .synopsis-panel { padding: 22px 18px; margin-top: 14px; }
+  .novel-page .synopsis-panel h2 { font-size: 1.45rem; }
+}
+@media (max-width: 760px) and (prefers-color-scheme: dark) {
+  html[data-theme='system'] .novel-art-band[data-novel-art='comprehension'] {
+    --novel-art-image: url('/images/art/comprehension-night-960.webp');
+  }
+}
