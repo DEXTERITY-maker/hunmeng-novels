@@ -2048,6 +2048,8 @@ html[data-theme='sepia'] .catalog-page .catalog-novel-card .catalog-card-art {
   flex-wrap: wrap;
   gap: 8px 16px;
   margin: auto 0 0;
+  padding: 0;
+  border: 0;
   color: var(--ink);
   font: 500 .76rem/1.45 'Manrope Variable', sans-serif;
 }
@@ -2122,16 +2124,16 @@ html[data-theme='sepia'] .catalog-page .catalog-novel-card .catalog-card-art {
   .catalog-page .catalog-art-hero .catalog-hero-actions svg { width: 15px; height: 15px; }
   .catalog-page .catalog-novel-card {
     grid-template-columns: 78px minmax(0, 1fr);
-    gap: 5px 11px;
+    gap: 5px 13px;
     padding: 11px;
     min-height: 0;
   }
   .catalog-page .catalog-novel-card .catalog-card-art { display: none; }
-  .catalog-page .catalog-novel-card .cover-link { grid-column: 1; grid-row: 1 / 6; }
+  .catalog-page .catalog-novel-card .cover-link { grid-column: 1; grid-row: 1; }
   .catalog-page .catalog-novel-card .cover-link img { width: 78px; }
   .catalog-page .catalog-novel-card .novel-copy,
-  .catalog-page .catalog-novel-card:not([data-art]) .novel-copy { display: contents; min-height: 0; padding: 0; }
-  .catalog-page .catalog-novel-card .novel-copy > :not(.catalog-read-action) { grid-column: 2; min-width: 0; }
+  .catalog-page .catalog-novel-card:not([data-art]) .novel-copy { display: flex; grid-column: 2; min-height: 0; padding: 0; }
+  .catalog-page .catalog-novel-card .novel-copy > * { min-width: 0; }
   .catalog-page .catalog-novel-card .genre-line { font-size: .69rem; line-height: 1.35; }
   .catalog-page .catalog-novel-card .novel-copy h2 { font-size: 1.09rem; line-height: 1.25; margin-bottom: 0; }
   .catalog-page .catalog-novel-card .original-title { margin: 0; font-size: .75rem; }
