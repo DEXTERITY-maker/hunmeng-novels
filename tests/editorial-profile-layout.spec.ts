@@ -87,4 +87,21 @@ test('профиль: синтетическая сессия, адаптивн�
       await expect(page.locator('#profile-details')).toBeVisible();
     }
   }
+  // Verify the key card text/surface combinations in all three themes.
+  for(const theme of ['light','dark','sepia'] as const){
+    await page.evaluate(theme=>{document.documentElement.dataset.theme=theme;},theme);
+    const contrast=await page.locator('#profile-details').evaluate(el=>{
+      const rgb=(value:string)=>value.match(/[\d.]+/g)!.slice(0,3).map(Number);
+      const light=(value:string)=>{
+        const channels=rgb(value).map(v=>{const x=v/255;return x<=.04045?x/12.92:((x+.055)/1.055)**2.4;});
+        return channels[0]*.2126+channels[1]*.7152+channels[2]*.0722;
+      };
+      const card=getComputedStyle(el);
+      const a=light(card.color),b=light(card.backgroundColor);
+      return (Math.max(a,b)+.05)/(Math.min(a,b)+.05);
+    });
+    expect(contrast).toBeGreaterThanOrEqual(4.5);
+    expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
+  }
+
 });
