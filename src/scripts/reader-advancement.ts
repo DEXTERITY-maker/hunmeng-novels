@@ -366,7 +366,7 @@ async function loadXpHistory(userId:string,seq:number) {
       isEvent ? 'Halloween Reading Week prize' : 'Verified XP award';
     const detail=document.createElement('small');
     const date=Date.parse(entry.awarded_at);
-    const when=Number.isFinite(date) ? new Intl.DateTimeFormat('en-GB',{day:'numeric',month:'short',timeZone:'UTC'}).format(new Date(date)) : 'Date unavailable';
+    const when=Number.isFinite(date) ? new Intl.DateTimeFormat('en-GB',{day:'numeric',month:'short'}).format(new Date(date)) : 'Date unavailable';
     detail.textContent=isEvent ? `${entry.chapter_slug==='place-1'?'Place 1':entry.chapter_slug==='place-2'?'Place 2':entry.chapter_slug==='place-3'?'Place 3':'Event reward'} · ${when}` : when;
     const amount=document.createElement('strong');
     amount.textContent=`+${entry.xp} XP`;

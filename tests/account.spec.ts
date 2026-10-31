@@ -848,6 +848,8 @@ test('six unique SVG reader-mastery badges are readable and responsive on deskto
  await expect(page.locator('[data-mastery-id="experienced"] [data-mastery-state]')).toHaveText('Current step');
  await expect(page.locator('[data-mastery-id="reader"] [data-mastery-state]')).toHaveText('Unlocked');
  await expect(page.locator('[data-mastery-id="master"] [data-mastery-state]')).toHaveText('Locked');
+ // Reader's Path now lives in the Progress tab of the compact profile.
+ await page.getByRole('tab',{name:'Progress',exact:true}).click();
  await expect(page.getByRole('tab',{name:'Progress',exact:true})).toHaveAttribute('aria-selected','true');
  await expect(page.locator('#progress')).toBeVisible();
  await expect(page.locator('.reader-mastery-section')).toBeVisible();
