@@ -939,9 +939,27 @@ test('editorial signed-in profile: accessible cards, demo recent covers and resp
   test.skip(info.project.name !== 'desktop', 'The test captures both viewport sizes from the desktop browser only.');
   // Uses the existing mocked reader account / responses; no real account is accessed.
   const state = await mockAuth(page);
-  state.profileUser.user_metadata = { nickname: 'Demo Reader', avatar_color: 'sage', bio: 'Reading across worlds.' };
-  state.rankStats.total_xp = 300;
-  state.rankStats.chapters = 3;
+  // Representative signed-in reader for visual screenshots (synthetic data only).
+  state.profileUser.user_metadata = { nickname: 'Hunmeng', avatar_color: 'navy',
+    bio: 'Reading cultivation and near-future sci-fi every evening.' };
+  const xpAtLevel=(target:number)=>{
+    let total=0;
+    for(let level=1;level<target;level++) {
+      const n=level-1;total+=500+4*n+Math.floor(26*Math.sqrt(n));
+    }
+    return total;
+  };
+  state.rankStats.total_xp = xpAtLevel(25)+135;
+  state.rankStats.last_rank_notified = 'bronze';
+  state.rankStats.selected_title = 'regular';
+  state.rankStats.chapters = 180;
+  state.rankStats.completedNovels = 2;
+  state.rankStats.readingDays = 34;
+  state.xpAwards = [
+    {event_kind:'chapter_finished',novel_slug:'sad-zimy',chapter_slug:'glava-2',xp:80,awarded_at:'2026-10-31T12:00:00Z'},
+    {event_kind:'chapter_finished',novel_slug:'sad-zimy',chapter_slug:'glava-1',xp:80,awarded_at:'2026-10-31T11:00:00Z'},
+    {event_kind:'novel_finished',novel_slug:'khranitel-mayaka',chapter_slug:'glava-3',xp:400,awarded_at:'2026-10-30T12:00:00Z'},
+  ];
   await open(page);
   await page.evaluate(() => localStorage.setItem('hunmeng-novels:v1', JSON.stringify({
     version: 1,
