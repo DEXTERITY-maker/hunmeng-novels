@@ -6,6 +6,7 @@ export interface ClientChapter {
   url: string;
 }
 export interface ClientNovel {
+  art?: 'comprehension' | 'latency';
   serial?: boolean;
   slug: string;
   title: string;
