@@ -1,0 +1,19 @@
+---
+import {rankImage} from '../lib/reader-progression';
+---
+  <section class="advancement-hero profile-rank-summary" aria-labelledby="advancement-heading" hidden>
+    <div class="advancement-emblem-wrap">
+      
+      <img id="reader-current-emblem" src={rankImage('iron')} width="96" height="108" alt="Current rank emblem" />
+    </div>
+    <div class="advancement-intro">
+      <p class="eyebrow">✦ READER'S JOURNEY ✦</p>
+      <h3 id="advancement-heading"><span id="reader-level">Level 1</span> <span class="advancement-separator">·</span> <span id="reader-rank">Iron</span></h3>
+      <span class="profile-rank-sr">Reader mastery: <strong id="reader-mastery-name">Novice Reader</strong></span>
+
+      <div class="advancement-xp-label"><span id="reader-xp-numbers">0 / 500 XP</span><span id="reader-xp-remaining">500 XP to next level</span></div>
+      <progress id="reader-xp-progress" aria-label="Experience toward next level" max="500" value="0"></progress>
+
+
+    </div>
+  </section>
