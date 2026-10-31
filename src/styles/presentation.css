@@ -2757,7 +2757,7 @@ html[data-theme='sepia'] :is(.library-page .landscape-banner,.reader-account-pag
   border-radius: 16px;
   box-shadow: var(--ed-shadow);
 }
-.library-page .library-row[data-art] { padding-right: max(18px,34%); }
+.library-page .library-row[data-art] { padding-right: max(18px,37%); }
 .library-page .library-row-art {
   position: absolute;
   z-index: -1;
