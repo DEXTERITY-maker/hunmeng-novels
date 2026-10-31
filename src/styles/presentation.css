@@ -3700,7 +3700,7 @@ html[data-theme='sepia'] .reader-account-page .profile-member-hero {
 }
 .reader-account-page .profile-member-identity {grid-area:identity;display:flex;gap:20px;align-items:center;min-width:0;}
 .reader-account-page .profile-member-copy {display:grid;gap:7px;min-width:0;}
-.reader-account-page .profile-member-copy h1 {color:var(--ink);font-family:var(--heading-font,Georgia,serif);font-weight:650;font-size:clamp(1.8rem,3vw,2.6rem);line-height:1.17;margin:0;overflow-wrap:anywhere;}
+.reader-account-page .profile-member-copy h2 {color:var(--ink);font-family:var(--heading-font,Georgia,serif);font-weight:650;font-size:clamp(1.8rem,3vw,2.6rem);line-height:1.17;margin:0;overflow-wrap:anywhere;}
 .reader-account-page .profile-member-copy #profile-bio {margin:0;max-width:45ch;line-height:1.48;font-size:.9rem;color:var(--ink);overflow-wrap:anywhere;}
 .reader-account-page .profile-member-identity .profile-avatar {
   width:100px;height:100px;flex:0 0 100px;border:3px solid var(--avatar-color);
@@ -3852,7 +3852,7 @@ html[data-theme='sepia'] .reader-account-page .profile-member-hero {
   html[data-theme='system'] .reader-account-page .profile-member-hero {background-position:center,62% center;}
   .reader-account-page .profile-member-identity {gap:12px;align-items:flex-start}
   .reader-account-page .profile-member-identity .profile-avatar {width:62px;height:62px;flex-basis:62px;font-size:1.7rem;border-width:2px}
-  .reader-account-page .profile-member-copy h1 {font-size:1.65rem}
+  .reader-account-page .profile-member-copy h2 {font-size:1.65rem}
   .reader-account-page .profile-member-copy #profile-bio {font-size:.83rem}
   .reader-account-page .profile-rank-slot .advancement-hero {grid-template-columns:65px minmax(0,1fr);padding:8px}
   .reader-account-page .profile-rank-slot .advancement-emblem-wrap {width:65px;height:68px}
@@ -3880,7 +3880,7 @@ html[data-theme='sepia'] .reader-account-page .profile-member-hero {
   .reader-account-page .profile-edit-dialog {padding:17px;}
 }
 @media(max-width:400px){
-  .reader-account-page .profile-member-copy h1 {font-size:1.45rem}
+  .reader-account-page .profile-member-copy h2 {font-size:1.45rem}
   .reader-account-page .profile-member-identity .profile-avatar {width:55px;height:55px;flex-basis:55px}
   .reader-account-page .profile-dashboard-card h3 {font-size:1.15rem}
   .reader-account-page #profile-details .reader-awards-list,
