@@ -15,7 +15,6 @@ The chapter reader now has a more polished appearance on desktop and mobile.
 - **Refined reading controls.** The bottom toolbar has a softer, slightly translucent appearance.
 - **Graceful fallback.** Novels without dedicated artwork retain a simple chapter header.
 
-
 ### What stays the same
 
 Chapter text, fonts, line spacing, text width and saved reading settings remain unchanged. Reading position and progress continue to be saved and restored. The back button, settings, bookmarks, contents, next-chapter navigation, Read later, focus mode, release schedules and reading rewards continue to work as before.
