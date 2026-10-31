@@ -114,6 +114,9 @@ const usesPlaceholder = n.cover === placeholderCover;
       )}
       <a class="chapter-back-to-novel" href={n.url}><Icon name="book" size={17} /> Back to novel</a>
     </nav>
+    <aside class="telegram-chapter-cta telegram-reader-cta" aria-label="Chapter release notifications" hidden={remote} data-release-unlock>
+      <a href={site.contacts.telegramChannel} target="_blank" rel="noopener noreferrer" aria-label="Get new chapters in Telegram">Get new chapters in Telegram <span aria-hidden="true">↗</span></a>
+    </aside>
     {!next && !remote && <p class="end-note">You have read all published chapters.</p>}
     {serial && <p class="end-note"><a href={`${n.url}releases/`}>Complete release schedule →</a></p>}
     {serial && <p class="fine">© 2026 Hunmeng.</p>}
