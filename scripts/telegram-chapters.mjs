@@ -153,9 +153,30 @@ async function main(){
   catch{info('Supabase public release list incomplete; no changes');return;}
   const remote=scheduled.map(c=>({...c,novelTitle:local.novels.get(c.novelSlug)}));
   if(remote.some(c=>!c.novelTitle))fail('Missing public serial novel metadata');
+  // Initial public release may include a chapter not committed locally yet.
+  // Remember every already-open launch chapter, so a later Git addition cannot
+  // incorrectly announce it as new. Its presence is proven by RLS, not a clock.
+  const localKeys=new Set(local.chapters.map(chapterKey));
+  const launchBaseline=[];
+  for(const edition of editions) {
+    for(const row of rows.filter(x=>x.novel_slug===edition.slug && x.number<=edition.initial_chapters)) {
+      const key=edition.slug+':'+row.number;
+      if(!localKeys.has(key)) {
+        const novelTitle=local.novels.get(edition.slug);
+        if(!novelTitle)fail('Missing public launch novel metadata');
+        launchBaseline.push({novelSlug:edition.slug,novelTitle,number:row.number,slug:'chapter-'+row.number,title:row.title});
+      }
+    }
+  }
   const published=[...local.chapters,...remote];
   const plan=decideChapters(previous,published);
-  const candidates=plan.baseline?published:plan.pending;
+  // Compare normal chapters with the PREVIOUSLY DEPLOYED commit, never
+  // with current main (which can include still-unpublished chapters).
+  const beforeLocal=previous?.deployedSha?localChapters(previous.deployedSha).chapters:[];
+  const beforeKeys=new Set(beforeLocal.map(chapterKey));
+  const scheduledKeys=new Set(remote.map(chapterKey));
+  const newCandidates=plan.pending.filter(ch=>scheduledKeys.has(chapterKey(ch))||!beforeKeys.has(chapterKey(ch)));
+  const candidates=plan.baseline?published:newCandidates;
   // A chapter must exist on the live site; do not announce a commit that has not propagated.
   for(const ch of candidates){
     if(!await reachable(chapterLink(ch,ORIGIN))){
@@ -165,13 +186,14 @@ async function main(){
   if(dry){
     info('DRY RUN: no messages or state changes. Initial baseline: '+plan.baseline+'. Chapters: '+candidates.length);
     for(const ch of candidates)info((plan.baseline?'Would baseline: ':'Would send: ')+announcement(ch,ORIGIN).replaceAll('\n',' | '));
+    if(plan.baseline&&launchBaseline.length)info('Would additionally baseline '+launchBaseline.length+' publicly released launch chapters absent from local files.');
     return;
   }
   if(plan.baseline){
     let next={version:1,initialized:true,deployedSha:sha,chapters:{}};
-    for(const ch of plan.mark)next=applyChapterMarker(next,ch,'baseline');
+    for(const ch of [...plan.mark,...launchBaseline])next=applyChapterMarker(next,ch,'baseline');
     writeLedger(ledger,next);
-    info('Initial baseline stored for '+plan.mark.length+' already released chapters. No posts.');
+    info('Initial baseline stored for '+(plan.mark.length+launchBaseline.length)+' already released chapters. No posts.');
     return;
   }
   if(plan.pending.length){
@@ -180,7 +202,7 @@ async function main(){
   }
   let current=previous;
   try{
-    current=await deliverChapters(previous,plan.pending,{
+    current=await deliverChapters(previous,newCandidates,{
       persist:async next=>{writeLedger(ledger,next);current=next;},
       send:async chapter=>{
         const result=await telegram('sendMessage',{chat_id:CHANNEL,text:announcement(chapter,ORIGIN),link_preview_options:{is_disabled:true}});
@@ -193,6 +215,6 @@ async function main(){
     process.exitCode=1;return;
   }
   if(current.deployedSha!==sha)writeLedger(ledger,{...current,deployedSha:sha});
-  info('Completed; new notices: '+plan.pending.length);
+  info('Completed; new notices: '+newCandidates.length);
 }
 main().catch(()=>{console.error('[telegram-chapters] Safe stop: a source, GitHub ledger or validation failed. No secret values logged.');process.exitCode=1;});
