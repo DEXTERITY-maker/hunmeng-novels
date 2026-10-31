@@ -1003,7 +1003,8 @@ test('editorial signed-in profile: accessible cards, demo recent covers and resp
       });
       expect(presentation.radius).toBe('0px');
       expect(presentation.border).toBe('0px');
-      expect(presentation.image).toContain(theme === 'dark' ? 'header-night.webp' : 'header-day.webp');
+      // Phones load the 960 px copy of the same header art.
+      expect(presentation.image).toMatch(theme === 'dark' ? /header-night(-960)?\.webp/ : /header-day(-960)?\.webp/);
       expect(presentation.image).toContain('hunmeng-landscape-');
       const rankPlate=await page.locator('.profile-rank-slot .advancement-hero').evaluate(el => ({
         background:getComputedStyle(el).backgroundColor,border:getComputedStyle(el).borderTopWidth,
