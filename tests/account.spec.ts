@@ -907,3 +907,68 @@ test('rank celebration completes first when a level unlocks both a rank and mast
  expect(state.rankStats.last_rank_notified).toBe('bronze');
  expect(readerSafeRequests(state.requests)).toBe(true);
 });
+
+
+test('editorial signed-in profile: accessible cards, demo recent covers and responsive screenshots', async ({ page }, info) => {
+  // Uses the existing mocked reader account / responses; no real account is accessed.
+  const state = await mockAuth(page);
+  state.rankStats.total_xp = 300;
+  state.rankStats.chapters = 3;
+  await open(page);
+  await page.evaluate(() => localStorage.setItem('hunmeng-novels:v1', JSON.stringify({
+    version: 1,
+    library: { 'sad-zimy': 'reading', 'khranitel-mayaka': 'later' },
+    progress: {
+      'sad-zimy': { chapterSlug:'glava-1', chapterNumber:1, blockId:'block-4',
+        offset: 0, ratio: .62, updatedAt: Date.parse('2026-10-30T10:00:00Z') },
+    },
+  })));
+  await fill(page);
+  await page.locator('#reader-auth-submit').click();
+  await expect(page.locator('#auth-logged-in')).toBeVisible();
+  await expect(page.locator('#profile-hero-identity')).toBeVisible();
+  await expect(page.locator('#profile-avatar')).toBeVisible();
+  await expect(page.locator('#profile-sidebar-rank')).toBeVisible();
+  await expect(page.locator('#profile-recent-list .profile-recent-card')).toHaveCount(1);
+  await expect(page.locator('#profile-recent-list .profile-recent-cover')).toHaveAttribute('src', /sad-zimy|garden/i);
+  await expect(page.locator('#profile-recent-list progress')).toHaveJSProperty('value', 62);
+  await expect(page.locator('#reader-rank')).not.toBeEmpty();
+  await expect(page.locator('#reader-mastery-heading')).toBeVisible();
+
+  for (const width of [1440, 390]) {
+    const device = width === 390 ? 'mobile' : 'desktop';
+    await page.setViewportSize({ width, height: width === 390 ? 844 : 900 });
+    for (const theme of ['light', 'dark', 'sepia'] as const) {
+      await page.locator('html').evaluate((el, value) => { el.dataset.theme = value; }, theme);
+      await expect(page.locator('#profile-details')).toBeVisible();
+      const hero = await page.locator('.profile-hero').boundingBox();
+      const identity = await page.locator('#profile-hero-identity').boundingBox();
+      const panel = await page.locator('#profile-details').boundingBox();
+      const recent = await page.locator('.profile-recent-card').first().boundingBox();
+      expect(hero).toBeTruthy();
+      expect(identity).toBeTruthy();
+      expect(panel).toBeTruthy();
+      expect(recent).toBeTruthy();
+      expect(identity!.x).toBeGreaterThanOrEqual(hero!.x - 1);
+      expect(identity!.x + identity!.width).toBeLessThanOrEqual(hero!.x + hero!.width + 1);
+      expect(recent!.x).toBeGreaterThanOrEqual(panel!.x - 1);
+      expect(recent!.x + recent!.width).toBeLessThanOrEqual(panel!.x + panel!.width + 1);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), theme + ' at ' + width).toBe(true);
+      await expect(page.locator('.profile-sidebar nav [aria-current="location"]')).toHaveCount(1);
+      if (theme !== 'sepia') {
+        await page.evaluate(() => document.fonts.ready);
+        await page.screenshot({
+          path: info.outputPath('hunmeng-profile-' + device + '-' + theme + '.png'),
+          fullPage: true, animations: 'disabled',
+        });
+      }
+    }
+  }
+  // Profile tabs and separated progression systems remain functional.
+  await page.locator('.profile-sidebar [data-profile-section="profile-reading"]').click();
+  await expect(page.locator('#profile-reading')).toBeVisible();
+  await page.locator('.profile-sidebar [data-profile-section="profile-details"]').click();
+  await expect(page.locator('#reader-mastery-heading')).toBeVisible();
+  await expect(page.locator('#reader-rank')).not.toBeEmpty();
+  expect(readerSafeRequests(state.requests)).toBe(true);
+});
