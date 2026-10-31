@@ -75,16 +75,17 @@ test('мобильная главная: компактное продолжен
   }
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBeTruthy();
 });
-test('новости: единственная приветственная запись без технических релизов', async ({ page }) => {
+test('новости: официальное сообщение о закладках и приветственная публикация', async ({ page }) => {
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'Latest news' })).toBeVisible();
-  await expect(page.locator('#latest-news [data-news-card]')).toHaveCount(1);
+  await expect(page.locator('#latest-news [data-news-card]')).toHaveCount(2);
   await expect(page.locator('#latest-news')).toContainText('Welcome to Hunmeng');
   await page.locator('#latest-news').getByRole('link', { name: 'View all' }).click();
   expect(new URL(page.url()).pathname).toBe('/news/');
-  await expect(page.locator('#news-feed [data-news-card]:visible')).toHaveCount(1);
+  await expect(page.locator('#news-feed [data-news-card]:visible')).toHaveCount(2);
   await expect(page.locator('#news-pagination')).toBeHidden();
   await expect(page.locator('a[href*="github.com"]')).toHaveCount(0);
+  await expect(page.locator('#news-feed')).toContainText('Paragraph bookmarks in the reading room');
   await expect(page.locator('#news-feed')).not.toContainText('Site update:');
 });
 test('новости: категории сохраняются, несуществующие публикации не показываются', async ({ page }) => {
@@ -93,11 +94,11 @@ test('новости: категории сохраняются, несущес�
   await expect(page.locator('#news-feed [data-news-card]:visible')).toHaveCount(1);
   await expect(page.locator('[data-news-filter=announcements]')).toHaveAttribute('aria-current', 'page');
   await page.getByRole('link', { name: 'Changelog', exact: true }).click();
-  await expect(page.locator('#news-empty')).toBeVisible();
+  await expect(page.locator('#news-feed [data-news-card]:visible')).toHaveCount(1);
   await page.getByRole('link', { name: 'Giveaways', exact: true }).click();
   await expect(page.locator('#news-empty')).toBeVisible();
   await page.getByRole('link', { name: 'All', exact: true }).click();
-  await expect(page.locator('#news-feed [data-news-card]:visible')).toHaveCount(1);
+  await expect(page.locator('#news-feed [data-news-card]:visible')).toHaveCount(2);
 });
 test('отдельная новость: приветствие, разрешения правообладателей и локальные реакции', async ({ page }) => {
   await page.goto('/news/hunmeng-opens/');
