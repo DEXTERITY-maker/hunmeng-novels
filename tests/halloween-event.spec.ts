@@ -20,7 +20,7 @@ for(const width of [1366,390]){
       const hasOverflow=await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1);
       expect(hasOverflow).toBe(false);
       for(const image of await page.locator('[data-halloween-badge]').all()){
-        const size=await image.getAttribute('data-halloween-path');
+        const size=await image.getAttribute('src');
         expect(size).toMatch(/^\/images\/events\/halloween-2026\/(gold|silver|bronze)\.webp$/);
       }
       await page.screenshot({path:test.info().outputPath(`hunmeng-halloween-${width}-${theme}.png`),fullPage:true});

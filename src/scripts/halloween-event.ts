@@ -59,17 +59,14 @@ function paintRows(rows:Entry[],finalized:boolean){
     if(!person)continue;
     const li=document.createElement('li');
     const art=document.createElement('span');art.className='halloween-winner-art';
-    const placeholder=document.createElement('span');placeholder.className='halloween-badge-placeholder';
-    placeholder.dataset.halloweenFallback=prize.key;placeholder.textContent='✦';
-    const image=document.createElement('img');image.dataset.halloweenPath=halloweenBadge(prize.key,true);
-    image.alt='Place '+prize.place+' '+prize.key+' emblem';image.width=64;image.height=64;image.hidden=true;
-    art.append(placeholder,image);
+    const image=document.createElement('img');image.src=halloweenBadge(prize.key,true);
+    image.alt='Place '+prize.place+' '+prize.key+' emblem';image.width=64;image.height=64;
+    art.append(image);
     const summary=document.createElement('span');summary.className='halloween-winner-label';
     const rank=document.createElement('strong');rank.textContent='Place '+prize.place+' · '+person.display_name;
-    const details=document.createElement('small');details.textContent=prize.title+' · +'+prize.xp+' XP';
+    const details=document.createElement('small');details.textContent=prize.title+' · +'+prize.xp.toLocaleString('en-US')+' XP';
     summary.append(rank,details);li.append(art,summary);winners.append(li);
   }
-  setupBadges(winners);
   if(!winners.children.length){
     const li=document.createElement('li');li.textContent='No eligible winners (a completed chapter was required).';
     winners.append(li);
@@ -139,6 +136,8 @@ export async function initHalloweenPage(){
     $('halloween-results').hidden=!finalized;
     if(!(isEnded()&&!finalized))paintRows(rows,finalized);
     closed.hidden=eventOpen();
+    closed.textContent=isEnded()?'The event has ended. Joining and name changes are closed.':
+      'Joining opens on 1 November at 00:00, Moscow time.';
     try{
       const {data:session}=await client.auth.getSession();
       if(!session.session){userId=null;guest.hidden=false;member.hidden=true;return;}
