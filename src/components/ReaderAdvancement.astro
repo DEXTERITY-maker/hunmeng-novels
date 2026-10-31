@@ -1,20 +1,62 @@
 ---
-import { ranks,readerMasteryTiers,titles,achievements,rankImage,masteryImage } from '../lib/reader-progression';
+import { ranks,readerMasteryTiers,titles,achievements,masteryImage } from '../lib/reader-progression';
 ---
 <div id="reader-advancement" class="reader-advancement" data-status="loading" aria-label="Reader progression">
   <p id="reader-advancement-status" class="fine" role="status" aria-live="polite">Loading verified reading achievements…</p>
-  <section class="advancement-hero" aria-labelledby="advancement-heading" hidden>
-    <div class="advancement-emblem-wrap">
-      <span class="advancement-emblem-crest" aria-hidden="true">✦ HUNMENG ✦</span>
-      <img id="reader-current-emblem" src={rankImage('iron')} width="150" height="168" alt="Current rank emblem" />
+  <section class="advancement-stats" aria-label="Verified reading statistics" hidden>
+    <div><span>Chapters</span><strong id="reader-stat-chapters">—</strong></div>
+    <div><span>Novels finished</span><strong id="reader-stat-novels">—</strong></div>
+    <div><span>Reading days</span><strong id="reader-stat-days">—</strong></div>
+    <div><span>Achievements</span><strong id="reader-stat-achievements">— / {achievements.length{'}'}</strong></div>
+  </section>
+  <div class="profile-legacy-stats" hidden aria-hidden="true">
+    <span id="reader-stat-collection">—</span><span id="reader-stat-reviews">—</span>
+    <span id="reader-stat-reading">0</span><span id="reader-stat-later">0</span>
+    <span id="reader-stat-shelf-completed">0</span>
+  </div>
+  <div class="profile-inner-tabs" role="tablist" aria-label="Profile information">
+    <button type="button" id="profile-tab-overview" role="tab" aria-selected="true" tabindex="0" aria-controls="overview" data-overview-tab="overview">Overview</button>
+    <button type="button" id="profile-tab-progress" role="tab" aria-selected="false" tabindex="-1" aria-controls="progress" data-overview-tab="progress">Progress</button>
+    <button type="button" id="profile-tab-titles-achievements" role="tab" aria-selected="false" tabindex="-1" aria-controls="titles-achievements" data-overview-tab="titles-achievements">Titles &amp; achievements</button>
+    <button type="button" id="profile-tab-xp-history" role="tab" aria-selected="false" tabindex="-1" aria-controls="xp-history" data-overview-tab="xp-history">XP history</button>
+  </div>
+  <div id="overview" class="profile-inner-panel profile-overview-grid" role="tabpanel" aria-labelledby="profile-tab-overview" tabindex="0">
+    <slot name="recent-reading" />
+    <section class="profile-overview-card profile-goal-card" aria-labelledby="profile-goal-heading">
+      <h3 id="profile-goal-heading">Next goal</h3>
+    <div id="reader-next-achievement" class="reader-next-achievement" hidden>
+      <p class="eyebrow">Closest milestone</p>
+      <h4 id="reader-next-achievement-name">Next achievement</h4>
+      <p id="reader-next-achievement-description" class="fine"></p>
+      <progress id="reader-next-achievement-progress" max="1" value="0" aria-label="Progress to the next achievement"></progress>
+      <small id="reader-next-achievement-remaining"></small>
     </div>
-    <div class="advancement-intro">
-      <p class="eyebrow">✦ READER'S JOURNEY ✦</p>
-      <h3 id="advancement-heading"><span id="reader-level">Level 1</span> <span class="advancement-separator">·</span> <span id="reader-rank">Iron</span></h3>
-      <p class="advancement-title-line">Reader mastery: <strong id="reader-mastery-name">Novice Reader</strong></p>
-      <p class="advancement-title-line">Title: <strong id="reader-equipped-title">Novice Reader</strong></p>
-      <div class="advancement-xp-label"><span id="reader-xp-numbers">0 / 500 XP</span><span id="reader-xp-remaining">500 XP to next level</span></div>
-      <progress id="reader-xp-progress" aria-label="Experience toward next level" max="500" value="0"></progress>
+    <p id="reader-all-achievements" class="reader-all-achievements fine" hidden>All verified milestones unlocked. Explore more worlds as they arrive.</p>
+
+    </section>
+  <section id="halloween-profile-awards-section" class="advancement-section" aria-labelledby="halloween-profile-awards-heading" hidden>
+    <div class="advancement-section-header"><p class="eyebrow">✦ SPECIAL EVENT REWARDS</p><h3 id="halloween-profile-awards-heading">Event awards</h3><p>Verified event awards and their selectable titles.</p></div>
+    <div id="halloween-profile-awards" class="halloween-profile-awards"></div>
+    <p id="profile-event-cta" hidden><a href="/events/halloween-2026/">Halloween Reading Week is on <span aria-hidden="true">→</span></a></p>
+    <p id="halloween-profile-awards-status" class="fine" role="status" aria-live="polite"></p>
+  </section>
+
+    <section class="profile-overview-card profile-recent-xp-card" aria-labelledby="profile-recent-xp-heading">
+      <div class="profile-card-heading"><h3 id="profile-recent-xp-heading">Recent XP</h3>
+        <a href="#xp-history" id="profile-view-xp-history">View history <span aria-hidden="true">→</span></a>
+      </div>
+      <p id="reader-recent-xp-status" class="fine" role="status">Checking verified rewards…</p>
+      <ol id="reader-recent-xp-list" class="reader-xp-history-list" aria-label="Three latest verified XP awards"></ol>
+    </section>
+  </div>
+  <div id="progress" class="profile-inner-panel profile-progress-content" role="tabpanel" aria-labelledby="profile-tab-progress" tabindex="0" hidden>
+    <section class="advancement-section profile-rank-progress-card" aria-labelledby="profile-rank-progress-title">
+      <h3 id="profile-rank-progress-title">Reader ranks</h3>
+      <div class="profile-current-next-ranks">
+        <div class="profile-current-rank">
+          <img id="profile-progress-current-emblem" src="/images/ranks/iron.svg" width="54" height="60" alt="Current rank emblem" />
+          <span><small>Current rank</small><strong id="profile-progress-current-name">Iron</strong></span>
+        </div>
       <div id="reader-next-rank" class="reader-next-rank" hidden>
         <img id="reader-next-rank-image" src={rankImage('bronze')} width="54" height="60" alt="Next rank emblem" loading="lazy" />
         <div class="reader-next-rank-copy">
@@ -25,21 +67,10 @@ import { ranks,readerMasteryTiers,titles,achievements,rankImage,masteryImage } f
         </div>
       </div>
       <p id="reader-highest-rank" class="fine reader-highest-rank" hidden>Highest rank unlocked: Mythical. Keep reading toward level 500.</p>
-      <div class="advancement-journey-actions"><a href="/ranks/" class="advancement-explore-ranks">Explore all ranks <span aria-hidden="true">→</span></a><span class="advancement-journey-note">500 levels · 9 ranks</span></div>
-      <p class="fine advancement-trust">XP and ranks are verified by the server. Simply opening or scrolling a page does not award XP.</p>
-    </div>
-  </section>
-  <section class="advancement-stats" aria-label="Reading statistics" hidden>
-    <div><span>Chapters rewarded</span><strong id="reader-stat-chapters">0</strong><small>Verified</small></div>
-    <div><span>Novels finished</span><strong id="reader-stat-novels">0</strong><small>Verified</small></div>
-    <div><span>Verified collection</span><strong id="reader-stat-collection">—</strong><small>Account-linked</small></div>
-    <div><span>Reading days</span><strong id="reader-stat-days">0</strong><small>Verified</small></div>
-    <div><span>Published reviews</span><strong id="reader-stat-reviews">—</strong><small>Approved by moderators</small></div>
-    <div><span>Reading now</span><strong id="reader-stat-reading">0</strong><small>On this device</small></div>
-    <div><span>Read later</span><strong id="reader-stat-later">0</strong><small>On this device</small></div>
-    <div><span>Completed shelf</span><strong id="reader-stat-shelf-completed">0</strong><small>On this device · not verified XP</small></div>
-    <div><span>Unlocked achievements</span><strong id="reader-stat-achievements">0</strong><small>Verified</small></div>
-  </section>
+
+      </div>
+      <a class="advancement-all-ranks" href="/ranks/">All nine ranks <span aria-hidden="true">→</span></a>
+    </section>
   <section class="advancement-section reader-mastery-section" aria-labelledby="reader-mastery-heading" hidden>
     <div class="advancement-section-header"><p class="eyebrow">✦ SIX MASTERY STEPS</p><h3 id="reader-mastery-heading">Reader's Path</h3><p>Six mastery steps follow your verified level. They are separate from the nine visual ranks and selectable titles.</p></div>
     <div class="reader-mastery-grid">
@@ -55,29 +86,12 @@ import { ranks,readerMasteryTiers,titles,achievements,rankImage,masteryImage } f
       ))}
     </div>
   </section>
-  <section class="advancement-section" aria-labelledby="reader-xp-history-heading" hidden>
-    <div class="advancement-section-header"><p class="eyebrow">Verified rewards</p><h3 id="reader-xp-history-heading">XP history</h3><p>Experience earned from confirmed reading activity, stored with your account.</p></div>
-    <p id="reader-xp-history-status" class="fine" role="status">Loading your reward history…</p>
-    <ol id="reader-xp-history-list" class="reader-xp-history-list" aria-label="Recent verified XP awards"></ol>
-  </section>
-  <section class="advancement-section" aria-labelledby="rank-gallery-title" hidden>
-    <div class="advancement-section-header advancement-rank-header"><p class="eyebrow">✦ NINE RANKS</p><h3 id="rank-gallery-title">Reader ranks</h3><p>Gain levels to unlock new medallions. There are 500 levels.</p><a href="/ranks/" class="advancement-all-ranks">All nine ranks <span aria-hidden="true">→</span></a></div>
-    <div class="rank-gallery">
-      {ranks.map((r,i) => (
-        <article class="rank-tile" data-rank-id={r.id} data-rank-min={r.min}>
-          <span class="rank-tile-roman" aria-hidden="true">{['I','II','III','IV','V','VI','VII','VIII','IX'][i]}</span>
-          <img src={rankImage(r.id)} alt={`Emblem of the ${r.en} rank`} width="112" height="125" loading="lazy" decoding="async" />
-          <h4>{r.en}</h4><p class="rank-tile-levels">Levels {r.min}–{r.max}</p>
-          <p class="rank-tile-description">{r.description}</p><span class="rank-tile-state" data-rank-state>Locked</span>
-        </article>
-      ))}
+
+    <div class="rank-gallery" hidden aria-hidden="true">
+      {ranks.map(rank => (<span class="rank-tile" data-rank-id={rank.id} data-rank-min={rank.min}><span data-rank-state>Locked</span></span>))}
     </div>
-  </section>
-  <section id="halloween-profile-awards-section" class="advancement-section" aria-labelledby="halloween-profile-awards-heading" hidden>
-    <div class="advancement-section-header"><p class="eyebrow">✦ SPECIAL EVENT REWARDS</p><h3 id="halloween-profile-awards-heading">Halloween Reading Week awards</h3><p>Verified awards are linked to this account. Winning titles can be equipped in the profile.</p></div>
-    <div id="halloween-profile-awards" class="halloween-profile-awards"></div>
-    <p id="halloween-profile-awards-status" class="fine" role="status" aria-live="polite"></p>
-  </section>
+  </div>
+  <div id="titles-achievements" class="profile-inner-panel profile-titles-content" role="tabpanel" aria-labelledby="profile-tab-titles-achievements" tabindex="0" hidden>
   <section class="advancement-section" aria-labelledby="reader-titles-heading" hidden>
     <div class="advancement-section-header"><p class="eyebrow">✦ SPECIAL TITLES</p><h3 id="reader-titles-heading">Titles</h3><p>Unlock titles through verified achievements and choose which one to display in your profile. Titles are independent of visual ranks.</p></div>
     <div class="reader-awards-list">
@@ -96,14 +110,6 @@ import { ranks,readerMasteryTiers,titles,achievements,rankImage,masteryImage } f
   </section>
   <section class="advancement-section" aria-labelledby="reader-achievements-heading" hidden>
     <div class="advancement-section-header"><p class="eyebrow">✦ YOUR STORY MILESTONES</p><h3 id="reader-achievements-heading">Achievements</h3><p>Achievements are based on verified activity and do not award extra XP.</p></div>
-    <div id="reader-next-achievement" class="reader-next-achievement" hidden>
-      <p class="eyebrow">Closest milestone</p>
-      <h4 id="reader-next-achievement-name">Next achievement</h4>
-      <p id="reader-next-achievement-description" class="fine"></p>
-      <progress id="reader-next-achievement-progress" max="1" value="0" aria-label="Progress to the next achievement"></progress>
-      <small id="reader-next-achievement-remaining"></small>
-    </div>
-    <p id="reader-all-achievements" class="reader-all-achievements fine" hidden>All verified milestones unlocked. Explore more worlds as they arrive.</p>
     <div class="achievement-filter" role="group" aria-label="Filter achievements">
       <button type="button" data-achievement-filter="all" aria-pressed="true">All</button>
       <button type="button" data-achievement-filter="unlocked" aria-pressed="false">Unlocked</button>
@@ -122,6 +128,16 @@ import { ranks,readerMasteryTiers,titles,achievements,rankImage,masteryImage } f
     </div>
     <p id="reader-achievements-empty" class="fine" hidden>No achievements match this filter yet.</p>
   </section>
+
+  </div>
+  <div id="xp-history" class="profile-inner-panel" role="tabpanel" aria-labelledby="profile-tab-xp-history" tabindex="0" hidden>
+  <section class="advancement-section" aria-labelledby="reader-xp-history-heading" hidden>
+    <div class="advancement-section-header"><p class="eyebrow">Verified rewards</p><h3 id="reader-xp-history-heading">XP history</h3><p>Experience earned from confirmed reading activity, stored with your account.</p></div>
+    <p id="reader-xp-history-status" class="fine" role="status">Loading your reward history…</p>
+    <ol id="reader-xp-history-list" class="reader-xp-history-list" aria-label="Recent verified XP awards"></ol>
+  </section>
+
+  </div>
 </div>
 <dialog id="reader-mastery-unlocked" class="reader-mastery-dialog" aria-labelledby="reader-mastery-unlocked-title" aria-describedby="reader-mastery-unlocked-detail">
   <div class="reader-mastery-dialog-inner">
