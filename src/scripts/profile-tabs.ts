@@ -18,7 +18,7 @@ export function initProfileTabs() {
   const views: Record<Section, { title: string; subtitle: string }> = {
     'profile-details': {
       title: 'My profile',
-      subtitle: 'Manage your personal information and profile.',
+      subtitle: 'Your reading overview and verified awards.',
     },
     'profile-reading': {
       title: 'Reading settings',
