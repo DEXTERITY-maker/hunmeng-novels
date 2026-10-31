@@ -173,7 +173,7 @@ async function main(){
   const scheduledKeys=new Set(remote.map(chapterKey));
   const launchKeys=new Set(launchBaseline.map(chapterKey));
   const newCandidates=plan.pending.filter(ch=>!launchKeys.has(chapterKey(ch))&&(scheduledKeys.has(chapterKey(ch))||!beforeKeys.has(chapterKey(ch))));
-  const candidates=plan.baseline?published:newCandidates;
+  const candidates=plan.baseline?[]:newCandidates;
   // A chapter must exist on the live site; do not announce a commit that has not propagated.
   for(const ch of candidates){
     if(!await reachable(chapterLink(ch,ORIGIN))){
@@ -181,8 +181,8 @@ async function main(){
     }
   }
   if(dry){
-    info('DRY RUN: no messages or state changes. Initial baseline: '+plan.baseline+'. Chapters: '+candidates.length);
-    for(const ch of candidates)info((plan.baseline?'Would baseline: ':'Would send: ')+announcement(ch,ORIGIN).replaceAll('\n',' | '));
+    info('DRY RUN: no messages or state changes. Initial baseline: '+plan.baseline+'. Chapters: '+(plan.baseline?plan.mark.length:newCandidates.length));
+    for(const ch of plan.baseline?plan.mark:newCandidates)info((plan.baseline?'Would baseline: ':'Would send: ')+announcement(ch,ORIGIN).replaceAll('\n',' | '));
     const unknownLaunch=launchBaseline.filter(ch=>!Object.hasOwn(previous?.chapters??{},chapterKey(ch)));
     if(unknownLaunch.length)info('Would also baseline '+unknownLaunch.length+' already-open launch chapters from public Supabase.');
     return;
