@@ -9,6 +9,7 @@ export function resolveProfileTab(hash: string): ProfileTab | null {
   return aliases[hash.replace(/^#/,'').toLowerCase()] ?? null;
 }
 export function profileHash(hash: string): string {
+  if (['#overview','#progress','#titles','#history'].includes(hash.toLowerCase())) return hash.toLowerCase();
   const tab = resolveProfileTab(hash);
   return tab ? '#'+tab : '';
 }

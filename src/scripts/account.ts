@@ -25,7 +25,7 @@ export async function initAccount() {
     history.replaceState(null, '', '/account/' + profileTarget);
   window.addEventListener('hashchange', () => {
     const target = profileHash(location.hash);
-    if (location.hash && !resolveProfileTab(location.hash)) {
+    if (location.hash && !resolveProfileTab(location.hash) && !['#overview','#progress','#titles','#history'].includes(location.hash)) {
       history.replaceState(null, '', '/account/');
       status.textContent = 'Only known profile tab links are supported.';
     } else if (target && target !== location.hash) {
@@ -45,7 +45,7 @@ export async function initAccount() {
     loggedIn.hidden = !user;
     document.getElementById('profile-hero-identity')!.hidden = !user;
     document.getElementById('account-email')!.textContent = user?.email ?? '';
-    status.textContent = message ?? (user ? 'You are signed in.' : 'Sign in or create a reader account.');
+    status.textContent = message ?? (user ? '' : 'Sign in or create a reader account.');
   };
   const setMode = (value: string) => {
     mode = value === 'signup' ? 'signup' : 'signin';
@@ -153,6 +153,6 @@ export async function initAccount() {
   } catch {render(null,'Unable to verify your session. Please sign in again.');}
   finally {
     busy=false;fields.disabled=false;
-    if (profileTarget && !loggedIn.hidden) document.querySelector(profileTarget)?.scrollIntoView();
+    if (profileTarget && !loggedIn.hidden && !['#overview','#progress','#titles','#history'].includes(profileTarget)) document.querySelector(profileTarget)?.scrollIntoView();
   }
 }
