@@ -3893,3 +3893,4 @@ html[data-theme='sepia'] .reader-account-page .profile-member-hero {
 /* Profile dashboard review: no empty cell when no event card; ranks link stays inside its card. */
 .reader-account-page .profile-overview-grid:has(> #profile-event-card[hidden]) > .profile-recent-xp {grid-column:1/-1}
 .reader-account-page #profile-details [aria-labelledby='rank-gallery-title'] .advancement-all-ranks {position:static;inset:auto;transform:none;margin:0}
+.reader-account-page #profile-details [aria-labelledby='rank-gallery-title'] .advancement-rank-header {padding-right:0}
