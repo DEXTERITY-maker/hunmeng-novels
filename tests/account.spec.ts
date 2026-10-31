@@ -910,6 +910,7 @@ test('rank celebration completes first when a level unlocks both a rank and mast
 
 
 test('editorial signed-in profile: accessible cards, demo recent covers and responsive screenshots', async ({ page }, info) => {
+  test.skip(info.project.name !== 'desktop', 'The test captures both viewport sizes from the desktop browser only.');
   // Uses the existing mocked reader account / responses; no real account is accessed.
   const state = await mockAuth(page);
   state.rankStats.total_xp = 300;
@@ -957,9 +958,13 @@ test('editorial signed-in profile: accessible cards, demo recent covers and resp
       await expect(page.locator('.profile-sidebar nav [aria-current="location"]')).toHaveCount(1);
       if (theme !== 'sepia') {
         await page.evaluate(() => document.fonts.ready);
+        // Capture the visible screen rather than stitching a very long page:
+        // fullPage screenshots displace the sticky site header mid-image.
+        await page.evaluate(() => window.scrollTo(0, 0));
+        await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
         await page.screenshot({
           path: info.outputPath('hunmeng-profile-' + device + '-' + theme + '.png'),
-          fullPage: true, animations: 'disabled',
+          fullPage: false, animations: 'disabled',
         });
       }
     }
