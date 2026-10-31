@@ -3,7 +3,7 @@ title: "Paragraph bookmarks in the reading room"
 excerpt: "Save a specific paragraph, browse personal bookmarks in the contents window, and return to saved passages."
 category: changelog
 publishedAt: '2026-10-31'
-order: 2
+order: 800
 ---
 
 **Paragraph bookmarks** are now available in the chapter reader. A bookmark saves a specific passage rather than adding an entire novel to a reading shelf.
