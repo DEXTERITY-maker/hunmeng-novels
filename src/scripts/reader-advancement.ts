@@ -369,7 +369,7 @@ async function loadXpHistory(userId:string,seq:number) {
     const isChapter=entry.event_kind==='chapter_finished';
     const isEvent=entry.event_kind==='event_reward';
     const novelName=catalogNames.get(entry.novel_slug) ?? entry.novel_slug;
-    const chapterNumber=/^chapter-(\\d+)$/.exec(entry.chapter_slug ?? '')?.[1];
+    const chapterNumber=/^chapter-(\d+)$/.exec(entry.chapter_slug ?? '')?.[1];
     label.textContent=isChapter?(chapterNumber?`Chapter ${chapterNumber} · ${novelName}`:`Chapter completed · ${novelName}`):
       entry.event_kind==='novel_finished'?`Novel completed · ${novelName}`:
       isEvent?'Halloween Reading Week prize':'Verified XP award';
