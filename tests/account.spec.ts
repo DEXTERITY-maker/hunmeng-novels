@@ -383,7 +383,6 @@ test('verified title can be equipped, display survives reload, and cards fit mob
  await loginFixture(page);
  await expect(page.locator('#reader-advancement')).toHaveAttribute('data-status','ready');
  await selectInner(page,'titles-achievements');
- await selectInner(page,'titles-achievements');
  await page.locator('[data-equip-title=regular]').click();
  await expect(page.locator('#reader-equipped-title')).toHaveText('Regular Reader');
  await page.reload();
@@ -686,7 +685,6 @@ test('achievement milestones and filters use verified statistics without awardin
  await expect(page.locator('[data-achievement-id="first-world"]')).toHaveAttribute('data-unlocked','true');
  await expect(page.locator('[data-achievement-id="one-hundred-days"]')).toHaveAttribute('data-unlocked','false');
  await selectInner(page,'titles-achievements');
- await selectInner(page,'titles-achievements');
  await page.locator('[data-achievement-filter="unlocked"]').click();
  await expect(page.locator('[data-achievement-id]:visible')).toHaveCount(6);
  await expect(page.locator('[data-achievement-filter="unlocked"]')).toHaveAttribute('aria-pressed','true');
@@ -725,7 +723,6 @@ test('next rank preview uses verified XP and advances at the exact rank boundary
  state.rankStats.last_rank_notified='iron';
  await loginFixture(page);
  await selectInner(page,'progress');
- await selectInner(page,'progress');
  await expect(page.locator('#reader-next-rank')).toBeVisible();
  await expect(page.locator('#reader-next-rank-name')).toHaveText('Bronze · Level 25');
  await expect(page.locator('#reader-next-rank-remaining')).toHaveText('1 verified XP remaining');
@@ -761,7 +758,6 @@ test('Dark Gold appears directly after Gold; Mythical has no next rank',async({p
  await page.reload();
  await expect(page.locator('#reader-rank')).toHaveText('Mythical');
  await expect(page.locator('#reader-next-rank')).toBeHidden();
- await selectInner(page,'progress');
  await selectInner(page,'progress');
  await expect(page.locator('#reader-highest-rank')).toBeVisible();
  await expect(page.locator('#reader-highest-rank')).toContainText('Keep reading toward level 500');
@@ -935,8 +931,16 @@ test('editorial signed-in profile: accessible cards, demo recent covers and resp
   // Uses the existing mocked reader account / responses; no real account is accessed.
   const state = await mockAuth(page);
   state.profileUser.user_metadata = { nickname: 'Demo Reader', avatar_color: 'sage', bio: 'Reading across worlds.' };
-  state.rankStats.total_xp = 300;
-  state.rankStats.chapters = 3;
+  const xpTo=(target:number)=>Array.from({length:target-1},(_,i)=>500+4*i+Math.floor(26*Math.sqrt(i))).reduce((a,b)=>a+b,0);
+  state.rankStats.total_xp = xpTo(25)+135;
+  state.rankStats.last_rank_notified = 'bronze';
+  state.rankStats.chapters = 180;
+  state.rankStats.completedNovels = 2;
+  state.rankStats.readingDays = 34;
+  state.xpAwards=[
+    {event_kind:'chapter_finished',novel_slug:'sad-zimy',chapter_slug:'glava-1',xp:80,awarded_at:'2026-10-31T08:00:00Z'},
+    {event_kind:'novel_finished',novel_slug:'khranitel-mayaka',chapter_slug:'',xp:400,awarded_at:'2026-10-30T08:00:00Z'},
+  ];
   await open(page);
   await page.evaluate(() => localStorage.setItem('hunmeng-novels:v1', JSON.stringify({
     version: 1,
@@ -956,6 +960,10 @@ test('editorial signed-in profile: accessible cards, demo recent covers and resp
   await expect(page.locator('#profile-recent-list .profile-recent-cover')).toHaveAttribute('src', /sad-zimy|garden/i);
   await expect(page.locator('#profile-recent-list progress')).toHaveJSProperty('value', 62);
   await expect(page.locator('#reader-rank')).not.toBeEmpty();
+  await expect(page.locator('#reader-rank')).toHaveText('Bronze');
+  await expect(page.locator('#reader-stat-chapters')).toHaveText('180');
+  await expect(page.locator('#reader-stat-novels')).toHaveText('2');
+  await expect(page.locator('#reader-stat-days')).toHaveText('34');
   await selectInner(page,'progress');
   await expect(page.locator('#reader-mastery-heading')).toBeVisible();
   await selectInner(page,'overview');
