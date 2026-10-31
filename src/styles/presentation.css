@@ -2982,11 +2982,12 @@ html[data-theme='sepia'] .library-page .library-row-art { filter: sepia(.22); }
 .reader-account-page #profile-details .rank-tile h4,
 .reader-account-page #profile-details .rank-tile-roman { color: var(--ink); }
 .reader-account-page #profile-details .rank-tile .rank-tile-levels,
-.reader-account-page #profile-details .rank-tile .rank-tile-description,
 .reader-account-page #profile-details .rank-tile-state { color: var(--muted); background: var(--soft); border-color: var(--line); }
+.reader-account-page #profile-details .rank-tile .rank-tile-description { color: var(--muted); }
 .reader-account-page #profile-details .rank-tile[data-rank-status=current] { border-color: var(--accent); background: var(--soft); box-shadow: inset 0 0 0 1px var(--accent); }
 .reader-account-page #profile-details .rank-tile[data-rank-status=current] .rank-tile-state { color: #fff; background: #205b47; }
-.reader-account-page #profile-details .reader-mastery-tile { min-height: 222px; }
+.reader-account-page #profile-details .reader-mastery-tile:nth-child(n) { min-height: 222px; background: var(--surface); border-color: var(--line); }
+.reader-account-page #profile-details .reader-mastery-tile .reader-mastery-levels { color: var(--muted); background: var(--soft); border-color: var(--line); }
 .reader-account-page #profile-details .reader-mastery-tile::before { display: none; }
 .reader-account-page #profile-details .reader-mastery-tile strong { color: var(--ink); }
 .reader-account-page #profile-details .reader-mastery-levels,
@@ -3009,6 +3010,11 @@ html[data-theme='sepia'] .library-page .library-row-art { filter: sepia(.22); }
 .reader-account-page #profile-details .reader-award .award-body :is(h4,strong),
 .reader-account-page #profile-details .achievement-tile h4,
 .reader-account-page #profile-details .reader-xp-history-list strong { color: var(--ink); }
+.reader-account-page #profile-details #profile-recent-reading {
+  background: var(--surface);
+  border-color: var(--line);
+}
+.reader-account-page #profile-details .reader-xp-history-list li { background: var(--surface); border-color: var(--line); }
 .reader-account-page #profile-details .profile-recent-reading {
   margin: 20px 0;
   padding: 17px;
