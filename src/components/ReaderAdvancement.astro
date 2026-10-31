@@ -15,11 +15,11 @@ import Icon from './Icon.astro';
       <div id="profile-continue-slot" class="profile-dashboard-card"></div>
       <section class="profile-dashboard-card profile-goal-card" aria-labelledby="profile-goal-title">
         <h3 id="profile-goal-title"><Icon name="target" size={22} />Next goal</h3>
-        <div id="profile-goal-slot"></div>
+        <div id="profile-goal-slot"><span class="profile-goal-medallion" aria-hidden="true"><Icon name="target" size={46} /></span></div>
       </section>
       <section id="profile-event-card" class="profile-dashboard-card" aria-labelledby="profile-event-title" hidden>
         <h3 id="profile-event-title"><Icon name="trophy" size={22} />Event awards</h3>
-        <div id="profile-event-awards-slot"></div>
+        <div id="profile-event-awards-slot"><span class="profile-award-placeholder" aria-hidden="true">+</span></div>
         <p id="profile-event-invitation" hidden>Halloween Reading Week is on. <a href="/events/halloween-2026/">Explore the event →</a></p>
       </section>
       <section class="profile-dashboard-card profile-recent-xp" aria-labelledby="profile-recent-xp-heading">
