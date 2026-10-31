@@ -812,6 +812,7 @@ test('reader mastery is a six-step level ladder distinct from the nine rank embl
  state.rankStats.total_xp=toLevel(12);
  state.rankStats.last_rank_notified='iron';
  await loginFixture(page);
+ await page.getByRole('tab',{name:'Progress',exact:true}).click();
  await expect(page.locator('.reader-mastery-tile')).toHaveCount(6);
  await expect(page.locator('#reader-mastery-name')).toHaveText('Experienced Reader');
  await expect(page.locator('[data-mastery-id="experienced"]')).toHaveAttribute('data-mastery-status','current');
@@ -996,6 +997,7 @@ test('editorial signed-in profile: accessible cards, demo recent covers and resp
   await page.locator('.profile-sidebar [data-profile-section="profile-reading"]').click();
   await expect(page.locator('#profile-reading')).toBeVisible();
   await page.locator('.profile-sidebar [data-profile-section="profile-details"]').click();
+  await page.getByRole('tab',{name:'Progress',exact:true}).click();
   await expect(page.locator('#reader-mastery-heading')).toBeVisible();
   await expect(page.locator('#reader-rank')).not.toBeEmpty();
   expect(readerSafeRequests(state.requests)).toBe(true);
