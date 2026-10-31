@@ -990,6 +990,13 @@ test('editorial signed-in profile: accessible cards, demo recent covers and resp
           path: info.outputPath('hunmeng-profile-' + device + '-' + theme + '.png'),
           fullPage: false, animations: 'disabled',
         });
+        if (width === 390) {
+          // Capture the entire Overview dashboard below the fold as well as its first screen.
+          await page.locator('#auth-logged-in').screenshot({
+            path: info.outputPath('hunmeng-profile-mobile-' + theme + '-overview.png'),
+            animations: 'disabled',
+          });
+        }
       }
     }
   }
