@@ -3296,3 +3296,25 @@ html[data-theme='sepia'] .library-page .library-row-art { filter: sepia(.24) sat
 .reader-account-page #profile-details .reader-mastery-tile[data-mastery-status=current] small {
   color: var(--ink);
 }
+
+/* State labels stay readable on the newly light mastery cards in every theme. */
+.reader-account-page #profile-details .reader-mastery-grid .reader-mastery-tile[data-mastery-status=current] {
+  background: var(--surface);
+  border-color: var(--accent);
+}
+.reader-account-page #profile-details .reader-mastery-grid .reader-mastery-tile [data-mastery-state] {
+  background: var(--soft);
+  color: var(--ink);
+  border: 1px solid var(--line);
+}
+.reader-account-page #profile-details .reader-mastery-grid .reader-mastery-tile[data-mastery-status=current] [data-mastery-state] {
+  background: #205b47;
+  border-color: #205b47;
+  color: #fff;
+}
+.reader-account-page #profile-details .reader-mastery-grid .reader-mastery-tile[data-mastery-status=locked] [data-mastery-state],
+.reader-account-page #profile-details .reader-mastery-grid .reader-mastery-tile[data-mastery-status=earned] [data-mastery-state] {
+  background: var(--soft);
+  border-color: var(--line);
+  color: var(--ink);
+}
