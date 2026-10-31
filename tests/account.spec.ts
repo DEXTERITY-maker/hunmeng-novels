@@ -222,7 +222,8 @@ for (const width of [320, 390, 1440]) {
     expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
   };
   await assertView('profile-details');
-  await expect(page.locator('#profile-details .profile-local-note')).toBeVisible();
+  await expect(page.locator('#profile-metrics-slot')).toBeVisible();
+  await expect(page.locator('#profile-details .profile-local-note')).toBeHidden();
   await page.evaluate(() => { window.scrollTo(0,0); (document.activeElement as HTMLElement | null)?.blur(); });
   await page.screenshot({path:testInfo.outputPath(`hunmeng-account-tabs-profile-${width}.png`),fullPage:true,animations:'disabled'});
   await page.locator('.profile-sidebar nav a[href="#profile-reading"]').click();
@@ -253,6 +254,7 @@ for (const width of [320, 390, 1440]) {
 }
 test('меню шапки показывает аватар и настройки, а выход сохраняет библиотеку',async({page})=>{
  const state=await mockAuth(page);await loginFixture(page);
+ await page.locator('#profile-edit-open').click();
  await page.getByLabel('Nickname',{exact:true}).fill('Моряк');
  await page.getByRole('radio',{name:'Blue',exact:true}).check();
  await page.getByRole('button',{name:'Save profile',exact:true}).click();
@@ -288,7 +290,8 @@ test('выход из меню при недоступном сервере уд
 });
 test('профиль: никнейм, описание и аватар сохраняются между посещениями только в Auth metadata',async({page})=>{
  const state=await mockAuth(page);await loginFixture(page);
- await expect(page.getByRole('heading',{name:'My profile',exact:true})).toBeVisible();
+ await expect(page.locator('#profile-name')).toBeVisible();
+ await page.locator('#profile-edit-open').click();
  await page.getByLabel('Nickname',{exact:true}).fill('Тихий_читатель');
  await page.getByLabel('Bio',{exact:true}).fill('Люблю истории о море.');
  await page.getByRole('radio',{name:'Blue',exact:true}).check();
@@ -303,6 +306,7 @@ test('профиль: никнейм, описание и аватар сохр�
 });
 test('некорректный никнейм и ошибки сети не дают ложного сохранения',async({page})=>{
  const state=await mockAuth(page);await loginFixture(page);
+ await page.locator('#profile-edit-open').click();
  await page.getByLabel('Nickname',{exact:true}).fill('<script>');await page.getByRole('button',{name:'Save profile',exact:true}).click();
  await expect(page.locator('#profile-status')).toContainText('Check your nickname');expect(state.profileCalls).toBe(0);
  await page.getByLabel('Nickname',{exact:true}).fill('Моряк');state.profileError=500;
@@ -315,6 +319,7 @@ test('некорректный никнейм и ошибки сети не да
 });
 test('истёкшая сессия закрывает профиль и не отправляет изменения',async({page})=>{
  const state=await mockAuth(page);await loginFixture(page);state.sessionExpired=true;
+ await page.locator('#profile-edit-open').click();
  await page.getByLabel('Nickname',{exact:true}).fill('Моряк');await page.getByRole('button',{name:'Save profile',exact:true}).click();
  await expect(page.locator('#auth-logged-in')).toBeHidden();await expect(page.locator('#account-status')).toContainText('Your session has ended');expect(state.profileCalls).toBe(0);
 });
@@ -343,6 +348,7 @@ test('настройки чтения: сохранение, обновлени�
 
 test('недоступный сервер проверки сессии не выдаётся за выход из аккаунта',async({page})=>{
  const state=await mockAuth(page);await loginFixture(page);state.verifyError=503;
+ await page.locator('#profile-edit-open').click();
  await page.getByLabel('Nickname',{exact:true}).fill('Моряк');await page.getByRole('button',{name:'Save profile',exact:true}).click();
  await expect(page.locator('#profile-status')).toContainText('Unable to verify your session');
  await expect(page.locator('#auth-logged-in')).toBeVisible();expect(state.profileCalls).toBe(0);
@@ -374,6 +380,7 @@ test('verified title can be equipped, display survives reload, and cards fit mob
  state.rankStats.total_xp=30*80;
  await page.setViewportSize({width:320,height:800});
  await loginFixture(page);
+ await page.getByRole('tab',{name:'Titles & achievements'}).click();
  await expect(page.locator('#reader-advancement')).toHaveAttribute('data-status','ready');
  await page.locator('[data-equip-title=regular]').click();
  await expect(page.locator('#reader-equipped-title')).toHaveText('Regular Reader');
@@ -416,10 +423,12 @@ test('verified XP ledger shows real server awards, not local reading estimates',
  ];
  await loginFixture(page);
  await expect(page.locator('#reader-advancement')).toHaveAttribute('data-status','ready');
+ await page.getByRole('tab',{name:'XP history'}).click();
  await expect(page.locator('#reader-xp-history-list li')).toHaveCount(2);
  await expect(page.locator('#reader-xp-history-list li').first()).toContainText('Novel completed');
+ await expect(page.locator('#reader-xp-history-list li').first()).toContainText('The Garden');
  await expect(page.locator('#reader-xp-history-list li').first()).toContainText('+400 XP');
- await expect(page.locator('#reader-xp-history-list li').last()).toContainText('Chapter completed');
+ await expect(page.locator('#reader-xp-history-list li').last()).toContainText('Chapter 1');
  await expect(page.locator('#reader-xp-history-list li').last()).toContainText('+80 XP');
  expect(state.xpHistoryRequests).toBeGreaterThan(0);
  expect(readerSafeRequests(state.requests)).toBe(true);
@@ -593,6 +602,7 @@ test('Reviewer title requires 20 approved reviews, stays separate from rank and 
  const state=await mockAuth(page);
  state.rankStats.approvedReviews=19;
  await loginFixture(page);
+ await page.getByRole('tab',{name:'Titles & achievements'}).click();
  await expect(page.locator('[data-title-id=reviewer] [data-award-progress]')).toHaveText('19 / 20');
  await expect(page.locator('#reader-stat-reviews')).toHaveText('19');
  await expect(page.locator('[data-equip-title=reviewer]')).toBeDisabled();
@@ -649,6 +659,8 @@ test('profile distinguishes completed device shelf from verified novel rewards',
  await page.locator('#reader-auth-submit').click();
  await expect(page.locator('#auth-logged-in')).toBeVisible();
  await expect(page.locator('#reader-stat-shelf-completed')).toHaveText('1');
+ await expect(page.locator('#reader-stat-shelf-completed')).toBeHidden();
+ await expect(page.locator('#profile-metrics-slot .advancement-stats > div')).toHaveCount(4);
  await expect(page.locator('#reader-stat-novels')).toHaveText('0');
  expect(state.rankStats.completedNovels).toBe(0);
  await page.evaluate(()=>{
@@ -667,9 +679,10 @@ test('achievement milestones and filters use verified statistics without awardin
  state.rankStats.completedNovels=1;
  state.rankStats.readingDays=8;
  await loginFixture(page);
+ await page.getByRole('tab',{name:'Titles & achievements'}).click();
  await expect(page.locator('#reader-advancement')).toHaveAttribute('data-status','ready');
  await expect(page.locator('[data-achievement-id]')).toHaveCount(13);
- await expect(page.locator('#reader-stat-achievements')).toHaveText('6');
+ await expect(page.locator('#reader-stat-achievements')).toHaveText('6 / 13');
  await expect(page.locator('#reader-achievements-summary')).toContainText('6 of 13');
  await expect(page.locator('[data-achievement-id="first-world"]')).toHaveAttribute('data-unlocked','true');
  await expect(page.locator('[data-achievement-id="one-hundred-days"]')).toHaveAttribute('data-unlocked','false');
@@ -689,7 +702,8 @@ test('achievement milestones and filters use verified statistics without awardin
 test('unlocked achievement filter explains an empty verified history',async({page})=>{
  await mockAuth(page);
  await loginFixture(page);
- await expect(page.locator('#reader-stat-achievements')).toHaveText('0');
+ await page.getByRole('tab',{name:'Titles & achievements'}).click();
+ await expect(page.locator('#reader-stat-achievements')).toHaveText('0 / 13');
  await page.locator('[data-achievement-filter="unlocked"]').click();
  await expect(page.locator('[data-achievement-id]:visible')).toHaveCount(0);
  await expect(page.locator('#reader-achievements-empty')).toBeVisible();
@@ -709,6 +723,7 @@ test('next rank preview uses verified XP and advances at the exact rank boundary
  state.rankStats.total_xp=toLevel(25)-1;
  state.rankStats.last_rank_notified='iron';
  await loginFixture(page);
+ await page.getByRole('tab',{name:'Progress',exact:true}).click();
  await expect(page.locator('#reader-next-rank')).toBeVisible();
  await expect(page.locator('#reader-next-rank-name')).toHaveText('Bronze · Level 25');
  await expect(page.locator('#reader-next-rank-remaining')).toHaveText('1 verified XP remaining');
@@ -736,6 +751,7 @@ test('Dark Gold appears directly after Gold; Mythical has no next rank',async({p
  state.rankStats.total_xp=toLevel(110);
  state.rankStats.last_rank_notified='gold';
  await loginFixture(page);
+ await page.getByRole('tab',{name:'Progress',exact:true}).click();
  await expect(page.locator('#reader-rank')).toHaveText('Gold');
  await expect(page.locator('#reader-next-rank-name')).toHaveText('Dark Gold · Level 140');
  await expect(page.locator('#reader-next-rank-image')).toHaveAttribute('src','/images/ranks/dark-gold.svg');
@@ -763,7 +779,9 @@ test('closest verified achievement updates from server progress without granting
  expect(state.rankStats.total_xp).toBe(0);
  await expect(page.locator('#reader-level')).toHaveText('Level 1');
  await expect(page.locator('#reader-all-achievements')).toBeHidden();
+ await page.getByRole('tab',{name:'Titles & achievements'}).click();
  await page.locator('[data-achievement-filter="unlocked"]').click();
+ await page.getByRole('tab',{name:'Overview'}).click();
  await expect(page.locator('#reader-next-achievement')).toBeVisible();
  expect(readerSafeRequests(state.requests)).toBe(true);
 });
@@ -928,14 +946,14 @@ test('editorial signed-in profile: accessible cards, demo recent covers and resp
   await fill(page);
   await page.locator('#reader-auth-submit').click();
   await expect(page.locator('#auth-logged-in')).toBeVisible();
-  await expect(page.locator('#profile-hero-identity')).toBeVisible();
+  await expect(page.locator('.profile-member-identity')).toBeVisible();
   await expect(page.locator('#profile-avatar')).toBeVisible();
-  await expect(page.locator('#profile-sidebar-rank')).toBeVisible();
+  await expect(page.locator('#reader-current-emblem')).toBeVisible();
   await expect(page.locator('#profile-recent-list .profile-recent-card')).toHaveCount(1);
   await expect(page.locator('#profile-recent-list .profile-recent-cover')).toHaveAttribute('src', /sad-zimy|garden/i);
   await expect(page.locator('#profile-recent-list progress')).toHaveJSProperty('value', 62);
   await expect(page.locator('#reader-rank')).not.toBeEmpty();
-  await expect(page.locator('#reader-mastery-heading')).toBeVisible();
+  await expect(page.locator('#reader-mastery-heading')).toHaveText("Reader's Path");
 
   for (const width of [1440, 390]) {
     const device = width === 390 ? 'mobile' : 'desktop';
@@ -943,8 +961,8 @@ test('editorial signed-in profile: accessible cards, demo recent covers and resp
     for (const theme of ['light', 'dark', 'sepia'] as const) {
       await page.locator('html').evaluate((el, value) => { el.dataset.theme = value; }, theme);
       await expect(page.locator('#profile-details')).toBeVisible();
-      const hero = await page.locator('.profile-hero').boundingBox();
-      const identity = await page.locator('#profile-hero-identity').boundingBox();
+      const hero = await page.locator('.profile-member-hero').boundingBox();
+      const identity = await page.locator('.profile-member-identity').boundingBox();
       const panel = await page.locator('#profile-details').boundingBox();
       const recent = await page.locator('.profile-recent-card').first().boundingBox();
       expect(hero).toBeTruthy();
