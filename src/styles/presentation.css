@@ -4039,3 +4039,31 @@ html[data-theme='dark'] .reader-account-page .profile-sidebar {--profile-landsca
   .reader-account-page #profile-details .profile-recent-cover {width:70px;height:100px}
   .reader-account-page #profile-event-awards-slot .halloween-profile-award-image {width:96px;height:96px;flex-basis:96px}
 }
+/* Review fixes for the mockup pass. */
+.reader-account-page .profile-member-hero {grid-template-columns:minmax(0,1fr) minmax(330px,420px)}
+.reader-account-page .profile-rank-slot #advancement-heading {white-space:nowrap}
+.reader-account-page #profile-recent-status:has(+ #profile-recent-list > li) {display:none}
+.reader-account-page #profile-recent-list:empty {margin:0}
+.reader-account-page #profile-event-card #profile-event-invitation {
+  display:grid;grid-template-columns:96px minmax(0,1fr);align-items:center;gap:6px 18px;margin:0 20px 18px;padding:0;font-size:1rem;
+}
+.reader-account-page #profile-event-card #profile-event-invitation::before {
+  content:'';grid-row:1 / span 2;width:96px;height:96px;background:url('/images/events/halloween-2026/gold-128.webp') center/contain no-repeat;
+}
+html[data-theme='dark'] .reader-account-page .profile-dashboard-card h3 svg,
+html[data-theme='dark'] .reader-account-page #profile-recent-reading h3 svg {color:#8fd3b4}
+@media(prefers-color-scheme:dark){html[data-theme='system'] .reader-account-page .profile-dashboard-card h3 svg {color:#8fd3b4}}
+@media(max-width:1100px){
+  .reader-account-page .profile-member-hero {grid-template-columns:minmax(0,1fr) minmax(280px,340px)}
+}
+@media(max-width:760px){
+  .reader-account-page .profile-member-hero {grid-template-columns:minmax(0,1fr);grid-template-areas:'identity' 'rank' 'actions';padding-top:150px}
+  .reader-account-page .profile-member-identity {flex-direction:row;align-items:flex-end}
+  .reader-account-page .profile-member-copy {min-width:0}
+  .reader-account-page .profile-rank-slot #advancement-heading {font-size:1.15rem}
+  .reader-account-page #profile-event-awards-slot .halloween-profile-award {flex-wrap:wrap;gap:12px}
+  .reader-account-page #profile-event-awards-slot .halloween-profile-award-image {width:84px;height:84px;flex-basis:84px}
+  .reader-account-page #profile-event-awards-slot .halloween-profile-award-info {flex:1 1 150px}
+  .reader-account-page #profile-event-card #profile-event-invitation {grid-template-columns:72px minmax(0,1fr);margin:0 16px 14px}
+  .reader-account-page #profile-event-card #profile-event-invitation::before {width:72px;height:72px}
+}
