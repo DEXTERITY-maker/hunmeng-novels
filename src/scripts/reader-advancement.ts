@@ -75,7 +75,7 @@ function paintAchievementFilter() {
   document.querySelectorAll<HTMLButtonElement>('[data-achievement-filter]').forEach(button=>{
     button.setAttribute('aria-pressed',String(button.dataset.achievementFilter===achievementFilter));
   });
-  stat('reader-stat-achievements',unlocked);
+  stat('reader-stat-achievements',`${unlocked} / ${tiles.length}`);
   const summary=document.getElementById('reader-achievements-summary');
   if(summary) summary.textContent=`${unlocked} of ${tiles.length} verified milestones unlocked`;
   const empty=document.getElementById('reader-achievements-empty');
@@ -85,7 +85,7 @@ function renderStats(s:VerifiedStats) {
   const level=levelFromTotalXp(s.total_xp);
   const hero=document.querySelector<HTMLElement>('.advancement-hero')!;
   hero.hidden=false;
-  document.querySelectorAll<HTMLElement>('#reader-advancement .advancement-stats, #reader-advancement .advancement-section:not(#halloween-profile-awards-section)')
+  document.querySelectorAll<HTMLElement>('.advancement-stats, #reader-advancement .advancement-section:not(#halloween-profile-awards-section)')
     .forEach(section=>{section.hidden=false;});
   stat('reader-level',`Level ${level.level}`);
   stat('reader-rank',level.rank.en);
@@ -345,20 +345,29 @@ async function loadXpHistory(userId:string,seq:number) {
     return;
   }
   status.textContent='Your 15 most recent verified rewards.';
+  let catalog: Array<{slug:string;title:string;chapters:Array<{slug:string;number:number}>}>=[];
+  try {
+    const serialized=document.getElementById('profile-catalog-titles')?.dataset.novels;
+    if(serialized)catalog=JSON.parse(serialized);
+  }catch{ /* Preserve slug fallback for invalid or missing catalog data. */ }
+  const novelBySlug=new Map(catalog.map(n=>[n.slug,n]));
   for(const entry of data) {
     const row=document.createElement('li');
     const label=document.createElement('span');
     const isChapter=entry.event_kind==='chapter_finished';
-    label.textContent=isChapter?'Chapter completed':
-      entry.event_kind==='novel_finished'?'Novel completed':
-      entry.event_kind==='event_reward'?'Halloween Reading Week prize':'Verified XP award';
+    const isEvent=entry.event_kind==='event_reward';
+    const novel=novelBySlug.get(entry.novel_slug);
+    const novelTitle=novel?.title || entry.novel_slug;
+    const knownNumber=novel?.chapters.find(ch=>ch.slug===entry.chapter_slug)?.number;
+    const parsedNumber=/^(?:chapter-|glava-)(\\d+)$/.exec(entry.chapter_slug)?.[1];
+    const chapterNumber=knownNumber || (parsedNumber ? Number(parsedNumber) : null);
+    label.textContent=isChapter ? `Chapter ${chapterNumber || entry.chapter_slug} · ${novelTitle}` :
+      entry.event_kind==='novel_finished' ? `Novel completed · ${novelTitle}` :
+      isEvent ? 'Halloween Reading Week prize' : 'Verified XP award';
     const detail=document.createElement('small');
     const date=Date.parse(entry.awarded_at);
-    const when=Number.isFinite(date)?new Date(date).toLocaleDateString():'Date unavailable';
-    const isEvent=entry.event_kind==='event_reward';
-    detail.textContent=isEvent?
-      `${entry.chapter_slug==='place-1'?'Place 1':entry.chapter_slug==='place-2'?'Place 2':entry.chapter_slug==='place-3'?'Place 3':'Event reward'} · ${when}`:
-      `${entry.novel_slug} · ${when}`;
+    const when=Number.isFinite(date) ? new Intl.DateTimeFormat('en-GB',{day:'numeric',month:'short',timeZone:'UTC'}).format(new Date(date)) : 'Date unavailable';
+    detail.textContent=isEvent ? `${entry.chapter_slug==='place-1'?'Place 1':entry.chapter_slug==='place-2'?'Place 2':entry.chapter_slug==='place-3'?'Place 3':'Event reward'} · ${when}` : when;
     const amount=document.createElement('strong');
     amount.textContent=`+${entry.xp} XP`;
     row.append(label,detail,amount);
