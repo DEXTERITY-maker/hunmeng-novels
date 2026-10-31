@@ -1,5 +1,6 @@
 ---
 import { ranks,readerMasteryTiers,titles,achievements,rankImage,masteryImage } from '../lib/reader-progression';
+import Icon from './Icon.astro';
 ---
 <div id="reader-advancement" class="reader-advancement" data-status="loading" aria-label="Reader progression">
   <p id="reader-advancement-status" class="fine" role="status" aria-live="polite">Loading verified reading achievements…</p>
@@ -13,16 +14,16 @@ import { ranks,readerMasteryTiers,titles,achievements,rankImage,masteryImage } f
     <div class="profile-overview-grid">
       <div id="profile-continue-slot" class="profile-dashboard-card"></div>
       <section class="profile-dashboard-card profile-goal-card" aria-labelledby="profile-goal-title">
-        <h3 id="profile-goal-title">Next goal</h3>
+        <h3 id="profile-goal-title"><Icon name="target" size={22} />Next goal</h3>
         <div id="profile-goal-slot"></div>
       </section>
       <section id="profile-event-card" class="profile-dashboard-card" aria-labelledby="profile-event-title" hidden>
-        <h3 id="profile-event-title">Event awards</h3>
+        <h3 id="profile-event-title"><Icon name="trophy" size={22} />Event awards</h3>
         <div id="profile-event-awards-slot"></div>
         <p id="profile-event-invitation" hidden>Halloween Reading Week is on. <a href="/events/halloween-2026/">Explore the event →</a></p>
       </section>
       <section class="profile-dashboard-card profile-recent-xp" aria-labelledby="profile-recent-xp-heading">
-        <div class="profile-card-heading"><h3 id="profile-recent-xp-heading">Recent XP</h3><a href="#xp-history" data-open-xp-history>View history →</a></div>
+        <div class="profile-card-heading"><h3 id="profile-recent-xp-heading"><Icon name="chart" size={22} />Recent XP</h3><a href="#xp-history" data-open-xp-history>View history →</a></div>
         <p id="profile-recent-xp-status" class="fine" role="status">Loading verified XP…</p>
         <ol id="profile-recent-xp-list" class="reader-xp-history-list" aria-label="Three latest verified XP awards"></ol>
       </section>
@@ -71,10 +72,10 @@ import { ranks,readerMasteryTiers,titles,achievements,rankImage,masteryImage } f
     </div>
   </section>
   <section class="advancement-stats" aria-label="Reading statistics" hidden>
-    <div><span>Chapters</span><strong id="reader-stat-chapters">0</strong></div>
-    <div><span>Novels finished</span><strong id="reader-stat-novels">0</strong></div>
-    <div><span>Reading days</span><strong id="reader-stat-days">0</strong></div>
-    <div><span>Achievements</span><strong id="reader-stat-achievements">0 / {achievements.length}</strong></div>
+    <div><i class="profile-stat-icon"><Icon name="book" size={26} /></i><span>Chapters</span><strong id="reader-stat-chapters">0</strong></div>
+    <div><i class="profile-stat-icon"><Icon name="layers" size={26} /></i><span>Novels finished</span><strong id="reader-stat-novels">0</strong></div>
+    <div><i class="profile-stat-icon"><Icon name="calendar" size={26} /></i><span>Reading days</span><strong id="reader-stat-days">0</strong></div>
+    <div><i class="profile-stat-icon"><Icon name="trophy" size={26} /></i><span>Achievements</span><strong id="reader-stat-achievements">0 / {achievements.length}</strong></div>
   </section>
   <div class="profile-legacy-stat-ids" hidden aria-hidden="true">
     <span id="reader-stat-collection">—</span><span id="reader-stat-reviews">—</span>

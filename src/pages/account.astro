@@ -60,7 +60,7 @@ const profileCatalog=(await getLibrary()).map(n=>({slug:n.slug,title:n.title,cha
             </div>
           </header>
           <aside class="profile-sidebar" aria-label="Profile sections">
-            <nav aria-label="Profile settings"><a href="#profile-details" aria-current="location" aria-controls="profile-details" data-profile-section="profile-details">Profile</a><a href="#profile-reading" aria-controls="profile-reading" data-profile-section="profile-reading">Reading</a><a href="#profile-account" aria-controls="profile-account" data-profile-section="profile-account">Account</a></nav>
+            <nav aria-label="Profile settings"><a href="#profile-details" aria-current="location" aria-controls="profile-details" data-profile-section="profile-details"><Icon name="user" size={20} />Profile</a><a href="#profile-reading" aria-controls="profile-reading" data-profile-section="profile-reading"><Icon name="book" size={20} />Reading</a><a href="#profile-account" aria-controls="profile-account" data-profile-section="profile-account"><Icon name="gear" size={20} />Account</a></nav>
             <div class="profile-quicklinks"><a class="profile-library-link" href="/library/"><Icon name="book" size={19} /> My library <span aria-hidden="true">→</span></a>
             <a class="profile-library-link" href="/studio/"><Icon name="pen" size={19} /> Writing studio <span aria-hidden="true">→</span></a></div>
           </aside>
@@ -70,7 +70,7 @@ const profileCatalog=(await getLibrary()).map(n=>({slug:n.slug,title:n.title,cha
               <div id="profile-metrics-slot" class="profile-metrics-slot" aria-label="Verified reader statistics"></div>
               <ReaderAdvancement />
               <section id="profile-recent-reading" class="profile-recent-reading" aria-labelledby="profile-recent-heading">
-                <div class="advancement-section-header"><p class="eyebrow">Pick up where you left off</p><h3 id="profile-recent-heading">Continue reading</h3></div>
+                <div class="advancement-section-header"><p class="eyebrow">Pick up where you left off</p><h3 id="profile-recent-heading"><Icon name="book" size={22} />Continue reading</h3></div>
                 <p id="profile-recent-status" class="fine" role="status">Checking recent chapters…</p>
                 <ol id="profile-recent-list" class="profile-recent-list" aria-label="Recently read novels"></ol>
                 <p class="fine">These positions are saved on this device. Cloud sync is optional in Account.</p>
