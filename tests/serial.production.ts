@@ -423,11 +423,12 @@ test('library design: real artwork, text-safe reading rows, progress and respons
       await expect(row.locator('.library-row-copy .library-row-chapter')).toContainText(' of ');
       const href = await row.locator('.library-row-action').getAttribute('href');
       expect(href).toContain('/novel/' + novel.slug + '/chapter-');
-      const cover = await row.locator('.library-row-cover img').evaluate(el => {
+      // The second cover may be below the first fold on a 390px phone.
+      await row.locator('.library-row-cover img').scrollIntoViewIfNeeded();
+      await expect.poll(() => row.locator('.library-row-cover img').evaluate(el => {
         const img = el as HTMLImageElement;
         return img.complete && img.naturalWidth > 0;
-      });
-      expect(cover).toBe(true);
+      })).toBe(true);
     }
     for (const theme of ['light', 'dark', 'sepia'] as const) {
       await page.locator('html').evaluate((el, value) => { el.dataset.theme = value; }, theme);
