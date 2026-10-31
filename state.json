@@ -1,0 +1,547 @@
+{
+  "version": 1,
+  "initialized": true,
+  "deployedSha": "60b8b0f9978b02f122681dc14e0a4b136f7e0135",
+  "chapters": {
+    "comprehension-against-the-heavens:1": {
+      "status": "baseline",
+      "slug": "chapter-1",
+      "title": "The Boy Who Read the Last Page",
+      "novelTitle": "Comprehension Against the Heavens"
+    },
+    "comprehension-against-the-heavens:2": {
+      "status": "baseline",
+      "slug": "chapter-2",
+      "title": "The Man Who Used His Card",
+      "novelTitle": "Comprehension Against the Heavens"
+    },
+    "comprehension-against-the-heavens:3": {
+      "status": "baseline",
+      "slug": "chapter-3",
+      "title": "The Drawing That Could Not Be Right",
+      "novelTitle": "Comprehension Against the Heavens"
+    },
+    "comprehension-against-the-heavens:4": {
+      "status": "baseline",
+      "slug": "chapter-4",
+      "title": "The Seventh Page",
+      "novelTitle": "Comprehension Against the Heavens"
+    },
+    "comprehension-against-the-heavens:5": {
+      "status": "baseline",
+      "slug": "chapter-5",
+      "title": "Water Does Not Forget Its Weight",
+      "novelTitle": "Comprehension Against the Heavens"
+    },
+    "comprehension-against-the-heavens:6": {
+      "status": "baseline",
+      "slug": "chapter-6",
+      "title": "A Name Is Not a Person",
+      "novelTitle": "Comprehension Against the Heavens"
+    },
+    "the-latency-of-tomorrow:1": {
+      "status": "baseline",
+      "slug": "chapter-1",
+      "title": "The File He Did Not Open",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:2": {
+      "status": "baseline",
+      "slug": "chapter-2",
+      "title": "A Number for the Case",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:3": {
+      "status": "baseline",
+      "slug": "chapter-3",
+      "title": "Fourteen Minutes",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:4": {
+      "status": "baseline",
+      "slug": "chapter-4",
+      "title": "His Ordinary Thursday",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:5": {
+      "status": "baseline",
+      "slug": "chapter-5",
+      "title": "The Meter Outside the Model",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:6": {
+      "status": "baseline",
+      "slug": "chapter-6",
+      "title": "A Message Is Not a Voice",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:7": {
+      "status": "baseline",
+      "slug": "chapter-7",
+      "title": "The Cost of a Ticket",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:8": {
+      "status": "baseline",
+      "slug": "chapter-8",
+      "title": "Amina's Shift",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:9": {
+      "status": "baseline",
+      "slug": "chapter-9",
+      "title": "The Narrow Permission",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:10": {
+      "status": "baseline",
+      "slug": "chapter-10",
+      "title": "Heat Has to Go Somewhere",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:11": {
+      "status": "baseline",
+      "slug": "chapter-11",
+      "title": "The Driver's Receipt",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:12": {
+      "status": "baseline",
+      "slug": "chapter-12",
+      "title": "An Easy Explanation",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:13": {
+      "status": "baseline",
+      "slug": "chapter-13",
+      "title": "What the Camera Cannot Know",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:14": {
+      "status": "baseline",
+      "slug": "chapter-14",
+      "title": "The Other Injured Man",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:15": {
+      "status": "baseline",
+      "slug": "chapter-15",
+      "title": "A Signature in Two Versions",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:16": {
+      "status": "baseline",
+      "slug": "chapter-16",
+      "title": "The First Refusal",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:17": {
+      "status": "baseline",
+      "slug": "chapter-17",
+      "title": "No One Searches Alone",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:18": {
+      "status": "baseline",
+      "slug": "chapter-18",
+      "title": "The Generator's Hour",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:19": {
+      "status": "baseline",
+      "slug": "chapter-19",
+      "title": "A Place the Report Excluded",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:20": {
+      "status": "baseline",
+      "slug": "chapter-20",
+      "title": "January Without News",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:21": {
+      "status": "baseline",
+      "slug": "chapter-21",
+      "title": "The Same Error Twice",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:22": {
+      "status": "baseline",
+      "slug": "chapter-22",
+      "title": "A Witness with a Family",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:23": {
+      "status": "baseline",
+      "slug": "chapter-23",
+      "title": "The Contract Beneath the Contract",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:24": {
+      "status": "baseline",
+      "slug": "chapter-24",
+      "title": "A Test Without an Audience",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:25": {
+      "status": "baseline",
+      "slug": "chapter-25",
+      "title": "The False Departure",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:26": {
+      "status": "baseline",
+      "slug": "chapter-26",
+      "title": "What Guo Is Buying",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:27": {
+      "status": "baseline",
+      "slug": "chapter-27",
+      "title": "The Boy at the Window",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:28": {
+      "status": "baseline",
+      "slug": "chapter-28",
+      "title": "A Fault with a Name",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:29": {
+      "status": "baseline",
+      "slug": "chapter-29",
+      "title": "The Supply That Continued",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:30": {
+      "status": "baseline",
+      "slug": "chapter-30",
+      "title": "Amina's Condition",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:31": {
+      "status": "baseline",
+      "slug": "chapter-31",
+      "title": "A Witness Without a Face",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:32": {
+      "status": "baseline",
+      "slug": "chapter-32",
+      "title": "The Distance Between Proofs",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:33": {
+      "status": "baseline",
+      "slug": "chapter-33",
+      "title": "Before the Door Opens",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:34": {
+      "status": "baseline",
+      "slug": "chapter-34",
+      "title": "The Machinery of an Alibi",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:35": {
+      "status": "baseline",
+      "slug": "chapter-35",
+      "title": "The Room That Proved Nothing",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:36": {
+      "status": "baseline",
+      "slug": "chapter-36",
+      "title": "A Finding, Not an Answer",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:37": {
+      "status": "baseline",
+      "slug": "chapter-37",
+      "title": "A Case Is Not a Company",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:38": {
+      "status": "baseline",
+      "slug": "chapter-38",
+      "title": "The First Paid Pilot",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:39": {
+      "status": "baseline",
+      "slug": "chapter-39",
+      "title": "The City That Kept Working",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:40": {
+      "status": "baseline",
+      "slug": "chapter-40",
+      "title": "Qiao's Night List",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:41": {
+      "status": "baseline",
+      "slug": "chapter-41",
+      "title": "The School's Quiet Server",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:42": {
+      "status": "baseline",
+      "slug": "chapter-42",
+      "title": "A Better Prediction",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:43": {
+      "status": "baseline",
+      "slug": "chapter-43",
+      "title": "The Price of Being Ready",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:44": {
+      "status": "baseline",
+      "slug": "chapter-44",
+      "title": "The Brother in the Public Record",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:45": {
+      "status": "baseline",
+      "slug": "chapter-45",
+      "title": "Another Kind of Heat",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:46": {
+      "status": "baseline",
+      "slug": "chapter-46",
+      "title": "The Priority Column",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:47": {
+      "status": "baseline",
+      "slug": "chapter-47",
+      "title": "A Cooling Promise",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:48": {
+      "status": "baseline",
+      "slug": "chapter-48",
+      "title": "The Room with No Spare Bed",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:49": {
+      "status": "baseline",
+      "slug": "chapter-49",
+      "title": "The Second Forecast",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:50": {
+      "status": "baseline",
+      "slug": "chapter-50",
+      "title": "A Manual Decision",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:51": {
+      "status": "baseline",
+      "slug": "chapter-51",
+      "title": "The Cost Outside the Chart",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:52": {
+      "status": "baseline",
+      "slug": "chapter-52",
+      "title": "The Apology That Matters",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:53": {
+      "status": "baseline",
+      "slug": "chapter-53",
+      "title": "A Test Against the Past",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:54": {
+      "status": "baseline",
+      "slug": "chapter-54",
+      "title": "The Unused Battery",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:55": {
+      "status": "baseline",
+      "slug": "chapter-55",
+      "title": "A Hearing in Daylight",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:56": {
+      "status": "baseline",
+      "slug": "chapter-56",
+      "title": "The Margin Clause",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:57": {
+      "status": "baseline",
+      "slug": "chapter-57",
+      "title": "An Invitation Across Borders",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:58": {
+      "status": "baseline",
+      "slug": "chapter-58",
+      "title": "A Different Grid",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:59": {
+      "status": "baseline",
+      "slug": "chapter-59",
+      "title": "The Local Engineer's Map",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:60": {
+      "status": "baseline",
+      "slug": "chapter-60",
+      "title": "A Part Worth Waiting For",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:61": {
+      "status": "baseline",
+      "slug": "chapter-61",
+      "title": "The Cost of Capital",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:62": {
+      "status": "baseline",
+      "slug": "chapter-62",
+      "title": "Arjun's Factory",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:63": {
+      "status": "baseline",
+      "slug": "chapter-63",
+      "title": "The Smallest Reliable Model",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:64": {
+      "status": "baseline",
+      "slug": "chapter-64",
+      "title": "A Robot Needs a Workshop",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:65": {
+      "status": "baseline",
+      "slug": "chapter-65",
+      "title": "The Contract in Two Languages",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:66": {
+      "status": "baseline",
+      "slug": "chapter-66",
+      "title": "What Does Not Cross the Border",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:67": {
+      "status": "baseline",
+      "slug": "chapter-67",
+      "title": "The Second Source",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:68": {
+      "status": "baseline",
+      "slug": "chapter-68",
+      "title": "A Machine Learns the Shift",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:69": {
+      "status": "baseline",
+      "slug": "chapter-69",
+      "title": "The Promise Outside the Contract",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:70": {
+      "status": "baseline",
+      "slug": "chapter-70",
+      "title": "The Certificate and the Steel",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:71": {
+      "status": "baseline",
+      "slug": "chapter-71",
+      "title": "The Pilot That Was Declined",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:72": {
+      "status": "baseline",
+      "slug": "chapter-72",
+      "title": "The Price of the Default",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:73": {
+      "status": "baseline",
+      "slug": "chapter-73",
+      "title": "An Old Receipt",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:74": {
+      "status": "baseline",
+      "slug": "chapter-74",
+      "title": "The Repair Nobody Photographs",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:75": {
+      "status": "baseline",
+      "slug": "chapter-75",
+      "title": "Three Compatible Limits",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:76": {
+      "status": "baseline",
+      "slug": "chapter-76",
+      "title": "A Company Large Enough to Fail",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:77": {
+      "status": "baseline",
+      "slug": "chapter-77",
+      "title": "A Desk That Disappeared",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:78": {
+      "status": "baseline",
+      "slug": "chapter-78",
+      "title": "The Apprentice Problem",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:79": {
+      "status": "baseline",
+      "slug": "chapter-79",
+      "title": "The Job Hidden in the Task",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:80": {
+      "status": "baseline",
+      "slug": "chapter-80",
+      "title": "Ning's Classroom",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:81": {
+      "status": "baseline",
+      "slug": "chapter-81",
+      "title": "The Worker Who Said No",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:82": {
+      "status": "baseline",
+      "slug": "chapter-82",
+      "title": "A Date They Keep",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:83": {
+      "status": "baseline",
+      "slug": "chapter-83",
+      "title": "A Salary for the Transition",
+      "novelTitle": "The Latency of Tomorrow"
+    },
+    "the-latency-of-tomorrow:84": {
+      "status": "baseline",
+      "slug": "chapter-84",
+      "title": "The Father on the Training Floor",
+      "novelTitle": "The Latency of Tomorrow"
+    }
+  }
+}
