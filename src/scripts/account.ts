@@ -43,6 +43,7 @@ export async function initAccount() {
     updateProfile?.(user);
     window.dispatchEvent(new CustomEvent('reader:auth-change'));
     loggedIn.hidden = !user;
+    document.getElementById('profile-hero-identity')!.hidden = !user;
     document.getElementById('account-email')!.textContent = user?.email ?? '';
     status.textContent = message ?? (user ? 'You are signed in.' : 'Sign in or create a reader account.');
   };
