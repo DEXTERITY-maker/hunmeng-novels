@@ -4558,3 +4558,63 @@ html[data-theme='dark'] .reader-account-page .profile-stat-icon {color:#b7dec5}
     }
   }
 }
+
+
+/* Screenshot review: seamless right-hand mist keeps rank text legible over
+   the bright landscape without introducing a floating panel. */
+.reader-account-page .profile-member-hero {
+  background-image:
+    linear-gradient(90deg,var(--profile-paper) 0%,rgb(247 241 230 / .94) 23%,rgb(247 241 230 / .72) 43%,rgb(247 241 230 / .14) 68%,transparent 90%),
+    radial-gradient(ellipse 330px 160px at 85% 51%,rgb(255 249 237 / .87),rgb(255 249 237 / .58) 58%,transparent 100%),
+    linear-gradient(0deg,var(--profile-paper),transparent 21%),
+    url('/images/profile/header-day.webp'),
+    url('/images/art/hunmeng-landscape-day-1536.webp');
+  background-position:center,center,center,center 40%,center 40%;
+}
+html[data-theme='sepia'] .reader-account-page .profile-member-hero {
+  background-image:
+    linear-gradient(90deg,rgb(238 224 201 / .99),rgb(238 224 201 / .88) 28%,rgb(238 224 201 / .65) 46%,transparent 84%),
+    radial-gradient(ellipse 330px 160px at 85% 51%,rgb(249 232 202 / .86),rgb(249 232 202 / .53) 58%,transparent 100%),
+    linear-gradient(0deg,var(--profile-paper),rgb(238 224 201 / .08) 28%),
+    url('/images/profile/header-day.webp'),
+    url('/images/art/hunmeng-landscape-day-1536.webp');
+  background-position:center,center,center,center 40%,center 40%;
+}
+@media(max-width:760px) {
+  /* Let the account menu meet the landscape soon after the action buttons. */
+  .reader-account-page .profile-member-hero {
+    padding:32px 18px 4px;gap:12px;
+    background-image:
+      linear-gradient(180deg,rgb(247 241 230 / .36) 0%,rgb(247 241 230 / .67) 36%,var(--profile-paper) 98%),
+      linear-gradient(90deg,rgb(247 241 230 / .76),transparent 100%),
+      url('/images/profile/header-day.webp'),
+      url('/images/art/hunmeng-landscape-day-960.webp');
+    background-position:center,center,center top,center top;
+  }
+  .reader-account-page .profile-sidebar {margin-top:-50px}
+  html[data-theme='sepia'] .reader-account-page .profile-member-hero {
+    background-image:
+      linear-gradient(180deg,rgb(238 224 201 / .4),rgb(238 224 201 / .76) 42%,var(--profile-paper) 98%),
+      linear-gradient(90deg,rgb(238 224 201 / .76),transparent),
+      url('/images/profile/header-day.webp'),
+      url('/images/art/hunmeng-landscape-day-960.webp');
+  }
+  html[data-theme='dark'] .reader-account-page .profile-member-hero {
+    background-image:
+      linear-gradient(180deg,rgb(23 35 31 / .35),rgb(23 35 31 / .76) 40%,var(--profile-paper) 98%),
+      linear-gradient(90deg,rgb(23 35 31 / .80),transparent),
+      url('/images/profile/header-night.webp'),
+      url('/images/art/hunmeng-landscape-night-960.webp');
+  }
+}
+@media (prefers-color-scheme:dark) {
+  @media(max-width:760px) {
+    html[data-theme='system'] .reader-account-page .profile-member-hero {
+      background-image:
+        linear-gradient(180deg,rgb(23 35 31 / .35),rgb(23 35 31 / .76) 40%,var(--profile-paper) 98%),
+        linear-gradient(90deg,rgb(23 35 31 / .80),transparent),
+        url('/images/profile/header-night.webp'),
+        url('/images/art/hunmeng-landscape-night-960.webp');
+    }
+  }
+}
