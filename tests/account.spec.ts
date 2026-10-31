@@ -848,11 +848,16 @@ test('six unique SVG reader-mastery badges are readable and responsive on deskto
  await expect(page.locator('[data-mastery-id="experienced"] [data-mastery-state]')).toHaveText('Current step');
  await expect(page.locator('[data-mastery-id="reader"] [data-mastery-state]')).toHaveText('Unlocked');
  await expect(page.locator('[data-mastery-id="master"] [data-mastery-state]')).toHaveText('Locked');
+ await expect(page.getByRole('tab',{name:'Progress',exact:true})).toHaveAttribute('aria-selected','true');
+ await expect(page.locator('#progress')).toBeVisible();
+ await expect(page.locator('.reader-mastery-section')).toBeVisible();
  const paths=['novice','reader','experienced','connoisseur','master','legend'];
  for(const id of paths){
   const img=page.locator(`[data-mastery-id="${id}"] img.reader-mastery-emblem`);
   await expect(img).toHaveAttribute('src',`/images/mastery/${id}.webp`);
-  await img.scrollIntoViewIfNeeded();
+  // Loading each in-view-on-demand image via eager mode avoids a brittle
+  // scroll-into-view on the horizontally compact six-step grid.
+  await img.evaluate((image:HTMLImageElement)=>{ image.loading='eager'; });
   await expect.poll(()=>img.evaluate((image:HTMLImageElement)=>image.complete&&image.naturalWidth>0)).toBe(true);
  }
  for(const width of [390,1440]){
