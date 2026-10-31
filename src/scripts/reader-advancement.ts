@@ -359,7 +359,7 @@ async function loadXpHistory(userId:string,seq:number) {
     const novel=novelBySlug.get(entry.novel_slug);
     const novelTitle=novel?.title || entry.novel_slug;
     const knownNumber=novel?.chapters.find(ch=>ch.slug===entry.chapter_slug)?.number;
-    const parsedNumber=/^(?:chapter-|glava-)(\\d+)$/.exec(entry.chapter_slug)?.[1];
+    const parsedNumber=/^(?:chapter-|glava-)(\d+)$/.exec(entry.chapter_slug)?.[1];
     const chapterNumber=knownNumber || (parsedNumber ? Number(parsedNumber) : null);
     label.textContent=isChapter ? `Chapter ${chapterNumber || entry.chapter_slug} · ${novelTitle}` :
       entry.event_kind==='novel_finished' ? `Novel completed · ${novelTitle}` :
