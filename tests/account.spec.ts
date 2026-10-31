@@ -207,7 +207,9 @@ async function loginFixture(page:Page) { await open(page);await fill(page);await
 async function openEditor(page:Page) { await page.locator('#profile-edit-button').click(); await expect(page.locator('#profile-edit-dialog')).toBeVisible(); }
 async function selectInner(page:Page,id:'overview'|'progress'|'titles-achievements'|'xp-history') {
   await page.locator('[data-overview-tab="'+id+'"]').click();
-  await expect(page).toHaveURL(new RegExp('#'+id+'
+  await expect(page).toHaveURL(new RegExp('#'+id+'$'));
+  await expect(page.locator('#'+id)).toBeVisible();
+}
 for (const width of [320, 390, 1440]) {
  test(`профиль показывает одну вкладку, а ссылки меню открывают нужную при ${width}px`,async({page},testInfo)=>{
   await page.setViewportSize({width,height:850});
