@@ -1,9 +1,10 @@
 import { defaults, sanitizeState, type ReaderState } from './storage.ts';
 import type { Shelf } from '../config/site';
+import { mergeBookmarks, type BookmarkEntries } from './bookmarks';
 
 export type SyncChoice = 'device' | 'cloud';
 export interface SyncConflict { slug: string; kind: 'shelf' | 'chapter-position' }
-export interface MergeResult { state: ReaderState; conflicts: SyncConflict[] }
+export interface MergeResult { state: ReaderState & {bookmarks: BookmarkEntries}; conflicts: SyncConflict[] }
 
 /**
  * Strict conservative merge: do not guess when devices disagree on a book.
@@ -52,5 +53,12 @@ export function mergeReaderStates(deviceRaw: unknown, cloudRaw: unknown, choice?
       state.progress[slug]=choice==='device'?a:b;
     }
   }
-  return {state:sanitizeState(state),conflicts};
+  // Bookmark tombstones and active anchors are independent of shelf/progress
+  // conflict decisions. Missing cloud fields (old clients) mean nothing was
+  // reported, not that previously known bookmarks have been deleted.
+  const deviceBookmarks = deviceRaw && typeof deviceRaw === 'object'
+    ? (deviceRaw as {bookmarks?: unknown}).bookmarks : undefined;
+  const cloudBookmarks = cloudRaw && typeof cloudRaw === 'object'
+    ? (cloudRaw as {bookmarks?: unknown}).bookmarks : undefined;
+  return {state:{...sanitizeState(state),bookmarks:mergeBookmarks(deviceBookmarks,cloudBookmarks)},conflicts};
 }
