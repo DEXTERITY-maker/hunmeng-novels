@@ -1,0 +1,53 @@
+name: Telegram new chapter notices
+
+on:
+  schedule:
+    # 12:05 Moscow time (MSK = UTC+3 year-round).
+    - cron: '5 9 * * *'
+  workflow_run:
+    workflows: ['Cloudflare Pages deployment (approved revision only)']
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Preview without Telegram calls or state changes'
+        type: boolean
+        default: true
+        required: true
+      mode:
+        description: 'Source label (both sources are always validated)'
+        type: choice
+        default: all
+        required: true
+        options: [all, scheduled, deployed]
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: hunmeng-telegram-chapter-notifications
+  cancel-in-progress: false
+
+jobs:
+  notify:
+    if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_run'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout code and production commit history
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Publish only new chapters, or preview with dry run
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || false }}
+          NOTIFICATION_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.mode || 'all' }}
+        run: node scripts/telegram-chapters.mjs

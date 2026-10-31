@@ -77,6 +77,7 @@ const extraCategories = n.categories.filter((category) =>
           <LibraryControl slug={n.slug} withIcon />
           <a class="detail-contents-link" href="#contents-title">Contents <span aria-hidden="true">→</span></a>
         </div>
+        <p class="telegram-chapter-cta"><a href={site.contacts.telegramChannel} target="_blank" rel="noopener noreferrer" aria-label="Get new chapters in Telegram">Get new chapters in Telegram <span aria-hidden="true">↗</span></a></p>
         <div class="serial-publication-stats" aria-label="Chapter publication progress">
           <span><Icon name="book" size={18} /> <strong>{n.chapterCount}</strong> published chapters</span>
           {serial && <>
