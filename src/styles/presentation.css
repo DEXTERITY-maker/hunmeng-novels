@@ -2646,3 +2646,625 @@ body.reader-page:not(.controls-hidden):not(.reader-focus-mode):has(.reader-toolb
 /* New Hunmeng emblem (transparent PNG) sits on a light tile in every theme. */
 .brand-emblem img { width: 40px; height: 40px; object-fit: contain; }
 .site-header .brand-emblem { background: var(--surface); border-radius: 13px; }
+
+
+/* Library and signed-in profile editorial refresh. All data, shelving, identity
+   and reward rules remain in their existing client modules. */
+
+/* The library shares the catalog's illustrated landscape design language. */
+.library-page .library-hero.landscape-banner {
+  --library-landscape: url('/images/art/hunmeng-landscape-day-1536.webp');
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  isolation: isolate;
+  min-height: 244px;
+  margin-bottom: 18px;
+  padding: clamp(23px, 4vw, 43px);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  overflow: hidden;
+  background-color: var(--bg);
+  background-image:
+    linear-gradient(90deg, var(--bg), color-mix(in srgb, var(--bg) 97%, transparent) 26%, color-mix(in srgb, var(--bg) 88%, transparent) 40%, color-mix(in srgb, var(--bg) 25%, transparent) 70%, transparent),
+    var(--library-landscape);
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center, center 56%;
+  box-shadow: 0 7px 24px rgb(18 39 32 / .07);
+}
+html[data-theme='dark'] .library-page .library-hero {
+  --library-landscape: url('/images/art/hunmeng-landscape-night-1536.webp');
+}
+@media (prefers-color-scheme: dark) {
+  html[data-theme='system'] .library-page .library-hero {
+    --library-landscape: url('/images/art/hunmeng-landscape-night-1536.webp');
+  }
+}
+html[data-theme='sepia'] .library-page .library-hero {
+  background-image:
+    linear-gradient(rgb(168 113 54 / .1), rgb(168 113 54 / .1)),
+    linear-gradient(90deg, var(--bg), color-mix(in srgb, var(--bg) 97%, transparent) 26%, color-mix(in srgb, var(--bg) 88%, transparent) 40%, color-mix(in srgb, var(--bg) 25%, transparent) 70%, transparent),
+    var(--library-landscape);
+}
+.library-page .library-hero-copy { position: relative; z-index: 1; width: min(480px, 58%); min-width: 0; }
+.library-page .library-hero .eyebrow {
+  color: var(--ink);
+  font: 800 .69rem/1.5 'Manrope Variable', sans-serif;
+  letter-spacing: .17em;
+  text-transform: uppercase;
+}
+.library-page .library-hero h1 {
+  margin: 3px 0 8px;
+  font: 650 clamp(2.4rem, 4.2vw, 4rem)/1.1 'Noto Serif Variable', Georgia, serif;
+  color: var(--ink);
+}
+.library-page .library-hero .library-hero-copy > p:last-child {
+  color: var(--ink);
+  font-size: .92rem;
+  line-height: 1.55;
+  max-width: 420px;
+}
+
+/* The shelves behave exactly as before: styling mirrors homepage shortcuts. */
+.library-page .shelf-tabs { gap: 12px; }
+.library-page .shelf-tab {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr) auto;
+  grid-template-rows: auto;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  min-height: 90px;
+  padding: 15px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  color: var(--ink);
+  box-shadow: 0 5px 17px rgb(17 45 32 / .065);
+  transition: box-shadow .2s ease, transform .2s ease, border-color .2s ease;
+}
+.library-page .shelf-tab > svg:first-child { width: 30px; height: 30px; color: var(--accent); }
+.library-page .shelf-tab strong { min-width: 0; font: 650 clamp(.86rem, 1.25vw, 1rem)/1.3 'Noto Serif Variable', Georgia, serif; }
+.library-page .shelf-tab [data-shelf-count] {
+  display: grid;
+  place-items: center;
+  min-width: 29px;
+  height: 29px;
+  padding: 0 7px;
+  border-radius: 999px;
+  background: var(--soft);
+  color: var(--ink);
+  font: 750 .78rem/1 'Manrope Variable', sans-serif;
+  opacity: 1;
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+.library-page .shelf-tab > svg:last-child { display: none; }
+.library-page .shelf-tab[aria-pressed='true'] {
+  background: #205b47;
+  border-color: #205b47;
+  color: #fff;
+  box-shadow: 0 7px 19px rgb(16 62 42 / .18);
+}
+.library-page .shelf-tab[aria-pressed='true'] > svg:first-child { color: #fff; }
+.library-page .shelf-tab[aria-pressed='true'] [data-shelf-count] { background: #e1ece3; color: #174433; }
+.library-page .shelf-tab:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .library-page .shelf-tab:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgb(17 45 32 / .13); }
+}
+.library-page #library-count {
+  margin: 21px 0 12px;
+  font-size: 1.45rem;
+}
+
+/* The novel's image lives in the right 40%. Left copy never crosses it. */
+.library-page .library-novel-row {
+  display: grid;
+  grid-template-columns: 106px minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  align-items: start;
+  column-gap: 18px;
+  row-gap: 8px;
+  position: relative;
+  isolation: isolate;
+  min-width: 0;
+  min-height: 206px;
+  padding: 16px;
+  overflow: hidden;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  box-shadow: 0 6px 19px rgb(19 44 32 / .08);
+}
+.library-page .library-row-art {
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: 40%;
+  z-index: -1;
+  pointer-events: none;
+  background: var(--library-row-image) center right / cover no-repeat;
+  -webkit-mask-image: linear-gradient(90deg, transparent, rgb(0 0 0 / .15) 12%, #000 69%);
+  mask-image: linear-gradient(90deg, transparent, rgb(0 0 0 / .15) 12%, #000 69%);
+}
+.library-page .library-novel-row[data-art='comprehension'] {
+  --library-row-image: url('/images/art/comprehension-day-1536.webp');
+}
+.library-page .library-novel-row[data-art='latency'] {
+  --library-row-image: url('/images/art/latency-night-1536.webp');
+}
+html[data-theme='dark'] .library-page .library-novel-row[data-art='comprehension'] {
+  --library-row-image: url('/images/art/comprehension-night-1536.webp');
+}
+@media (prefers-color-scheme: dark) {
+  html[data-theme='system'] .library-page .library-novel-row[data-art='comprehension'] {
+    --library-row-image: url('/images/art/comprehension-night-1536.webp');
+  }
+}
+html[data-theme='sepia'] .library-page .library-row-art { filter: sepia(.24) saturate(.88); }
+.library-page .library-row-cover { grid-column: 1; grid-row: 1 / span 2; z-index: 1; display: block; width: 106px; }
+.library-page .library-row-cover img {
+  display: block;
+  width: 106px;
+  aspect-ratio: 260 / 380;
+  height: auto;
+  border-radius: 9px;
+  object-fit: cover;
+  box-shadow: 0 4px 13px rgb(0 0 0 / .14);
+}
+.library-page .library-row-copy {
+  grid-column: 2;
+  grid-row: 1;
+  z-index: 1;
+  width: 52%;
+  min-width: 0;
+}
+.library-page .library-novel-row:not([data-art]) .library-row-copy,
+.library-page .library-novel-row:not([data-art]) .library-row-picker { width: min(100%, 720px); }
+.library-page .library-row-copy h2 {
+  color: var(--ink);
+  font: 650 clamp(1.15rem, 2vw, 1.5rem)/1.3 'Noto Serif Variable', Georgia, serif;
+  overflow-wrap: anywhere;
+  margin: 1px 0 4px;
+}
+.library-page .library-row-copy h2 a { color: inherit; }
+.library-page .library-row-copy h2 a:hover { color: var(--accent); }
+.library-page .library-row-author { color: var(--muted); font-size: .79rem; margin: 0 0 7px; }
+.library-page .library-row-copy .fine { color: var(--muted); font-size: .76rem; line-height: 1.5; }
+.library-page .library-row-copy .library-row-chapter { color: var(--ink); font-weight: 700; }
+.library-page .library-row-copy .library-row-caught-up { margin: 4px 0; }
+.library-page .library-row-copy .library-chapter-progress {
+  width: 100%;
+  max-width: 330px;
+  height: 7px;
+  margin: 10px 0 5px;
+}
+.library-page .library-row-copy .library-row-percent { margin: 0 0 4px; }
+.library-page .library-row-copy .library-row-date { margin: 5px 0 10px; }
+.library-page .library-row-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 138px;
+  min-height: 44px;
+  padding: 10px 15px;
+  border: 1px solid #205b47;
+  border-radius: 9px;
+  background: #205b47;
+  color: #fff;
+  font: 750 .8rem/1.35 'Manrope Variable', sans-serif;
+  text-align: center;
+  text-decoration: none;
+}
+.library-page .library-row-action:is(:hover, :focus-visible) { background: #154737; color: #fff; }
+.library-page .library-row-action:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+.library-page .library-row-picker {
+  grid-column: 2;
+  grid-row: 2;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 52%;
+  min-width: 0;
+  margin: 5px 0 0;
+  color: var(--ink);
+  font: 700 .75rem/1.45 'Manrope Variable', sans-serif;
+}
+.library-page .library-row-picker select {
+  flex: 1;
+  min-width: 0;
+  min-height: 40px;
+  max-width: 260px;
+  padding: 6px 28px 6px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--ink);
+  font-size: .76rem;
+}
+.library-page .library-row-picker:focus-within { color: var(--accent); }
+.library-page .library-empty {
+  border-radius: 18px;
+  padding: 35px 20px;
+  background: var(--surface);
+  box-shadow: 0 8px 22px rgb(19 44 32 / .07);
+}
+.library-page .library-empty h2 { color: var(--ink); }
+.library-page .library-empty a { border-radius: 9px; }
+.library-page .storage-explanation {
+  align-items: flex-start;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgb(19 44 32 / .045);
+  color: var(--muted);
+}
+.library-page .storage-explanation svg { flex-shrink: 0; color: var(--accent); }
+.library-page .storage-explanation a { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+
+/* Signed-in identity belongs visually to the profile banner. */
+.reader-account-page .profile-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(210px, 42%);
+  align-items: center;
+  gap: 18px;
+  min-height: 226px;
+  padding: clamp(22px, 3.8vw, 38px);
+  background: linear-gradient(90deg, #0e2a30 0%, rgb(14 42 48 / .95) 38%, rgb(14 42 48 / .45) 77%),
+    url('/images/profile-kingdom.svg') 70% center / cover no-repeat;
+  border-radius: 19px;
+  box-shadow: 0 9px 25px rgb(14 42 38 / .13);
+}
+.reader-account-page .profile-hero::after { display: none; }
+.reader-account-page .profile-hero-copy { position: relative; z-index: 1; min-width: 0; }
+.reader-account-page .profile-hero-copy .eyebrow {
+  color: #f4da9c;
+  font: 750 .69rem/1.5 'Manrope Variable', sans-serif;
+  letter-spacing: .15em;
+}
+.reader-account-page .profile-hero-copy h1 { margin: 3px 0 7px; color: #fff; font-size: clamp(1.8rem, 3.6vw, 3.4rem); }
+.reader-account-page .profile-hero-copy #account-subtitle { font-size: .88rem; line-height: 1.5; color: #f0efe7; }
+.reader-account-page .profile-hero-identity {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid rgb(239 222 176 / .48);
+  border-radius: 14px;
+  background: rgb(11 45 43 / .84);
+  color: #fff;
+}
+.reader-account-page .profile-hero-identity[hidden] { display: none !important; }
+.reader-account-page .profile-hero-identity .profile-avatar {
+  width: 62px;
+  height: 62px;
+  flex-shrink: 0;
+  border: 3px solid #d9c78c;
+  box-shadow: none;
+}
+.reader-account-page .profile-hero-identity .profile-sidebar-rank {
+  width: 43px;
+  height: 49px;
+  flex-shrink: 0;
+  filter: none;
+}
+.reader-account-page .profile-hero-identity .profile-identity-copy { min-width: 0; }
+.reader-account-page .profile-hero-identity .profile-identity-copy strong {
+  display: block;
+  color: #fff;
+  font: 650 clamp(.95rem, 1.5vw, 1.16rem)/1.3 'Noto Serif Variable', Georgia, serif;
+  overflow-wrap: anywhere;
+}
+.reader-account-page .profile-hero-identity .profile-identity-copy span {
+  color: #e8eee7;
+  font-size: .73rem;
+}
+
+/* Reset the old always-dark fantasy panel to the site's actual theme tokens.
+   XP/ranks and the six-step mastery path retain their independent data and DOM. */
+.reader-account-page #profile-details {
+  --ink: inherit;
+  --muted: inherit;
+  --accent: inherit;
+  --line: inherit;
+  --soft: inherit;
+  --surface: inherit;
+  color: var(--ink);
+  border: 1px solid var(--line);
+  background: var(--surface);
+  box-shadow: 0 7px 25px rgb(19 44 32 / .08);
+  border-radius: 18px;
+  overflow: visible;
+}
+.reader-account-page #profile-details::before { display: none; }
+.reader-account-page #profile-details > .eyebrow,
+.reader-account-page #profile-details .advancement-section-header .eyebrow,
+.reader-account-page #profile-details .advancement-intro .eyebrow {
+  color: var(--accent);
+  font-weight: 800;
+}
+.reader-account-page #profile-details > #profile-title,
+.reader-account-page #profile-details :is(h2,h3,h4) { color: var(--ink); }
+.reader-account-page #profile-details > .profile-intro,
+.reader-account-page #profile-details .advancement-section-header p:last-child { color: var(--muted); }
+.reader-account-page #profile-details .advancement-section {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: 0 5px 16px rgb(19 44 32 / .055);
+}
+.reader-account-page #profile-details .advancement-hero {
+  min-width: 0;
+  grid-template-columns: minmax(92px, 160px) minmax(0,1fr);
+  background: linear-gradient(125deg, var(--soft), var(--surface) 75%);
+  border: 1px solid var(--line);
+  box-shadow: none;
+  color: var(--ink);
+  border-radius: 17px;
+}
+.reader-account-page #profile-details .advancement-hero::before { display: none; }
+.reader-account-page #profile-details .advancement-emblem-wrap {
+  min-height: 144px;
+  border-radius: 17px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: none;
+}
+.reader-account-page #profile-details .advancement-emblem-wrap img { width: min(100%, 142px); height: auto; filter: none; }
+.reader-account-page #profile-details .advancement-emblem-crest { color: var(--accent); }
+.reader-account-page #profile-details .advancement-intro h3,
+.reader-account-page #profile-details .advancement-title-line strong { color: var(--ink); }
+.reader-account-page #profile-details .advancement-title-line,
+.reader-account-page #profile-details .advancement-trust { color: var(--muted); }
+.reader-account-page #profile-details .advancement-xp-label { color: var(--ink); }
+.reader-account-page #profile-details .reader-next-rank {
+  background: var(--surface);
+  border-color: var(--line);
+  backdrop-filter: none;
+}
+.reader-account-page #profile-details .reader-next-rank-copy strong { color: var(--ink); }
+.reader-account-page #profile-details .reader-next-rank-copy :is(span,small),
+.reader-account-page #profile-details .advancement-journey-note { color: var(--muted); }
+.reader-account-page #profile-details .advancement-explore-ranks {
+  background: #205b47;
+  color: #fff;
+  border-radius: 9px;
+  box-shadow: none;
+}
+.reader-account-page #profile-details .advancement-stats { grid-template-columns: repeat(3,minmax(0,1fr)); }
+.reader-account-page #profile-details .advancement-stats > div {
+  min-width: 0;
+  min-height: 92px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--soft);
+}
+.reader-account-page #profile-details .advancement-stats > div::before { display: none; }
+.reader-account-page #profile-details .advancement-stats :is(strong,span,small) { color: var(--ink); }
+.reader-account-page #profile-details .advancement-stats :is(span,small) { color: var(--muted); }
+.reader-account-page #profile-details .advancement-all-ranks {
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  color: var(--ink);
+  background: var(--soft);
+}
+.reader-account-page #profile-details .advancement-all-ranks:hover { background: var(--surface); color: var(--ink); }
+
+/* Separate rank, title, achievement and mastery cards keep their own states. */
+.reader-account-page #profile-details .rank-tile,
+.reader-account-page #profile-details .reader-award,
+.reader-account-page #profile-details .achievement-tile,
+.reader-account-page #profile-details .reader-mastery-tile,
+.reader-account-page #profile-details .reader-xp-history-list li,
+.reader-account-page #profile-details .reader-next-achievement {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: var(--surface);
+  box-shadow: 0 2px 9px rgb(19 44 32 / .04);
+  color: var(--ink);
+}
+.reader-account-page #profile-details .rank-tile::after { display: none; }
+.reader-account-page #profile-details .rank-tile[data-rank-status=current],
+.reader-account-page #profile-details .reader-mastery-tile[data-mastery-status=current] {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+.reader-account-page #profile-details .rank-tile :is(.rank-tile-roman,.rank-tile-levels,.rank-tile-description),
+.reader-account-page #profile-details .reader-mastery-tile :is(.reader-mastery-levels,small),
+.reader-account-page #profile-details .reader-award :is(p,small) { color: var(--muted); }
+.reader-account-page #profile-details .rank-tile h4,
+.reader-account-page #profile-details .reader-award .award-body h4,
+.reader-account-page #profile-details .reader-mastery-tile strong { color: var(--ink); }
+.reader-account-page #profile-details .rank-tile .rank-tile-levels,
+.reader-account-page #profile-details .reader-mastery-levels,
+.reader-account-page #profile-details .rank-tile-state {
+  border: 1px solid var(--line);
+  background: var(--soft);
+  color: var(--ink);
+}
+.reader-account-page #profile-details .award-symbol,
+.reader-account-page #profile-details .achievement-icon {
+  background: var(--soft);
+  color: var(--accent);
+  border-color: var(--line);
+}
+.reader-account-page #profile-details .reader-next-achievement small { color: var(--muted); }
+.reader-account-page #profile-details #profile-recent-reading {
+  background: var(--soft);
+  border: 1px solid var(--line);
+  border-radius: 15px;
+}
+.reader-account-page #profile-details .profile-recent-list li {
+  display: grid;
+  grid-template-columns: 58px minmax(0,1fr) auto;
+  gap: 10px 13px;
+  align-items: center;
+  padding: 11px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+.reader-account-page #profile-details .profile-recent-cover {
+  width: 58px;
+  height: 84px;
+  object-fit: cover;
+  border-radius: 7px;
+  box-shadow: 0 3px 9px rgb(0 0 0 / .11);
+}
+.reader-account-page #profile-details .profile-recent-copy {
+  display: grid;
+  grid-template-columns: minmax(0,1fr);
+  align-content: center;
+  gap: 5px;
+  min-width: 0;
+}
+.reader-account-page #profile-details .profile-recent-copy strong { color: var(--ink); overflow-wrap: anywhere; }
+.reader-account-page #profile-details .profile-recent-copy span { grid-column: auto; font-size: .78rem; color: var(--muted); }
+.reader-account-page #profile-details .profile-recent-copy progress { grid-column: auto; width: 100%; height: 7px; max-width: 320px; }
+.reader-account-page #profile-details .profile-recent-card > a {
+  grid-column: 3;
+  grid-row: 1;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 12px;
+  border-radius: 9px;
+  background: #205b47;
+  color: #fff;
+  font-size: .76rem;
+  text-align: center;
+  text-decoration: none;
+}
+.reader-account-page #profile-details .profile-recent-card > a:hover { color: #fff; background: #154737; }
+.reader-account-page #profile-details #profile-form {
+  border-top: 1px solid var(--line);
+  padding-top: 22px;
+}
+.reader-account-page #profile-details #profile-form :is(input,textarea) {
+  background: var(--bg);
+  color: var(--ink);
+  border: 1px solid var(--line);
+}
+.reader-account-page #profile-details #profile-form :is(input,textarea)::placeholder { color: var(--muted); }
+.reader-account-page #profile-details #profile-form :is(label,legend,small) { color: var(--ink); }
+.reader-account-page #profile-details .profile-local-note { color: var(--muted); }
+.reader-account-page #profile-details .profile-local-note svg { color: var(--accent); }
+.reader-account-page .profile-sidebar,
+.reader-account-page .profile-panel,
+.reader-account-page .account-card {
+  border: 1px solid var(--line);
+  border-radius: 17px;
+  background: var(--surface);
+  box-shadow: 0 6px 18px rgb(19 44 32 / .07);
+}
+.reader-account-page .profile-sidebar { top: 94px; }
+.reader-account-page .profile-sidebar nav { margin: 0; padding: 0; border: 0; display: grid; gap: 7px; }
+.reader-account-page .profile-sidebar nav a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 45px;
+  padding: 9px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  color: var(--ink);
+}
+.reader-account-page .profile-sidebar nav a[aria-current='location'] {
+  border-color: var(--line);
+  background: var(--soft);
+  color: var(--ink);
+  font-weight: 800;
+}
+.reader-account-page .profile-library-link {
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--soft);
+  padding: 8px;
+  min-height: 44px;
+}
+.reader-account-page .profile-library-link svg { color: var(--accent); }
+
+/* Compact 2x2 shelf grid, no clipped selects, and clean mobile novel rows. */
+@media (max-width: 960px) {
+  .library-page .library-row-art { display: none; }
+  .library-page .library-row-copy,
+  .library-page .library-row-picker { width: 100%; }
+}
+@media (max-width: 760px) {
+  .library-page .library-hero.landscape-banner {
+    --library-landscape: url('/images/art/hunmeng-landscape-day-960.webp');
+    min-height: 145px;
+    padding: 13px 17px;
+    margin-bottom: 11px;
+    border-radius: 13px;
+    background-position: center, 63% center;
+    background-image: linear-gradient(90deg, color-mix(in srgb,var(--bg) 97%,transparent), color-mix(in srgb,var(--bg) 91%,transparent) 67%, color-mix(in srgb,var(--bg) 65%,transparent)), var(--library-landscape);
+  }
+  html[data-theme='dark'] .library-page .library-hero { --library-landscape: url('/images/art/hunmeng-landscape-night-960.webp'); }
+  html[data-theme='sepia'] .library-page .library-hero {
+    background-image: linear-gradient(rgb(168 113 54 / .1), rgb(168 113 54 / .1)), linear-gradient(90deg, color-mix(in srgb,var(--bg) 97%,transparent), color-mix(in srgb,var(--bg) 91%,transparent) 67%, color-mix(in srgb,var(--bg) 65%,transparent)), var(--library-landscape);
+  }
+  .library-page .library-hero-copy { width: min(100%, 350px); }
+  .library-page .library-hero h1 { font-size: clamp(1.8rem, 7vw, 2.2rem); }
+  .library-page .library-hero .eyebrow { font-size: .59rem; }
+  .library-page .library-hero .library-hero-copy > p:last-child { font-size: .75rem; line-height: 1.35; max-width: 270px; }
+  .library-page .shelf-tabs { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 9px; }
+  .library-page .shelf-tab { grid-template-columns: 25px minmax(0,1fr) auto; gap: 7px; min-height: 70px; padding: 11px 9px; }
+  .library-page .shelf-tab strong { font-size: .82rem; }
+  .library-page .shelf-tab > svg:first-child { width: 23px; height: 23px; }
+  .library-page .shelf-tab [data-shelf-count] { min-width: 25px; height: 25px; padding: 0 5px; font-size: .72rem; }
+  .library-page #library-count { font-size: 1.25rem; margin: 14px 0 10px; }
+  .library-page .library-novel-row { grid-template-columns: 87px minmax(0,1fr); column-gap: 12px; padding: 12px; min-height: 0; }
+  .library-page .library-row-cover { width: 87px; }
+  .library-page .library-row-cover img { width: 87px; }
+  .library-page .library-row-copy h2 { font-size: 1.1rem; }
+  .library-page .library-row-copy .library-row-chapter { font-size: .73rem; }
+  .library-page .library-row-copy .library-row-date { margin-bottom: 8px; }
+  .library-page .library-row-action { padding: 8px 9px; min-width: 0; width: 100%; min-height: 44px; }
+  .library-page .library-row-picker { grid-column: 1 / -1; grid-row: 2; margin-top: 7px; }
+  .library-page .library-row-picker select { max-width: 100%; }
+  .library-page .library-empty { padding: 24px 15px; }
+  .library-page .storage-explanation { gap: 11px; padding: 14px; font-size: .81rem; }
+  .reader-account-page .profile-hero { grid-template-columns: 1fr; gap: 11px; min-height: 0; padding: 21px 18px; }
+  .reader-account-page .profile-hero-identity { padding: 10px; gap: 9px; }
+  .reader-account-page .profile-hero-identity .profile-avatar { width: 48px; height: 48px; font-size: 1.15rem; }
+  .reader-account-page .profile-hero-identity .profile-sidebar-rank { width: 35px; height: 42px; }
+  .reader-account-page .profile-hero-copy h1 { font-size: clamp(1.7rem, 7vw, 2.15rem); }
+  .reader-account-page .profile-sidebar { position: static; min-width: 0; padding: 13px; }
+  .reader-account-page .profile-sidebar nav { grid-template-columns: repeat(3, minmax(0,1fr)); gap: 6px; }
+  .reader-account-page .profile-sidebar nav a { padding: 8px 3px; font-size: .82rem; }
+  .reader-account-page .profile-content, .reader-account-page .profile-panel { min-width: 0; }
+  .reader-account-page #profile-details .advancement-stats { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .reader-account-page #profile-details .rank-gallery { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .reader-account-page #profile-details .reader-awards-list { grid-template-columns: minmax(0,1fr); }
+  .reader-account-page #profile-details .reader-achievements-grid { grid-template-columns: minmax(0,1fr); }
+  .reader-account-page #profile-details .profile-recent-list li { grid-template-columns: 50px minmax(0,1fr); gap: 7px 10px; }
+  .reader-account-page #profile-details .profile-recent-cover { width: 50px; height: 74px; grid-column: 1; grid-row: 1; }
+  .reader-account-page #profile-details .profile-recent-copy { grid-column: 2; grid-row: 1; }
+  .reader-account-page #profile-details .profile-recent-card > a { grid-column: 1 / -1; grid-row: 2; width: 100%; }
+  .reader-account-page #profile-details .advancement-hero { grid-template-columns: minmax(80px,110px) minmax(0,1fr); gap: 9px; }
+  .reader-account-page #profile-details .advancement-emblem-wrap { min-height: 100px; }
+}
+@media (max-width: 760px) and (prefers-color-scheme: dark) {
+  html[data-theme='system'] .library-page .library-hero { --library-landscape: url('/images/art/hunmeng-landscape-night-960.webp'); }
+}
+@media (max-width: 400px) {
+  .reader-account-page #profile-details .advancement-hero { grid-template-columns: minmax(0, 1fr); }
+  .reader-account-page #profile-details .advancement-emblem-wrap { width: min(150px,100%); justify-self: center; }
+  .reader-account-page #profile-details .reader-mastery-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .reader-account-page #profile-details .reader-mastery-tile { min-height: 170px; }
+  .reader-account-page #profile-details .reader-mastery-levels { white-space: normal; text-align: center; overflow-wrap: anywhere; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .library-page .shelf-tab { transition: none; }
+}
