@@ -1,5 +1,5 @@
 import {
-  BOOKMARK_STORAGE_KEY, addParagraphBookmark, assertBookmarkBudget, bookmarkDocument,
+  BOOKMARK_STORAGE_KEY, addParagraphBookmark, bookmarkDocument,
   deleteParagraphBookmark, emptyBookmarkDocument, mergeBookmarks, type BookmarkDocument,
   type BookmarkEntries, type BookmarkInput,
 } from './bookmarks.ts';
@@ -21,7 +21,7 @@ function read(): BookmarkDocument {
   }
 }
 function write(next: BookmarkEntries): void {
-  assertBookmarkBudget(next);
+  // Limits are checked by add() only; merges and deletions must always persist.
   const state: BookmarkDocument = {version: 1, bookmarks: next};
   // Do not update the memory cache or announce success until persistence succeeds.
   try {

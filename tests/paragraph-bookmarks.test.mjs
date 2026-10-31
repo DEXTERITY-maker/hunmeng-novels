@@ -5,7 +5,7 @@ import {
   addParagraphBookmark, assertBookmarkBudget, assertCloudStateBudget,
   bookmarkBytes, bookmarkDocument, bookmarkKey, deleteParagraphBookmark,
   findBookmarkParagraph, mergeBookmarks, normalizeParagraph, paragraphHash,
-  sanitizeBookmarks, BookmarkLimitError,
+  sanitizeBookmarks, BookmarkLimitError, fitCloudState,
 } from '../src/lib/bookmarks.ts';
 import {mergeReaderStates} from '../src/lib/reader-sync-merge.ts';
 
@@ -221,3 +221,39 @@ test('separate localStorage key survives old reader client rewriting the main ke
   delete globalThis.window;
   delete globalThis.localStorage;
 });
+
+test('two devices may together exceed the creation limits; merge and sync never throw', async () => {
+  const a = {}, b = {};
+  for (let i = 0; i < 60; i++) {
+    const x = await make('block-' + i, 'chapter-' + (i % 10 + 1), 'Device A paragraph ' + i);
+    a[bookmarkKey(x.novelSlug, x.chapterSlug, x.blockId)] = x;
+    const y = await make('block-' + (100 + i), 'chapter-' + (i % 10 + 1), 'Device B paragraph ' + i);
+    b[bookmarkKey(y.novelSlug, y.chapterSlug, y.blockId)] = y;
+  }
+  const merged = mergeBookmarks(a, b);
+  assert.equal(Object.values(merged).filter(x => !x.deleted).length, 120);
+  assert.doesNotThrow(() => mergeReaderStates({...base(), bookmarks: a}, {...base(), bookmarks: b}));
+  // A new bookmark is refused while over the limit...
+  await assert.rejects(async () => addParagraphBookmark(merged, await input('block-999', 'chapter-1', 'One more paragraph.')), BookmarkLimitError);
+  // ...but deleting is always allowed, so the reader can get back under it.
+  const key = Object.keys(merged)[0];
+  const afterDelete = deleteParagraphBookmark(merged, key);
+  assert.equal(afterDelete[key].deleted, true);
+});
+
+test('an oversized bookmark field is left out of the cloud row instead of blocking sync', async () => {
+  const big = {};
+  for (let i = 0; i < 1200; i++) {
+    const x = await make('block-' + i, 'chapter-1', 'Tombstone ' + i);
+    big[bookmarkKey(x.novelSlug, x.chapterSlug, x.blockId)] = {...x, deleted: true, revision: 2};
+  }
+  const state = {...base(), library: {'novel-one': 'reading'}, bookmarks: big};
+  const fitted = fitCloudState(state);
+  assert.equal(fitted.bookmarksOmitted, true);
+  assert.equal('bookmarks' in fitted.state, false);
+  assert.deepEqual(fitted.state.library, {'novel-one': 'reading'});
+  assert.equal(Object.keys(state.bookmarks).length, 1200);
+  const small = fitCloudState({...base(), bookmarks: {}});
+  assert.equal(small.bookmarksOmitted, false);
+});
+

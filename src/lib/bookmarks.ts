@@ -127,9 +127,8 @@ export function deleteParagraphBookmark(raw: unknown, key: string, now = Date.no
   if (!old || old.deleted) return entries;
   if (!validTime(now) || !Number.isSafeInteger(old.revision + 1))
     throw new Error('Invalid bookmark deletion revision.');
-  const result = {...entries, [key]: {...old, revision: old.revision + 1, updatedAt: now, deleted: true}};
-  assertBookmarkBudget(result);
-  return result;
+  // Deleting must always be possible, even when a merge left the reader over a limit.
+  return {...entries, [key]: {...old, revision: old.revision + 1, updatedAt: now, deleted: true}};
 }
 function winner(a: ParagraphBookmark, b: ParagraphBookmark): ParagraphBookmark {
   if (a.revision !== b.revision) return a.revision > b.revision ? a : b;
@@ -163,4 +162,23 @@ export async function findBookmarkParagraph(
   const matches = candidates.filter(p => normalizeParagraph(p.text).includes(needle));
   if (matches.length === 1) return {status: 'found', blockId: matches[0].blockId, method: 'quote'};
   return {status: 'not-found', reason: matches.length > 1 ? 'ambiguous' : 'missing'};
+}
+
+/**
+ * Limits apply when a reader ADDS a bookmark, never to merges: two devices can
+ * legitimately hold more together than one may create. If the bookmark field
+ * would push the cloud row over its safety margin, the rest of the reading state
+ * is still uploaded without it. Absent bookmarks mean "no information" to every
+ * merge, so this never deletes anything; local copies stay untouched.
+ */
+export function fitCloudState<T extends {bookmarks?: unknown}>(state: T): {state: T; bookmarksOmitted: boolean} {
+  try {
+    assertCloudStateBudget(state);
+    return {state, bookmarksOmitted: false};
+  } catch (error) {
+    if (!(error instanceof BookmarkLimitError)) throw error;
+    const {bookmarks: _omitted, ...rest} = state;
+    assertCloudStateBudget(rest);
+    return {state: rest as T, bookmarksOmitted: true};
+  }
 }

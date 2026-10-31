@@ -3,7 +3,7 @@ import { createReaderClient, readerAuthConfigured } from './reader-auth';
 import { repository, sanitizeState, onStorageChange, type ReaderState } from './storage';
 import { mergeReaderStates, type SyncChoice, type SyncConflict } from './reader-sync-merge';
 import { bookmarkRepository, onBookmarkStorageChange } from './bookmark-storage';
-import { assertBookmarkBudget, assertCloudStateBudget, sanitizeBookmarks, type BookmarkEntries } from './bookmarks';
+import { fitCloudState, sanitizeBookmarks, type BookmarkEntries } from './bookmarks';
 
 const OWNER_KEY='hunmeng-novels:cloud-sync-owner:v1';
 const PREVIOUS_OWNER_KEY='hunmeng-novels:cloud-sync-last-owner:v1';
@@ -93,19 +93,20 @@ async function perform(client:SupabaseClient, choice?:SyncChoice):Promise<SyncRe
       // Reading appearance is device-specific; do not overwrite another device.
       settings:remote ? sanitizeState(remote.state).settings : before.settings,
     };
-    // Never silently evict entries (including deletion markers) to fit cloud storage.
-    assertBookmarkBudget(result.state.bookmarks);
     const changed=!remote || snapshot(cloudState)!==snapshot(remote.state);
     let version=remote?.updated_at??'';
     if(changed) {
-      assertCloudStateBudget(cloudState);
+      // Bookmarks never block library and progress sync; nothing is evicted locally.
+      const fitted=fitCloudState(cloudState);
+      if(fitted.bookmarksOmitted) window.dispatchEvent(new Event('reader:bookmarks-cloud-full'));
+      const payload=fitted.state;
       const stillSignedIn=await client.auth.getSession();
       if(stillSignedIn.data.session?.user.id!==userId)
         throw new Error('Account changed during sync. No cloud updates were sent.');
       if(remote){
         const requestedVersion=new Date().toISOString();
         const write=await client.from('novel_reader_state')
-          .update({state:cloudState,updated_at:requestedVersion})
+          .update({state:payload,updated_at:requestedVersion})
           .eq('user_id',userId).eq('updated_at',remote.updated_at)
           .select('updated_at').maybeSingle();
         if(write.error) throw new Error('Unable to update the cloud library. Your device copy is unchanged.');
@@ -114,7 +115,7 @@ async function perform(client:SupabaseClient, choice?:SyncChoice):Promise<SyncRe
         version=saved?.updated_at??requestedVersion;
       }else{
         const write=await client.from('novel_reader_state')
-          .insert({user_id:userId,state:cloudState})
+          .insert({user_id:userId,state:payload})
           .select('updated_at').maybeSingle();
         if(write.error){
           if(write.error.code==='23505')continue; // Concurrent first sign-in.
