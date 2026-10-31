@@ -43,6 +43,7 @@ export async function initAccount() {
     updateProfile?.(user);
     window.dispatchEvent(new CustomEvent('reader:auth-change'));
     loggedIn.hidden = !user;
+    if(!user){const edit=document.getElementById('profile-edit-dialog') as HTMLDialogElement | null;if(edit?.open)edit.close();}
     document.getElementById('profile-guest-hero')!.hidden = !!user;
     status.hidden = !!user && !message;
     document.getElementById('account-email')!.textContent = user?.email ?? '';
