@@ -53,6 +53,7 @@ const usesPlaceholder = n.cover === placeholderCover;
         <summary class="icon-button" aria-label="More reading options" title="More reading options"><span aria-hidden="true">⋯</span></summary>
         <div class="reader-more-panel">
           <a href={n.url}>Back to novel</a>
+          <button type="button" id="reader-paragraph-bookmark-action" aria-label="Bookmark this paragraph">Bookmark this paragraph</button>
           <button type="button" data-reader-focus aria-pressed="false">Focus mode</button>
           {reportHref && <a href={reportHref} target="_blank" rel="noopener noreferrer">Report an error ↗</a>}
         </div>
@@ -91,6 +92,7 @@ const usesPlaceholder = n.cover === placeholderCover;
       <button id="serial-retry" type="button" class="button secondary">Check availability</button>
       <p class="fine">{serial?.initialChapters ?? 85} chapters at launch, then one daily at 12:00 MSK (UTC+3).</p>
     </div>}
+    <p id="reader-bookmark-status" class="reader-bookmark-status" role="status" aria-live="polite" hidden></p>
     <article
       id="chapter-text"
       class="chapter-text"
@@ -246,6 +248,11 @@ const usesPlaceholder = n.cover === placeholderCover;
       <h2 id="toc-title">Contents</h2>
       <p class="reader-toc-novel">{n.title}</p>
     </div>
+    <div class="reader-toc-tabs" role="group" aria-label="Contents or paragraph bookmarks">
+      <button type="button" id="reader-toc-contents-tab" aria-pressed="true" aria-controls="reader-toc-contents-panel">Contents</button>
+      <button type="button" id="reader-toc-bookmarks-tab" aria-pressed="false" aria-controls="reader-toc-bookmarks-panel">Bookmarks <span id="reader-bookmark-count" aria-hidden="true">0</span></button>
+    </div>
+    <div id="reader-toc-contents-panel">
     <ol class="chapter-list reader-toc-list">
       {nearby.map((ch) => (
         <li>
@@ -267,6 +274,11 @@ const usesPlaceholder = n.cover === placeholderCover;
     <div class="reader-toc-footer">
       <a class="reader-toc-all" href={remote ? `${n.url}releases/` : chapterListUrl(n.slug, tocPage)}>Full contents ({chapterCount(n.chapterCount)}) →</a>
     </div>
+    </div>
+    <section id="reader-toc-bookmarks-panel" aria-label="Paragraph bookmarks in this novel" hidden data-chapters={JSON.stringify([...n.chapters.map(ch => ({slug:ch.data.slug,number:ch.data.number,title:ch.data.title})), ...(serial?.chapters.filter(ch => ch.number > (serial?.initialChapters ?? 0)).map(ch => ({slug:`chapter-${ch.number}`,number:ch.number,title:ch.title})) ?? [])])}>
+      <p id="reader-bookmark-empty">No paragraph bookmarks yet. Open the ⋯ menu while reading and select “Bookmark this paragraph”.</p>
+      <ol id="reader-bookmark-list" aria-label="Saved paragraph bookmarks"></ol>
+    </section>
   </dialog>
   <noscript>
     <p class="notice">
