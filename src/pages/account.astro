@@ -9,8 +9,16 @@ import Icon from '../components/Icon.astro';
 <Layout title="Sign in or register" noindex description="Sign in to Hunmeng or create a reader account with your email and password.">
   <main id="main" class="page-shell account-page reader-account-page">
     <header class="page-heading landscape-banner profile-hero">
-      <h1 id="account-title">Sign in or register</h1>
-      <p id="account-subtitle">You can read novels without an account.</p>
+      <div class="profile-hero-copy">
+        <p class="eyebrow">Your reading space</p>
+        <h1 id="account-title">Sign in or register</h1>
+        <p id="account-subtitle">You can read novels without an account.</p>
+      </div>
+      <div class="profile-hero-identity" id="profile-hero-identity" hidden>
+        <span id="profile-avatar" class="profile-avatar" data-avatar="sage" aria-hidden="true">R</span>
+        <img id="profile-sidebar-rank" class="profile-sidebar-rank" src="/images/ranks/iron.svg" width="44" height="49" alt="Rank emblem" hidden />
+        <div class="profile-identity-copy"><strong id="profile-name">Reader</strong><span>My reading corner</span></div>
+      </div>
     </header>
     {site.features.accounts ? (
       <>
@@ -39,7 +47,6 @@ import Icon from '../components/Icon.astro';
         </section>
         <div id="auth-logged-in" class="profile-layout" hidden>
           <aside class="profile-sidebar" aria-label="Profile sections">
-            <div class="profile-identity"><span id="profile-avatar" class="profile-avatar" data-avatar="sage" aria-hidden="true">R</span><img id="profile-sidebar-rank" class="profile-sidebar-rank" src="/images/ranks/iron.svg" width="44" height="49" alt="Rank emblem" hidden /><div class="profile-identity-copy"><strong id="profile-name">Reader</strong><span>My reading corner</span></div></div>
             <nav aria-label="Profile settings"><a href="#profile-details" aria-current="location" aria-controls="profile-details" data-profile-section="profile-details">Profile</a><a href="#profile-reading" aria-controls="profile-reading" data-profile-section="profile-reading">Reading</a><a href="#profile-account" aria-controls="profile-account" data-profile-section="profile-account">Account</a></nav>
             <div class="profile-quicklinks"><a class="profile-library-link" href="/library/"><Icon name="book" size={19} /> My library <span aria-hidden="true">→</span></a>
             <a class="profile-library-link" href="/studio/"><Icon name="pen" size={19} /> Writing studio <span aria-hidden="true">→</span></a></div>
