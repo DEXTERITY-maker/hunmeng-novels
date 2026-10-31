@@ -47,7 +47,8 @@ revoke all on public.reader_halloween_rewards from public, anon, authenticated;
 create table public.reader_halloween_finalizations (
   event_id text primary key check (event_id = 'halloween-2026'),
   finalized_at timestamptz not null default clock_timestamp(),
-  finalized_by uuid not null references auth.users(id)
+  -- NULL when finalized from the Supabase SQL editor by the project owner.
+  finalized_by uuid references auth.users(id) on delete set null
 );
 alter table public.reader_halloween_finalizations enable row level security;
 revoke all on public.reader_halloween_finalizations from public, anon, authenticated;
@@ -87,7 +88,7 @@ alter table public.reader_title_selection
 create function private.reader_halloween_scores()
 returns table (
   user_id uuid, display_name text, chapters bigint,
-  last_chapter_at timestamptz, place bigint
+  last_chapter_at timestamptz, place bigint, team boolean
 ) language sql stable security invoker set search_path=''
 as $$
   with counted as (
@@ -105,22 +106,23 @@ as $$
       row_number() over (
         order by coalesce(c.chapters,0::bigint) desc,
           c.last_chapter_at asc nulls last, p.user_id asc
-      )::bigint as place
+      )::bigint as place,
+      exists(select 1 from public.novel_staff s where s.user_id=p.user_id) as team
     from public.reader_halloween_participants p
     left join counted c on c.user_id=p.user_id
     where p.event_id='halloween-2026'
   )
-  select r.user_id,r.display_name,r.chapters,r.last_chapter_at,r.place
+  select r.user_id,r.display_name,r.chapters,r.last_chapter_at,r.place,r.team
   from ranked r
 $$;
 revoke all on function private.reader_halloween_scores() from public,anon,authenticated;
 
 -- Public guest-safe leaderboard: exactly rank, chosen public name, chapter count.
 create function public.reader_halloween_leaderboard()
-returns table (place bigint, display_name text, chapters bigint)
+returns table (place bigint, display_name text, chapters bigint, team boolean)
 language sql stable security definer set search_path=''
 as $$
-  select r.place,r.display_name,r.chapters
+  select r.place,r.display_name,r.chapters,r.team
   from private.reader_halloween_scores() r
   order by r.place limit 20
 $$;
@@ -159,6 +161,8 @@ as $$
     and char_length(p_name) between 3 and 24
     and p_name=btrim(p_name)
     and p_name ~ '^[[:alnum:] _-]+$'
+    -- Readers must not impersonate the site or its staff on a public board.
+    and lower(p_name) !~ '(hunmeng|admin|moderator|official|support|staff)'
 $$;
 revoke all on function private.reader_halloween_valid_name(text) from public,anon,authenticated;
 
@@ -321,8 +325,15 @@ declare
   v_title_id text;
   v_badge text;
   v_xp integer;
+  v_prize integer:=0;
 begin
-  if v_admin is null or not exists (
+  -- Two allowed callers: a signed-in site admin through the API, or the
+  -- project owner in the Supabase SQL editor (no auth user, session_user postgres).
+  if v_admin is null then
+    if session_user not in ('postgres','supabase_admin') then
+      raise exception 'Administrator role required' using errcode='42501';
+    end if;
+  elsif not exists (
     select 1 from public.novel_staff s where s.user_id=v_admin and s.role='admin'
   ) then raise exception 'Administrator role required' using errcode='42501'; end if;
   if clock_timestamp() < timestamptz '2026-11-07 21:00:00+00' then
@@ -333,27 +344,33 @@ begin
   if exists(select 1 from public.reader_halloween_finalizations
     where event_id='halloween-2026') then return false; end if;
 
+  -- Staff may appear on the board but never take a prize; the next eligible
+  -- reader moves up. Prize place is the order among eligible readers.
   for v_winner in select * from private.reader_halloween_scores()
-    where place<=3 and chapters>=1 order by place loop
-    v_xp:=case v_winner.place when 1 then 3000 when 2 then 2000 else 1000 end;
-    v_badge:=case v_winner.place when 1 then 'gold' when 2 then 'silver' else 'bronze' end;
+    where chapters>=1 and not team order by place limit 3 loop
+    v_prize:=v_prize+1;
+    v_xp:=case v_prize when 1 then 3000 when 2 then 2000 else 1000 end;
+    v_badge:=case v_prize when 1 then 'gold' when 2 then 'silver' else 'bronze' end;
     v_title_id:='halloween-2026-'||v_badge;
-    v_title:=case v_winner.place
+    v_title:=case v_prize
       when 1 then 'Lantern of the Long Night'
       when 2 then 'Keeper of the Autumn Moon'
       else 'Reader of the Falling Leaves' end;
 
     insert into public.reader_halloween_rewards(user_id,event_id,place,title_id,title,badge)
-    values(v_winner.user_id,'halloween-2026',v_winner.place,v_title_id,v_title,v_badge);
+    values(v_winner.user_id,'halloween-2026',v_prize,v_title_id,v_title,v_badge);
     insert into public.reader_xp_events(user_id,event_kind,novel_slug,chapter_slug,xp)
     values(v_winner.user_id,'event_reward','event-halloween-2026',
-      'place-'||v_winner.place::text,v_xp)
+      'place-'||v_prize::text,v_xp)
     on conflict (user_id,event_kind,novel_slug,chapter_slug) do nothing;
   end loop;
   insert into public.reader_halloween_finalizations(event_id,finalized_by)
     values ('halloween-2026',v_admin);
   return true;
 end $$;
+-- Run once after 8 November 00:00 MSK in the SQL editor:
+--   select private.reader_halloween_finalize();
+-- true = prizes issued; false = already finalized earlier (nothing changes).
 revoke all on function private.reader_halloween_finalize() from public,anon;
 grant execute on function private.reader_halloween_finalize() to authenticated;
 create function public.reader_halloween_finalize()

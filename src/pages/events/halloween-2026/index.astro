@@ -20,7 +20,7 @@ import {halloweenPrizes,HALLOWEEN_START,HALLOWEEN_END,halloweenBadge} from '../.
         <li><strong>Join voluntarily.</strong> Sign in and choose a unique public leaderboard name. Your email and account identity are never shown.</li>
         <li><strong>Finish verified chapters.</strong> Only chapters completed through the existing reading-session system between 1 and 7 November (MSK) count. Chapters finished earlier in the week count even if you join later.</li>
         <li><strong>Climb the leaderboard.</strong> Most chapters wins. If counts are equal, the reader who reached that count earlier places higher.</li>
-        <li><strong>Collect a prize.</strong> The first three participating readers with at least one verified chapter earn an event emblem, a selectable title, and bonus XP. Normal reading rewards and shelves are unaffected.</li>
+        <li><strong>Collect a prize.</strong> The first three participating readers with at least one verified chapter earn an event emblem, a selectable title, and bonus XP. Hunmeng team members may take part but do not receive prizes. Normal reading rewards and shelves are unaffected.</li>
       </ol>
     </section>
 
@@ -42,7 +42,6 @@ import {halloweenPrizes,HALLOWEEN_START,HALLOWEEN_END,halloweenBadge} from '../.
           </article>
         ))}
       </div>
-      <p class="fine halloween-art-note">Official event emblems are being prepared. Awards and their places are listed even before the images arrive.</p>
     </section>
 
     <div class="halloween-main-grid">
@@ -59,7 +58,7 @@ import {halloweenPrizes,HALLOWEEN_START,HALLOWEEN_END,halloweenBadge} from '../.
             <input id="halloween-display-name" type="text" name="display_name" autocomplete="off"
               required minlength="3" maxlength="24" aria-describedby="halloween-public-note halloween-name-help" />
             <small id="halloween-public-note"><strong>Your chosen name is visible to everyone on the leaderboard.</strong> Your email is never displayed.</small>
-            <small id="halloween-name-help">3–24 letters, numbers, spaces, _ or -. Names must be unique regardless of case.</small>
+            <small id="halloween-name-help">3–24 letters, numbers, spaces, _ or -. Names must be unique regardless of case, and names that look like the site or its staff are reserved.</small>
             <button id="halloween-join-button" class="button" type="submit">Join the event</button>
           </form>
           <div id="halloween-member-actions" hidden>

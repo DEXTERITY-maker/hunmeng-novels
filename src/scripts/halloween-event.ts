@@ -1,8 +1,8 @@
 import {createReaderClient,readerAuthConfigured} from '../lib/reader-auth';
-import {halloweenValidName,halloweenPrizes,halloweenBadge,HALLOWEEN_START,HALLOWEEN_END} from '../lib/halloween-event';
+import {halloweenValidName,halloweenPrizes,halloweenBadge,halloweenPrizeWinners,HALLOWEEN_START,HALLOWEEN_END} from '../lib/halloween-event';
 import type {SupabaseClient} from '@supabase/supabase-js';
 
-type Entry={place:number;display_name:string;chapters:number};
+type Entry={place:number;display_name:string;chapters:number;team?:boolean};
 type Mine={place:number|null;chapters:number;participating:boolean;display_name:string|null};
 const $=<T extends HTMLElement>(id:string)=>document.getElementById(id) as T;
 const start=Date.parse(HALLOWEEN_START),end=Date.parse(HALLOWEEN_END);
@@ -39,6 +39,10 @@ function paintRows(rows:Entry[],finalized:boolean){
     const tr=document.createElement('tr');
     const place=document.createElement('th');place.scope='row';place.textContent='#'+item.place;
     const name=document.createElement('td');name.textContent=item.display_name;
+    if(item.team){
+      const tag=document.createElement('span');tag.className='halloween-team-tag';
+      tag.textContent='Team · no prize';name.append(' ',tag);
+    }
     const chapters=document.createElement('td');chapters.textContent=String(item.chapters);
     tr.append(place,name,chapters);
     body.append(tr);
@@ -49,8 +53,9 @@ function paintRows(rows:Entry[],finalized:boolean){
   const winners=$('halloween-winners');
   winners.replaceChildren();
   if(!finalized)return;
+  const eligible=halloweenPrizeWinners(rows);
   for(const prize of halloweenPrizes){
-    const person=rows.find(r=>r.place===prize.place&&r.chapters>=1);
+    const person=eligible[prize.place-1];
     if(!person)continue;
     const li=document.createElement('li');
     const art=document.createElement('span');art.className='halloween-winner-art';
@@ -155,7 +160,7 @@ export async function initHalloweenPage(){
     if(!client||!ready||!userId||!eventOpen())return;
     const input=$<HTMLInputElement>('halloween-display-name');
     if(!halloweenValidName(input.value)){
-      notice('Use 3–24 letters, numbers, spaces, _ or -, without leading/trailing spaces.');
+      notice('Use 3–24 letters, numbers, spaces, _ or -. Names that look like the site or its staff are reserved.');
       input.focus();return;
     }
     const mode=form.dataset.mode==='rename'?'reader_halloween_rename':'reader_halloween_join';

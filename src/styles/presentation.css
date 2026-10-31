@@ -3586,7 +3586,6 @@ html[data-theme='sepia'] .library-page .library-row-art { filter: sepia(.24) sat
 .halloween-prize-copy h3 { margin:12px 0 8px;font-size:1.07rem;overflow-wrap:anywhere; }
 .halloween-prize-copy p {font-size:.86rem;color:var(--muted);}
 .halloween-prize-copy p strong {color:var(--ink);}
-.halloween-art-note {margin-top:10px;}
 .halloween-main-grid {display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.3fr);gap:22px;align-items:start;}
 .halloween-main-grid > .halloween-section {min-width:0;margin-top:36px;padding:20px;border:1px solid var(--line);border-radius:16px;background:var(--surface);}
 .halloween-join-panel #halloween-member {min-width:0;}
@@ -3614,7 +3613,8 @@ html[data-theme='sepia'] .library-page .library-row-art { filter: sepia(.24) sat
 .halloween-winner-label {display:grid;gap:2px;min-width:0;overflow-wrap:anywhere;}
 .halloween-winner-label small {color:var(--muted);}
 .halloween-home-banner {display:flex;align-items:center;gap:18px;min-width:0;margin:20px 0;padding:18px 22px;border:1px solid var(--line);border-left:5px solid var(--accent);border-radius:14px;background:var(--surface);}
-.halloween-home-banner-symbol {flex:0 0 48px;width:48px;height:48px;display:grid;place-items:center;border-radius:12px;background:var(--soft);font-size:1.7rem;color:var(--ink);}
+.halloween-home-banner-symbol {flex:0 0 56px;width:56px;height:56px;object-fit:contain;}
+.halloween-team-tag {display:inline-block;padding:1px 8px;border:1px solid var(--line);border-radius:999px;font-size:.72rem;color:var(--muted);white-space:nowrap;}
 .halloween-home-banner > div {min-width:0;flex:1;}
 .halloween-home-banner strong {color:var(--ink);}
 .halloween-home-banner p {font-size:.85rem;color:var(--muted);}
@@ -3647,6 +3647,6 @@ html[data-theme='sepia'] .library-page .library-row-art { filter: sepia(.24) sat
   .halloween-leaderboard th,.halloween-leaderboard td {padding:11px 4px;font-size:.9rem;}
   .halloween-leaderboard th:first-child {width:54px;}
   .halloween-leaderboard th:last-child,.halloween-leaderboard td:last-child {width:76px;}
-  .halloween-home-banner-symbol {flex-basis:40px;width:40px;height:40px;}
+  .halloween-home-banner-symbol {flex-basis:48px;width:48px;height:48px;}
   .halloween-profile-award {flex-wrap:wrap;}
 }

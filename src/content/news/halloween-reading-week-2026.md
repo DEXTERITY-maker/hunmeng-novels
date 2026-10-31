@@ -18,6 +18,6 @@ The leaderboard counts chapters verified by the existing reading-session reward 
 - **Second place:** 2,000 XP, the **Keeper of the Autumn Moon** title, and a silver Halloween emblem.
 - **Third place:** 1,000 XP, the **Reader of the Falling Leaves** title, and a bronze Halloween emblem.
 
-A minimum of one verified chapter is required to receive a prize. The results and awards are finalized after the event by an administrator. Awarded titles can be equipped in the reader profile.
+A minimum of one verified chapter is required to receive a prize. Hunmeng team members may take part, but prizes go only to readers. The results and awards are finalized after the event by an administrator. Awarded titles can be equipped in the reader profile.
 
 Reading XP rules, reader ranks, Reader's Path, MP, chapter progress and library shelves remain unchanged. Event prizes are additional verified XP awards.

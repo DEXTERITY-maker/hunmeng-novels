@@ -19,7 +19,14 @@ export function halloweenValidName(value: unknown): value is string {
   return typeof value === 'string' &&
     [...value].length >= 3 && [...value].length <= 24 &&
     value === value.trim() &&
-    /^[\p{L}\p{N} _-]+$/u.test(value);
+    /^[\p{L}\p{N} _-]+$/u.test(value) &&
+    !halloweenReservedName.test(value);
+}
+/** Mirrors the database rule: nobody may pose as the site or its staff. */
+export const halloweenReservedName = /(hunmeng|admin|moderator|official|support|staff)/iu;
+/** Staff may take part but never take a prize; the next eligible readers move up. */
+export function halloweenPrizeWinners<T extends {chapters: number; team?: boolean; place: number}>(rows: T[]): T[] {
+  return [...rows].sort((a, b) => a.place - b.place).filter(row => row.chapters >= 1 && !row.team).slice(0, 3);
 }
 export type HalloweenParticipant = {userId: string; displayName: string};
 export type HalloweenXpEvent = {userId: string; eventKind: string; awardedAt: string};

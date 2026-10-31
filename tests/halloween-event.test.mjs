@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {HALLOWEEN_START,HALLOWEEN_END,halloweenInWindow,halloweenValidName,halloweenRank,halloweenBadge} from '../src/lib/halloween-event.ts';
+import {HALLOWEEN_START,HALLOWEEN_END,halloweenInWindow,halloweenValidName,halloweenRank,halloweenBadge,halloweenPrizeWinners} from '../src/lib/halloween-event.ts';
 
 const people=[{userId:'a',displayName:'Autumn'},{userId:'b',displayName:'Moon'},{userId:'c',displayName:'Lantern'}];
 const xp=(userId,awardedAt,eventKind='chapter_finished')=>({userId,awardedAt,eventKind});
@@ -33,6 +33,16 @@ test('late joins receive earlier verified chapters and rewards never count as ch
 test('name restrictions include Unicode letters and reject spaces-only, punctuation and nontrimmed',()=>{
  for(const v of ['Alex','Мороз_1','秋夜-12','Night Reader','a-b','Reader 2026'])assert.equal(halloweenValidName(v),true,v);
  for(const v of ['a','  ',' Alice','Alice ','A!B','X@Y','a'.repeat(25),'x\ny',null])assert.equal(halloweenValidName(v),false,String(v));
+});
+test('names that pose as the site or its staff are reserved',()=>{
+ for(const v of ['Hunmeng','hunmeng_fan','Admin','The Moderator','Official Reader','Support','STAFF'])assert.equal(halloweenValidName(v),false,v);
+ assert.equal(halloweenValidName('Night Owl'),true);
+});
+test('staff and zero-chapter readers never take prizes; next eligible readers move up',()=>{
+ const rows=[{place:1,chapters:40,team:true,display_name:'T'},{place:2,chapters:30,team:false,display_name:'A'},
+  {place:3,chapters:20,team:false,display_name:'B'},{place:4,chapters:10,team:false,display_name:'C'},{place:5,chapters:0,team:false,display_name:'D'}];
+ assert.deepEqual(halloweenPrizeWinners(rows).map(r=>r.display_name),['A','B','C']);
+ assert.deepEqual(halloweenPrizeWinners(rows.slice(0,2)).map(r=>r.display_name),['A']);
 });
 test('badge paths use supplied filenames without requiring assets to exist yet',()=>{
  assert.equal(halloweenBadge('gold'),'/images/events/halloween-2026/gold.webp');
