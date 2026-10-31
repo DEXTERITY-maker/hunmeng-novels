@@ -413,14 +413,17 @@ test('системная тема по умолчанию: смена схемы
   await page.emulateMedia({ colorScheme: 'light' });
   await page.goto('/');
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
-  const emblem = page.locator('.site-header .brand-emblem svg');
+  // The emblem sits on a light tile, so the same artwork stays readable in both schemes.
+  const emblem = page.locator('.site-header .brand-emblem img');
   await expect(emblem).toBeVisible();
-  const lightStroke = await emblem.locator('.brand-emblem-book').evaluate(el => getComputedStyle(el).stroke);
+  const tile = page.locator('.site-header .brand-emblem');
+  const lightTile = await tile.evaluate(el => getComputedStyle(el).backgroundColor);
   await page.emulateMedia({ colorScheme: 'dark' });
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
   await expect(emblem).toBeVisible();
-  const darkStroke = await emblem.locator('.brand-emblem-book').evaluate(el => getComputedStyle(el).stroke);
-  expect(darkStroke).not.toBe(lightStroke);
+  const darkTile = await tile.evaluate(el => getComputedStyle(el).backgroundColor);
+  expect(darkTile).not.toBe('rgba(0, 0, 0, 0)');
+  expect(lightTile).not.toBe('rgba(0, 0, 0, 0)');
   await page.goto(chapter);
   await page.locator('[data-open=settings]').click();
   await expect(page.locator('input[name=theme][value=system]')).toBeChecked();
@@ -621,11 +624,15 @@ test('novel without art keeps the original reader heading', async ({ page }) => 
   expect(image).not.toContain('latency-');
 });
 
-test('phone reader header shows the Hunmeng emblem next to the back button', async ({ page }) => {
+test('site and phone reader headers show the new Hunmeng emblem', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/novel/khranitel-mayaka/glava-1/');
-  const emblem = page.locator('.reader-header .reader-header-logo-placeholder svg');
+  const emblem = page.locator('.reader-header .reader-header-logo-placeholder img');
   await expect(emblem).toBeVisible();
-  await expect(emblem.locator('.brand-emblem-book')).toHaveCount(1);
+  await expect(emblem).toHaveAttribute('src', '/images/hunmeng-emblem.png');
+  await expect.poll(() => emblem.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0)).toBe(true);
+  const header = page.locator('.site-header .brand-emblem img');
+  await page.goto('/');
+  await expect(header).toHaveAttribute('src', '/images/hunmeng-emblem.png');
 });
 

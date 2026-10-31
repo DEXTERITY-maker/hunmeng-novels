@@ -64,9 +64,6 @@ a, button, summary { -webkit-tap-highlight-color: transparent; }
   width: 46px; height: 46px; flex: none;
 }
 .brand-emblem svg { width: 44px; height: 44px; display: block; }
-.brand-emblem-frame { fill: var(--editorial-emblem); stroke: var(--line); }
-.brand-emblem-book,.brand-emblem-page { stroke: var(--accent); }
-.brand-emblem-star { fill: var(--accent); }
 .brand-title {
   font-family: 'Lora Variable',Georgia,serif;
   font-weight: 650; font-size: 1.52rem;

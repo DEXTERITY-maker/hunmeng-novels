@@ -14,7 +14,7 @@ The chapter reader now has a more polished appearance on desktop and mobile.
 - **Improved mobile layout.** Artwork appears in a shorter header, keeping chapter titles readable and leaving more room for reading.
 - **Refined reading controls.** The bottom toolbar has a softer, slightly translucent appearance.
 - **Graceful fallback.** Novels without dedicated artwork retain a simple chapter header.
-- **Brand in the mobile header.** The phone reader header shows the Hunmeng emblem beside the back button.
+
 
 ### What stays the same
 
