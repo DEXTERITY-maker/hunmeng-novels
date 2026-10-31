@@ -2832,10 +2832,14 @@ html[data-theme='sepia'] .library-page .library-row-art { filter: sepia(.22); }
   grid-column: 2;
   grid-row: 2;
   align-items: center;
+  justify-self: start;
+  justify-content: flex-start;
+  width: min(100%, 330px);
   gap: 12px;
   min-width: 0;
   color: var(--muted);
   font-size: .81rem;
+  text-align: left;
 }
 .library-page .library-row-shelf select {
   min-width: 0;
@@ -3093,7 +3097,8 @@ html[data-theme='sepia'] .library-page .library-row-art { filter: sepia(.22); }
   .library-page .library-row-art { display: none; }
   .reader-account-page .profile-layout { grid-template-columns: 1fr; }
   .reader-account-page .profile-sidebar { position: static; padding: 12px; }
-  .reader-account-page .profile-sidebar nav { display: flex; flex-wrap: wrap; gap: 6px; }
+  .reader-account-page .profile-sidebar nav { display: flex; flex-wrap: wrap; gap: 6px; order: 0; }
+  .reader-account-page .profile-sidebar .profile-quicklinks { order: 1; }
   .reader-account-page .profile-sidebar nav a { flex: 1 1 100px; justify-content: center; }
   .reader-account-page .profile-sidebar nav a[aria-current='location'] { box-shadow: inset 0 -3px var(--accent); }
   .reader-account-page .profile-quicklinks { grid-template-columns: repeat(2,minmax(0,1fr)); }
@@ -3130,7 +3135,7 @@ html[data-theme='sepia'] .library-page .library-row-art { filter: sepia(.22); }
   .library-page .library-row { grid-template-columns: 76px minmax(0,1fr); gap: 8px 12px; padding: 12px; }
   .library-page .library-row-cover { width: 76px; height: 114px; }
   .library-page .library-row-copy h2 { font-size: 1.08rem; }
-  .library-page .library-row-shelf { align-items: stretch; flex-wrap: wrap; gap: 5px; }
+  .library-page .library-row-shelf { flex-direction: column; align-items: stretch; flex-wrap: wrap; gap: 5px; }
   .library-page .library-row-shelf select { width: 100%; }
   .reader-account-page .profile-hero .profile-identity { margin-top: 8px; gap: 8px; padding: 7px; }
   .reader-account-page .profile-hero .profile-avatar { width: 48px; height: 48px; font-size: 1.35rem; }
