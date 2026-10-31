@@ -626,3 +626,11 @@ html[data-theme='dark'] .library-page #library-empty a { color: var(--bg); }
 .home-page .home-cover-grid .hm-motion-book-card:focus-within .home-book-read,
 .home-page .home-cover-grid .home-book-link:hover .home-book-read,
 .home-page .home-cover-grid .home-book-link:focus-visible .home-book-read { color:#fff !important; }
+
+/* Telegram channel notification links: adapt to existing light, dark and sepia tokens. */
+.telegram-chapter-cta { margin: 12px 0 20px; max-width: 100%; min-width: 0; }
+.telegram-chapter-cta a { display: inline-flex; align-items: center; flex-wrap: wrap; gap: .45em; max-width: 100%; min-height: 44px; box-sizing: border-box; padding: 9px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--soft); color: var(--ink); font-weight: 700; font-size: .9rem; line-height: 1.45; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; overflow-wrap: anywhere; }
+.telegram-chapter-cta a:hover { border-color: var(--accent); color: var(--ink); background: var(--surface); }
+.telegram-chapter-cta a:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+.telegram-reader-cta { margin: 24px auto 12px; text-align: center; padding-inline: 12px; }
+@media (max-width: 390px) { .telegram-chapter-cta a { font-size: .85rem; padding: 10px 12px; } }
