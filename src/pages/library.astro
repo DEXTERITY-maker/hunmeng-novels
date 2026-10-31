@@ -6,10 +6,10 @@ import { shelves, site } from '../config/site';
 
 <Layout title="My library" noindex>
   <main id="main" class="page-shell library-page">
-    <div class="page-heading landscape-banner">
-      <p class="eyebrow">Your own reading corner</p><h1>Library</h1>
-      <p>Your stories and reading progress are saved on this device.</p>
-    </div>
+    <header class="page-heading landscape-banner library-hero">
+      <div class="library-hero-copy"><p class="eyebrow">Your own reading corner</p><h1>Library</h1>
+      <p>Your stories and reading progress are saved on this device.</p></div>
+    </header>
     <div class="shelf-tabs" role="group" aria-label="Shelves">
       {Object.entries(shelves).map(([value, label], i) => (
         <button

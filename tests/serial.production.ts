@@ -383,3 +383,107 @@ test('reading position still restores after reloading an illustrated chapter', a
   await page.reload();
   await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(200);
 });
+
+
+test('library design: real artwork, text-safe reading rows, progress and responsive themes', async ({ page }, info) => {
+  test.skip(info.project.name !== 'desktop', 'Capture all four layouts in one browser.');
+  const sample = {
+    version: 1,
+    library: { 'comprehension-against-the-heavens': 'reading', 'the-latency-of-tomorrow': 'reading' },
+    progress: {
+      'comprehension-against-the-heavens': {
+        chapterSlug: 'chapter-1', chapterNumber: 1, blockId: 'block-2', offset: 0,
+        ratio: .35, updatedAt: Date.parse('2026-10-27T12:00:00Z'),
+      },
+      'the-latency-of-tomorrow': {
+        chapterSlug: 'chapter-10', chapterNumber: 10, blockId: 'block-4', offset: 0,
+        ratio: .62, updatedAt: Date.parse('2026-10-28T12:00:00Z'),
+      },
+    },
+  };
+  await page.addInitScript(value => {
+    localStorage.setItem('hunmeng-novels:v1', JSON.stringify(value));
+  }, sample);
+  for (const width of [1440, 390]) {
+    const device = width === 390 ? 'mobile' : 'desktop';
+    await page.setViewportSize({ width, height: width === 390 ? 844 : 900 });
+    await page.goto('/library/');
+    const rows = page.locator('.library-novel-row');
+    await expect(rows).toHaveCount(2);
+    await expect(page.locator('[data-shelf-tab="reading"]')).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.locator('[data-shelf-count="reading"]')).toHaveText('2');
+    for (const novel of [
+      { slug: 'comprehension-against-the-heavens', art: 'comprehension', day: 'comprehension-day', night: 'comprehension-night', progress: 35 },
+      { slug: 'the-latency-of-tomorrow', art: 'latency', day: 'latency-night', night: 'latency-night', progress: 62 },
+    ]) {
+      const row = rows.filter({ has: page.locator('h2 a[href="/novel/' + novel.slug + '/"]') });
+      await expect(row).toHaveCount(1);
+      await expect(row).toHaveAttribute('data-art', novel.art);
+      await expect(row.locator('.library-chapter-progress')).toHaveJSProperty('value', novel.progress);
+      await expect(row.locator('.library-row-copy .library-row-chapter')).toContainText(' of ');
+      // Shelf label and select share one line, aligned with the text column.
+      const picker = (await row.locator('.library-row-picker').boundingBox())!;
+      const select = (await row.locator('.library-row-picker select').boundingBox())!;
+      const copy = (await row.locator('.library-row-copy').boundingBox())!;
+      expect(Math.abs((select.y + select.height / 2) - (picker.y + picker.height / 2))).toBeLessThan(6);
+      if (width > 960) expect(picker.x).toBeLessThanOrEqual(copy.x + 2);
+      const href = await row.locator('.library-row-action').getAttribute('href');
+      expect(href).toContain('/novel/' + novel.slug + '/chapter-');
+      // The second cover may be below the first fold on a 390px phone.
+      await row.locator('.library-row-cover img').scrollIntoViewIfNeeded();
+      await expect.poll(() => row.locator('.library-row-cover img').evaluate(el => {
+        const img = el as HTMLImageElement;
+        return img.complete && img.naturalWidth > 0;
+      })).toBe(true);
+    }
+    for (const theme of ['light', 'dark', 'sepia'] as const) {
+      await page.locator('html').evaluate((el, value) => { el.dataset.theme = value; }, theme);
+      const hero = await page.locator('.library-hero').evaluate(el => getComputedStyle(el).backgroundImage);
+      expect(hero).toContain('hunmeng-landscape-' + (theme === 'dark' ? 'night' : 'day') + '-' + (width === 390 ? '960' : '1536') + '.webp');
+      for (const novel of [
+        { slug: 'comprehension-against-the-heavens', art: 'comprehension', day: 'comprehension-day', night: 'comprehension-night' },
+        { slug: 'the-latency-of-tomorrow', art: 'latency', day: 'latency-night', night: 'latency-night' },
+      ]) {
+        const card = rows.filter({ has: page.locator('h2 a[href="/novel/' + novel.slug + '/"]') });
+        const art = card.locator('.library-row-art');
+        const bg = await art.evaluate(el => getComputedStyle(el).backgroundImage);
+        expect(bg).toContain((theme === 'dark' ? novel.night : novel.day) + '-1536.webp');
+        const display = await art.evaluate(el => getComputedStyle(el).display);
+        if (device === 'mobile') expect(display).toBe('none');
+        else {
+          expect(display).not.toBe('none');
+          const copy = await card.locator('.library-row-copy').boundingBox();
+          const image = await art.boundingBox();
+          expect(copy).toBeTruthy();
+          expect(image).toBeTruthy();
+          expect(copy!.x + copy!.width).toBeLessThanOrEqual(image!.x + 4);
+        }
+      }
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), theme + ' at ' + width).toBe(true);
+      for (const button of await page.locator('.library-row-action').all()) {
+        const ratio = await button.evaluate(el => {
+          const s = getComputedStyle(el);
+          const rgb = (x: string) => (x.match(/[\d.]+/g) ?? []).slice(0,3).map(Number);
+          const lum = (x: string) => rgb(x).reduce((sum, channel, i) => {
+            const n = channel / 255, v = n <= .04045 ? n / 12.92 : ((n+.055)/1.055)**2.4;
+            return sum + v * [.2126, .7152, .0722][i];
+          },0);
+          const a = lum(s.color), b = lum(s.backgroundColor);
+          return (Math.max(a,b)+.05)/(Math.min(a,b)+.05);
+        });
+        expect(ratio).toBeGreaterThanOrEqual(4.5);
+      }
+      if (theme !== 'sepia') {
+        await page.evaluate(() => document.fonts.ready);
+        await page.screenshot({
+          path: info.outputPath('hunmeng-library-' + device + '-' + theme + '.png'),
+          fullPage: true,
+          animations: 'disabled',
+        });
+      }
+    }
+    await page.locator('[data-shelf-tab="later"]').click();
+    await expect(rows).toHaveCount(0);
+    await expect(page.locator('#library-empty')).toBeVisible();
+  }
+});
