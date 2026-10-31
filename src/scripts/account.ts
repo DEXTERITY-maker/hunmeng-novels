@@ -43,7 +43,8 @@ export async function initAccount() {
     updateProfile?.(user);
     window.dispatchEvent(new CustomEvent('reader:auth-change'));
     loggedIn.hidden = !user;
-    document.getElementById('profile-hero-identity')!.hidden = !user;
+    document.getElementById('profile-guest-hero')!.hidden = !!user;
+    status.hidden = !!user && !message;
     document.getElementById('account-email')!.textContent = user?.email ?? '';
     status.textContent = message ?? (user ? 'You are signed in.' : 'Sign in or create a reader account.');
   };
@@ -153,6 +154,7 @@ export async function initAccount() {
   } catch {render(null,'Unable to verify your session. Please sign in again.');}
   finally {
     busy=false;fields.disabled=false;
-    if (profileTarget && !loggedIn.hidden) document.querySelector(profileTarget)?.scrollIntoView();
+    if (profileTarget && !loggedIn.hidden && !['#overview','#progress','#titles-achievements','#xp-history'].includes(profileTarget))
+      document.querySelector(profileTarget)?.scrollIntoView();
   }
 }
