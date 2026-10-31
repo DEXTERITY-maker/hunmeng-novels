@@ -3000,6 +3000,7 @@ html[data-theme='sepia'] .library-page .library-row-art { filter: sepia(.22); }
 .reader-account-page #profile-details .reader-mastery-tile[data-mastery-status=current] { background: var(--soft); border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
 .reader-account-page #profile-details .reader-mastery-tile[data-mastery-status=current] [data-mastery-state] { color: var(--bg); background: var(--accent); border-color: var(--accent); }
 .reader-account-page #profile-details .reader-mastery-tile[data-mastery-status=earned] [data-mastery-state] { color: var(--ink); background: var(--soft); border-color: var(--accent); }
+.reader-account-page #profile-details .reader-mastery-tile[data-mastery-status=locked] [data-mastery-state] { color: var(--muted); }
 .reader-account-page #profile-details .reader-award { grid-template-columns: 43px minmax(0,1fr); }
 .reader-account-page #profile-details .award-symbol,
 .reader-account-page #profile-details .achievement-icon { color: var(--accent); background: var(--soft); border: 1px solid var(--line); }
