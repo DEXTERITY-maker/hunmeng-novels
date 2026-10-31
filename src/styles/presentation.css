@@ -4625,3 +4625,16 @@ html[data-theme='sepia'] .reader-account-page .profile-member-hero {
 /* Profile art supplied: lighter files on phones, faint ink-wash in dark mode. */
 html[data-theme='dark'] .reader-account-page .profile-dashboard-card::after {opacity:.05}
 @media(prefers-color-scheme:dark){html[data-theme='system'] .reader-account-page .profile-dashboard-card::after {opacity:.05}}
+/* Review fixes: award sits left of the future slot; no empty box without awards;
+   the laurel needs room past the avatar so it is never clipped by the page edge. */
+.reader-account-page #profile-event-awards-slot:not(:has(.halloween-profile-award)) {display:none}
+.reader-account-page #profile-event-awards-slot:has(.halloween-profile-award) > #halloween-profile-awards-section {grid-column:1;grid-row:1;min-width:0;margin:0;padding:0;border:0;background:transparent;box-shadow:none}
+.reader-account-page #profile-event-awards-slot:has(.halloween-profile-award) > .profile-award-placeholder {grid-column:2;grid-row:1;justify-self:end}
+.reader-account-page #profile-event-awards-slot .halloween-profile-award {flex-wrap:wrap}
+.reader-account-page #profile-event-awards-slot .halloween-profile-award-info {flex:1 1 170px}
+.reader-account-page #profile-event-awards-slot .halloween-profile-award > button {flex:0 0 auto}
+.reader-account-page .profile-member-hero {padding-left:calc(var(--profile-gutter) + 48px)}
+@media(max-width:760px){
+  .reader-account-page .profile-member-hero {padding-left:calc(var(--profile-gutter) + 22px)}
+  .reader-account-page #profile-event-awards-slot .halloween-profile-award-image {width:84px;height:84px;flex-basis:84px}
+}
