@@ -30,9 +30,8 @@ import {halloweenPrizes,HALLOWEEN_START,HALLOWEEN_END,halloweenBadge} from '../.
         {halloweenPrizes.map(prize=>(
           <article class:list={['halloween-prize', 'halloween-prize-'+prize.key]}>
             <div class="halloween-prize-art">
-              <span class="halloween-badge-placeholder" aria-hidden="true" data-halloween-fallback={prize.key}>✦</span>
-              <img data-halloween-badge={prize.key} data-halloween-path={halloweenBadge(prize.key)}
-                alt={`Place ${prize.place} ${prize.key} award emblem`} width="128" height="128" hidden decoding="async" />
+              <img data-halloween-badge={prize.key} src={halloweenBadge(prize.key)}
+                alt={`Place ${prize.place} ${prize.key} award emblem`} width="128" height="128" />
               <span class="halloween-prize-place">Place {prize.place}</span>
             </div>
             <div class="halloween-prize-copy">
@@ -67,7 +66,7 @@ import {halloweenPrizes,HALLOWEEN_START,HALLOWEEN_END,halloweenBadge} from '../.
           </div>
           <p id="halloween-member-notice" class="fine" role="status" aria-live="polite"></p>
         </div>
-        <p id="halloween-closed-notice" class="fine" hidden>Joining and changes close at midnight on 8 November, Moscow time.</p>
+        <p id="halloween-closed-notice" class="fine" hidden></p>
       </section>
 
       <section class="halloween-section halloween-leaderboard-panel" aria-labelledby="halloween-leaderboard-heading">
