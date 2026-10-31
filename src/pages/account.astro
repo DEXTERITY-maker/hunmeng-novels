@@ -5,21 +5,19 @@ import ReaderPreferences from '../components/ReaderPreferences.astro';
 import ReaderAdvancement from '../components/ReaderAdvancement.astro';
 import ReaderSyncPanel from '../components/ReaderSyncPanel.astro';
 import Icon from '../components/Icon.astro';
+import { getLibrary } from '../lib/content';
+const profileCatalog=(await getLibrary()).map(n=>({slug:n.slug,title:n.title,chapters:n.chapters.map(c=>({slug:c.data.slug,number:c.data.number}))}));
 ---
 <Layout title="Sign in or register" noindex description="Sign in to Hunmeng or create a reader account with your email and password.">
   <main id="main" class="page-shell account-page reader-account-page">
-    <header class="page-heading landscape-banner profile-hero">
+    <header id="profile-guest-hero" class="page-heading landscape-banner profile-hero">
       <div class="profile-hero-copy">
         <p class="eyebrow">Your reading space</p>
         <h1 id="account-title">Sign in or register</h1>
         <p id="account-subtitle">You can read novels without an account.</p>
       </div>
-      <div class="profile-hero-identity" id="profile-hero-identity" hidden>
-        <span id="profile-avatar" class="profile-avatar" data-avatar="sage" aria-hidden="true">R</span>
-        <img id="profile-sidebar-rank" class="profile-sidebar-rank" src="/images/ranks/iron.svg" width="44" height="49" alt="Rank emblem" hidden />
-        <div class="profile-identity-copy"><strong id="profile-name">Reader</strong><span>My reading corner</span></div>
-      </div>
     </header>
+    <span id="profile-catalog-titles" data-novels={JSON.stringify(profileCatalog)} hidden></span>
     {site.features.accounts ? (
       <>
         <p class="notice" id="account-status" role="status" aria-live="polite">Checking your session…</p>
@@ -46,21 +44,42 @@ import Icon from '../components/Icon.astro';
           <p class="fine">Your account uses your email address. Read our <a href="/rules/">terms and privacy information</a>.</p>
         </section>
         <div id="auth-logged-in" class="profile-layout" hidden>
+          <header id="profile-member-hero" class="profile-member-hero" aria-label="Reader profile">
+            <div class="profile-member-identity">
+              <span id="profile-avatar" class="profile-avatar" data-avatar="sage" aria-hidden="true">R</span>
+              <div class="profile-member-copy">
+                <h2 id="profile-name" role="heading" aria-level="1">Reader</h2>
+                <div id="profile-title-slot" class="profile-title-slot"></div>
+                <p id="profile-bio">Your reading story starts here.</p>
+              </div>
+            </div>
+            <div id="profile-rank-slot" class="profile-rank-slot" aria-label="Verified reader rank"><img id="profile-sidebar-rank" src="/images/ranks/iron.svg" alt="" hidden width="44" height="49" /></div>
+            <div class="profile-member-actions">
+              <button class="button" type="button" id="profile-edit-open">Edit profile</button>
+              <a class="button secondary" href="/library/">My library</a>
+            </div>
+          </header>
           <aside class="profile-sidebar" aria-label="Profile sections">
-            <nav aria-label="Profile settings"><a href="#profile-details" aria-current="location" aria-controls="profile-details" data-profile-section="profile-details">Profile</a><a href="#profile-reading" aria-controls="profile-reading" data-profile-section="profile-reading">Reading</a><a href="#profile-account" aria-controls="profile-account" data-profile-section="profile-account">Account</a></nav>
+            <nav aria-label="Profile settings"><a href="#profile-details" aria-current="location" aria-controls="profile-details" data-profile-section="profile-details"><Icon name="user" size={20} />Profile</a><a href="#profile-reading" aria-controls="profile-reading" data-profile-section="profile-reading"><Icon name="book" size={20} />Reading</a><a href="#profile-account" aria-controls="profile-account" data-profile-section="profile-account"><Icon name="gear" size={20} />Account</a></nav>
             <div class="profile-quicklinks"><a class="profile-library-link" href="/library/"><Icon name="book" size={19} /> My library <span aria-hidden="true">→</span></a>
             <a class="profile-library-link" href="/studio/"><Icon name="pen" size={19} /> Writing studio <span aria-hidden="true">→</span></a></div>
           </aside>
           <div class="profile-content">
             <section id="profile-details" class="profile-panel" aria-labelledby="profile-title">
-              <p class="eyebrow">Personal space</p><h2 id="profile-title">Profile</h2><p class="profile-intro">Your name and a little about you.</p>
+              <h2 id="profile-title" class="visually-hidden">Reader profile overview</h2>
+              <div id="profile-metrics-slot" class="profile-metrics-slot" aria-label="Verified reader statistics"></div>
               <ReaderAdvancement />
               <section id="profile-recent-reading" class="profile-recent-reading" aria-labelledby="profile-recent-heading">
-                <div class="advancement-section-header"><p class="eyebrow">Pick up where you left off</p><h3 id="profile-recent-heading">Continue reading</h3></div>
+                <div class="advancement-section-header"><p class="eyebrow">Pick up where you left off</p><h3 id="profile-recent-heading"><Icon name="book" size={22} />Continue reading</h3></div>
                 <p id="profile-recent-status" class="fine" role="status">Checking recent chapters…</p>
                 <ol id="profile-recent-list" class="profile-recent-list" aria-label="Recently read novels"></ol>
                 <p class="fine">These positions are saved on this device. Cloud sync is optional in Account.</p>
               </section>
+              <dialog id="profile-edit-dialog" class="profile-edit-dialog" aria-labelledby="profile-edit-title">
+                <div class="profile-dialog-heading">
+                  <div><p class="eyebrow">Personal details</p><h2 id="profile-edit-title">Edit profile</h2></div>
+                  <button class="icon-button" type="button" id="profile-edit-close" aria-label="Close edit profile">×</button>
+                </div>
               <form id="profile-form">
                 <fieldset id="profile-fields" disabled>
                   <label>Nickname<input name="nickname" aria-label="Nickname" autocomplete="nickname" minlength="3" maxlength="24" required aria-describedby="nickname-help" /><small id="nickname-help">Use 3–24 characters: letters, numbers, spaces, hyphens, or underscores. Nicknames do not need to be unique.</small></label>
@@ -70,7 +89,10 @@ import Icon from '../components/Icon.astro';
                 </fieldset>
                 <p id="profile-status" class="fine" role="status" aria-live="polite"></p>
               </form>
-              <p class="profile-local-note"><Icon name="info" size={20} /><span>Your library remains on this device; optional cloud sync is available in Account. Your nickname and bio are saved to your account.</span></p>
+
+                <p class="fine">Your nickname and bio are saved to your account.</p>
+              </dialog>
+              <p class="profile-local-note" hidden><Icon name="info" size={20} /><span>Your library remains on this device; optional cloud sync is available in Account. Your nickname and bio are saved to your account.</span></p>
             </section>
             <ReaderPreferences />
             <section id="profile-account" class="profile-panel" aria-labelledby="profile-account-title">
@@ -90,6 +112,8 @@ import Icon from '../components/Icon.astro';
   <script>
     import { site } from '../config/site';
     import { initProfileTabs } from '../scripts/profile-tabs';
+    import { initProfileDashboard } from '../scripts/profile-dashboard';
+    initProfileDashboard();
     initProfileTabs();
     if (site.features.accounts) void import('../scripts/account').then(({ initAccount }) => initAccount());
   </script>
