@@ -346,8 +346,13 @@ async function loadXpHistory(userId:string,seq:number) {
   // Resolve human-readable novel names from the existing public catalog.
   // A removed/unlisted novel gracefully falls back to its stored slug.
   let catalogNames=new Map<string,string>();
+  let catalogChapters=new Map<string,Map<string,number>>();
   try{
-    catalogNames=new Map((await getCatalog()).map(novel=>[novel.slug,novel.title]));
+    const catalog=await getCatalog();
+    catalogNames=new Map(catalog.map(novel=>[novel.slug,novel.title]));
+    catalogChapters=new Map(catalog.map(novel=>[
+      novel.slug, new Map(novel.chapters.map(chapter=>[chapter.slug,chapter.number])),
+    ]));
   }catch{ /* History remains readable when the public catalog is offline. */ }
   if(userId!==activeUser||seq!==requestCount)return;
   if(error) {
@@ -369,7 +374,7 @@ async function loadXpHistory(userId:string,seq:number) {
     const isChapter=entry.event_kind==='chapter_finished';
     const isEvent=entry.event_kind==='event_reward';
     const novelName=catalogNames.get(entry.novel_slug) ?? entry.novel_slug;
-    const chapterNumber=/^chapter-(\d+)$/.exec(entry.chapter_slug ?? '')?.[1];
+    const chapterNumber=catalogChapters.get(entry.novel_slug)?.get(entry.chapter_slug) ?? /^chapter-(\d+)$/.exec(entry.chapter_slug ?? '')?.[1];
     label.textContent=isChapter?(chapterNumber?`Chapter ${chapterNumber} · ${novelName}`:`Chapter completed · ${novelName}`):
       entry.event_kind==='novel_finished'?`Novel completed · ${novelName}`:
       isEvent?'Halloween Reading Week prize':'Verified XP award';
