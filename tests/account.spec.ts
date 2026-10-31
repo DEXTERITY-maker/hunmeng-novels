@@ -430,7 +430,7 @@ test('verified XP ledger shows real server awards, not local reading estimates',
  await expect(page.locator('#xp-history')).toBeVisible();
  await expect(page.locator('#reader-xp-history-list li').first()).toContainText('Novel completed');
  await expect(page.locator('#reader-xp-history-list li').first()).toContainText('+400 XP');
- await expect(page.locator('#reader-xp-history-list li').last()).toContainText('Chapter completed');
+ await expect(page.locator('#reader-xp-history-list li').last()).toContainText('Chapter 1 · The Garden');
  await expect(page.locator('#reader-xp-history-list li').last()).toContainText('+80 XP');
  expect(state.xpHistoryRequests).toBeGreaterThan(0);
  expect(readerSafeRequests(state.requests)).toBe(true);
@@ -781,6 +781,7 @@ test('closest verified achievement updates from server progress without granting
  await expect(page.locator('#reader-all-achievements')).toBeHidden();
  await selectInner(page,'titles-achievements');
  await page.locator('[data-achievement-filter="unlocked"]').click();
+ await selectInner(page,'overview');
  await expect(page.locator('#reader-next-achievement')).toBeVisible();
  expect(readerSafeRequests(state.requests)).toBe(true);
 });
@@ -846,6 +847,7 @@ test('six unique SVG reader-mastery badges are readable and responsive on deskto
  await expect(page.locator('[data-mastery-id="experienced"] [data-mastery-state]')).toHaveText('Current step');
  await expect(page.locator('[data-mastery-id="reader"] [data-mastery-state]')).toHaveText('Unlocked');
  await expect(page.locator('[data-mastery-id="master"] [data-mastery-state]')).toHaveText('Locked');
+ await selectInner(page,'progress');
  const paths=['novice','reader','experienced','connoisseur','master','legend'];
  for(const id of paths){
   const img=page.locator(`[data-mastery-id="${id}"] img.reader-mastery-emblem`);
