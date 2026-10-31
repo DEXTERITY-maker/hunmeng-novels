@@ -1,6 +1,6 @@
 import { defaults, sanitizeState, type ReaderState } from './storage.ts';
 import type { Shelf } from '../config/site';
-import { mergeBookmarks, type BookmarkEntries } from './bookmarks';
+import { mergeBookmarks, type BookmarkEntries } from './bookmarks.ts';
 
 export type SyncChoice = 'device' | 'cloud';
 export interface SyncConflict { slug: string; kind: 'shelf' | 'chapter-position' }
