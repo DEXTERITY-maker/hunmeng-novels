@@ -1013,8 +1013,6 @@ test('editorial signed-in profile: accessible cards, demo recent covers and resp
   await selectInner(page,'progress');
   await expect(page.locator('#reader-mastery-heading')).toBeVisible();
   await selectInner(page,'overview');
-
-  await selectInner(page,'overview');
   const overviewHeight=await page.locator('#profile-details').evaluate(el=>el.getBoundingClientRect().height);
   expect(overviewHeight).toBeLessThanOrEqual(1800);
   await expect(page.locator('#profile-edit-dialog')).toBeHidden();
