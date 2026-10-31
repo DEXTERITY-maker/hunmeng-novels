@@ -2971,7 +2971,23 @@ html[data-theme='sepia'] .library-page .library-row-art { filter: sepia(.22); }
 .reader-account-page #profile-details .advancement-stats > div::before { display: none; }
 .reader-account-page #profile-details .advancement-stats :is(span,small) { color: var(--muted); }
 .reader-account-page #profile-details .advancement-stats strong { color: var(--ink); }
-.reader-account-page #profile-details .advancement-section { min-width: 0; }
+.reader-account-page #profile-details .advancement-section {
+  min-width: 0;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: none;
+}
+.reader-account-page #profile-details .advancement-all-ranks {
+  color: var(--accent);
+  background: var(--surface);
+  border-color: var(--line);
+}
+.reader-account-page #profile-details .advancement-all-ranks:hover {
+  color: var(--ink);
+  background: var(--soft);
+}
+.reader-account-page #profile-details .rank-tile::after { display: none; }
 .reader-account-page #profile-details :is(.rank-tile,.reader-award,.achievement-tile,.reader-mastery-tile,.reader-xp-history-list li,.reader-next-achievement) {
   background: var(--surface);
   border: 1px solid var(--line);
