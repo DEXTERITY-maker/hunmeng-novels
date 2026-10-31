@@ -5,6 +5,8 @@ import ReaderPreferences from '../components/ReaderPreferences.astro';
 import ReaderAdvancement from '../components/ReaderAdvancement.astro';
 import ReaderSyncPanel from '../components/ReaderSyncPanel.astro';
 import Icon from '../components/Icon.astro';
+import { getLibrary } from '../lib/content';
+const profileCatalog=(await getLibrary()).map(n=>({slug:n.slug,title:n.title,chapters:n.chapters.map(c=>({slug:c.data.slug,number:c.data.number}))}));
 ---
 <Layout title="Sign in or register" noindex description="Sign in to Hunmeng or create a reader account with your email and password.">
   <main id="main" class="page-shell account-page reader-account-page">
@@ -15,6 +17,7 @@ import Icon from '../components/Icon.astro';
         <p id="account-subtitle">You can read novels without an account.</p>
       </div>
     </header>
+    <span id="profile-catalog-titles" data-novels={JSON.stringify(profileCatalog)} hidden></span>
     {site.features.accounts ? (
       <>
         <p class="notice" id="account-status" role="status" aria-live="polite">Checking your session…</p>
@@ -50,7 +53,7 @@ import Icon from '../components/Icon.astro';
                 <p id="profile-bio">Your reading story starts here.</p>
               </div>
             </div>
-            <div id="profile-rank-slot" class="profile-rank-slot" aria-label="Verified reader rank"></div>
+            <div id="profile-rank-slot" class="profile-rank-slot" aria-label="Verified reader rank"><img id="profile-sidebar-rank" src="/images/ranks/iron.svg" alt="" hidden width="44" height="49" /></div>
             <div class="profile-member-actions">
               <button class="button" type="button" id="profile-edit-open">Edit profile</button>
               <a class="button secondary" href="/library/">My library</a>
