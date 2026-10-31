@@ -13,6 +13,11 @@ export function initReaderSyncPanel(client:SupabaseClient){
   const enable=panel.querySelector<HTMLButtonElement>('#reader-sync-enable')!;
   const now=panel.querySelector<HTMLButtonElement>('#reader-sync-now')!;
   const pause=panel.querySelector<HTMLButtonElement>('#reader-sync-pause')!;
+  const bookmarkWarning=panel.querySelector<HTMLElement>('#reader-bookmark-cloud-warning');
+  // This status belongs to account sync settings, not to reading controls.
+  window.addEventListener('reader:bookmarks-cloud-full',()=>{
+    if(bookmarkWarning) bookmarkWarning.hidden=false;
+  });
   const conflict=panel.querySelector<HTMLElement>('#reader-sync-conflict')!;
   const detail=panel.querySelector<HTMLElement>('#reader-sync-conflict-detail')!;
   const choices=Array.from(panel.querySelectorAll<HTMLButtonElement>('[data-sync-choice]'));
