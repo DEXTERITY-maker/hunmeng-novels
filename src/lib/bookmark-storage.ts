@@ -2,7 +2,7 @@ import {
   BOOKMARK_STORAGE_KEY, addParagraphBookmark, assertBookmarkBudget, bookmarkDocument,
   deleteParagraphBookmark, emptyBookmarkDocument, mergeBookmarks, type BookmarkDocument,
   type BookmarkEntries, type BookmarkInput,
-} from './bookmarks';
+} from './bookmarks.ts';
 
 /**
  * Separate storage key: old reader clients can rewrite hunmeng-novels:v1 without
