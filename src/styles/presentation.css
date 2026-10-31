@@ -3268,3 +3268,31 @@ html[data-theme='sepia'] .library-page .library-row-art { filter: sepia(.24) sat
 @media (prefers-reduced-motion: reduce) {
   .library-page .shelf-tab { transition: none; }
 }
+
+
+/* Higher specificity than the old individually tinted mastery tiles: all
+   collectible cards follow theme surfaces; rarity remains in badge artwork. */
+.reader-account-page #profile-details .reader-mastery-grid .reader-mastery-tile {
+  background: var(--surface);
+  border-color: var(--line);
+}
+.reader-account-page #profile-details .reader-mastery-grid .reader-mastery-tile[data-mastery-status='current'] {
+  border-color: var(--accent);
+}
+.reader-account-page #profile-details .advancement-hero .eyebrow {
+  color: var(--accent);
+}
+.reader-account-page #profile-details .advancement-xp-label,
+.reader-account-page #profile-details .reader-next-rank-copy strong {
+  color: var(--ink);
+}
+.reader-account-page #profile-details .reader-mastery-tile .reader-mastery-levels {
+  background: var(--soft);
+  border-color: var(--line);
+}
+.reader-account-page #profile-details .reader-mastery-tile small {
+  color: var(--muted);
+}
+.reader-account-page #profile-details .reader-mastery-tile[data-mastery-status=current] small {
+  color: var(--ink);
+}
