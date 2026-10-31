@@ -610,6 +610,7 @@ test('Reviewer title requires 20 approved reviews, stays separate from rank and 
  state.rankStats.approvedReviews=20;
  await page.reload();
  await expect(page.locator('[data-equip-title=reviewer]')).toBeEnabled();
+ await selectInner(page,'titles-achievements');
  await page.locator('[data-equip-title=reviewer]').click();
  await expect(page.locator('#reader-equipped-title')).toHaveText('Reviewer');
  await expect(page.locator('#reader-rank')).toHaveText('Iron');
