@@ -156,16 +156,12 @@ async function main(){
   // Initial public release may include a chapter not committed locally yet.
   // Remember every already-open launch chapter, so a later Git addition cannot
   // incorrectly announce it as new. Its presence is proven by RLS, not a clock.
-  const localKeys=new Set(local.chapters.map(chapterKey));
   const launchBaseline=[];
   for(const edition of editions) {
     for(const row of rows.filter(x=>x.novel_slug===edition.slug && x.number<=edition.initial_chapters)) {
-      const key=edition.slug+':'+row.number;
-      if(!localKeys.has(key)) {
-        const novelTitle=local.novels.get(edition.slug);
-        if(!novelTitle)fail('Missing public launch novel metadata');
-        launchBaseline.push({novelSlug:edition.slug,novelTitle,number:row.number,slug:'chapter-'+row.number,title:row.title});
-      }
+      const novelTitle=local.novels.get(edition.slug);
+      if(!novelTitle)fail('Missing public launch novel metadata');
+      launchBaseline.push({novelSlug:edition.slug,novelTitle,number:row.number,slug:'chapter-'+row.number,title:row.title});
     }
   }
   const published=[...local.chapters,...remote];
@@ -175,7 +171,8 @@ async function main(){
   const beforeLocal=previous?.deployedSha?localChapters(previous.deployedSha).chapters:[];
   const beforeKeys=new Set(beforeLocal.map(chapterKey));
   const scheduledKeys=new Set(remote.map(chapterKey));
-  const newCandidates=plan.pending.filter(ch=>scheduledKeys.has(chapterKey(ch))||!beforeKeys.has(chapterKey(ch)));
+  const launchKeys=new Set(launchBaseline.map(chapterKey));
+  const newCandidates=plan.pending.filter(ch=>!launchKeys.has(chapterKey(ch))&&(scheduledKeys.has(chapterKey(ch))||!beforeKeys.has(chapterKey(ch))));
   const candidates=plan.baseline?published:newCandidates;
   // A chapter must exist on the live site; do not announce a commit that has not propagated.
   for(const ch of candidates){
@@ -186,7 +183,8 @@ async function main(){
   if(dry){
     info('DRY RUN: no messages or state changes. Initial baseline: '+plan.baseline+'. Chapters: '+candidates.length);
     for(const ch of candidates)info((plan.baseline?'Would baseline: ':'Would send: ')+announcement(ch,ORIGIN).replaceAll('\n',' | '));
-    if(plan.baseline&&launchBaseline.length)info('Would additionally baseline '+launchBaseline.length+' publicly released launch chapters absent from local files.');
+    const unknownLaunch=launchBaseline.filter(ch=>!Object.hasOwn(previous?.chapters??{},chapterKey(ch)));
+    if(unknownLaunch.length)info('Would also baseline '+unknownLaunch.length+' already-open launch chapters from public Supabase.');
     return;
   }
   if(plan.baseline){
@@ -196,13 +194,21 @@ async function main(){
     info('Initial baseline stored for '+(plan.mark.length+launchBaseline.length)+' already released chapters. No posts.');
     return;
   }
-  if(plan.pending.length){
+  // A launch can occur after the notification service's very first run.
+  // In that case mark newly visible INITIAL chapters as baseline too, never
+  // post them as newly added content merely because they later enter Git.
+  let active=previous;
+  for(const ch of launchBaseline) {
+    if(!Object.hasOwn(active.chapters??{},chapterKey(ch))) active=applyChapterMarker(active,ch,'baseline');
+  }
+  if(active!==previous)writeLedger(ledger,active);
+  if(newCandidates.length){
     try{await telegram('getMe');}
     catch{info('Telegram unavailable at preflight; no changes');return;}
   }
-  let current=previous;
+  let current=active;
   try{
-    current=await deliverChapters(previous,newCandidates,{
+    current=await deliverChapters(active,newCandidates,{
       persist:async next=>{writeLedger(ledger,next);current=next;},
       send:async chapter=>{
         const result=await telegram('sendMessage',{chat_id:CHANNEL,text:announcement(chapter,ORIGIN),link_preview_options:{is_disabled:true}});
