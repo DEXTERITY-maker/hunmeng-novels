@@ -1,5 +1,6 @@
 import { repository, defaults, applySettings, type Settings } from '../lib/storage';
 import { recordVerifiedLibraryAdd } from '../lib/verified-library';
+import { initParagraphBookmarks } from './reader-bookmarks';
 export async function initReader() {
   const main = document.querySelector<HTMLElement>('[data-reader]');
   if (!main) return;
@@ -172,10 +173,13 @@ export async function initReader() {
     if ((e.target as HTMLElement).closest('a,button,input,label') || window.getSelection()?.toString()) return;
     show(!shown);
   });
+  const dialogOpeners = new WeakMap<HTMLDialogElement, HTMLElement>();
   document.querySelectorAll<HTMLButtonElement>('[data-open]').forEach((button) =>
     button.addEventListener('click', () => {
       show(true);
       const dialog = button.dataset.open?.startsWith('settings') ? settingsDialog : tocDialog;
+      dialogOpeners.set(dialog, button);
+      if (dialog === tocDialog) tocDialog.dispatchEvent(new Event('reader:toc-open'));
       dialog.showModal();
       // The current chapter may sit below the visible part of the contents list.
       if (dialog === tocDialog)
@@ -199,7 +203,14 @@ export async function initReader() {
     dialog.addEventListener('close', () => {
       lastY = window.scrollY;
       show(true);
-      save();
+      // Bookmark navigation and removal must not invoke the progress writer.
+      if (dialog.dataset.bookmarkAction === 'true') {
+        delete dialog.dataset.bookmarkAction;
+      } else {
+        save();
+      }
+      const opener = dialogOpeners.get(dialog);
+      if (opener?.isConnected) opener.focus({preventScroll:true});
     });
   }
   const preserve = () => {
@@ -255,6 +266,11 @@ export async function initReader() {
     paint();
   });
   await restore();
+  // The bookmark module is independent of progress, shelves and rewards.
+  await initParagraphBookmarks({
+    novelSlug: slug, chapterSlug, chapterNumber, article,
+    paragraphs: blocks, tocDialog, moreMenu,
+  });
   // Reward network activity is isolated from local progress and reading controls.
   void import('./reader-rewards').then(({ initReaderRewards }) =>
     initReaderRewards(slug, chapterSlug, article)).catch(() => {});
