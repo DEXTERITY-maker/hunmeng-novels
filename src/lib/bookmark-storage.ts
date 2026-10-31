@@ -13,7 +13,7 @@ const notify = () => window.dispatchEvent(new Event('reader:bookmarks-change'));
 function read(): BookmarkDocument {
   try {
     const raw = localStorage.getItem(BOOKMARK_STORAGE_KEY);
-    if (raw !== null) memory = bookmarkDocument(JSON.parse(raw));
+    memory = raw === null ? emptyBookmarkDocument() : bookmarkDocument(JSON.parse(raw));
     return structuredClone(memory);
   } catch {
     window.dispatchEvent(new Event('reader:storage-error'));
