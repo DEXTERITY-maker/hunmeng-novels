@@ -2,6 +2,8 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import { createReaderClient, readerAuthConfigured } from './reader-auth';
 import { repository, sanitizeState, onStorageChange, type ReaderState } from './storage';
 import { mergeReaderStates, type SyncChoice, type SyncConflict } from './reader-sync-merge';
+import { bookmarkRepository, onBookmarkStorageChange } from './bookmark-storage';
+import { fitCloudState, sanitizeBookmarks, type BookmarkEntries } from './bookmarks';
 
 const OWNER_KEY='hunmeng-novels:cloud-sync-owner:v1';
 const PREVIOUS_OWNER_KEY='hunmeng-novels:cloud-sync-last-owner:v1';
@@ -35,11 +37,12 @@ export function disableReaderSync(userId:string) {
 }
 const sorted=(v:Record<string,unknown>|undefined)=>Object.fromEntries(Object.entries(v??{}).sort(([a],[b])=>a.localeCompare(b)));
 /** Excludes per-device global appearance settings from cloud comparisons. */
-function snapshot(value:ReaderState):string {
+function snapshot(value:ReaderState & {bookmarks?: BookmarkEntries}):string {
   const s=sanitizeState(value);
   return JSON.stringify({
     library:sorted(s.library),progress:sorted(s.progress),
     shelfChanges:sorted(s.shelfChanges),novelSettings:sorted(s.novelSettings),
+    bookmarks:sorted(sanitizeBookmarks(value.bookmarks)),
   });
 }
 function lastSynced(userId:string):{version:string;hash:string}|null {
@@ -72,6 +75,8 @@ async function perform(client:SupabaseClient, choice?:SyncChoice):Promise<SyncRe
     if(fetched.error) throw new Error('Unable to read the cloud library. Your device copy is unchanged.');
     const remote=fetched.data as {state:ReaderState;updated_at:string}|null;
     const before=await repository.getState();
+    const deviceBookmarks=(await bookmarkRepository.getState()).bookmarks;
+    const withBookmarks={...before,bookmarks:deviceBookmarks};
     const baseline=lastSynced(userId);
     // Three-way reconciliation: a device may freely advance when the cloud
     // has not changed since its last successful sync, and vice versa.
@@ -79,11 +84,11 @@ async function perform(client:SupabaseClient, choice?:SyncChoice):Promise<SyncRe
     let resolution=choice;
     if(!resolution&&baseline){
       if(!remote||baseline.version===remote.updated_at)resolution='device';
-      else if(baseline.hash===snapshot(before))resolution='cloud';
+      else if(baseline.hash===snapshot(withBookmarks))resolution='cloud';
     }
-    const result=mergeReaderStates(before,remote?.state,resolution);
+    const result=mergeReaderStates(withBookmarks,remote?.state,resolution);
     if(result.conflicts.length&&!resolution) throw new SyncConflictError(result.conflicts);
-    const cloudState:ReaderState={
+    const cloudState:ReaderState & {bookmarks: BookmarkEntries}={
       ...result.state,
       // Reading appearance is device-specific; do not overwrite another device.
       settings:remote ? sanitizeState(remote.state).settings : before.settings,
@@ -91,13 +96,17 @@ async function perform(client:SupabaseClient, choice?:SyncChoice):Promise<SyncRe
     const changed=!remote || snapshot(cloudState)!==snapshot(remote.state);
     let version=remote?.updated_at??'';
     if(changed) {
+      // Bookmarks never block library and progress sync; nothing is evicted locally.
+      const fitted=fitCloudState(cloudState);
+      if(fitted.bookmarksOmitted) window.dispatchEvent(new Event('reader:bookmarks-cloud-full'));
+      const payload=fitted.state;
       const stillSignedIn=await client.auth.getSession();
       if(stillSignedIn.data.session?.user.id!==userId)
         throw new Error('Account changed during sync. No cloud updates were sent.');
       if(remote){
         const requestedVersion=new Date().toISOString();
         const write=await client.from('novel_reader_state')
-          .update({state:cloudState,updated_at:requestedVersion})
+          .update({state:payload,updated_at:requestedVersion})
           .eq('user_id',userId).eq('updated_at',remote.updated_at)
           .select('updated_at').maybeSingle();
         if(write.error) throw new Error('Unable to update the cloud library. Your device copy is unchanged.');
@@ -106,7 +115,7 @@ async function perform(client:SupabaseClient, choice?:SyncChoice):Promise<SyncRe
         version=saved?.updated_at??requestedVersion;
       }else{
         const write=await client.from('novel_reader_state')
-          .insert({user_id:userId,state:cloudState})
+          .insert({user_id:userId,state:payload})
           .select('updated_at').maybeSingle();
         if(write.error){
           if(write.error.code==='23505')continue; // Concurrent first sign-in.
@@ -117,10 +126,16 @@ async function perform(client:SupabaseClient, choice?:SyncChoice):Promise<SyncRe
       }
     }
     const newest=await repository.getState();
-    if(snapshot(newest)===snapshot(before)){
+    const newestBookmarks=(await bookmarkRepository.getState()).bookmarks;
+    if(snapshot({...newest,bookmarks:newestBookmarks})===snapshot(withBookmarks)){
       // Preserve device-specific appearance and preferences even after import.
+      // restoreState intentionally strips cloud-only bookmarks: local bookmarks
+      // are persisted exclusively under hunmeng-novels:bookmarks:v1.
       await repository.restoreState({...newest,...result.state,settings:newest.settings});
+      await bookmarkRepository.mergeImported(result.state.bookmarks);
     }else{
+      // New bookmarks created during the request are unioned, never replaced.
+      await bookmarkRepository.mergeImported(result.state.bookmarks);
       // Do not erase chapter progress written while the request was in flight.
       window.dispatchEvent(new Event('reader:sync-pending'));
     }
@@ -168,6 +183,7 @@ export function startReaderSync() {
     },3500);
   };
   onStorageChange(queue);
+  onBookmarkStorageChange(queue);
   window.addEventListener('online',queue);
   window.addEventListener('pageshow',queue);
   window.addEventListener('reader:sync-pending',queue);
