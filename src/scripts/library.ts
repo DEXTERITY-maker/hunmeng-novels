@@ -76,7 +76,7 @@ export async function initLibrary() {
         const date = p?.updatedAt && p.updatedAt > 0
           ? `Last read: ${new Date(p.updatedAt).toLocaleDateString()}`
           : `Updated: ${new Date(n.updatedAt).toLocaleDateString()}`;
-        body.append(element('p', date, 'fine library-row-date'));
+        body.append(element('p', date, 'library-row-date'));
 
         const read = element('a', action.label + ' →', 'text-link library-row-action');
         read.href = action.url;
