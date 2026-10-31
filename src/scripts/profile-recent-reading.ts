@@ -30,6 +30,10 @@ export function initProfileRecentReading() {
         const novel=bySlug.get(slug)!;
         const action=readingAction(novel,p);
         const item=document.createElement('li');
+        const cover=document.createElement('img');
+        cover.className='profile-recent-cover';
+        cover.src=novel.cover;cover.alt='';cover.width=58;cover.height=87;cover.loading='lazy';
+        const copy=document.createElement('div');copy.className='profile-recent-copy';
         const title=document.createElement('strong');
         title.textContent=novel.title;
         const detail=document.createElement('span');
@@ -41,7 +45,8 @@ export function initProfileRecentReading() {
         bar.setAttribute('aria-label',`${novel.title}: current chapter progress`);
         const link=document.createElement('a');
         link.href=action.url;link.textContent=action.label+' →';
-        item.append(title,detail,bar,link);
+        copy.append(title,detail,bar);
+        item.append(cover,copy,link);
         list.append(item);
       }
     }catch{
