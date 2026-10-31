@@ -913,6 +913,7 @@ test('editorial signed-in profile: accessible cards, demo recent covers and resp
   test.skip(info.project.name !== 'desktop', 'The test captures both viewport sizes from the desktop browser only.');
   // Uses the existing mocked reader account / responses; no real account is accessed.
   const state = await mockAuth(page);
+  state.profileUser.user_metadata = { nickname: 'Demo Reader', avatar_color: 'sage', bio: 'Reading across worlds.' };
   state.rankStats.total_xp = 300;
   state.rankStats.chapters = 3;
   await open(page);
