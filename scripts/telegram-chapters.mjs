@@ -211,7 +211,7 @@ async function main(){
     current=await deliverChapters(active,newCandidates,{
       persist:async next=>{writeLedger(ledger,next);current=next;},
       send:async chapter=>{
-        const result=await telegram('sendMessage',{chat_id:CHANNEL,text:announcement(chapter,ORIGIN),link_preview_options:{is_disabled:true}});
+        const result=await telegram('sendMessage',{chat_id:CHANNEL,text:announcement(chapter,ORIGIN),link_preview_options:{is_disabled:false,prefer_large_media:true}});
         info('Telegram confirmed '+chapterKey(chapter));
         return result;
       },
