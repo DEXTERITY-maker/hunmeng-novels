@@ -1,5 +1,5 @@
 ---
-import { ranks,readerMasteryTiers,titles,achievements,masteryImage } from '../lib/reader-progression';
+import { ranks,readerMasteryTiers,titles,achievements,rankImage,masteryImage } from '../lib/reader-progression';
 ---
 <div id="reader-advancement" class="reader-advancement" data-status="loading" aria-label="Reader progression">
   <p id="reader-advancement-status" class="fine" role="status" aria-live="polite">Loading verified reading achievements…</p>
@@ -7,7 +7,7 @@ import { ranks,readerMasteryTiers,titles,achievements,masteryImage } from '../li
     <div><span>Chapters</span><strong id="reader-stat-chapters">—</strong></div>
     <div><span>Novels finished</span><strong id="reader-stat-novels">—</strong></div>
     <div><span>Reading days</span><strong id="reader-stat-days">—</strong></div>
-    <div><span>Achievements</span><strong id="reader-stat-achievements">— / {achievements.length{'}'}</strong></div>
+    <div><span>Achievements</span><strong id="reader-stat-achievements">— / {achievements.length}</strong></div>
   </section>
   <div class="profile-legacy-stats" hidden aria-hidden="true">
     <span id="reader-stat-collection">—</span><span id="reader-stat-reviews">—</span>
