@@ -37,6 +37,8 @@ export async function initAccount() {
   let updateProfile: ((user: User | null) => void) | undefined;
   const render = (user: User | null, message?: string) => {
     authFields.hidden = !!user;
+    document.getElementById('account-auth-hero')!.hidden = !!user;
+    document.getElementById('account-status')!.hidden = !!user && !message;
     document.getElementById('account-title')!.textContent = user ? 'My profile' : 'Sign in or register';
     document.getElementById('account-subtitle')!.textContent = user ? 'Make yourself at home and read your way.' : 'You can read novels without an account.';
     document.title = (user ? 'My profile' : 'Sign in or register') + ' — Hunmeng novels';
@@ -45,7 +47,7 @@ export async function initAccount() {
     loggedIn.hidden = !user;
     document.getElementById('profile-hero-identity')!.hidden = !user;
     document.getElementById('account-email')!.textContent = user?.email ?? '';
-    status.textContent = message ?? (user ? 'You are signed in.' : 'Sign in or create a reader account.');
+    status.textContent = message ?? (user ? '' : 'Sign in or create a reader account.');
   };
   const setMode = (value: string) => {
     mode = value === 'signup' ? 'signup' : 'signin';

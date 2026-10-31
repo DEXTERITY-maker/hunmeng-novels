@@ -3,6 +3,8 @@ import {halloweenPrizes,halloweenBadge} from '../lib/halloween-event';
 type HalloweenAward={event_id:string;place:number;title_id:string;title:string;badge:string;awarded_at:string};
 let halloweenAwards:HalloweenAward[]=[];
 import { repository, onStorageChange } from '../lib/storage';
+import { getCatalog } from '../lib/client-data';
+import { halloweenInWindow } from '../lib/halloween-event';
 import { ranks,readerMasteryTiers,titles,achievements,levelFromTotalXp,getReaderMastery,nextRankMilestone,nextVerifiedAchievement,rankImage,masteryImage,titleStatus,emptyVerifiedStats,type VerifiedStats } from '../lib/reader-progression';
 
 let activeUser: string | null=null;
@@ -75,7 +77,7 @@ function paintAchievementFilter() {
   document.querySelectorAll<HTMLButtonElement>('[data-achievement-filter]').forEach(button=>{
     button.setAttribute('aria-pressed',String(button.dataset.achievementFilter===achievementFilter));
   });
-  stat('reader-stat-achievements',unlocked);
+  stat('reader-stat-achievements',`${unlocked} / ${tiles.length}`);
   const summary=document.getElementById('reader-achievements-summary');
   if(summary) summary.textContent=`${unlocked} of ${tiles.length} verified milestones unlocked`;
   const empty=document.getElementById('reader-achievements-empty');
@@ -102,6 +104,9 @@ function renderStats(s:VerifiedStats) {
   const current=document.getElementById('reader-current-emblem') as HTMLImageElement;
   current.src=rankImage(level.rank.id);
   current.alt=`${level.rank.en} rank emblem`;
+  const progressEmblem=document.getElementById('profile-progress-current-emblem') as HTMLImageElement | null;
+  if(progressEmblem){progressEmblem.src=current.src;progressEmblem.alt=current.alt;}
+  stat('profile-progress-current-name',`${level.rank.en} · Level ${level.level}`);
   const avatar=document.getElementById('profile-avatar');
   if (avatar) avatar.dataset.readerRank=level.rank.id;
   const sidebar=document.getElementById('profile-sidebar-rank') as HTMLImageElement | null;
@@ -259,6 +264,7 @@ export function initReaderAdvancement(client: SupabaseClient) {
       halloweenAwards=[];
       const rewardPanel=document.getElementById('halloween-profile-awards-section');
       if(rewardPanel)rewardPanel.hidden=true;
+      const eventCta=document.getElementById('profile-event-cta');if(eventCta)eventCta.hidden=true;
       document.getElementById('halloween-profile-awards')?.replaceChildren();
       root.dataset.status='signed-out';
       document.querySelector<HTMLElement>('.advancement-hero')!.hidden=true;
@@ -319,6 +325,7 @@ async function loadXpHistory(userId:string,seq:number) {
   if (!status||!list) return;
   list.replaceChildren();
   status.textContent='Loading your reward history…';
+  stat('reader-recent-xp-status','Checking verified rewards…');
   // A slow or unavailable service must never leave the account panel loading forever.
   const controller=new AbortController();
   const timeout=window.setTimeout(()=>controller.abort(),4000);
@@ -329,49 +336,73 @@ async function loadXpHistory(userId:string,seq:number) {
       .order('awarded_at',{ascending:false}).limit(15)
       .abortSignal(controller.signal);
   } catch {
-    if (userId===activeUser&&seq===requestCount) status.textContent='Reward history is temporarily unavailable.';
+    if (userId===activeUser&&seq===requestCount){status.textContent='Reward history is temporarily unavailable.';stat('reader-recent-xp-status','Reward history is temporarily unavailable.');}
     return;
   } finally {
     window.clearTimeout(timeout);
   }
   if (userId!==activeUser||seq!==requestCount) return;
   const {data,error}=response;
+  // Resolve human-readable novel names from the existing public catalog.
+  // A removed/unlisted novel gracefully falls back to its stored slug.
+  let catalogNames=new Map<string,string>();
+  let catalogChapters=new Map<string,Map<string,number>>();
+  try{
+    const catalog=await getCatalog();
+    catalogNames=new Map(catalog.map(novel=>[novel.slug,novel.title]));
+    catalogChapters=new Map(catalog.map(novel=>[
+      novel.slug, new Map(novel.chapters.map(chapter=>[chapter.slug,chapter.number])),
+    ]));
+  }catch{ /* History remains readable when the public catalog is offline. */ }
+  if(userId!==activeUser||seq!==requestCount)return;
   if(error) {
     status.textContent='Reward history is temporarily unavailable.';
+    stat('reader-recent-xp-status','Reward history is temporarily unavailable.');
     return;
   }
   if(!data?.length) {
     status.textContent='No verified XP awards yet. Complete a chapter to begin your journey.';
+    stat('reader-recent-xp-status','No verified XP awards yet.');
     return;
   }
-  status.textContent='Your 15 most recent verified rewards.';
+  status.textContent='Verified XP activity from your account.';
+  const recent=document.getElementById('reader-recent-xp-list');
+  if(recent)recent.replaceChildren();
   for(const entry of data) {
     const row=document.createElement('li');
     const label=document.createElement('span');
     const isChapter=entry.event_kind==='chapter_finished';
-    label.textContent=isChapter?'Chapter completed':
-      entry.event_kind==='novel_finished'?'Novel completed':
-      entry.event_kind==='event_reward'?'Halloween Reading Week prize':'Verified XP award';
+    const isEvent=entry.event_kind==='event_reward';
+    const novelName=catalogNames.get(entry.novel_slug) ?? entry.novel_slug;
+    const chapterNumber=catalogChapters.get(entry.novel_slug)?.get(entry.chapter_slug) ?? /^chapter-(\d+)$/.exec(entry.chapter_slug ?? '')?.[1];
+    label.textContent=isChapter?(chapterNumber?`Chapter ${chapterNumber} · ${novelName}`:`Chapter completed · ${novelName}`):
+      entry.event_kind==='novel_finished'?`Novel completed · ${novelName}`:
+      isEvent?'Halloween Reading Week prize':'Verified XP award';
     const detail=document.createElement('small');
     const date=Date.parse(entry.awarded_at);
-    const when=Number.isFinite(date)?new Date(date).toLocaleDateString():'Date unavailable';
-    const isEvent=entry.event_kind==='event_reward';
-    detail.textContent=isEvent?
-      `${entry.chapter_slug==='place-1'?'Place 1':entry.chapter_slug==='place-2'?'Place 2':entry.chapter_slug==='place-3'?'Place 3':'Event reward'} · ${when}`:
-      `${entry.novel_slug} · ${when}`;
+    const when=Number.isFinite(date)?new Intl.DateTimeFormat('en-GB',
+      {day:'numeric',month:'short',timeZone:'UTC'}).format(new Date(date)):'Date unavailable';
+    const eventPlace=entry.chapter_slug==='place-1'?'Place 1':entry.chapter_slug==='place-2'?'Place 2':entry.chapter_slug==='place-3'?'Place 3':'Event reward';
+    detail.textContent=isEvent?`${eventPlace} · ${when}`:when;
     const amount=document.createElement('strong');
     amount.textContent=`+${entry.xp} XP`;
     row.append(label,detail,amount);
     list.append(row);
+    if(recent&&recent.children.length<3)recent.append(row.cloneNode(true));
   }
+  stat('reader-recent-xp-status','');
 }
 
 /** Optional add-on RPC: old deployments lack it, and verified progression still works. */
 async function loadHalloweenAwards(userId:string,seq:number,stats:VerifiedStats){
   if(!clientRef)return;
   const section=document.getElementById('halloween-profile-awards-section');
+  const cta=document.getElementById('profile-event-cta');
   const list=document.getElementById('halloween-profile-awards');
   if(!section||!list)return;
+  const active=halloweenInWindow(new Date());
+  section.hidden=!active;
+  if(cta)cta.hidden=!active;
   let result;
   try{result=await clientRef.rpc('reader_halloween_my_awards');}
   catch{return;}
@@ -381,7 +412,8 @@ async function loadHalloweenAwards(userId:string,seq:number,stats:VerifiedStats)
     award.event_id==='halloween-2026'&&halloweenPrizes.some(prize=>
       prize.place===award.place&&prize.key===award.badge&&prize.titleId===award.title_id));
   list.replaceChildren();
-  section.hidden=halloweenAwards.length===0;
+  section.hidden=halloweenAwards.length===0&&!active;
+  if(cta)cta.hidden=halloweenAwards.length>0||!active;
   if(!halloweenAwards.length)return;
   const selected=halloweenAwards.find(a=>a.title_id===stats.selected_title);
   if(selected)stat('reader-equipped-title',selected.title);

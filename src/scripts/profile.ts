@@ -9,6 +9,11 @@ export function initProfile(client: SupabaseClient, onExpired: () => void) {
   const form = document.querySelector<HTMLFormElement>('#profile-form')!;
   const fields = document.querySelector<HTMLFieldSetElement>('#profile-fields')!;
   const status = document.getElementById('profile-status')!;
+  const dialog = document.querySelector<HTMLDialogElement>('#profile-edit-dialog')!;
+  const opener = document.querySelector<HTMLButtonElement>('#profile-edit-button')!;
+  document.querySelector<HTMLButtonElement>('#profile-edit-close')!.addEventListener('click', () => dialog.close());
+  opener.addEventListener('click', () => { if (current) { status.textContent = ''; dialog.showModal(); nickname.focus(); } });
+  dialog.addEventListener('close', () => opener.focus());
   const nickname = form.elements.namedItem('nickname') as HTMLInputElement;
   const bio = form.elements.namedItem('bio') as HTMLTextAreaElement;
   let current: User | null = null;
@@ -16,6 +21,7 @@ export function initProfile(client: SupabaseClient, onExpired: () => void) {
   const paint = (user: User, fill: boolean) => {
     const profile = readProfile(user.user_metadata);
     document.getElementById('profile-name')!.textContent = profile.nickname || 'Nickname not set';
+    document.getElementById('profile-bio')!.textContent = profile.bio || 'Add a short bio using Edit profile.';
     const avatar = document.getElementById('profile-avatar')!;
     avatar.textContent = profile.nickname ? [...profile.nickname][0].toLocaleUpperCase('en') : '?';
     avatar.dataset.avatar = profile.avatar_color;
@@ -65,6 +71,6 @@ export function initProfile(client: SupabaseClient, onExpired: () => void) {
     current=user; fields.disabled=!user || saving;
     if (changed){updateAdvancement(user);updateSync(user);updateRecent(Boolean(user));}
     if (user) paint(user,changed);
-    else { form.reset(); status.textContent=''; }
+    else { if (dialog.open) dialog.close(); form.reset(); status.textContent=''; }
   };
 }

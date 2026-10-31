@@ -19,13 +19,13 @@ export function initProfileRecentReading() {
       const bySlug=new Map(catalog.map(n=>[n.slug,n]));
       const recent=Object.entries(state.progress)
         .filter(([slug,p])=>bySlug.has(slug)&&p.updatedAt>0&&Number.isFinite(p.updatedAt))
-        .sort((a,b)=>b[1].updatedAt-a[1].updatedAt).slice(0,3);
+        .sort((a,b)=>b[1].updatedAt-a[1].updatedAt).slice(0,1);
       list.replaceChildren();
       if(!recent.length){
         status.textContent='No reading activity saved on this device yet.';
         return;
       }
-      status.textContent='Your most recently opened chapters on this device.';
+      status.textContent='Last saved reading position on this device.';
       for(const [slug,p] of recent){
         const novel=bySlug.get(slug)!;
         const action=readingAction(novel,p);
@@ -50,7 +50,7 @@ export function initProfileRecentReading() {
         bar.max=100;bar.value=percent;
         bar.setAttribute('aria-label',`${novel.title}: current chapter progress`);
         const link=document.createElement('a');
-        link.href=action.url;link.textContent=action.label+' →';
+        link.href=action.url;link.textContent='Read now →';
         copy.append(title,detail,bar);
         item.append(cover,copy,link);
         list.append(item);
