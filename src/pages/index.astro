@@ -101,6 +101,12 @@ const animatedNovels = newNovels.map((n) => ({
       ))}
     </nav>
 
+    <aside id="halloween-home-banner" class="halloween-home-banner" hidden aria-label="Halloween Reading Week event">
+      <img class="halloween-home-banner-symbol" src="/images/events/halloween-2026/gold-128.webp" alt="" width="56" height="56" decoding="async" />
+      <div><strong>Halloween Reading Week</strong><p>1–7 November · Read chapters, climb the leaderboard and earn a special award.</p></div>
+      <a href="/events/halloween-2026/">View event <span aria-hidden="true">→</span></a>
+    </aside>
+
     <ContinueReading />
 
     <section id="new-novels" class="section home-section" aria-labelledby="new-title">
@@ -219,6 +225,16 @@ const animatedNovels = newNovels.map((n) => ({
     </section>
   </main>
   <script>
+    import {HALLOWEEN_START,HALLOWEEN_END} from '../lib/halloween-event';
+    const eventBanner=document.getElementById('halloween-home-banner');
+    if(eventBanner){
+      const updateBanner=()=>{
+        const now=Date.now();
+        eventBanner.hidden=!(now>=Date.parse(HALLOWEEN_START)&&now<Date.parse(HALLOWEEN_END));
+      };
+      updateBanner();
+      window.setInterval(updateBanner,60000);
+    }
     import { initPersonal } from '../scripts/personal';
     import { initHomeHeroMotion } from '../scripts/home-hero-motion';
     import { initFeaturedCover } from '../scripts/featured-cover';

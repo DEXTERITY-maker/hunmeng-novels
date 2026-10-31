@@ -1,0 +1,95 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import {halloweenPrizes,HALLOWEEN_START,HALLOWEEN_END,halloweenBadge} from '../../../lib/halloween-event';
+---
+
+<Layout title="Halloween Reading Week — reading event" description="Read verified chapters from 1–7 November 2026 Moscow time. Join the optional Halloween Reading Week leaderboard and earn top-three awards.">
+  <main id="main" class="page-shell halloween-page">
+    <nav class="halloween-breadcrumb" aria-label="Breadcrumb"><a href="/">← Home</a><span aria-hidden="true">/</span><span aria-current="page">Halloween Reading Week</span></nav>
+    <header class="halloween-hero">
+      <p class="eyebrow">✦ HUNMENG · AUTUMN EVENT</p>
+      <h1>Halloween <em>Reading Week</em></h1>
+      <p class="halloween-lead">Seven days of stories, a friendly leaderboard, and three special reader awards.</p>
+      <p class="halloween-dates"><time datetime={HALLOWEEN_START}>1 November 2026</time> – <time datetime={HALLOWEEN_END}>7 November 2026</time> · Moscow time (MSK)</p>
+      <p class="halloween-countdown" role="status" aria-live="off"><span id="halloween-timer-label">Time remaining</span> <strong id="halloween-timer">Calculating…</strong></p>
+    </header>
+
+    <section class="halloween-section" aria-labelledby="halloween-rules-heading">
+      <div class="section-heading"><h2 id="halloween-rules-heading">How it works</h2></div>
+      <ol class="halloween-rules">
+        <li><strong>Join voluntarily.</strong> Sign in and choose a unique public leaderboard name. Your email and account identity are never shown.</li>
+        <li><strong>Finish verified chapters.</strong> Only chapters completed through the existing reading-session system between 1 and 7 November (MSK) count. Chapters finished earlier in the week count even if you join later.</li>
+        <li><strong>Climb the leaderboard.</strong> Most chapters wins. If counts are equal, the reader who reached that count earlier places higher.</li>
+        <li><strong>Collect a prize.</strong> The first three participating readers with at least one verified chapter earn an event emblem, a selectable title, and bonus XP. Hunmeng team members may take part but do not receive prizes. Normal reading rewards and shelves are unaffected.</li>
+      </ol>
+    </section>
+
+    <section class="halloween-section" aria-labelledby="halloween-prizes-heading">
+      <div class="section-heading"><h2 id="halloween-prizes-heading">Awards for the top three</h2><span class="fine">At least 1 chapter required</span></div>
+      <div class="halloween-prize-grid">
+        {halloweenPrizes.map(prize=>(
+          <article class:list={['halloween-prize', 'halloween-prize-'+prize.key]}>
+            <div class="halloween-prize-art">
+              <img data-halloween-badge={prize.key} src={halloweenBadge(prize.key)}
+                alt={`Place ${prize.place} ${prize.key} award emblem`} width="128" height="128" />
+              <span class="halloween-prize-place">Place {prize.place}</span>
+            </div>
+            <div class="halloween-prize-copy">
+              <h3>{prize.title}</h3>
+              <p><strong>+{prize.xp.toLocaleString('en-US')} XP</strong> <span>· Special title and emblem</span></p>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <div class="halloween-main-grid">
+      <section class="halloween-section halloween-join-panel" aria-labelledby="halloween-join-heading">
+        <div class="section-heading"><h2 id="halloween-join-heading">Take part</h2></div>
+        <div id="halloween-guest">
+          <p>Participation is optional. Everyone can view the leaderboard.</p>
+          <a class="button" href="/account/">Sign in to join</a>
+        </div>
+        <div id="halloween-member" hidden>
+          <p id="halloween-my-place" class="halloween-my-place" aria-live="polite">Checking your place…</p>
+          <form id="halloween-join-form" novalidate hidden>
+            <label for="halloween-display-name">Public leaderboard name</label>
+            <input id="halloween-display-name" type="text" name="display_name" autocomplete="off"
+              required minlength="3" maxlength="24" aria-describedby="halloween-public-note halloween-name-help" />
+            <small id="halloween-public-note"><strong>Your chosen name is visible to everyone on the leaderboard.</strong> Your email is never displayed.</small>
+            <small id="halloween-name-help">3–24 letters, numbers, spaces, _ or -. Names must be unique regardless of case, and names that look like the site or its staff are reserved.</small>
+            <button id="halloween-join-button" class="button" type="submit">Join the event</button>
+          </form>
+          <div id="halloween-member-actions" hidden>
+            <button type="button" id="halloween-rename-button" class="button secondary">Change leaderboard name</button>
+            <button type="button" id="halloween-leave-button" class="button secondary">Leave event</button>
+          </div>
+          <p id="halloween-member-notice" class="fine" role="status" aria-live="polite"></p>
+        </div>
+        <p id="halloween-closed-notice" class="fine" hidden></p>
+      </section>
+
+      <section class="halloween-section halloween-leaderboard-panel" aria-labelledby="halloween-leaderboard-heading">
+        <div class="section-heading"><h2 id="halloween-leaderboard-heading">Leaderboard</h2><span class="fine">Top 20</span></div>
+        <p id="halloween-leaderboard-soon" class="halloween-quiet-state" role="status">Leaderboard opens soon.</p>
+        <p id="halloween-finalizing" class="halloween-quiet-state" hidden>Results are being finalized.</p>
+        <div id="halloween-results" hidden>
+          <h3>Event winners</h3>
+          <ol id="halloween-winners" class="halloween-winners" aria-label="Halloween event winners"></ol>
+        </div>
+        <div id="halloween-leaderboard-wrap" hidden>
+          <table class="halloween-leaderboard">
+            <thead><tr><th scope="col">Place</th><th scope="col">Reader</th><th scope="col">Chapters</th></tr></thead>
+            <tbody id="halloween-leaderboard-rows"></tbody>
+          </table>
+          <p id="halloween-leaderboard-empty" class="fine" hidden>No readers have joined yet. Be the first!</p>
+        </div>
+        <p class="halloween-privacy-note fine">Only your chosen leaderboard name and verified chapter count are public. No email addresses or account IDs are displayed.</p>
+      </section>
+    </div>
+  </main>
+  <script>
+    import {initHalloweenPage} from '../../../scripts/halloween-event';
+    void initHalloweenPage();
+  </script>
+</Layout>
