@@ -49,7 +49,7 @@ export function initProfileDashboard() {
     tab.addEventListener('click', () => {
       const id = tab.dataset.overviewTab!;
       select(id);
-      if (location.hash !== '#' + id) history.pushState(null, '', '#' + id);
+      if (location.hash !== '#' + id) window.history.pushState(null, '', '#' + id);
     });
     tab.addEventListener('keydown', event => {
       const last = tabs.length - 1;
@@ -63,7 +63,7 @@ export function initProfileDashboard() {
       const target = tabs[next];
       const id = target.dataset.overviewTab!;
       select(id, true);
-      if (location.hash !== '#' + id) history.replaceState(null, '', '#' + id);
+      if (location.hash !== '#' + id) window.history.replaceState(null, '', '#' + id);
     });
   });
   window.addEventListener('hashchange', fromHash);
@@ -84,17 +84,17 @@ export function initProfileDashboard() {
   }
 
   // Preview the actual rows from the verified, read-only XP history response.
-  const history = document.getElementById('reader-xp-history-list');
+  const historyList = document.getElementById('reader-xp-history-list');
   const recent = document.getElementById('profile-recent-xp-list');
   const recentStatus = document.getElementById('profile-recent-xp-status');
   const historyStatus = document.getElementById('reader-xp-history-status');
   const updateRecent = () => {
-    if (!history || !recent || !recentStatus) return;
-    const entries = [...history.children].slice(0, 3);
+    if (!historyList || !recent || !recentStatus) return;
+    const entries = [...historyList.children].slice(0, 3);
     recent.replaceChildren(...entries.map(node => node.cloneNode(true)));
     recentStatus.textContent = entries.length ? '' : historyStatus?.textContent || 'No verified XP awards yet.';
   };
-  if (history) new MutationObserver(updateRecent).observe(history, {childList:true});
+  if (historyList) new MutationObserver(updateRecent).observe(historyList, {childList:true});
   if (historyStatus) new MutationObserver(updateRecent).observe(historyStatus, {childList:true,characterData:true,subtree:true});
   updateRecent();
 
