@@ -977,6 +977,27 @@ test('editorial signed-in profile: accessible cards, demo recent covers and resp
       expect(identity).toBeTruthy();
       expect(panel).toBeTruthy();
       expect(recent).toBeTruthy();
+      // The presentational redesign should preserve the older verified tests
+      // while removing the hero card frame and floating rank background.
+      const presentation = await page.locator('.profile-member-hero').evaluate(el => {
+        const style=getComputedStyle(el);
+        return {radius:style.borderTopLeftRadius,border:style.borderTopWidth,image:style.backgroundImage};
+      });
+      expect(presentation.radius).toBe('0px');
+      expect(presentation.border).toBe('0px');
+      expect(presentation.image).toContain(theme === 'dark' ? 'header-night.webp' : 'header-day.webp');
+      expect(presentation.image).toContain('hunmeng-landscape-');
+      const rankPlate=await page.locator('.profile-rank-slot .advancement-hero').evaluate(el => ({
+        background:getComputedStyle(el).backgroundColor,border:getComputedStyle(el).borderTopWidth,
+      }));
+      expect(rankPlate.background).toBe('rgba(0, 0, 0, 0)');
+      expect(rankPlate.border).toBe('0px');
+      if(width===1440) expect(hero!.height).toBeGreaterThanOrEqual(330);
+      if(width===390) {
+        const count=await page.locator('#profile-metrics-slot .advancement-stats').evaluate(el =>
+          getComputedStyle(el).gridTemplateColumns.split(' ').length);
+        expect(count).toBe(2);
+      }
       expect(identity!.x).toBeGreaterThanOrEqual(hero!.x - 1);
       expect(identity!.x + identity!.width).toBeLessThanOrEqual(hero!.x + hero!.width + 1);
       expect(recent!.x).toBeGreaterThanOrEqual(panel!.x - 1);
