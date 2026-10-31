@@ -2841,7 +2841,7 @@ html[data-theme='sepia'] .library-page .library-row-art { filter: sepia(.24) sat
   margin: 10px 0 5px;
 }
 .library-page .library-row-copy .library-row-percent { margin: 0 0 4px; }
-.library-page .library-row-copy .library-row-date { margin: 5px 0 10px; }
+.library-page .library-row-copy .library-row-date { margin: 5px 0 10px; color: var(--muted); font-size: .76rem; line-height: 1.5; }
 .library-page .library-row-action {
   display: inline-flex;
   align-items: center;
