@@ -16,6 +16,8 @@ export function initProfile(client: SupabaseClient, onExpired: () => void) {
   const paint = (user: User, fill: boolean) => {
     const profile = readProfile(user.user_metadata);
     document.getElementById('profile-name')!.textContent = profile.nickname || 'Nickname not set';
+    const heroBio=document.getElementById('profile-bio');
+    if(heroBio)heroBio.textContent=profile.bio || 'Your reading story starts here.';
     const avatar = document.getElementById('profile-avatar')!;
     avatar.textContent = profile.nickname ? [...profile.nickname][0].toLocaleUpperCase('en') : '?';
     avatar.dataset.avatar = profile.avatar_color;
