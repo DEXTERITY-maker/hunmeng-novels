@@ -973,6 +973,10 @@ test('editorial signed-in profile: accessible cards, demo recent covers and resp
       expect(identity!.x + identity!.width).toBeLessThanOrEqual(hero!.x + hero!.width + 1);
       expect(recent!.x).toBeGreaterThanOrEqual(panel!.x - 1);
       expect(recent!.x + recent!.width).toBeLessThanOrEqual(panel!.x + panel!.width + 1);
+      if (width === 1440 && theme === 'light') {
+        // Overview is no longer a seven-thousand-pixel stream of all progression cards.
+        expect(panel!.height).toBeLessThanOrEqual(1800);
+      }
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), theme + ' at ' + width).toBe(true);
       await expect(page.locator('.profile-sidebar nav [aria-current="location"]')).toHaveCount(1);
       if (theme !== 'sepia') {
@@ -994,5 +998,54 @@ test('editorial signed-in profile: accessible cards, demo recent covers and resp
   await page.locator('.profile-sidebar [data-profile-section="profile-details"]').click();
   await expect(page.locator('#reader-mastery-heading')).toBeVisible();
   await expect(page.locator('#reader-rank')).not.toBeEmpty();
+  expect(readerSafeRequests(state.requests)).toBe(true);
+});
+
+test('profile dashboard: keyboard tabs and URL state, edit dialog focus and live XP preview', async ({page}) => {
+  const state=await mockAuth(page);
+  state.profileUser.user_metadata={nickname:'Hunmeng',bio:'Reading cultivation and near-future sci-fi every evening.',avatar_color:'navy'};
+  state.rankStats.chapters=180;
+  state.rankStats.completedNovels=2;
+  state.rankStats.readingDays=34;
+  state.rankStats.total_xp=15200;
+  state.xpAwards=[
+    {event_kind:'chapter_finished',novel_slug:'sad-zimy',chapter_slug:'glava-1',xp:80,awarded_at:'2026-10-31T12:00:00Z'},
+    {event_kind:'novel_finished',novel_slug:'khranitel-mayaka',chapter_slug:'glava-1',xp:400,awarded_at:'2026-10-30T12:00:00Z'},
+  ];
+  await page.setViewportSize({width:390,height:844});
+  await loginFixture(page);
+  await expect(page.locator('#profile-name')).toHaveText('Hunmeng');
+  await expect(page.locator('#profile-bio')).toContainText('near-future sci-fi');
+  await expect(page.locator('#reader-stat-chapters')).toHaveText('180');
+  await expect(page.locator('#profile-metrics-slot .advancement-stats>div')).toHaveCount(4);
+  await expect(page.locator('#profile-recent-xp-list li')).toHaveCount(2);
+  await expect(page.locator('#profile-recent-xp-list')).toContainText('The Garden');
+  await expect(page.locator('#profile-recent-xp-list')).not.toContainText('sad-zimy');
+  await expect(page.locator('#profile-recent-xp-list')).toContainText('31 Oct');
+  const tab=page.getByRole('tab',{name:'Overview',exact:true});
+  await tab.focus();
+  await page.keyboard.press('ArrowRight');
+  await expect(page.getByRole('tab',{name:'Progress'})).toHaveAttribute('aria-selected','true');
+  await expect(page).toHaveURL(/#progress$/);
+  await page.reload();
+  await expect(page.getByRole('tab',{name:'Progress'})).toHaveAttribute('aria-selected','true');
+  await page.getByRole('tab',{name:'Overview'}).click();
+  await page.locator('#profile-edit-open').click();
+  await expect(page.locator('#profile-edit-dialog')).toBeVisible();
+  await expect(page.getByLabel('Nickname',{exact:true})).toBeFocused();
+  await page.keyboard.press('Escape');
+  await expect(page.locator('#profile-edit-dialog')).toBeHidden();
+  await expect(page.locator('#profile-edit-open')).toBeFocused();
+  await page.locator('#profile-edit-open').click();
+  await page.getByLabel('Bio',{exact:true}).fill('Updated on mobile.');
+  await page.getByRole('button',{name:'Save profile'}).click();
+  await expect(page.locator('#profile-status')).toHaveText('Profile saved.');
+  await expect(page.locator('#profile-edit-dialog')).toBeHidden();
+  await expect(page.locator('#profile-bio')).toHaveText('Updated on mobile.');
+  await expect(page.locator('#profile-edit-open')).toBeFocused();
+  await page.locator('[data-open-xp-history]').click();
+  await expect(page.getByRole('tab',{name:'XP history'})).toHaveAttribute('aria-selected','true');
+  await expect(page.locator('#reader-xp-history-list')).toContainText('The Garden');
+  await expect(page.evaluate(() => document.documentElement.scrollWidth <= innerWidth+1)).resolves.toBe(true);
   expect(readerSafeRequests(state.requests)).toBe(true);
 });
