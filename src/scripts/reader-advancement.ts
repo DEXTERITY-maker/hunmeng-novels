@@ -85,7 +85,7 @@ function renderStats(s:VerifiedStats) {
   const level=levelFromTotalXp(s.total_xp);
   const hero=document.querySelector<HTMLElement>('.advancement-hero')!;
   hero.hidden=false;
-  document.querySelectorAll<HTMLElement>('#reader-advancement .advancement-stats, #reader-advancement .advancement-section')
+  document.querySelectorAll<HTMLElement>('#reader-advancement .advancement-stats, #reader-advancement .advancement-section:not(#halloween-profile-awards-section)')
     .forEach(section=>{section.hidden=false;});
   stat('reader-level',`Level ${level.level}`);
   stat('reader-rank',level.rank.en);
@@ -262,7 +262,7 @@ export function initReaderAdvancement(client: SupabaseClient) {
       document.getElementById('halloween-profile-awards')?.replaceChildren();
       root.dataset.status='signed-out';
       document.querySelector<HTMLElement>('.advancement-hero')!.hidden=true;
-      document.querySelectorAll<HTMLElement>('#reader-advancement .advancement-stats, #reader-advancement .advancement-section').forEach(n=>n.hidden=true);
+      document.querySelectorAll<HTMLElement>('#reader-advancement .advancement-stats, #reader-advancement .advancement-section:not(#halloween-profile-awards-section)').forEach(n=>n.hidden=true);
       stat('reader-advancement-status','Sign in to view your verified level and achievements.');
       delete modal.dataset.pendingRank;
       if(modal.open)modal.close();
