@@ -54,9 +54,12 @@ alter table public.reader_halloween_finalizations enable row level security;
 revoke all on public.reader_halloween_finalizations from public, anon, authenticated;
 
 -- Preserve old award conditions exactly, and add only the 3 approved prizes.
+-- Production names: the original column CHECK on xp references two columns,
+-- so PostgreSQL named it reader_xp_events_check. Drop either spelling safely.
 alter table public.reader_xp_events
-  drop constraint reader_xp_events_event_kind_check,
-  drop constraint reader_xp_events_xp_check;
+  drop constraint if exists reader_xp_events_event_kind_check,
+  drop constraint if exists reader_xp_events_xp_check,
+  drop constraint if exists reader_xp_events_check;
 alter table public.reader_xp_events
   add constraint reader_xp_events_event_kind_check
     check (event_kind in ('chapter_finished','novel_finished','event_reward')),
@@ -75,7 +78,7 @@ alter table public.reader_xp_events
 
 -- Extend the existing constraint without unlocking unearned event titles.
 alter table public.reader_title_selection
-  drop constraint reader_title_selection_equipped_title_check;
+  drop constraint if exists reader_title_selection_equipped_title_check;
 alter table public.reader_title_selection
   add constraint reader_title_selection_equipped_title_check check (
     equipped_title in ('novice','regular','collector','scifi','reviewer','genres',
