@@ -620,3 +620,12 @@ test('novel without art keeps the original reader heading', async ({ page }) => 
   expect(image).toBe('none');
   expect(image).not.toContain('latency-');
 });
+
+test('phone reader header shows the Hunmeng emblem next to the back button', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/novel/khranitel-mayaka/glava-1/');
+  const emblem = page.locator('.reader-header .reader-header-logo-placeholder svg');
+  await expect(emblem).toBeVisible();
+  await expect(emblem.locator('.brand-emblem-book')).toHaveCount(1);
+});
+
