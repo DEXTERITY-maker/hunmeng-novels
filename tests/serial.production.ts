@@ -437,7 +437,6 @@ test('library design: real artwork, text-safe reading rows, progress and respons
         { slug: 'comprehension-against-the-heavens', art: 'comprehension', day: 'comprehension-day', night: 'comprehension-night' },
         { slug: 'the-latency-of-tomorrow', art: 'latency', day: 'latency-night', night: 'latency-night' },
       ]) {
-        const row = rows.locator('[data-novel="' + novel.slug + '"]');
         const card = rows.filter({ has: page.locator('h2 a[href="/novel/' + novel.slug + '/"]') });
         const art = card.locator('.library-row-art');
         const bg = await art.evaluate(el => getComputedStyle(el).backgroundImage);
