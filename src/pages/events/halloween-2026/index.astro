@@ -1,6 +1,6 @@
 ---
-import Layout from '../../layouts/Layout.astro';
-import {halloweenPrizes,HALLOWEEN_START,HALLOWEEN_END,halloweenBadge} from '../../lib/halloween-event';
+import Layout from '../../../layouts/Layout.astro';
+import {halloweenPrizes,HALLOWEEN_START,HALLOWEEN_END,halloweenBadge} from '../../../lib/halloween-event';
 ---
 
 <Layout title="Halloween Reading Week — reading event" description="Read verified chapters from 1–7 November 2026 Moscow time. Join the optional Halloween Reading Week leaderboard and earn top-three awards.">
@@ -91,7 +91,7 @@ import {halloweenPrizes,HALLOWEEN_START,HALLOWEEN_END,halloweenBadge} from '../.
     </div>
   </main>
   <script>
-    import {initHalloweenPage} from '../../scripts/halloween-event';
+    import {initHalloweenPage} from '../../../scripts/halloween-event';
     void initHalloweenPage();
   </script>
 </Layout>
