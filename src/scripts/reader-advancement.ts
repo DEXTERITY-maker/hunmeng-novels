@@ -1,4 +1,7 @@
 import type { SupabaseClient,User } from '@supabase/supabase-js';
+import {halloweenPrizes,halloweenBadge} from '../lib/halloween-event';
+type HalloweenAward={event_id:string;place:number;title_id:string;title:string;badge:string;awarded_at:string};
+let halloweenAwards:HalloweenAward[]=[];
 import { repository, onStorageChange } from '../lib/storage';
 import { ranks,readerMasteryTiers,titles,achievements,levelFromTotalXp,getReaderMastery,nextRankMilestone,nextVerifiedAchievement,rankImage,masteryImage,titleStatus,emptyVerifiedStats,type VerifiedStats } from '../lib/reader-progression';
 
@@ -104,7 +107,8 @@ function renderStats(s:VerifiedStats) {
   const sidebar=document.getElementById('profile-sidebar-rank') as HTMLImageElement | null;
   if(sidebar){sidebar.src=rankImage(level.rank.id);sidebar.alt=`${level.rank.en} rank emblem`;sidebar.hidden=false;}
   const selected=titles.find(t=>t.id===s.selected_title&&titleStatus(t.id,s).unlocked)??titles[0];
-  stat('reader-equipped-title',selected.en);
+  const eventEquipped=halloweenAwards.find(award=>award.title_id===s.selected_title);
+  stat('reader-equipped-title',eventEquipped?.title??selected.en);
   const maxed=level.maxed;
   const progress=document.getElementById('reader-xp-progress') as HTMLProgressElement;
   progress.max=maxed?1:level.nextXp;
@@ -150,7 +154,7 @@ function renderStats(s:VerifiedStats) {
       item.target?`${state.progress} / ${item.target}`: 'Available from the start';
     tile.dataset.unlocked=String(state.unlocked);
     const button=tile.querySelector<HTMLButtonElement>('button')!;
-    const equipped=item.id===selected.id;
+    const equipped=item.id===s.selected_title;
     button.disabled=!state.unlocked||equipped;
     button.textContent=equipped?'Equipped':state.unlocked?'Equip':'Locked';
   });
@@ -198,6 +202,23 @@ export function initReaderAdvancement(client: SupabaseClient) {
       paintAchievementFilter();
     });
   });
+  document.getElementById('halloween-profile-awards')?.addEventListener('click',async event=>{
+    const button=(event.target as HTMLElement).closest<HTMLButtonElement>('[data-equip-event-title]');
+    if(!button||!clientRef||!activeUser||button.disabled)return;
+    const award=halloweenAwards.find(item=>item.title_id===button.dataset.equipEventTitle);
+    if(!award)return;
+    const owner=activeUser;
+    button.disabled=true;
+    stat('halloween-profile-awards-status','Equipping verified event title…');
+    const {data,error}=await clientRef.rpc('reader_select_title',{p_title:award.title_id});
+    if(owner!==activeUser)return;
+    if(error||data!==true){
+      stat('halloween-profile-awards-status','Could not equip this title.');
+      button.disabled=false;return;
+    }
+    stat('halloween-profile-awards-status','Event title equipped.');
+    await loadVerified(owner,requestCount);
+  });
   document.querySelectorAll<HTMLButtonElement>('[data-equip-title]').forEach(button=>{
     button.addEventListener('click',async()=>{
       const owner=activeUser;
@@ -235,6 +256,10 @@ export function initReaderAdvancement(client: SupabaseClient) {
     const seq=++requestCount;
     const root=document.getElementById('reader-advancement')!;
     if(!user){
+      halloweenAwards=[];
+      const rewardPanel=document.getElementById('halloween-profile-awards-section');
+      if(rewardPanel)rewardPanel.hidden=true;
+      document.getElementById('halloween-profile-awards')?.replaceChildren();
       root.dataset.status='signed-out';
       document.querySelector<HTMLElement>('.advancement-hero')!.hidden=true;
       document.querySelectorAll<HTMLElement>('#reader-advancement .advancement-stats, #reader-advancement .advancement-section').forEach(n=>n.hidden=true);
@@ -259,6 +284,7 @@ async function loadVerified(userId:string,seq:number) {
     return;
   }
   const values={...emptyVerifiedStats(),...data} as VerifiedStats;
+  halloweenAwards=[];
   const root=document.getElementById('reader-advancement')!;
   root.dataset.status='ready';
   stat('reader-advancement-status','');
@@ -267,6 +293,7 @@ async function loadVerified(userId:string,seq:number) {
   const unlocked=rememberMasteryPromotion(userId,mastery.id);
   if(unlocked)celebrateMastery(userId,seq,unlocked);
   void loadXpHistory(userId,seq);
+  void loadHalloweenAwards(userId,seq,values);
   // A first login simply remembers the initial rank. Only genuine promotions
   // display the modal, and acknowledgement persists server-side.
   if(values.last_rank_notified===rank.id)return;
@@ -322,14 +349,62 @@ async function loadXpHistory(userId:string,seq:number) {
     const row=document.createElement('li');
     const label=document.createElement('span');
     const isChapter=entry.event_kind==='chapter_finished';
-    label.textContent=isChapter?'Chapter completed':'Novel completed';
+    label.textContent=isChapter?'Chapter completed':
+      entry.event_kind==='novel_finished'?'Novel completed':
+      entry.event_kind==='event_reward'?'Halloween Reading Week prize':'Verified XP award';
     const detail=document.createElement('small');
     const date=Date.parse(entry.awarded_at);
     const when=Number.isFinite(date)?new Date(date).toLocaleDateString():'Date unavailable';
-    detail.textContent=`${entry.novel_slug} · ${when}`;
+    const isEvent=entry.event_kind==='event_reward';
+    detail.textContent=isEvent?
+      `${entry.chapter_slug==='place-1'?'Place 1':entry.chapter_slug==='place-2'?'Place 2':entry.chapter_slug==='place-3'?'Place 3':'Event reward'} · ${when}`:
+      `${entry.novel_slug} · ${when}`;
     const amount=document.createElement('strong');
     amount.textContent=`+${entry.xp} XP`;
     row.append(label,detail,amount);
     list.append(row);
+  }
+}
+
+/** Optional add-on RPC: old deployments lack it, and verified progression still works. */
+async function loadHalloweenAwards(userId:string,seq:number,stats:VerifiedStats){
+  if(!clientRef)return;
+  const section=document.getElementById('halloween-profile-awards-section');
+  const list=document.getElementById('halloween-profile-awards');
+  if(!section||!list)return;
+  let result;
+  try{result=await clientRef.rpc('reader_halloween_my_awards');}
+  catch{return;}
+  if(userId!==activeUser||seq!==requestCount)return;
+  if(result.error||!Array.isArray(result.data))return;
+  halloweenAwards=(result.data as HalloweenAward[]).filter(award=>
+    award.event_id==='halloween-2026'&&halloweenPrizes.some(prize=>
+      prize.place===award.place&&prize.key===award.badge&&prize.titleId===award.title_id));
+  list.replaceChildren();
+  section.hidden=halloweenAwards.length===0;
+  if(!halloweenAwards.length)return;
+  const selected=halloweenAwards.find(a=>a.title_id===stats.selected_title);
+  if(selected)stat('reader-equipped-title',selected.title);
+  for(const award of halloweenAwards){
+    const prize=halloweenPrizes.find(p=>p.place===award.place)!;
+    const article=document.createElement('article');article.className='halloween-profile-award';
+    const fallback=document.createElement('span');fallback.className='halloween-badge-placeholder';
+    fallback.textContent='✦';fallback.setAttribute('aria-hidden','true');
+    const image=document.createElement('img');image.className='halloween-profile-award-image';
+    image.width=72;image.height=72;
+    image.alt='Place '+prize.place+' '+prize.key+' Halloween emblem';image.hidden=true;
+    image.onload=()=>{image.hidden=false;fallback.hidden=true;};
+    image.onerror=()=>{image.hidden=true;fallback.hidden=false;};
+    image.src=halloweenBadge(prize.key,true);
+    const info=document.createElement('div');info.className='halloween-profile-award-info';
+    const title=document.createElement('strong');title.textContent='Place '+prize.place+' · '+award.title;
+    const caption=document.createElement('small');
+    caption.textContent='Halloween Reading Week · +'+prize.xp.toLocaleString()+' XP';
+    info.append(title,caption);
+    const button=document.createElement('button');button.type='button';
+    button.className='button secondary';button.dataset.equipEventTitle=award.title_id;
+    const equipped=award.title_id===stats.selected_title;
+    button.textContent=equipped?'Equipped':'Equip title';button.disabled=equipped;
+    article.append(fallback,image,info,button);list.append(article);
   }
 }
