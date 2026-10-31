@@ -1,0 +1,36 @@
+name: Preview — page screenshots
+on:
+  push:
+    branches: [preview/toc-screens-run]
+permissions:
+  contents: write
+jobs:
+  shots:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - name: Capture Halloween previews (demo data)
+        run: |
+          npm run build:demo
+          npx playwright test tests/zz-halloween-preview.spec.ts --project=desktop || true
+      - name: Publish screenshots to preview/toc-screens
+        run: |
+          mkdir -p /tmp/shots
+          find test-results -name 'hunmeng-hw-*.png' 2>/dev/null | xargs -r -I{} cp {} /tmp/shots/
+          ls -la /tmp/shots
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout --orphan preview/toc-screens
+          git rm -rfq .
+          cp /tmp/shots/*.png .
+          git add *.png
+          git commit -qm "preview: halloween screenshots"
+          git push -f origin HEAD:preview/toc-screens
