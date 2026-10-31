@@ -926,6 +926,52 @@ test('rank celebration completes first when a level unlocks both a rank and mast
 });
 
 
+test('compact overview tabs, keyboard navigation, editor focus and readable XP titles',async({page})=>{
+  const state=await mockAuth(page);
+  state.rankStats.chapters=180;
+  state.rankStats.completedNovels=2;
+  state.rankStats.readingDays=34;
+  state.xpAwards=[
+    {event_kind:'chapter_finished',novel_slug:'sad-zimy',chapter_slug:'glava-1',xp:80,awarded_at:'2026-10-31T10:00:00Z'},
+    {event_kind:'novel_finished',novel_slug:'sad-zimy',chapter_slug:'',xp:400,awarded_at:'2026-10-30T10:00:00Z'},
+  ];
+  await page.setViewportSize({width:1440,height:900});
+  await loginFixture(page);
+  await expect(page.locator('#reader-stat-chapters')).toHaveText('180');
+  await expect(page.locator('#reader-stat-novels')).toHaveText('2');
+  await expect(page.locator('#reader-stat-days')).toHaveText('34');
+  await expect(page.locator('#profile-tab-overview')).toHaveAttribute('aria-selected','true');
+  await expect(page.locator('#profile-inner-tabs')).toHaveCount(0); // existing navigation is one tablist, no duplicate heading
+  const height=await page.locator('#profile-details').evaluate(el=>el.getBoundingClientRect().height);
+  expect(height).toBeLessThanOrEqual(1800);
+  await expect(page.locator('#reader-recent-xp-list li')).toHaveCount(2);
+  await page.locator('#profile-tab-overview').focus();
+  await page.keyboard.press('ArrowRight');
+  await expect(page.locator('#profile-tab-progress')).toHaveAttribute('aria-selected','true');
+  await expect(page.locator('#progress')).toBeVisible();
+  await expect(page).toHaveURL(/#progress$/);
+  await page.keyboard.press('End');
+  await expect(page.locator('#profile-tab-xp-history')).toHaveAttribute('aria-selected','true');
+  await expect(page.locator('#reader-xp-history-list li').first()).toContainText('Chapter 1');
+  await expect(page.locator('#reader-xp-history-list li').first()).toContainText('Garden');
+  await expect(page.locator('#reader-xp-history-list li').first()).not.toContainText('sad-zimy');
+  await expect(page.locator('#reader-xp-history-list li').first()).toContainText('31 Oct');
+  await page.reload();
+  await expect(page.locator('#xp-history')).toBeVisible();
+  await page.locator('.profile-sidebar [data-profile-section="profile-details"]').click();
+  await openEditor(page);
+  await page.getByLabel('Nickname',{exact:true}).fill('New Reader');
+  await page.getByLabel('Bio',{exact:true}).fill('A good chapter every day.');
+  await page.getByRole('button',{name:'Save profile',exact:true}).click();
+  await expect(page.locator('#profile-status')).toHaveText('Profile saved.');
+  await expect(page.locator('#profile-bio')).toHaveText('A good chapter every day.');
+  await page.keyboard.press('Escape');
+  await expect(page.locator('#profile-edit-dialog')).toBeHidden();
+  await expect(page.locator('#profile-edit-button')).toBeFocused();
+  expect(state.profileCalls).toBe(1);
+  expect(readerSafeRequests(state.requests)).toBe(true);
+});
+
 test('editorial signed-in profile: accessible cards, demo recent covers and responsive screenshots', async ({ page }, info) => {
   test.skip(info.project.name !== 'desktop', 'The test captures both viewport sizes from the desktop browser only.');
   // Uses the existing mocked reader account / responses; no real account is accessed.
