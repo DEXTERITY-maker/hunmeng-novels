@@ -4178,8 +4178,10 @@ html[data-theme='dark'] .reader-account-page .profile-member-hero {
 }
 .reader-account-page .profile-member-identity .profile-avatar::after {
   content:'';position:absolute;pointer-events:none;
-  width:132%;height:76%;left:-16%;bottom:-20%;
-  background:url('/images/profile/avatar-laurel.webp') center bottom/contain no-repeat;
+  /* The wreath art is a square whose arc hugs a circle ~68% of its width,
+     sitting slightly low: scale and centre it on the avatar, nudged down. */
+  width:147%;height:147%;left:-23.5%;top:-16.5%;
+  background:url('/images/profile/avatar-laurel.webp') center/contain no-repeat;
 }
 .reader-account-page .profile-member-copy {gap:10px}
 .reader-account-page .profile-member-copy h2 {
@@ -4248,10 +4250,11 @@ html[data-theme='dark'] .reader-account-page .profile-member-hero {
   box-shadow:0 8px 25px rgb(77 58 27 / .08);
 }
 html[data-theme='dark'] .reader-account-page .profile-sidebar {
+  /* The ink-wash art is light grey: on a dark card it would read as a white smear. */
   background-image:
     linear-gradient(180deg,var(--profile-card) 36%,color-mix(in srgb,var(--profile-card) 89%,transparent) 80%,color-mix(in srgb,var(--profile-card) 66%,transparent)),
-    url('/images/profile/ink-wash-corner.webp'),
     url('/images/art/hunmeng-landscape-night-960.webp');
+  background-position:center,center bottom;background-size:cover,cover;
 }
 .reader-account-page .profile-sidebar nav a {
   font:600 1rem/1.3 var(--heading-font,Georgia,serif);
@@ -4587,7 +4590,7 @@ html[data-theme='sepia'] .reader-account-page .profile-member-hero {
     background-image:
       linear-gradient(180deg,rgb(247 241 230 / .36) 0%,rgb(247 241 230 / .67) 36%,var(--profile-paper) 98%),
       linear-gradient(90deg,rgb(247 241 230 / .76),transparent 100%),
-      url('/images/profile/header-day.webp'),
+      url('/images/profile/header-day-960.webp'),
       url('/images/art/hunmeng-landscape-day-960.webp');
     background-position:center,center,center top,center top;
   }
@@ -4596,14 +4599,14 @@ html[data-theme='sepia'] .reader-account-page .profile-member-hero {
     background-image:
       linear-gradient(180deg,rgb(238 224 201 / .4),rgb(238 224 201 / .76) 42%,var(--profile-paper) 98%),
       linear-gradient(90deg,rgb(238 224 201 / .76),transparent),
-      url('/images/profile/header-day.webp'),
+      url('/images/profile/header-day-960.webp'),
       url('/images/art/hunmeng-landscape-day-960.webp');
   }
   html[data-theme='dark'] .reader-account-page .profile-member-hero {
     background-image:
       linear-gradient(180deg,rgb(23 35 31 / .35),rgb(23 35 31 / .76) 40%,var(--profile-paper) 98%),
       linear-gradient(90deg,rgb(23 35 31 / .80),transparent),
-      url('/images/profile/header-night.webp'),
+      url('/images/profile/header-night-960.webp'),
       url('/images/art/hunmeng-landscape-night-960.webp');
   }
 }
@@ -4618,3 +4621,7 @@ html[data-theme='sepia'] .reader-account-page .profile-member-hero {
     }
   }
 }
+
+/* Profile art supplied: lighter files on phones, faint ink-wash in dark mode. */
+html[data-theme='dark'] .reader-account-page .profile-dashboard-card::after {opacity:.05}
+@media(prefers-color-scheme:dark){html[data-theme='system'] .reader-account-page .profile-dashboard-card::after {opacity:.05}}
