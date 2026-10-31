@@ -83,6 +83,20 @@ export function initProfileDashboard() {
     updateRank();
   }
 
+  // Mirror the existing verified goal progress as a compact visual fraction.
+  // The goal, its value and its eligibility still come from ReaderAdvancement.
+  const goalBar = document.getElementById('reader-next-achievement-progress') as HTMLProgressElement | null;
+  if (goalBar && !document.getElementById('profile-goal-ratio')) {
+    const ratio = document.createElement('output');
+    ratio.id = 'profile-goal-ratio';
+    ratio.className = 'profile-goal-ratio';
+    ratio.setAttribute('aria-label', 'Goal progress');
+    goalBar.insertAdjacentElement('afterend', ratio);
+    const refreshRatio = () => { ratio.textContent = Math.round(goalBar.value) + ' / ' + Math.round(goalBar.max); };
+    new MutationObserver(refreshRatio).observe(goalBar, {attributes: true, attributeFilter: ['value','max']});
+    refreshRatio();
+  }
+
   // Preview the actual rows from the verified, read-only XP history response.
   const historyList = document.getElementById('reader-xp-history-list');
   const recent = document.getElementById('profile-recent-xp-list');
