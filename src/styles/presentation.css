@@ -3318,3 +3318,27 @@ html[data-theme='sepia'] .library-page .library-row-art { filter: sepia(.24) sat
   border-color: var(--line);
   color: var(--ink);
 }
+
+/* Library rows: the shelf picker sits under the text, label and select on one line. */
+.library-page .library-novel-row .library-row-picker {
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  text-align: left;
+}
+.library-page .library-novel-row .library-row-picker select { width: auto; min-width: 170px; max-width: 240px; margin: 0; }
+@media (max-width: 960px) {
+  .library-page .library-novel-row .library-row-picker select { flex: 1; max-width: none; }
+}
+
+/* Profile sidebar: the two quick links stack, so their text and arrows fit. */
+@media (min-width: 761px) {
+  .reader-account-page .profile-sidebar .profile-quicklinks { grid-template-columns: 1fr; }
+}
+.reader-account-page .profile-library-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+.reader-account-page .profile-library-link > span[aria-hidden='true'] { margin-left: auto; }

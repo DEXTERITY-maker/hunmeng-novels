@@ -421,6 +421,12 @@ test('library design: real artwork, text-safe reading rows, progress and respons
       await expect(row).toHaveAttribute('data-art', novel.art);
       await expect(row.locator('.library-chapter-progress')).toHaveJSProperty('value', novel.progress);
       await expect(row.locator('.library-row-copy .library-row-chapter')).toContainText(' of ');
+      // Shelf label and select share one line, aligned with the text column.
+      const picker = (await row.locator('.library-row-picker').boundingBox())!;
+      const select = (await row.locator('.library-row-picker select').boundingBox())!;
+      const copy = (await row.locator('.library-row-copy').boundingBox())!;
+      expect(Math.abs((select.y + select.height / 2) - (picker.y + picker.height / 2))).toBeLessThan(6);
+      if (width > 960) expect(picker.x).toBeLessThanOrEqual(copy.x + 2);
       const href = await row.locator('.library-row-action').getAttribute('href');
       expect(href).toContain('/novel/' + novel.slug + '/chapter-');
       // The second cover may be below the first fold on a 390px phone.
