@@ -24,12 +24,18 @@ export async function initLibrary() {
           c = n.chapters.find((c) => c.slug === p?.chapterSlug);
         const action = readingAction(n, p);
         const row = element('article', undefined, 'library-row');
-        const img = element('img');
+        if (n.art === 'comprehension' || n.art === 'latency') {
+          row.dataset.art = n.art;
+          const art = element('div', undefined, 'library-row-art');
+          art.setAttribute('aria-hidden', 'true');
+          row.append(art);
+        }
+        const img = element('img', undefined, 'library-row-cover');
         img.src = n.cover;
         img.alt = '';
         img.width = 78;
         img.height = 114;
-        const body = element('div');
+        const body = element('div', undefined, 'library-row-copy');
         const title = element('h2'),
           link = element('a', n.title);
         link.href = n.url;
@@ -46,7 +52,8 @@ export async function initLibrary() {
             'fine',
           ),
         );
-        const read = element('a', action.label + ' →', 'text-link');
+        if (n.author) body.append(element('p', n.author, 'library-row-author'));
+        const read = element('a', action.label + ' →', 'text-link library-row-continue');
         read.href = action.url;
         if (c && p) {
           const chapterProgress = Math.round(Math.max(0, Math.min(1, p.ratio)) * 100);
@@ -63,7 +70,7 @@ export async function initLibrary() {
           }
         }
         body.append(read);
-        const label = element('label', 'Shelf');
+        const label = element('label', 'Shelf', 'library-row-shelf');
         const select = element('select');
         select.setAttribute('aria-label', `Shelf: ${n.title}`);
         for (const [value, text] of Object.entries(shelves)) {

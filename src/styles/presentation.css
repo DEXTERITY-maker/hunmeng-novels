@@ -2646,3 +2646,513 @@ body.reader-page:not(.controls-hidden):not(.reader-focus-mode):has(.reader-toolb
 /* New Hunmeng emblem (transparent PNG) sits on a light tile in every theme. */
 .brand-emblem img { width: 40px; height: 40px; object-fit: contain; }
 .site-header .brand-emblem { background: var(--surface); border-radius: 13px; }
+
+
+/* Library and signed-in profile: the same illustrated editorial surfaces as main.
+   Presentation only: shelf state, reward calculations, auth and sync remain in their modules. */
+.library-page .landscape-banner,
+.reader-account-page .profile-hero {
+  --personal-landscape: url('/images/art/hunmeng-landscape-day-1536.webp');
+  position: relative;
+  isolation: isolate;
+  min-width: 0;
+  min-height: 225px;
+  padding: clamp(22px,4vw,42px);
+  border: 1px solid var(--line);
+  border-radius: 19px;
+  background-color: var(--bg);
+  background-image:
+    linear-gradient(90deg, var(--bg) 0%, color-mix(in srgb,var(--bg) 97%,transparent) 35%, color-mix(in srgb,var(--bg) 69%,transparent) 60%, transparent 100%),
+    var(--personal-landscape);
+  background-size: cover;
+  background-position: center, center 67%;
+  box-shadow: var(--ed-shadow);
+}
+html[data-theme='dark'] :is(.library-page .landscape-banner,.reader-account-page .profile-hero) {
+  --personal-landscape: url('/images/art/hunmeng-landscape-night-1536.webp');
+}
+@media(prefers-color-scheme: dark) {
+  html[data-theme='system'] :is(.library-page .landscape-banner,.reader-account-page .profile-hero) {
+    --personal-landscape: url('/images/art/hunmeng-landscape-night-1536.webp');
+  }
+}
+html[data-theme='sepia'] :is(.library-page .landscape-banner,.reader-account-page .profile-hero) {
+  background-image:
+    linear-gradient(rgb(166 111 54 / .10),rgb(166 111 54 / .10)),
+    linear-gradient(90deg,var(--bg) 0%,color-mix(in srgb,var(--bg) 97%,transparent) 35%,color-mix(in srgb,var(--bg) 69%,transparent) 60%,transparent 100%),
+    var(--personal-landscape);
+}
+.library-page .landscape-banner :is(h1,p),
+.reader-account-page .profile-hero :is(h1,p) {
+  color: var(--ink);
+  text-shadow: none;
+}
+.library-page .landscape-banner .eyebrow { color: var(--accent); font-size: .76rem; font-weight: 800; letter-spacing: .13em; }
+.library-page .landscape-banner h1,
+.reader-account-page .profile-hero h1 {
+  max-width: 720px;
+  font: 600 clamp(2rem,4vw,3.2rem)/1.16 'Lora Variable',Georgia,serif;
+  letter-spacing: -.045em;
+  color: var(--ink);
+}
+.library-page .landscape-banner > p:last-child { max-width: 425px; line-height: 1.6; }
+
+/* Light shelf cards keep the active choice distinct without turning its count invisible. */
+.library-page .shelf-tabs { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 12px; }
+.library-page .shelf-tab,
+.library-page .shelf-tab[aria-pressed='true'] {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  min-height: 86px;
+  padding: 13px 15px;
+  gap: 9px;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: var(--ed-shadow);
+}
+.library-page .shelf-tab strong {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font: 650 clamp(.82rem,1.15vw,1rem)/1.35 'Lora Variable',Georgia,serif;
+}
+.library-page .shelf-tab > svg:first-child { color: var(--accent); width: 23px; height: 23px; flex: none; }
+.library-page .shelf-tab > svg:last-child { display: none; }
+.library-page .shelf-tab [data-shelf-count] {
+  margin-left: auto;
+  padding: 4px 8px;
+  min-width: 30px;
+  border-radius: 999px;
+  background: var(--soft);
+  color: var(--ink);
+  font: 800 .86rem/1.3 'Manrope Variable',sans-serif;
+  text-align: center;
+  opacity: 1;
+}
+.library-page .shelf-tab[aria-pressed='true'] {
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 2px var(--accent), var(--ed-shadow);
+}
+.library-page .shelf-tab:hover { border-color: var(--accent); }
+.library-page .shelf-tab:focus-visible,
+.library-page .library-row-continue:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+.library-page #library-count { font: 650 1.3rem/1.35 'Lora Variable',Georgia,serif; margin: 22px 0 13px; color: var(--ink); }
+
+.library-page .library-list { display: grid; gap: 12px; min-width: 0; }
+.library-page .library-row {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 96px minmax(0,1fr);
+  gap: 8px 19px;
+  align-items: start;
+  min-width: 0;
+  margin: 0;
+  padding: 18px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  box-shadow: var(--ed-shadow);
+}
+.library-page .library-row[data-art] { padding-right: max(18px,37%); }
+.library-page .library-row-art {
+  position: absolute;
+  z-index: -1;
+  inset: 0 0 0 auto;
+  width: 35%;
+  pointer-events: none;
+  background: var(--library-row-art) center / cover no-repeat;
+  -webkit-mask-image: linear-gradient(90deg,transparent,#000 55%);
+  mask-image: linear-gradient(90deg,transparent,#000 55%);
+}
+.library-page .library-row[data-art='comprehension'] { --library-row-art: url('/images/art/comprehension-day-1536.webp'); }
+.library-page .library-row[data-art='latency'] { --library-row-art: url('/images/art/latency-night-1536.webp'); }
+html[data-theme='dark'] .library-page .library-row[data-art='comprehension'] { --library-row-art: url('/images/art/comprehension-night-1536.webp'); }
+@media(prefers-color-scheme: dark) {
+  html[data-theme='system'] .library-page .library-row[data-art='comprehension'] { --library-row-art: url('/images/art/comprehension-night-1536.webp'); }
+}
+html[data-theme='sepia'] .library-page .library-row-art { filter: sepia(.22); }
+.library-page .library-row-cover {
+  display: block;
+  grid-column: 1;
+  grid-row: 1 / 3;
+  width: 96px;
+  height: auto;
+  aspect-ratio: 2/3;
+  object-fit: cover;
+  border-radius: 9px;
+  box-shadow: 0 6px 15px rgb(18 38 31 / .18);
+}
+.library-page .library-row-copy { grid-column: 2; grid-row: 1; display: grid; justify-items: start; gap: 5px; min-width: 0; }
+.library-page .library-row-copy h2 {
+  margin: 0;
+  font: 650 clamp(1.1rem,1.7vw,1.4rem)/1.3 'Lora Variable',Georgia,serif;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+.library-page .library-row-copy h2 a { color: var(--ink); }
+.library-page .library-row-copy h2 a:hover { color: var(--accent); }
+.library-page .library-row-author { color: var(--muted); font-size: .83rem; overflow-wrap: anywhere; }
+.library-page .library-row-copy > .fine { margin: 0; color: var(--muted); font-size: .8rem; line-height: 1.5; }
+.library-page .library-row-copy .library-chapter-progress {
+  display: block;
+  width: min(290px,100%);
+  min-width: 90px;
+  height: 8px;
+  margin: 3px 0 6px;
+  appearance: none;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--soft);
+  accent-color: var(--accent);
+}
+.library-page .library-chapter-progress::-webkit-progress-bar { background: var(--soft); }
+.library-page .library-chapter-progress::-webkit-progress-value,
+.library-page .library-chapter-progress::-moz-progress-bar { background: var(--accent); }
+.library-page .library-row-continue {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  margin: 7px 0 0;
+  padding: 8px 14px;
+  border-radius: 9px;
+  background: var(--accent);
+  color: var(--bg);
+  text-decoration: none;
+  font-size: .84rem;
+  font-weight: 800;
+}
+.library-page .library-row-continue:hover { color: var(--bg); filter: brightness(.95); }
+.library-page .library-row-shelf {
+  display: flex;
+  grid-column: 2;
+  grid-row: 2;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  color: var(--muted);
+  font-size: .81rem;
+}
+.library-page .library-row-shelf select {
+  min-width: 0;
+  width: min(220px,100%);
+  max-width: 100%;
+  min-height: 44px;
+  background: var(--bg);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  padding: 7px 10px;
+}
+.library-page .library-empty { padding: 32px 22px; gap: 10px; }
+.library-page .library-empty h2 { font-family: 'Lora Variable',Georgia,serif; color: var(--ink); }
+.library-page .library-empty .button { color: var(--bg); background: var(--accent); border-radius: 9px; }
+.library-page .storage-explanation {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+  background: var(--surface);
+  color: var(--muted);
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  padding: 16px 18px;
+  box-shadow: var(--ed-shadow);
+  overflow-wrap: anywhere;
+}
+.library-page .storage-explanation svg { color: var(--accent); }
+.library-page .storage-explanation a { color: var(--accent); font-weight: 750; }
+
+/* Reader identity lives in the signed-in banner; sections remain the existing hash-driven views. */
+.reader-account-page .profile-hero { min-height: 220px; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 6px; }
+.reader-account-page .profile-hero::after { content: none; }
+.reader-account-page .profile-hero h1 { margin: 0; }
+.reader-account-page .profile-hero > p { max-width: 460px; margin: 0; }
+.reader-account-page .profile-hero .profile-identity[hidden] { display: none !important; }
+.reader-account-page .profile-hero .profile-identity {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: fit-content;
+  max-width: 100%;
+  gap: 12px;
+  margin-top: 16px;
+  padding: 10px 16px 10px 10px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: color-mix(in srgb,var(--surface) 90%,transparent);
+  box-shadow: var(--ed-shadow);
+  text-align: left;
+}
+.reader-account-page .profile-hero .profile-avatar { width: 60px; height: 60px; font-size: 1.6rem; flex: none; }
+.reader-account-page .profile-hero .profile-sidebar-rank { width: 42px; height: 47px; }
+.reader-account-page .profile-hero .profile-identity-copy { min-width: 0; max-width: 300px; }
+.reader-account-page .profile-hero .profile-identity-copy strong { color: var(--ink); overflow-wrap: anywhere; font: 650 1.25rem/1.25 'Lora Variable',Georgia,serif; }
+.reader-account-page .profile-hero .profile-identity-copy span { color: var(--muted); font-size: .77rem; }
+.reader-account-page .profile-layout { grid-template-columns: 205px minmax(0,1fr); gap: 17px; }
+.reader-account-page .profile-sidebar { position: sticky; top: 90px; min-width: 0; padding: 15px; background: var(--surface); border-radius: 15px; }
+.reader-account-page .profile-sidebar nav { border: 0; padding: 0; margin: 0; display: grid; gap: 5px; }
+.reader-account-page .profile-sidebar nav a { justify-content: flex-start; min-width: 0; color: var(--ink); font-weight: 650; }
+.reader-account-page .profile-sidebar nav a[aria-current='location'] {
+  background: var(--soft);
+  box-shadow: inset 3px 0 var(--accent);
+  color: var(--ink);
+}
+.reader-account-page .profile-quicklinks { min-width: 0; grid-template-columns: minmax(0,1fr); border-top: 1px solid var(--line); padding-top: 12px; margin-top: 12px; }
+.reader-account-page .profile-library-link { margin: 0; border: 0; padding: 8px; overflow-wrap: anywhere; }
+.reader-account-page .profile-library-link svg { color: var(--accent); }
+.reader-account-page .profile-panel { min-width: 0; padding: clamp(16px,2.8vw,28px); border-radius: 16px; background: var(--surface); color: var(--ink); }
+.reader-account-page #profile-details {
+  --ink: inherit;
+  --muted: inherit;
+  --accent: inherit;
+  --line: inherit;
+  --soft: inherit;
+  --surface: inherit;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: var(--ed-shadow);
+}
+.reader-account-page #profile-details::before { display: none; }
+.reader-account-page #profile-details :is(h2,h3,h4),
+.reader-account-page #profile-details #profile-title,
+.reader-account-page #profile-details .rank-tile h4,
+.reader-account-page #profile-details .reader-award h4 { color: var(--ink); }
+.reader-account-page #profile-details > .eyebrow,
+.reader-account-page #profile-details .advancement-section-header .eyebrow,
+.reader-account-page #profile-details .advancement-intro .eyebrow { color: var(--accent); }
+.reader-account-page #profile-details > .profile-intro,
+.reader-account-page #profile-details .advancement-section-header p:last-child,
+.reader-account-page #profile-details .advancement-title-line,
+.reader-account-page #profile-details .advancement-trust,
+.reader-account-page #profile-details .advancement-journey-note,
+.reader-account-page #profile-details .advancement-title-line strong { color: var(--muted); }
+.reader-account-page #profile-details .advancement-title-line strong { color: var(--ink); }
+.reader-account-page #profile-details .advancement-hero {
+  grid-template-columns: minmax(100px,150px) minmax(0,1fr);
+  gap: clamp(12px,2.2vw,22px);
+  background: linear-gradient(125deg,var(--soft),var(--surface) 60%);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  padding: clamp(14px,2.4vw,24px);
+  box-shadow: none;
+}
+.reader-account-page #profile-details .advancement-hero::before { display: none; }
+.reader-account-page #profile-details .advancement-intro h3,
+.reader-account-page #profile-details .advancement-xp-label,
+.reader-account-page #profile-details .advancement-hero .eyebrow,
+.reader-account-page #profile-details .reader-next-rank-copy strong { color: var(--ink); }
+.reader-account-page #profile-details .advancement-emblem-wrap {
+  min-height: 120px;
+  border-color: var(--line);
+  background: color-mix(in srgb,var(--accent) 8%,var(--surface));
+  box-shadow: none;
+}
+.reader-account-page #profile-details .advancement-emblem-wrap img { width: min(100%,145px); }
+.reader-account-page #profile-details .advancement-emblem-crest { color: var(--accent); }
+.reader-account-page #profile-details .advancement-hero progress { background: var(--soft); border: 0; box-shadow: none; height: 10px; }
+.reader-account-page #profile-details .advancement-hero progress::-webkit-progress-bar { background: var(--soft); }
+.reader-account-page #profile-details .reader-next-rank { background: var(--surface); border-color: var(--line); }
+.reader-account-page #profile-details .reader-next-rank-copy :is(span,small) { color: var(--muted); }
+.reader-account-page #profile-details .advancement-stats { grid-template-columns: repeat(3,minmax(0,1fr)); }
+.reader-account-page #profile-details .advancement-stats > div {
+  min-height: 105px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  box-shadow: none;
+}
+.reader-account-page #profile-details .advancement-stats > div::before { display: none; }
+.reader-account-page #profile-details .advancement-stats :is(span,small) { color: var(--muted); }
+.reader-account-page #profile-details .advancement-stats strong { color: var(--ink); }
+.reader-account-page #profile-details .advancement-section {
+  min-width: 0;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: none;
+}
+.reader-account-page #profile-details .advancement-all-ranks {
+  color: var(--accent);
+  background: var(--surface);
+  border-color: var(--line);
+}
+.reader-account-page #profile-details .advancement-all-ranks:hover {
+  color: var(--ink);
+  background: var(--soft);
+}
+.reader-account-page #profile-details .rank-tile::after { display: none; }
+.reader-account-page #profile-details :is(.rank-tile,.reader-award,.achievement-tile,.reader-mastery-tile,.reader-xp-history-list li,.reader-next-achievement) {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  color: var(--ink);
+  box-shadow: none;
+}
+.reader-account-page #profile-details .rank-tile h4,
+.reader-account-page #profile-details .rank-tile-roman { color: var(--ink); }
+.reader-account-page #profile-details .rank-tile .rank-tile-levels,
+.reader-account-page #profile-details .rank-tile-state { color: var(--muted); background: var(--soft); border-color: var(--line); }
+.reader-account-page #profile-details .rank-tile .rank-tile-description { color: var(--muted); }
+.reader-account-page #profile-details .rank-tile[data-rank-status=current] { border-color: var(--accent); background: var(--soft); box-shadow: inset 0 0 0 1px var(--accent); }
+.reader-account-page #profile-details .rank-tile[data-rank-status=current] .rank-tile-state { color: #fff; background: #205b47; }
+.reader-account-page #profile-details .reader-mastery-tile:nth-child(n) { min-height: 222px; background: var(--surface); border-color: var(--line); }
+.reader-account-page #profile-details .reader-mastery-tile .reader-mastery-levels { color: var(--muted); background: var(--soft); border-color: var(--line); }
+.reader-account-page #profile-details .reader-mastery-tile::before { display: none; }
+.reader-account-page #profile-details .reader-mastery-tile strong { color: var(--ink); }
+.reader-account-page #profile-details .reader-mastery-levels,
+.reader-account-page #profile-details .reader-mastery-tile small,
+.reader-account-page #profile-details .reader-mastery-tile [data-mastery-state] {
+  color: var(--muted);
+  background: var(--soft);
+  border-color: var(--line);
+}
+.reader-account-page #profile-details .reader-mastery-tile[data-mastery-status=current] { background: var(--soft); border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.reader-account-page #profile-details .reader-mastery-tile[data-mastery-status=current] [data-mastery-state] { color: var(--bg); background: var(--accent); border-color: var(--accent); }
+.reader-account-page #profile-details .reader-mastery-tile[data-mastery-status=earned] [data-mastery-state] { color: var(--ink); background: var(--soft); border-color: var(--accent); }
+.reader-account-page #profile-details .reader-mastery-tile[data-mastery-status=locked] [data-mastery-state] { color: var(--muted); }
+.reader-account-page #profile-details .reader-award { grid-template-columns: 43px minmax(0,1fr); }
+.reader-account-page #profile-details .award-symbol,
+.reader-account-page #profile-details .achievement-icon { color: var(--accent); background: var(--soft); border: 1px solid var(--line); }
+.reader-account-page #profile-details .reader-award .award-body :is(p,small),
+.reader-account-page #profile-details .achievement-tile :is(p,span),
+.reader-account-page #profile-details .reader-next-achievement :is(small,p),
+.reader-account-page #profile-details .reader-xp-history-list :is(small,span) { color: var(--muted); }
+.reader-account-page #profile-details .reader-award .award-body :is(h4,strong),
+.reader-account-page #profile-details .achievement-tile h4,
+.reader-account-page #profile-details .reader-xp-history-list strong { color: var(--ink); }
+.reader-account-page #profile-details #profile-recent-reading {
+  background: var(--surface);
+  border-color: var(--line);
+}
+.reader-account-page #profile-details .reader-xp-history-list li { background: var(--surface); border-color: var(--line); }
+.reader-account-page #profile-details .profile-recent-reading {
+  margin: 20px 0;
+  padding: 17px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+}
+.reader-account-page #profile-details .profile-recent-list { grid-template-columns: repeat(auto-fit,minmax(min(100%,235px),1fr)); gap: 10px; }
+.reader-account-page #profile-details .profile-recent-list li {
+  display: grid;
+  grid-template-columns: 58px minmax(0,1fr);
+  gap: 10px;
+  align-items: start;
+  min-width: 0;
+  padding: 11px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: var(--bg);
+}
+.reader-account-page #profile-details .profile-recent-cover { display: block; width: 58px; height: 87px; border-radius: 6px; object-fit: cover; }
+.reader-account-page #profile-details .profile-recent-copy { grid-column: 2; min-width: 0; display: grid; gap: 5px; }
+.reader-account-page #profile-details .profile-recent-copy strong { color: var(--ink); font-size: .88rem; line-height: 1.35; }
+.reader-account-page #profile-details .profile-recent-copy span { grid-column: auto; color: var(--muted); font-size: .76rem; }
+.reader-account-page #profile-details .profile-recent-copy progress {
+  grid-column: auto;
+  display: block;
+  appearance: none;
+  width: 100%;
+  height: 8px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--soft);
+  accent-color: var(--accent);
+}
+.reader-account-page #profile-details .profile-recent-copy progress::-webkit-progress-bar { background: var(--soft); }
+.reader-account-page #profile-details .profile-recent-copy progress::-webkit-progress-value,
+.reader-account-page #profile-details .profile-recent-copy progress::-moz-progress-bar { background: var(--accent); }
+.reader-account-page #profile-details .profile-recent-list li a {
+  grid-column: 1 / -1;
+  grid-row: auto;
+  justify-self: start;
+  align-self: end;
+  min-height: 40px;
+  color: var(--accent);
+  font-size: .81rem;
+  text-align: left;
+}
+.reader-account-page #profile-details #profile-form { border-color: var(--line); }
+.reader-account-page #profile-details #profile-form :is(input,textarea) { background: var(--bg); color: var(--ink); border-color: var(--line); }
+.reader-account-page #profile-details #profile-form :is(input,textarea)::placeholder,
+.reader-account-page #profile-details #profile-form :is(label,legend,small) { color: var(--muted); }
+.reader-account-page #profile-details #profile-form button { color: var(--bg); background: var(--accent); }
+.reader-account-page #profile-details .profile-local-note { color: var(--muted); background: var(--soft); }
+.reader-account-page #profile-details .profile-local-note svg { color: var(--accent); }
+
+/* Protect narrow layouts and keep decorative images away from all copy. */
+@media(max-width: 1100px) {
+  .library-page .library-row[data-art] { padding-right: 18px; }
+  .library-page .library-row-art { display: none; }
+  .reader-account-page .profile-layout { grid-template-columns: 1fr; }
+  .reader-account-page .profile-sidebar { position: static; padding: 12px; }
+  .reader-account-page .profile-sidebar nav { display: flex; flex-wrap: wrap; gap: 6px; }
+  .reader-account-page .profile-sidebar nav a { flex: 1 1 100px; justify-content: center; }
+  .reader-account-page .profile-sidebar nav a[aria-current='location'] { box-shadow: inset 0 -3px var(--accent); }
+  .reader-account-page .profile-quicklinks { grid-template-columns: repeat(2,minmax(0,1fr)); }
+}
+@media(max-width: 760px) {
+  .library-page .landscape-banner,
+  .reader-account-page .profile-hero {
+    --personal-landscape: url('/images/art/hunmeng-landscape-day-960.webp');
+    min-height: 165px;
+    padding: 16px;
+    border-radius: 13px;
+    background-position: center, 64% center;
+    background-image:
+      linear-gradient(90deg,var(--bg) 0%,color-mix(in srgb,var(--bg) 95%,transparent) 54%,color-mix(in srgb,var(--bg) 73%,transparent) 100%),
+      var(--personal-landscape);
+  }
+  html[data-theme='dark'] :is(.library-page .landscape-banner,.reader-account-page .profile-hero) {
+    --personal-landscape: url('/images/art/hunmeng-landscape-night-960.webp');
+  }
+  html[data-theme='sepia'] :is(.library-page .landscape-banner,.reader-account-page .profile-hero) {
+    background-image: linear-gradient(rgb(166 111 54 / .10),rgb(166 111 54 / .10)),
+      linear-gradient(90deg,var(--bg),color-mix(in srgb,var(--bg) 95%,transparent) 54%,color-mix(in srgb,var(--bg) 73%,transparent)),
+      var(--personal-landscape);
+  }
+  .library-page .landscape-banner h1,
+  .reader-account-page .profile-hero h1 { font-size: clamp(1.85rem,7vw,2.3rem); }
+  .library-page .landscape-banner p,
+  .reader-account-page .profile-hero > p { max-width: 100%; font-size: .8rem; }
+  .library-page .shelf-tabs { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; }
+  .library-page .shelf-tab,.library-page .shelf-tab[aria-pressed='true'] { min-height: 72px; padding: 10px; gap: 6px; }
+  .library-page .shelf-tab strong { font-size: .84rem; }
+  .library-page .shelf-tab > svg:first-child { width: 20px; height: 20px; }
+  .library-page .shelf-tab [data-shelf-count] { padding: 3px 6px; min-width: 25px; }
+  .library-page .library-row { grid-template-columns: 76px minmax(0,1fr); gap: 8px 12px; padding: 12px; }
+  .library-page .library-row-cover { width: 76px; height: 114px; }
+  .library-page .library-row-copy h2 { font-size: 1.08rem; }
+  .library-page .library-row-shelf { align-items: stretch; flex-wrap: wrap; gap: 5px; }
+  .library-page .library-row-shelf select { width: 100%; }
+  .reader-account-page .profile-hero .profile-identity { margin-top: 8px; gap: 8px; padding: 7px; }
+  .reader-account-page .profile-hero .profile-avatar { width: 48px; height: 48px; font-size: 1.35rem; }
+  .reader-account-page .profile-hero .profile-sidebar-rank { width: 34px; height: 38px; }
+  .reader-account-page .profile-hero .profile-identity-copy strong { font-size: 1rem; }
+  .reader-account-page .profile-sidebar nav a { font-size: .82rem; }
+  .reader-account-page .profile-quicklinks { gap: 6px; }
+  .reader-account-page #profile-details .advancement-hero { grid-template-columns: minmax(0,1fr); }
+  .reader-account-page #profile-details .advancement-emblem-wrap { width: 130px; min-height: 130px; justify-self: center; }
+  .reader-account-page #profile-details .advancement-stats { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .reader-account-page #profile-details .reader-mastery-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .reader-account-page #profile-details .reader-mastery-tile { min-height: 195px; }
+  .reader-account-page #profile-details .profile-recent-list { grid-template-columns: minmax(0,1fr); }
+}
+@media(max-width: 400px) {
+  .reader-account-page .profile-quicklinks { grid-template-columns: 1fr; }
+  .reader-account-page .profile-sidebar nav a { padding: 7px 8px; flex-basis: 75px; }
+  .reader-account-page #profile-details .rank-gallery { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .reader-account-page #profile-details .rank-tile { min-width: 0; padding-inline: 6px; }
+}
+@media(max-width: 760px) and (prefers-color-scheme: dark) {
+  html[data-theme='system'] :is(.library-page .landscape-banner,.reader-account-page .profile-hero) {
+    --personal-landscape: url('/images/art/hunmeng-landscape-night-960.webp');
+  }
+}

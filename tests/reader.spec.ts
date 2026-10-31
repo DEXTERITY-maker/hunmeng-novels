@@ -75,14 +75,15 @@ test('мобильная главная: компактное продолжен
   }
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBeTruthy();
 });
-test('новости: единственная приветственная запись без технических релизов', async ({ page }) => {
+test('новости: приветствие и официальный changelog без технических релизов', async ({ page }) => {
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'Latest news' })).toBeVisible();
-  await expect(page.locator('#latest-news [data-news-card]')).toHaveCount(1);
+  await expect(page.locator('#latest-news [data-news-card]')).toHaveCount(2);
   await expect(page.locator('#latest-news')).toContainText('Welcome to Hunmeng');
+  await expect(page.locator('#latest-news')).toContainText('Library and reader profile refreshed');
   await page.locator('#latest-news').getByRole('link', { name: 'View all' }).click();
   expect(new URL(page.url()).pathname).toBe('/news/');
-  await expect(page.locator('#news-feed [data-news-card]:visible')).toHaveCount(1);
+  await expect(page.locator('#news-feed [data-news-card]:visible')).toHaveCount(2);
   await expect(page.locator('#news-pagination')).toBeHidden();
   await expect(page.locator('a[href*="github.com"]')).toHaveCount(0);
   await expect(page.locator('#news-feed')).not.toContainText('Site update:');
@@ -93,11 +94,12 @@ test('новости: категории сохраняются, несущес�
   await expect(page.locator('#news-feed [data-news-card]:visible')).toHaveCount(1);
   await expect(page.locator('[data-news-filter=announcements]')).toHaveAttribute('aria-current', 'page');
   await page.getByRole('link', { name: 'Changelog', exact: true }).click();
-  await expect(page.locator('#news-empty')).toBeVisible();
+  await expect(page.locator('#news-feed [data-news-card]:visible')).toHaveCount(1);
+  await expect(page.locator('#news-feed')).toContainText('Library and reader profile refreshed');
   await page.getByRole('link', { name: 'Giveaways', exact: true }).click();
   await expect(page.locator('#news-empty')).toBeVisible();
   await page.getByRole('link', { name: 'All', exact: true }).click();
-  await expect(page.locator('#news-feed [data-news-card]:visible')).toHaveCount(1);
+  await expect(page.locator('#news-feed [data-news-card]:visible')).toHaveCount(2);
 });
 test('отдельная новость: приветствие, разрешения правообладателей и локальные реакции', async ({ page }) => {
   await page.goto('/news/hunmeng-opens/');
@@ -636,3 +638,79 @@ test('site and phone reader headers show the new Hunmeng emblem', async ({ page 
   await expect(header).toHaveAttribute('src', '/images/hunmeng-emblem.png');
 });
 
+
+
+test('библиотека: реальные локальные позиции, контрастные полоски, раскладка на 390px и снимки тем', async ({ page }, info) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.addInitScript(() => {
+    localStorage.setItem('hunmeng-novels:v1', JSON.stringify({
+      version: 1, settings: { theme: 'light' },
+      library: { 'khranitel-mayaka': 'reading', 'sad-zimy': 'reading' },
+      progress: {
+        'khranitel-mayaka': { chapterSlug: 'glava-1', chapterNumber: 1, blockId: 'block-0', offset: 0, ratio: .42, updatedAt: Date.now() },
+        'sad-zimy': { chapterSlug: 'glava-2', chapterNumber: 2, blockId: 'block-0', offset: 0, ratio: .74, updatedAt: Date.now()-1000 },
+      },
+    }));
+  });
+  for (const width of [1440, 390]) {
+    await page.setViewportSize({width,height:900});
+    for (const theme of ['light','dark'] as const) {
+      await page.goto('/library/');
+      await expect(page.locator('.library-row')).toHaveCount(2);
+      await page.evaluate(theme => { document.documentElement.dataset.theme=theme; },theme);
+      await expect(page.locator('.library-row-copy h2')).toHaveCount(2);
+      await expect(page.locator('.library-row-author')).toHaveCount(2);
+      await expect(page.locator('.library-chapter-progress')).toHaveCount(2);
+      for (const meter of await page.locator('.library-chapter-progress').all()) {
+        await expect(meter).toBeVisible();
+        const rect=await meter.boundingBox();
+        expect(rect!.width).toBeGreaterThan(85);
+        expect(rect!.height).toBeGreaterThanOrEqual(6);
+      }
+      await expect(page.locator('[data-shelf-count=reading]')).toHaveText('2');
+      expect(await page.evaluate(() => document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
+      await page.evaluate(() => { window.scrollTo(0,0); (document.activeElement as HTMLElement|null)?.blur(); });
+      await page.screenshot({path:info.outputPath('hunmeng-library-'+width+'-'+theme+'.png'),fullPage:true,animations:'disabled'});
+    }
+  }
+  await page.setViewportSize({width:390,height:844});
+  await page.goto('/library/');
+  await page.evaluate(()=>{document.documentElement.dataset.theme='sepia';});
+  expect(await page.evaluate(() => document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
+  await page.locator('[data-shelf-tab=later]').click();
+  await expect(page.locator('.library-row')).toHaveCount(0);
+  await page.locator('[data-shelf-tab=reading]').click();
+  await expect(page.locator('.library-row')).toHaveCount(2);
+});
+
+test('библиотека: текст не заходит на существующий арт на компьютере, на телефоне арт скрыт', async ({ page }) => {
+  // Demo fixture uses its own novel content; art flag is injected only into the
+  // browser test response to exercise a real production code path, never published.
+  await page.route('**/catalog.json', async route => {
+    const response=await route.fetch();
+    const data=await response.json() as Array<{slug:string;art?:string}>;
+    const novel=data.find(n=>n.slug==='khranitel-mayaka');
+    if(novel) novel.art='comprehension';
+    await route.fulfill({response,json:data});
+  });
+  await page.addInitScript(() => {
+    localStorage.setItem('hunmeng-novels:v1',JSON.stringify({
+      version:1, settings:{theme:'light'}, library:{'khranitel-mayaka':'reading'},
+      progress:{'khranitel-mayaka':{chapterSlug:'glava-1',chapterNumber:1,blockId:'block-0',offset:0,ratio:.36,updatedAt:Date.now()}},
+    }));
+  });
+  await page.setViewportSize({width:1440,height:900});
+  await page.goto('/library/');
+  const art=page.locator('.library-row-art');
+  const copy=page.locator('.library-row-copy');
+  await expect(art).toBeVisible();
+  await expect(copy).toBeVisible();
+  const artRect=await art.boundingBox(),copyRect=await copy.boundingBox();
+  expect(artRect).not.toBeNull();
+  expect(copyRect).not.toBeNull();
+  expect(copyRect!.x+copyRect!.width).toBeLessThanOrEqual(artRect!.x+2);
+  await expect(page.locator('.library-chapter-progress')).toBeVisible();
+  await page.setViewportSize({width:390,height:844});
+  await expect(art).toBeHidden();
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
+});
