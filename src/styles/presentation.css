@@ -3650,3 +3650,40 @@ html[data-theme='sepia'] .library-page .library-row-art { filter: sepia(.24) sat
   .halloween-home-banner-symbol {flex-basis:48px;width:48px;height:48px;}
   .halloween-profile-award {flex-wrap:wrap;}
 }
+
+
+/* Compact account profile: keep existing verified progression elements. */
+.reader-account-page .profile-hero{background:linear-gradient(90deg,rgba(255,250,239,.96),rgba(255,250,239,.82) 58%,rgba(255,250,239,.18)),url('/images/art/hunmeng-landscape-day-1536.webp') center/cover;min-height:210px;color:var(--text)}
+.reader-account-page .profile-hero :is(h1,p){color:var(--text);text-shadow:none}
+[data-theme="dark"] .reader-account-page .profile-hero{background:linear-gradient(90deg,rgba(13,26,30,.97),rgba(13,26,30,.87) 58%,rgba(13,26,30,.45)),url('/images/art/hunmeng-landscape-night-1536.webp') center/cover}
+.reader-account-page .profile-hero-identity{display:flex;flex-wrap:wrap;gap:1rem;align-items:center}
+.reader-account-page .profile-hero-identity[hidden]{display:none}
+.reader-account-page .profile-hero-rank{display:grid;grid-template-columns:65px minmax(0,1fr);gap:.4rem 1rem;align-items:center;max-width:400px;margin-left:auto}
+.reader-account-page .profile-hero-rank .advancement-emblem-wrap{grid-row:span 3}
+.reader-account-page .profile-hero-rank #reader-current-emblem{width:65px;height:75px;object-fit:contain}
+.reader-account-page .profile-hero-rank .advancement-emblem-crest,.reader-account-page .profile-hero-rank .advancement-separator{display:none}
+.reader-account-page .profile-hero-rank h3{margin:0;font-size:1.2rem}
+.reader-account-page .profile-hero-rank progress{width:100%}
+.reader-account-page .profile-title-pill{display:inline-flex;border:1px solid var(--border);border-radius:999px;padding:.2rem .65rem;width:max-content}
+.reader-account-page .profile-overview-actions{display:flex;gap:.75rem;flex-wrap:wrap;margin:1rem 0}
+.reader-account-page .profile-four-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.7rem;margin:1rem 0}
+.reader-account-page .profile-subtabs{display:flex;gap:.4rem;overflow-x:auto;white-space:nowrap;border-bottom:1px solid var(--border);margin:1.2rem 0;scrollbar-width:thin}
+.reader-account-page .profile-subtabs button{flex:none;background:transparent;color:var(--text);border:0;border-bottom:3px solid transparent;padding:.8rem 1rem;cursor:pointer}
+.reader-account-page .profile-subtabs button[aria-selected="true"]{border-color:var(--accent);font-weight:700}
+.reader-account-page .profile-overview-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}
+.reader-account-page .profile-overview-grid>section{min-width:0;padding:1.2rem;background:var(--surface);border:1px solid var(--border);border-radius:18px}
+.reader-account-page .profile-rank-gallery-hidden{display:none!important}
+.reader-account-page .profile-edit-dialog{max-width:min(620px,calc(100vw - 2rem));max-height:90dvh;overflow:auto;border:1px solid var(--border);border-radius:18px;background:var(--surface);color:var(--text);padding:1.5rem}
+.reader-account-page .profile-edit-dialog::backdrop{background:rgba(0,0,0,.5)}
+.reader-account-page .profile-edit-dialog-inner{display:grid;gap:1rem}
+.reader-account-page .profile-edit-dialog form{display:block}
+.reader-account-page #profile-event-awards-slot[hidden]{display:none}
+@media(max-width:700px){
+ .reader-account-page .profile-hero{background-image:linear-gradient(90deg,rgba(255,250,239,.97),rgba(255,250,239,.78)),url('/images/art/hunmeng-landscape-day-960.webp')}
+ [data-theme="dark"] .reader-account-page .profile-hero{background-image:linear-gradient(90deg,rgba(13,26,30,.96),rgba(13,26,30,.75)),url('/images/art/hunmeng-landscape-night-960.webp')}
+ .reader-account-page .profile-hero-rank{margin-left:0;max-width:100%;width:100%}
+ .reader-account-page .profile-four-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .reader-account-page .profile-overview-grid{grid-template-columns:minmax(0,1fr)}
+ .reader-account-page .profile-overview-actions>*{flex:1;text-align:center}
+ .reader-account-page .profile-layout,.reader-account-page .profile-content{min-width:0}
+}
