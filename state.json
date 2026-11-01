@@ -544,10 +544,11 @@
       "novelTitle": "The Latency of Tomorrow"
     },
     "alices-adventures-in-wonderland:1": {
-      "status": "reserved",
+      "status": "sent",
       "slug": "chapter-1",
       "title": "Part 1",
-      "novelTitle": "Alice's Adventures in Wonderland"
+      "novelTitle": "Alice's Adventures in Wonderland",
+      "messageId": 11
     }
   }
 }
