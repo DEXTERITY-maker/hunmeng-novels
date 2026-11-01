@@ -1,0 +1,48 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { externalNovels } from '../../data/external-novels';
+
+export function getStaticPaths() {
+  return externalNovels.map(novel => ({ params: { slug: novel.slug }, props: { novel } }));
+}
+const { novel } = Astro.props;
+---
+
+<Layout
+  title={`${novel.title} — external novel reference`}
+  description={novel.summary}
+>
+  <main id="main" class="page-shell external-novel-page">
+    <nav class="novel-detail-breadcrumb" aria-label="Breadcrumb">
+      <a href="/catalog/">← Catalog</a><span aria-hidden="true">/</span>
+      <span aria-current="page">External novel</span>
+    </nav>
+    <article class="external-novel-detail">
+      <div class="external-novel-cover">
+        <img src="/images/novel-placeholder.svg" alt="" width="260" height="380" />
+        <span>External reference</span>
+      </div>
+      <div class="external-novel-copy">
+        <p class="external-novel-eyebrow">From another library · not hosted on Hunmeng</p>
+        <h1>{novel.title}</h1>
+        <p class="external-novel-original" lang="zh">{novel.originalTitle}</p>
+        <p class="external-novel-author">By <strong lang="zh">{novel.author}</strong></p>
+        <div class="external-novel-tags">
+          {novel.genres.map(genre => <span>{genre}</span>)}
+          {novel.tags.map(tag => <span>{tag}</span>)}
+        </div>
+        <p class="external-novel-status"><strong>Original status:</strong> {novel.status}</p>
+        <div class="external-novel-actions">
+          <a class="button" href={novel.sourceUrl} target="_blank" rel="noopener noreferrer">Read on {novel.sourceName} ↗</a>
+          <a class="button secondary" href={novel.originalUrl} target="_blank" rel="noopener noreferrer">Chinese original ↗</a>
+        </div>
+        <p class="fine">These links open third-party websites. Hunmeng does not host or translate chapters of this work. Publication rights have not been verified.</p>
+      </div>
+    </article>
+    <section class="external-novel-summary" aria-labelledby="external-synopsis-title">
+      <h2 id="external-synopsis-title">About this story</h2>
+      <p>{novel.summary}</p>
+      <p class="fine">Reference: {novel.sourceName} #{novel.externalId.split(':')[1]}. Chapter availability and details may change at the source.</p>
+    </section>
+  </main>
+</Layout>
