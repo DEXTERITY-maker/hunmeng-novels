@@ -6,7 +6,7 @@ on:
 permissions:
   contents: write
 concurrency:
-  group: hunmeng-pages-production
+  group: hunmeng-alice-cover-release
   cancel-in-progress: false
 
 jobs:
@@ -14,8 +14,10 @@ jobs:
     if: >-
       github.ref == 'refs/heads/main' &&
       github.event_name == 'push' &&
-      startsWith(github.event.head_commit.message,
-        'feat(cover): publish original Alice 1865 cover 2026-11-01 [deploy cloudflare]')
+      (startsWith(github.event.head_commit.message,
+        'feat(cover): publish original Alice 1865 cover 2026-11-01 [deploy cloudflare]') ||
+       startsWith(github.event.head_commit.message,
+        'fix(cover): publish original Alice first edition 2026-11-01 [deploy cloudflare]'))
     runs-on: ubuntu-latest
     timeout-minutes: 35
     environment: pages-production
