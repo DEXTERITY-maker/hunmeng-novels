@@ -8,7 +8,7 @@ order: 840
 
 **Halloween Reading Week** runs from **1 to 7 November 2026**, Moscow time.
 
-Signed-in readers can join the event on the [Halloween Reading Week page](/events/halloween-2026/) and choose a unique public leaderboard name. Participation is voluntary. The chosen nickname is visible to everyone; email addresses and account identities are not shown. Readers can rename themselves or leave before the event ends.
+Signed-in readers can join the event with one button on the [Halloween Reading Week page](/events/halloween-2026/). Participation is voluntary. The leaderboard shows the nickname from the reader's profile, which can be changed in **Edit profile**; email addresses and account identities are not shown. Readers can leave before the event ends.
 
 The leaderboard counts chapters verified by the existing reading-session reward system during the event week, including eligible chapters completed before joining. Rankings are based on completed chapters, with ties decided by who reached the count earlier.
 

@@ -29,7 +29,8 @@ for(const width of [1366,390]){
 }
 test('Halloween event page preserves guest privacy and explicit nick visibility warning',async({page})=>{
   await page.goto(eventUrl);
-  await expect(page.getByText('Your chosen name is visible to everyone on the leaderboard.')).toHaveCount(1);
+  await expect(page.locator('#halloween-public-note')).toContainText('nickname from your profile');
+  await expect(page.locator('#halloween-display-name')).toHaveCount(0);
   await expect(page.locator('body')).not.toContainText('reader_xp_events');
   await expect(page.locator('body')).not.toContainText('user_id');
 });

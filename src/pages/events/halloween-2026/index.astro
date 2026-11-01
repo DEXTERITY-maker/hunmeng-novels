@@ -17,7 +17,7 @@ import {halloweenPrizes,HALLOWEEN_START,HALLOWEEN_END,halloweenBadge} from '../.
     <section class="halloween-section" aria-labelledby="halloween-rules-heading">
       <div class="section-heading"><h2 id="halloween-rules-heading">How it works</h2></div>
       <ol class="halloween-rules">
-        <li><strong>Join voluntarily.</strong> Sign in and choose a unique public leaderboard name. Your email and account identity are never shown.</li>
+        <li><strong>Join voluntarily.</strong> Sign in and press <em>Join the event</em>. The leaderboard shows the nickname from your profile; your email and account identity are never shown.</li>
         <li><strong>Finish verified chapters.</strong> Only chapters completed through the existing reading-session system between 1 and 7 November (MSK) count. Chapters finished earlier in the week count even if you join later.</li>
         <li><strong>Climb the leaderboard.</strong> Most chapters wins. If counts are equal, the reader who reached that count earlier places higher.</li>
         <li><strong>Collect a prize.</strong> The first three participating readers with at least one verified chapter earn an event emblem, a selectable title, and bonus XP. Hunmeng team members may take part but do not receive prizes. Normal reading rewards and shelves are unaffected.</li>
@@ -52,16 +52,11 @@ import {halloweenPrizes,HALLOWEEN_START,HALLOWEEN_END,halloweenBadge} from '../.
         </div>
         <div id="halloween-member" hidden>
           <p id="halloween-my-place" class="halloween-my-place" aria-live="polite">Checking your place…</p>
-          <form id="halloween-join-form" novalidate hidden>
-            <label for="halloween-display-name">Public leaderboard name</label>
-            <input id="halloween-display-name" type="text" name="display_name" autocomplete="off"
-              required minlength="3" maxlength="24" aria-describedby="halloween-public-note halloween-name-help" />
-            <small id="halloween-public-note"><strong>Your chosen name is visible to everyone on the leaderboard.</strong> Your email is never displayed.</small>
-            <small id="halloween-name-help">3–24 letters, numbers, spaces, _ or -. Names must be unique regardless of case, and names that look like the site or its staff are reserved.</small>
-            <button id="halloween-join-button" class="button" type="submit">Join the event</button>
-          </form>
+          <div id="halloween-join-panel" hidden>
+            <button id="halloween-join-button" class="button" type="button">Join the event</button>
+            <small id="halloween-public-note">The leaderboard shows the nickname from your profile. You can change it any time in <a href="/account/">Edit profile</a>. Your email is never displayed.</small>
+          </div>
           <div id="halloween-member-actions" hidden>
-            <button type="button" id="halloween-rename-button" class="button secondary">Change leaderboard name</button>
             <button type="button" id="halloween-leave-button" class="button secondary">Leave event</button>
           </div>
           <p id="halloween-member-notice" class="fine" role="status" aria-live="polite"></p>
@@ -87,6 +82,16 @@ import {halloweenPrizes,HALLOWEEN_START,HALLOWEEN_END,halloweenBadge} from '../.
         <p class="halloween-privacy-note fine">Only your chosen leaderboard name and verified chapter count are public. No email addresses or account IDs are displayed.</p>
       </section>
     </div>
+    <dialog id="halloween-joined-dialog" class="halloween-joined-dialog" aria-labelledby="halloween-joined-title">
+      <img src="/images/events/halloween-2026/gold.webp" alt="" width="132" height="132" />
+      <h2 id="halloween-joined-title">Congratulations!</h2>
+      <p>You have joined <strong>Halloween Reading Week</strong>.</p>
+      <p id="halloween-joined-name"></p>
+      <p class="fine">Every chapter you finish by 7 November (Moscow time) counts towards your place.</p>
+      <div class="halloween-joined-actions">
+        <button type="button" class="button" id="halloween-joined-close">Start reading</button>
+      </div>
+    </dialog>
   </main>
   <script>
     import {initHalloweenPage} from '../../../scripts/halloween-event';
