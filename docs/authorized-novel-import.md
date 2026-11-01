@@ -12,7 +12,7 @@ Hunmeng supports two **separate** stages:
 1. Sign in to `/admin/` with an existing editor or administrator account.
 2. Confirm the source is present in `novel_sources` and an administrator has independently verified documentary **translation and publication** rights, including the expiry date. The status must be `verified`, both permission flags true, and `verified_at` set. The WTR-Lab listing alone is insufficient.
 3. In **Import authorized chapters**, select the verified source, paste JSON with a `chapters` array, confirm the license statement, and select **Validate batch** followed by **Import as private drafts**.
-4. Each chapter must have `chapter_number` (positive integer), `chapter_slug` (lowercase hyphenated), `chapter_title`, `chapter_description` (10–200 characters), `original_text` (80–300000 characters), and optional `translated_text` (leave empty for machine translation). Maximum 10 chapters per batch. Duplicates and unknown fields are rejected. No imported chapter is public.
+4. Each chapter must have `chapter_number` (positive integer), `chapter_slug` (lowercase hyphenated), `chapter_title`, `chapter_description` (10–200 characters), `original_text` (80–300000 characters), and optional `translated_text` (leave empty for machine translation). Maximum 10 chapters per batch. Duplicates and unknown fields are rejected. No imported chapter is public. Before approval, the **translated** chapter must also satisfy the existing 4,000–8,500 Unicode character publication requirement; shorter draft text is allowed for editing but will not be published.
 5. Staff can open a draft in the editorial panel, edit a translation, add glossary terms and send for review. The administrator approves only after rights and QA checks.
 
 Example structure (**not actual novel content**):
@@ -35,7 +35,7 @@ Example structure (**not actual novel content**):
 
 The protected GitHub Actions workflow **Prepare authorized translations (manual only)** can prepare English drafts using the OpenAI Responses API. It requires existing, securely configured GitHub Actions secrets `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, and (only for actual translation) `OPENAI_API_KEY`. The optional workflow variable `OPENAI_TRANSLATION_MODEL` controls the chosen model. **Never paste keys into chat, code, or public forms.**
 
-Run the workflow with an exact `source_slug`, set a limit of 1–3 chapters, and leave `execute_translation=false` for a no-charge preview. Actual model use requires explicitly selecting `execute_translation=true`, and can incur API usage charges. It is not triggered by normal browsing or by users submitting URLs.
+Run the workflow with an exact `source_slug`, set a limit of 1–3 chapters, and leave `execute_translation=false` for a no-charge preview. Actual model use requires explicitly selecting `execute_translation=true`, and can incur API usage charges. It is not triggered by normal browsing or by users submitting URLs. The AI runner accepts source texts up to 32,000 characters per chapter; longer licensed chapters can still be imported as private drafts for manual handling.
 
 The runner checks the current source rights **before sending text to the provider** and **again before writing** a translation. It selects only private, untranslated draft chapters. It never changes the status to approved/published, and uses optimistic concurrency to avoid overwrites. A human reviewer must inspect the machine translation and all its terminology.
 
