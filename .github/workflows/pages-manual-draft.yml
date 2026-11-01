@@ -36,7 +36,8 @@ jobs:
          startsWith(github.event.head_commit.message, 'chore(content): withdraw original Hunmeng novels 2026-11-01 [deploy cloudflare]') ||
          startsWith(github.event.head_commit.message, 'fix(release): clean demo content before production build 2026-11-01 [deploy cloudflare]') ||
          startsWith(github.event.head_commit.message, 'fix(release): clear persistent Astro cache 2026-11-01 [deploy cloudflare]') ||
-         startsWith(github.event.head_commit.message, 'content(external): publish highway survival reference 2026-11-01 [deploy cloudflare]'))))
+         startsWith(github.event.head_commit.message, 'content(external): publish highway survival reference 2026-11-01 [deploy cloudflare]') ||
+         startsWith(github.event.head_commit.message, 'fix(catalog): publish external reading position 2026-11-01 [deploy cloudflare]'))))
     runs-on: ubuntu-latest
     environment: pages-production
     timeout-minutes: 30
