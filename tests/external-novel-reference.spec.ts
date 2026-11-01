@@ -32,6 +32,7 @@ for (const width of [390, 1366]) {
       await page.locator('html').evaluate((element, value) => element.setAttribute('data-theme', value), theme);
       await expect(page.locator('[data-external-source="wtr-lab:109475"]')).toBeVisible();
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+      await page.locator('[data-external-source="wtr-lab:109475"]').scrollIntoViewIfNeeded();
       await page.screenshot({ path: info.outputPath(`hunmeng-highway-${theme}-${width}.png`), animations: 'disabled' });
     }
   });
