@@ -40,3 +40,37 @@ test('homepage and news remain available after original works are withdrawn', as
   await expect(page.locator('#new-novels')).toBeVisible();
   await page.screenshot({ path: info.outputPath('hunmeng-home-withdrawn-originals.png'), animations: 'disabled', fullPage: false });
 });
+
+test('third-party novel is discoverable as a normal card while local chapters stay gated', async ({ page, request }) => {
+  await page.goto('/catalog/');
+  const card = page.locator('#catalog-results [data-external-source="wtr-lab:109475"]');
+  await expect(card).toBeVisible();
+  await expect(card).toContainText('Highway Survival: Lathe Is Also a Car');
+  await expect(card).toContainText('External novel');
+  await expect(card.getByRole('link', { name: 'Read on WTR-Lab' })).toHaveAttribute(
+    'href', 'https://wtr-lab.com/en/novel/109475/highway-survival-lathe-is-also-a-car-i-handcraft-gatling-gun',
+  );
+  await page.locator('#catalog-filters input[name="search"]').fill('凨羽');
+  await expect(page.locator('#result-count')).toHaveText('Novels found: 1');
+  await expect(page.locator('#catalog-results [data-external-source="wtr-lab:109475"]')).toBeVisible();
+  await page.locator('#catalog-filters input[name="search"]').fill('Gatling');
+  await expect(page.locator('#result-count')).toHaveText('Novels found: 1');
+
+  const catalog = await (await request.get('/catalog.json')).json() as Array<{ slug: string }>;
+  const index = await (await request.get('/catalog-index.json')).json() as Array<{slug:string;external?:boolean;chapterCount:number;sourceUrl?:string}>;
+  expect(catalog.some(n => n.slug === 'highway-survival-lathe-gatling')).toBe(false);
+  expect(index.filter(n => n.slug === 'highway-survival-lathe-gatling')).toEqual([
+    expect.objectContaining({
+      slug:'highway-survival-lathe-gatling', external: true, chapterCount: 0,
+      sourceUrl: 'https://wtr-lab.com/en/novel/109475/highway-survival-lathe-is-also-a-car-i-handcraft-gatling-gun',
+    }),
+  ]);
+  expect((await request.get('/novel/highway-survival-lathe-gatling/chapter-1/')).status()).toBe(404);
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/catalog/');
+  const top = (await page.locator('#catalog-results [data-external-source="wtr-lab:109475"]').boundingBox())!.y;
+  expect(top).toBeLessThan(700);
+  await page.goto('/');
+  await expect(page.locator('.home-external-card[data-external-source="wtr-lab:109475"]')).toBeVisible();
+});
