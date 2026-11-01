@@ -1,5 +1,5 @@
 import {createReaderClient,readerAuthConfigured} from '../lib/reader-auth';
-import {halloweenValidName,halloweenPrizes,halloweenBadge,halloweenPrizeWinners,HALLOWEEN_START,HALLOWEEN_END} from '../lib/halloween-event';
+import {halloweenPrizes,halloweenBadge,halloweenPrizeWinners,HALLOWEEN_START,HALLOWEEN_END} from '../lib/halloween-event';
 import type {SupabaseClient} from '@supabase/supabase-js';
 
 type Entry={place:number;display_name:string;chapters:number;team?:boolean};
@@ -73,25 +73,17 @@ function paintRows(rows:Entry[],finalized:boolean){
   }
 }
 function notice(message:string){$('halloween-member-notice').textContent=message;}
-function showForm(mode:'join'|'rename',name=''){
-  const form=$<HTMLFormElement>('halloween-join-form');
-  form.hidden=false;
-  const input=$<HTMLInputElement>('halloween-display-name');input.value=name;
-  $('halloween-join-button').textContent=mode==='join'?'Join the event':'Save new name';
-  form.dataset.mode=mode;
-}
 function showMine(mine:Mine|null){
   const memberActions=$('halloween-member-actions');
-  const form=$('halloween-join-form');
+  const join=$('halloween-join-panel');
   if(!mine?.participating){
-    $('halloween-my-place').textContent='You have not joined the event.';
+    $('halloween-my-place').textContent='You have not joined the event yet.';
     memberActions.hidden=true;
-    if(eventOpen())showForm('join');
-    else form.hidden=true;
+    join.hidden=!eventOpen();
     return;
   }
   $('halloween-my-place').textContent=`Your place: #${mine.place} · ${mine.chapters} verified chapter${mine.chapters===1?'':'s'} · ${mine.display_name}`;
-  form.hidden=true;
+  join.hidden=true;
   memberActions.hidden=!eventOpen();
 }
 export async function initHalloweenPage(){
@@ -153,33 +145,23 @@ export async function initHalloweenPage(){
       showMine(current);
     }catch{notice('Your place is temporarily unavailable.');}
   };
-  const form=$<HTMLFormElement>('halloween-join-form');
-  form.addEventListener('submit',async event=>{
-    event.preventDefault();
+  const dialog=$<HTMLDialogElement>('halloween-joined-dialog');
+  $('halloween-joined-close').addEventListener('click',()=>{dialog.close();location.href='/catalog/';});
+  dialog.addEventListener('click',event=>{if(event.target===dialog)dialog.close();});
+  $('halloween-join-button').addEventListener('click',async()=>{
     if(!client||!ready||!userId||!eventOpen())return;
-    const input=$<HTMLInputElement>('halloween-display-name');
-    if(!halloweenValidName(input.value)){
-      notice('Use 3–24 letters, numbers, spaces, _ or -. Names that look like the site or its staff are reserved.');
-      input.focus();return;
-    }
-    const mode=form.dataset.mode==='rename'?'reader_halloween_rename':'reader_halloween_join';
     const button=$<HTMLButtonElement>('halloween-join-button');
-    button.disabled=true;notice('Saving your public name…');
+    button.disabled=true;notice('Joining…');
     try{
-      const {data,error}=await client.rpc(mode,{p_name:input.value});
-      if(error||data!==true){
-        notice(error?.code==='23505'?'That name is already taken. Choose another.':'Could not save the name. Please check it and try again.');
-        return;
-      }
-      notice('Your leaderboard name is saved.');
+      const {data,error}=await client.rpc('reader_halloween_join_now');
+      if(error||data!==true){notice('Could not join the event. Please try again.');return;}
+      notice('');
       await refresh();
+      const name=current?.display_name;
+      $('halloween-joined-name').textContent=name?`You appear on the leaderboard as “${name}”.`:'You now appear on the leaderboard.';
+      dialog.showModal();
     }catch{notice('Unable to connect. Please try again.');}
     finally{button.disabled=false;}
-  });
-  $('halloween-rename-button').addEventListener('click',()=>{
-    if(!eventOpen()||!current?.participating)return;
-    showForm('rename',current.display_name??'');
-    $<HTMLInputElement>('halloween-display-name').focus();
   });
   $('halloween-leave-button').addEventListener('click',async()=>{
     if(!client||!userId||!eventOpen()||!current?.participating)return;

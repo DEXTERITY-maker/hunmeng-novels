@@ -3590,11 +3590,17 @@ html[data-theme='sepia'] .library-page .library-row-art { filter: sepia(.24) sat
 .halloween-main-grid > .halloween-section {min-width:0;margin-top:36px;padding:20px;border:1px solid var(--line);border-radius:16px;background:var(--surface);}
 .halloween-join-panel #halloween-member {min-width:0;}
 .halloween-join-panel .button {min-height:44px;margin-top:14px;}
-#halloween-join-form {display:flex;flex-direction:column;gap:10px;margin-top:14px;min-width:0;}
-#halloween-join-form label {font-weight:800;}
-#halloween-join-form input {width:100%;min-width:0;min-height:44px;border:1px solid var(--line);border-radius:8px;padding:10px 12px;background:var(--bg);color:var(--ink);}
-#halloween-join-form small {color:var(--muted);overflow-wrap:anywhere;}
-#halloween-join-form small strong {color:var(--ink);}
+#halloween-join-panel {display:grid;gap:10px;margin-top:14px;min-width:0}
+#halloween-join-panel .button {justify-self:start;min-height:46px;padding-inline:26px}
+#halloween-public-note {color:var(--muted);overflow-wrap:anywhere;line-height:1.5}
+#halloween-public-note a {color:var(--ink);text-decoration:underline;text-underline-offset:3px}
+.halloween-joined-dialog {width:min(420px,calc(100vw - 32px));padding:28px 26px 24px;border:1px solid var(--line);border-radius:20px;background:var(--surface);color:var(--ink);text-align:center;box-shadow:0 30px 80px rgb(0 0 0 / .28)}
+.halloween-joined-dialog::backdrop {background:rgb(10 18 24 / .6)}
+.halloween-joined-dialog img {width:132px;height:132px;object-fit:contain;margin:0 auto 6px;display:block;filter:drop-shadow(0 10px 16px rgb(40 20 0 / .25))}
+.halloween-joined-dialog h2 {margin:4px 0 8px;font-size:1.7rem}
+.halloween-joined-dialog p {margin:6px 0}
+.halloween-joined-actions {display:flex;justify-content:center;margin-top:16px}
+.halloween-joined-actions .button {min-height:46px;padding-inline:28px}
 #halloween-member-actions {display:flex;flex-wrap:wrap;gap:8px;}
 .halloween-my-place {font-weight:750;overflow-wrap:anywhere;}
 #halloween-member-notice {margin-top:10px;}
