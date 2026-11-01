@@ -72,5 +72,7 @@ test('translation workflow is opt-in and does not expose an HTTP scraping endpoi
   assert.match(flow,/default: false/);
   assert.doesNotMatch(flow,/cron:|schedule:/);
   assert.match(flow,/HUNMENG_TRANSLATION_EXECUTE/);
+  assert.match(flow,/HUNMENG_AI_PROCESSING_AUTHORIZED/);
+  assert.match(flow,/confirm_ai_processing_rights/);
   assert.match(publisher,/HUNMENG_PUBLISH_ENABLED/);
 });
