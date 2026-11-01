@@ -1,0 +1,50 @@
+name: Prepare authorized translations (manual only)
+on:
+  workflow_dispatch:
+    inputs:
+      source_slug:
+        description: Licensed source slug in novel_sources
+        required: true
+        type: string
+      max_chapters:
+        description: Max private drafts to translate (1-3)
+        required: true
+        default: '1'
+        type: choice
+        options: ['1', '2', '3']
+      execute_translation:
+        description: Actually use the paid AI service (otherwise dry run only)
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+concurrency:
+  group: hunmeng-licensed-translation
+  cancel-in-progress: false
+
+jobs:
+  translate:
+    # There is no schedule and this job cannot publish chapters.
+    # Secrets are consumed only by server-side Node on the Actions runner.
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Prepare private draft translations only
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_TRANSLATION_MODEL: ${{ vars.OPENAI_TRANSLATION_MODEL || 'gpt-6.1-terra' }}
+          HUNMENG_SOURCE_SLUG: ${{ inputs.source_slug }}
+          HUNMENG_TRANSLATION_LIMIT: ${{ inputs.max_chapters }}
+          HUNMENG_TRANSLATION_EXECUTE: ${{ inputs.execute_translation }}
+        run: node scripts/translate-authorized.mjs
