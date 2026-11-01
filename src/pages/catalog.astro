@@ -2,6 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import NovelCard from '../components/NovelCard.astro';
 import CatalogHero from '../components/CatalogHero.astro';
+import { externalNovels, externalNovelUrl } from '../data/external-novels';
 import { getLibrary } from '../lib/content';
 import { getTaxonomy } from '../lib/taxonomy';
 const novels = await getLibrary();
@@ -17,6 +18,31 @@ const PAGE_SIZE = 24;
 >
   <main id="main" class="page-shell catalog-page">
     <CatalogHero />
+    {externalNovels.length > 0 && (
+      <section class="catalog-external-sources" aria-labelledby="catalog-external-title">
+        <div class="catalog-external-heading">
+          <h2 id="catalog-external-title">External reading references</h2>
+          <p>Discover titles hosted elsewhere · no chapters on Hunmeng</p>
+        </div>
+        {externalNovels.map(novel => (
+          <article class="external-novel-card" data-external-source={novel.externalId}>
+            <a class="external-novel-thumb" href={externalNovelUrl(novel.slug)} aria-label={`Details: ${novel.title}`}>
+              <img src="/images/novel-placeholder.svg" alt="" width="110" height="165" loading="lazy" />
+            </a>
+            <div class="external-novel-card-copy">
+              <p class="external-novel-eyebrow">External source · {novel.status}</p>
+              <h3><a href={externalNovelUrl(novel.slug)}>{novel.title}</a></h3>
+              <p class="external-novel-original" lang="zh">{novel.originalTitle} · {novel.author}</p>
+              <p class="external-novel-card-description">{novel.summary}</p>
+              <div class="external-novel-links">
+                <a href={externalNovelUrl(novel.slug)}>Details on Hunmeng →</a>
+                <a href={novel.sourceUrl} target="_blank" rel="noopener noreferrer">Read on {novel.sourceName} ↗</a>
+              </div>
+            </div>
+          </article>
+        ))}
+      </section>
+    )}
     <div class="catalog-layout">
       <form id="catalog-filters" class="filter-panel catalog-filter-panel" role="search">
         <div class="catalog-filter-header">
