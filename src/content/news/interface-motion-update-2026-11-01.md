@@ -9,7 +9,7 @@ coverAlt: "Hunmeng landscape with mountain pavilions and waterfalls"
 coverFit: art
 ---
 
-We've released a small interface update to make everyday browsing on **Hunmeng** feel smoother and more responsive.
+A small interface update makes everyday browsing on **Hunmeng** feel smoother and more responsive.
 
 ### What's improved
 
