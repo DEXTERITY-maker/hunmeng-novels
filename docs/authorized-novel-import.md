@@ -41,7 +41,7 @@ The runner checks the current source rights **before sending text to the provide
 
 ### Controlled publication and withdrawal
 
-The existing `Publish approved translations` workflow is a separate service-role publisher, controlled by `HUNMENG_PUBLISH_ENABLED`, and selects **approved** chapters only. It rechecks publication rights and glossary compliance immediately before Git push. The publication adds the novel, glossary, individual chapter pages and their reader-facing news. This is what enables comfortable reading directly on Hunmeng. The job must never run against pending or revoked rights.
+The existing `Publish approved translations` workflow is a separate service-role publisher, controlled by `HUNMENG_PUBLISH_ENABLED`, and selects **approved** chapters only. It rechecks publication rights and glossary compliance immediately before Git push. The publication adds the novel, glossary, individual chapter pages and their reader-facing news. This is what enables comfortable reading directly on Hunmeng. When the first authorized chapter appears, the external catalog card is automatically replaced with the canonical local novel card (no duplicate). The original source page then links to Hunmeng's reader. The job must never run against pending or revoked rights.
 
 To withdraw a published work, revoke its rights and remove its public chapter files in an independently reviewed release. Revoking rights blocks *new* chapters, but does not by itself erase previously generated static pages.
 
