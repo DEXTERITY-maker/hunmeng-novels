@@ -4,6 +4,9 @@ excerpt: "Track verified achievements, filter earned and locked milestones, and 
 category: changelog
 publishedAt: "2026-10-28"
 order: 280
+cover: "/images/profile/goal-emblem.webp"
+coverAlt: "Achievement emblem: a bronze compass star in a laurel wreath"
+coverFit: emblem
 ---
 
 The reader journey is clearer now: Hunmeng has **13 achievements** based on verified activity.

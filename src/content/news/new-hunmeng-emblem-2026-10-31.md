@@ -4,6 +4,9 @@ excerpt: "Hunmeng has a new emblem: an open book with a path leading to a pavili
 category: changelog
 publishedAt: "2026-10-31"
 order: 100
+cover: "/images/hunmeng-emblem.png"
+coverAlt: "The Hunmeng emblem: an open book with a path to a pavilion under a golden sun"
+coverFit: emblem
 ---
 
 Hunmeng has a new emblem. An open book opens onto a path that winds up to a pavilion beneath a golden sun — a story leading into another world.

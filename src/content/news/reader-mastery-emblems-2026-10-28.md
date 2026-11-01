@@ -4,6 +4,9 @@ excerpt: "Six unique book-themed medallions, refreshed mastery cards and a subtl
 category: changelog
 publishedAt: "2026-10-28"
 order: 350
+cover: "/images/mastery/connoisseur.webp"
+coverAlt: "Connoisseur mastery emblem"
+coverFit: emblem
 ---
 
 The **Reader's Path** now has its own set of illustrated fantasy emblems. Each mastery step features an open book alongside crystals, metal filigree, leaves or a distinctive symbol.

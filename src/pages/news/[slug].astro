@@ -2,7 +2,9 @@
 import { render } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 import { dateLabel } from '../../lib/content';
-import { getNews, newsCategories } from '../../lib/news';
+import { getNews, newsCategories, newsCover } from '../../lib/news';
+import { getLibrary } from '../../lib/content';
+import NewsCard from '../../components/NewsCard.astro';
 
 export async function getStaticPaths() {
   const posts = await getNews();
@@ -11,6 +13,8 @@ export async function getStaticPaths() {
 const { post } = Astro.props;
 const { Content } = await render(post);
 const { title, publishedAt, category, excerpt } = post.data;
+const cover = newsCover(post, await getLibrary());
+const others = (await getNews()).filter((item) => item.id !== post.id).slice(0, 3);
 ---
 
 <Layout title={title} description={excerpt}>
@@ -29,6 +33,9 @@ const { title, publishedAt, category, excerpt } = post.data;
         <h1>{title}</h1>
         <p class="news-article-lead">{excerpt}</p>
       </header>
+      <figure class:list={['news-article-cover', `news-article-cover-${cover.fit}`]}>
+        <img src={cover.src} alt={cover.alt} width="1200" height="640" decoding="async" fetchpriority="high" />
+      </figure>
       <div class="news-article-body">
         <Content />
       </div>
@@ -43,6 +50,12 @@ const { title, publishedAt, category, excerpt } = post.data;
       </div>
       <p class="fine" id="news-reaction-status" role="status">No reaction yet.</p>
     </section>
+    {others.length > 0 && (
+      <section class="news-more" aria-labelledby="news-more-title">
+        <div class="news-more-heading"><h2 id="news-more-title">More from Hunmeng</h2><a href="/news/">All news →</a></div>
+        <div class="news-more-grid">{others.map((item) => <NewsCard post={item} />)}</div>
+      </section>
+    )}
     <a class="news-return" href="/news/">← All news</a>
   </main>
   <script>

@@ -14,6 +14,16 @@ For visual changes, edit the existing stylesheets in `src/styles/` and preserve 
 
 Every functional or visual release readers can see must include a news post in the same pull request: a file in `src/content/news/` with `category: changelog` and the release date in `publishedAt`. Write in clear, concise **official release-note style**, in English: e.g. "Added illustrated chapter headers", "Improved mobile reading controls", and "Reading progress remains unchanged". Avoid personal narration ("I", "we", "my"), AI-assistant references, invented features and claims about unverified work. State what changed and what remained unchanged. Multiple changes released on one day may share a single post. When correcting the wording of an existing announcement, edit that post rather than publish a duplicate.
 
+News posts are illustrated. Give each post a `cover` (and `coverAlt`) in the frontmatter: use `coverFit: emblem` for transparent emblems and badges, the default `art` for landscapes and covers. When a release adds new emblems, badges, ranks or artwork, show them in the post with a gallery:
+
+```html
+<div class="news-gallery">
+  <figure><img src="/images/ranks/gold.svg" alt="Gold rank emblem" loading="lazy" width="300" height="300" /><figcaption>Gold<small>Levels 110–139</small></figcaption></figure>
+</div>
+```
+
+Structure longer posts with a short lead paragraph, `###` sections ("What's new", "How it works", "What stays the same") and a closing link to the feature.
+
 ## Historical release notes
 
 The notes below describe past releases and their settings. Addresses ending in `twc1.net`, references to `hunmeng.net`, and Timeweb deployment instructions are outdated and must not be used for the current website.

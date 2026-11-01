@@ -4,6 +4,9 @@ excerpt: "A themed landscape, featured-novel carousel and three illustrated shor
 category: changelog
 publishedAt: "2026-10-30"
 order: 716
+cover: "/images/art/hunmeng-landscape-day-1536.webp"
+coverAlt: "Hunmeng castle landscape"
+coverFit: art
 ---
 
 The Hunmeng homepage has been refreshed with a more immersive design and clearer navigation.

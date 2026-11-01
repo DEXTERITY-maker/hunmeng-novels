@@ -4,6 +4,9 @@ excerpt: "Illustrated chapter headers and refined reading controls, with reading
 category: changelog
 publishedAt: "2026-10-30"
 order: 717
+cover: "/images/art/latency-night-1536.webp"
+coverAlt: "Rainy Shenzhen riverside at night from The Latency of Tomorrow"
+coverFit: art
 ---
 
 The chapter reader now has a more polished appearance on desktop and mobile.

@@ -4,6 +4,9 @@ excerpt: "Hunmeng introduces 500 levels, nine distinctive reader rank emblems, a
 category: changelog
 publishedAt: "2026-10-27"
 order: 150
+cover: "/images/ranks/gold.svg"
+coverAlt: "Gold rank emblem"
+coverFit: emblem
 ---
 
 Your reading journey now has milestones of its own.
