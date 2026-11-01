@@ -1,0 +1,28 @@
+{
+  "slug": "the-picture-of-dorian-gray",
+  "title": "The Picture of Dorian Gray",
+  "originalTitle": "The Picture of Dorian Gray",
+  "author": "Oscar Wilde",
+  "original": false,
+  "originalUrl": "https://standardebooks.org/ebooks/oscar-wilde/the-picture-of-dorian-gray",
+  "cover": "/images/novel-placeholder.svg",
+  "description": "A beautiful young man's wish about his portrait sets him on a troubling path through vanity and temptation.",
+  "genres": [
+    "Fantasy",
+    "Horror"
+  ],
+  "tags": [
+    "Public Domain",
+    "Supernatural",
+    "Gothic",
+    "Mystery"
+  ],
+  "categories": [
+    "Public Domain Classics"
+  ],
+  "originalStatus": "Завершён",
+  "translationStatus": "Завершён",
+  "updatedAt": "2026-11-01",
+  "addedAt": "2026-11-01",
+  "demo": false
+}

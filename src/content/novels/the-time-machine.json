@@ -1,0 +1,28 @@
+{
+  "slug": "the-time-machine",
+  "title": "The Time Machine",
+  "originalTitle": "The Time Machine",
+  "author": "H. G. Wells",
+  "original": false,
+  "originalUrl": "https://standardebooks.org/ebooks/h-g-wells/the-time-machine",
+  "cover": "/images/novel-placeholder.svg",
+  "description": "A Victorian inventor ventures into a distant future and discovers a society transformed beyond recognition.",
+  "genres": [
+    "Science Fiction",
+    "Adventure"
+  ],
+  "tags": [
+    "Public Domain",
+    "Time Travel",
+    "Dystopia",
+    "Future"
+  ],
+  "categories": [
+    "Public Domain Classics"
+  ],
+  "originalStatus": "Завершён",
+  "translationStatus": "Завершён",
+  "updatedAt": "2026-11-01",
+  "addedAt": "2026-11-01",
+  "demo": false
+}

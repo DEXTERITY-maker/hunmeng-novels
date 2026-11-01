@@ -1,0 +1,52 @@
+---
+novelSlug: "dracula"
+slug: "chapter-51"
+number: 51
+title: "Part 51"
+publishedAt: "2026-11-01"
+description: "Reading part 51 of Dracula from a public-domain English edition."
+---
+
+without moving, I saw one of the maids pass silently along the passage⁠—she had her back towards me, so did not see me⁠—and go into the room where Lucy lay. The sight touched me. Devotion is so rare, and we are so grateful to those who show it unasked to those we love. Here was a poor girl putting aside the terrors which she naturally had of death to go watch alone by the bier of the mistress whom she loved, so that the poor clay might not be lonely till laid to eternal rest.⁠ ⁠…
+
+I must have slept long and soundly, for it was broad daylight when Van Helsing waked me by coming into my room. He came over to my bedside and said:⁠—
+
+“You need not trouble about the knives; we shall not do it.”
+
+“Why not?” I asked. For his solemnity of the night before had greatly impressed me.
+
+“Because,” he said sternly, “it is too late⁠—or too early. See!” Here he held up the little golden crucifix. “This was stolen in the night.”
+
+“How, stolen,” I asked in wonder, “since you have it now?”
+
+“Because I get it back from the worthless wretch who stole it, from the woman who robbed the dead and the living. Her punishment will surely come, but not through me; she knew not altogether what she did and thus unknowing, she only stole. Now we must wait.”
+
+He went away on the word, leaving me with a new mystery to think of, a new puzzle to grapple with.
+
+The forenoon was a dreary time, but at noon the solicitor came: Mr. Marquand, of Wholeman, Sons, Marquand & Lidderdale. He was very genial and very appreciative of what we had done, and took off our hands all cares as to details. During lunch he told us that Mrs. Westenra had for some time expected sudden death from her heart, and had put her affairs in absolute order; he informed us that, with the exception of a certain entailed property of Lucy’s father’s which now, in default of direct issue, went back to a distant branch of the family, the whole estate, real and personal, was left absolutely to Arthur Holmwood. When he had told us so much he went on:⁠—
+
+“Frankly we did our best to prevent such a testamentary disposition, and pointed out certain contingencies that might leave her daughter either penniless or not so free as she should be to act regarding a matrimonial alliance. Indeed, we pressed the matter so far that we almost came into collision, for she asked us if we were or were not prepared to carry out her wishes. Of course, we had then no alternative but to accept. We were right in principle, and ninety-nine times out of a hundred we should have proved, by the logic of events, the accuracy of our judgment. Frankly, however, I must admit that in this case any other form of disposition would have rendered impossible the carrying out of her wishes. For by her predeceasing her daughter the latter would have come into possession of the property, and, even had she only survived her mother by five minutes, her property would, in case there were no will⁠—and a will was a practical impossibility in such a case⁠—have been treated at her decease as under intestacy. In which case Lord Godalming, though so dear a friend, would have had no claim in the world; and the inheritors, being remote, would not be likely to abandon their just rights, for sentimental reasons regarding an entire stranger. I assure you, my dear sirs, I am rejoiced at the result, perfectly rejoiced.”
+
+He was a good fellow, but his rejoicing at the one little part⁠—in which he was officially interested⁠—of so great a tragedy, was an object-lesson in the limitations of sympathetic understanding.
+
+He did not remain long, but said he would look in later in the day and see Lord Godalming. His coming, however, had been a certain comfort to us, since it assured us that we should not have to dread hostile criticism as to any of our acts. Arthur was expected at five o’clock, so a little before that time we visited the death-chamber. It was so in very truth, for now both mother and daughter lay in it. The undertaker, true to his craft, had made the best display he could of his goods, and there was a mortuary air about the place that lowered our spirits at once. Van Helsing ordered the former arrangement to be adhered to, explaining that, as Lord Godalming was coming very soon, it would be less harrowing to his feelings to see all that was left of his fiancée quite alone. The undertaker seemed shocked at his own stupidity and exerted himself to restore things to the condition in which we left them the night before, so that when Arthur came such shocks to his feelings as we could avoid were saved.
+
+Poor fellow! He looked desperately sad and broken; even his stalwart manhood seemed to have shrunk somewhat under the strain of his much-tried emotions. He had, I knew, been very genuinely and devotedly attached to his father; and to lose him, and at such a time, was a bitter blow to him. With me he was warm as ever, and to Van Helsing he was sweetly courteous; but I could not help seeing that there was some constraint with him. The Professor noticed it, too, and motioned me to bring him upstairs. I did so, and left him at the door of the room, as I felt he would like to be quite alone with her, but he took my arm and led me in, saying huskily:⁠—
+
+“You loved her too, old fellow; she told me all about it, and there was no friend had a closer place in her heart than you. I don’t know how to thank you for all you have done for her. I can’t think yet.⁠ ⁠…”
+
+Here he suddenly broke down, and threw his arms round my shoulders and laid his head on my breast, crying:⁠—
+
+“Oh, Jack! Jack! What shall I do! The whole of life seems gone from me all at once, and there is nothing in the wide world for me to live for.”
+
+I comforted him as well as I could. In such cases men do not need much expression. A grip of the hand, the tightening of an arm over the shoulder, a sob in unison, are expressions of sympathy dear to a man’s heart. I stood still and silent till his sobs died away, and then I said softly to him:⁠—
+
+“Come and look at her.”
+
+Together we moved over to the bed, and I lifted the lawn from her face. God! how beautiful she was. Every hour seemed to be enhancing her loveliness. It frightened and amazed me somewhat; and as for Arthur, he fell a-trembling, and finally was shaken with doubt as with an ague. At last, after a long pause, he said to me in a faint whisper:⁠—
+
+“Jack, is she really dead?”
+
+I assured him sadly that it was so, and went on to suggest⁠—for I felt that such a horrible doubt should not have life for a moment longer than I could help⁠—that it often happened that after death faces became softened and even resolved into their youthful beauty; that this was especially so when death had been preceded by any acute or prolonged suffering. It seemed to quite do away with any doubt, and, after kneeling beside the couch for a while and looking at her lovingly and long, he turned aside. I told him that that must be goodbye, as the coffin had to be prepared; so he went back and took her dead hand in his and kissed it, and bent over and kissed her forehead. He came away, fondly looking back over his shoulder at her as he came.
+
+I left him in the drawing-room, and told Van Helsing that he had said goodbye; so the latter went to the kitchen to tell the

@@ -1,0 +1,28 @@
+{
+  "slug": "alices-adventures-in-wonderland",
+  "title": "Alice's Adventures in Wonderland",
+  "originalTitle": "Alice's Adventures in Wonderland",
+  "author": "Lewis Carroll",
+  "original": false,
+  "originalUrl": "https://standardebooks.org/ebooks/lewis-carroll/alices-adventures-in-wonderland/john-tenniel",
+  "cover": "/images/novel-placeholder.svg",
+  "description": "Following a hurried white rabbit, Alice finds herself in a whimsical realm where familiar rules no longer apply.",
+  "genres": [
+    "Fantasy",
+    "Adventure"
+  ],
+  "tags": [
+    "Public Domain",
+    "Magic",
+    "Portal Fantasy",
+    "Wonderland"
+  ],
+  "categories": [
+    "Public Domain Classics"
+  ],
+  "originalStatus": "Завершён",
+  "translationStatus": "Завершён",
+  "updatedAt": "2026-11-01",
+  "addedAt": "2026-11-01",
+  "demo": false
+}

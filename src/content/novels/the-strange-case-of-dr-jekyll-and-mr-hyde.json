@@ -1,0 +1,28 @@
+{
+  "slug": "the-strange-case-of-dr-jekyll-and-mr-hyde",
+  "title": "The Strange Case of Dr. Jekyll and Mr. Hyde",
+  "originalTitle": "The Strange Case of Dr. Jekyll and Mr. Hyde",
+  "author": "Robert Louis Stevenson",
+  "original": false,
+  "originalUrl": "https://standardebooks.org/ebooks/robert-louis-stevenson/the-strange-case-of-dr-jekyll-and-mr-hyde",
+  "cover": "/images/novel-placeholder.svg",
+  "description": "A lawyer investigates the unsettling connection between a respected doctor and a menacing stranger.",
+  "genres": [
+    "Horror",
+    "Mystery"
+  ],
+  "tags": [
+    "Public Domain",
+    "Gothic",
+    "Identity",
+    "Science"
+  ],
+  "categories": [
+    "Public Domain Classics"
+  ],
+  "originalStatus": "Завершён",
+  "translationStatus": "Завершён",
+  "updatedAt": "2026-11-01",
+  "addedAt": "2026-11-01",
+  "demo": false
+}

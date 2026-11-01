@@ -1,0 +1,28 @@
+{
+  "slug": "frankenstein",
+  "title": "Frankenstein; or, The Modern Prometheus",
+  "originalTitle": "Frankenstein; or, The Modern Prometheus",
+  "author": "Mary Shelley",
+  "original": false,
+  "originalUrl": "https://standardebooks.org/ebooks/mary-shelley/frankenstein",
+  "cover": "/images/novel-placeholder.svg",
+  "description": "A scientist's audacious attempt to create life sets in motion a haunting story of responsibility, loneliness and the consequences of ambition.",
+  "genres": [
+    "Science Fiction",
+    "Horror"
+  ],
+  "tags": [
+    "Public Domain",
+    "Gothic",
+    "Science",
+    "Monsters"
+  ],
+  "categories": [
+    "Public Domain Classics"
+  ],
+  "originalStatus": "Завершён",
+  "translationStatus": "Завершён",
+  "updatedAt": "2026-11-01",
+  "addedAt": "2026-11-01",
+  "demo": false
+}

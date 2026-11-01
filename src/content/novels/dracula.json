@@ -1,0 +1,28 @@
+{
+  "slug": "dracula",
+  "title": "Dracula",
+  "originalTitle": "Dracula",
+  "author": "Bram Stoker",
+  "original": false,
+  "originalUrl": "https://standardebooks.org/ebooks/bram-stoker/dracula",
+  "cover": "/images/novel-placeholder.svg",
+  "description": "Letters and journals recount a terrifying encounter with a Transylvanian count and a desperate struggle to confront a supernatural threat.",
+  "genres": [
+    "Horror",
+    "Fantasy"
+  ],
+  "tags": [
+    "Public Domain",
+    "Vampires",
+    "Gothic",
+    "Mystery"
+  ],
+  "categories": [
+    "Public Domain Classics"
+  ],
+  "originalStatus": "Завершён",
+  "translationStatus": "Завершён",
+  "updatedAt": "2026-11-01",
+  "addedAt": "2026-11-01",
+  "demo": false
+}

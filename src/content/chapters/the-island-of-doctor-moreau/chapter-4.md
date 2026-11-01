@@ -1,0 +1,62 @@
+---
+novelSlug: "the-island-of-doctor-moreau"
+slug: "chapter-4"
+number: 4
+title: "Part 4"
+publishedAt: "2026-11-01"
+description: "Reading part 4 of The Island of Doctor Moreau from a public-domain English edition."
+---
+
+began some abuse even fouler than the last. “Shut up!” I said, turning on him sharply, for I had seen danger in Montgomery’s white face. With that I brought the downpour on myself.
+
+However, I was glad to avert what was uncommonly near a scuffle, even at the price of the captain’s drunken ill-will. I do not think I have ever heard quite so much vile language come in a continuous stream from any man’s lips before, though I have frequented eccentric company enough. I found some of it hard to endure, though I am a mild-tempered man; but, certainly, when I told the captain to “shut up” I had forgotten that I was merely a bit of human flotsam, cut off from my resources and with my fare unpaid; a mere casual dependant on the bounty, or speculative enterprise, of the ship. He reminded me of it with considerable vigour; but at any rate I prevented a fight.
+
+## IV
+
+At the Schooner’s Rail
+
+That night land was sighted after sundown, and the schooner hove to. Montgomery intimated that was his destination. It was too far to see any details; it seemed to me then simply a low-lying patch of dim blue in the uncertain blue-grey sea. An almost vertical streak of smoke went up from it into the sky. The captain was not on deck when it was sighted. After he had vented his wrath on me he had staggered below, and I understand he went to sleep on the floor of his own cabin. The mate practically assumed the command. He was the gaunt, taciturn individual we had seen at the wheel. Apparently he was in an evil temper with Montgomery. He took not the slightest notice of either of us. We dined with him in a sulky silence, after a few ineffectual efforts on my part to talk. It struck me too that the men regarded my companion and his animals in a singularly unfriendly manner. I found Montgomery very reticent about his purpose with these creatures, and about his destination; and though I was sensible of a growing curiosity as to both, I did not press him.
+
+We remained talking on the quarter deck until the sky was thick with stars. Except for an occasional sound in the yellow-lit forecastle and a movement of the animals now and then, the night was very still. The puma lay crouched together, watching us with shining eyes, a black heap in the corner of its cage. Montgomery produced some cigars. He talked to me of London in a tone of half-painful reminiscence, asking all kinds of questions about changes that had taken place. He spoke like a man who had loved his life there, and had been suddenly and irrevocably cut off from it. I gossiped as well as I could of this and that. All the time the strangeness of him was shaping itself in my mind; and as I talked I peered at his odd, pallid face in the dim light of the binnacle lantern behind me. Then I looked out at the darkling sea, where in the dimness his little island was hidden.
+
+This man, it seemed to me, had come out of immensity merely to save my life. Tomorrow he would drop over the side, and vanish again out of my existence. Even had it been under commonplace circumstances, it would have made me a trifle thoughtful; but in the first place was the singularity of an educated man living on this unknown little island, and coupled with that the extraordinary nature of his luggage. I found myself repeating the captain’s question. What did he want with the beasts? Why, too, had he pretended they were not his when I had remarked about them at first? Then, again, in his personal attendant there was a bizarre quality which had impressed me profoundly. These circumstances threw a haze of mystery round the man. They laid hold of my imagination, and hampered my tongue.
+
+Towards midnight our talk of London died away, and we stood side by side leaning over the bulwarks and staring dreamily over the silent, starlit sea, each pursuing his own thoughts. It was the atmosphere for sentiment, and I began upon my gratitude.
+
+“If I may say it,” said I, after a time, “you have saved my life.”
+
+“Chance,” he answered. “Just chance.”
+
+“I prefer to make my thanks to the accessible agent.”
+
+“Thank no one. You had the need, and I had the knowledge; and I injected and fed you much as I might have collected a specimen. I was bored and wanted something to do. If I’d been jaded that day, or hadn’t liked your face, well⁠—it’s a curious question where you would have been now!”
+
+This damped my mood a little. “At any rate,” I began.
+
+“It’s a chance, I tell you,” he interrupted, “as everything is in a man’s life. Only the asses won’t see it! Why am I here now, an outcast from civilisation, instead of being a happy man enjoying all the pleasures of London? Simply because eleven years ago⁠—I lost my head for ten minutes on a foggy night.”
+
+He stopped. “Yes?” said I.
+
+“That’s all.”
+
+We relapsed into silence. Presently he laughed. “There’s something in this starlight that loosens one’s tongue. I’m an ass, and yet somehow I would like to tell you.”
+
+“Whatever you tell me, you may rely upon my keeping to myself⁠—if that’s it.”
+
+He was on the point of beginning, and then shook his head, doubtfully.
+
+“Don’t,” said I. “It is all the same to me. After all, it is better to keep your secret. There’s nothing gained but a little relief if I respect your confidence. If I don’t⁠—well?”
+
+He grunted undecidedly. I felt I had him at a disadvantage, had caught him in the mood of indiscretion; and to tell the truth I was not curious to learn what might have driven a young medical student out of London. I have an imagination. I shrugged my shoulders and turned away. Over the taffrail leant a silent black figure, watching the stars. It was Montgomery’s strange attendant. It looked over its shoulder quickly with my movement, then looked away again.
+
+It may seem a little thing to you, perhaps, but it came like a sudden blow to me. The only light near us was a lantern at the wheel. The creature’s face was turned for one brief instant out of the dimness of the stern towards this illumination, and I saw that the eyes that glanced at me shone with a pale-green light. I did not know then that a reddish luminosity, at least, is not uncommon in human eyes. The thing came to me as stark inhumanity. That black figure with its eyes of fire struck down through all my adult thoughts and feelings, and for a moment the forgotten horrors of childhood came back to my mind. Then the effect passed as it had come. An uncouth black figure of a man, a figure of no particular import, hung over the taffrail against the starlight, and I found Montgomery was speaking to me.
+
+“I’m thinking of turning in, then,” said he, “if you’ve had enough of this.”
+
+I answered him incongruously. We went below, and he wished me good night at the door of my cabin.
+
+That night I had some very unpleasant dreams. The waning moon rose late. Its light struck a ghostly white beam across my cabin, and made an ominous shape on the planking by my bunk. Then the staghounds woke, and began howling and baying; so that I dreamt fitfully, and scarcely slept until the approach of dawn.
+
+The Man Who Had Nowhere to Go
+
+In the early morning (it was the second morning after my recovery, and I believe the fourth after I was picked up), I awoke through an avenue of tumultuous dreams⁠—dreams of guns and howling mobs⁠—and became sensible

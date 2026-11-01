@@ -1,0 +1,36 @@
+---
+novelSlug: "the-time-machine"
+slug: "chapter-6"
+number: 6
+title: "Part 6"
+publishedAt: "2026-11-01"
+description: "Reading part 6 of The Time Machine from a public-domain English edition."
+---
+
+rebounding, dancing hail hung in a cloud over the machine, and drove along the ground like smoke. In a moment I was wet to the skin. ‘Fine hospitality,’ said I, ‘to a man who has travelled innumerable years to see you.’
+
+“Presently I thought what a fool I was to get wet. I stood up and looked round me. A colossal figure, carved apparently in some white stone, loomed indistinctly beyond the rhododendrons through the hazy downpour. But all else of the world was invisible.
+
+“My sensations would be hard to describe. As the columns of hail grew thinner, I saw the white figure more distinctly. It was very large, for a silver birch-tree touched its shoulder. It was of white marble, in shape something like a winged sphinx, but the wings, instead of being carried vertically at the sides, were spread so that it seemed to hover. The pedestal, it appeared to me, was of bronze, and was thick with verdigris. It chanced that the face was towards me; the sightless eyes seemed to watch me; there was the faint shadow of a smile on the lips. It was greatly weatherworn, and that imparted an unpleasant suggestion of disease. I stood looking at it for a little space⁠—half a minute, perhaps, or half an hour. It seemed to advance and to recede as the hail drove before it denser or thinner. At last I tore my eyes from it for a moment and saw that the hail curtain had worn threadbare, and that the sky was lightening with the promise of the sun.
+
+“I looked up again at the crouching white shape, and the full temerity of my voyage came suddenly upon me. What might appear when that hazy curtain was altogether withdrawn? What might not have happened to men? What if cruelty had grown into a common passion? What if in this interval the race had lost its manliness and had developed into something inhuman, unsympathetic, and overwhelmingly powerful? I might seem some old-world savage animal, only the more dreadful and disgusting for our common likeness⁠—a foul creature to be incontinently slain.
+
+“Already I saw other vast shapes⁠—huge buildings with intricate parapets and tall columns, with a wooded hillside dimly creeping in upon me through the lessening storm. I was seized with a panic fear. I turned frantically to the Time Machine, and strove hard to readjust it. As I did so the shafts of the sun smote through the thunderstorm. The grey downpour was swept aside and vanished like the trailing garments of a ghost. Above me, in the intense blue of the summer sky, some faint brown shreds of cloud whirled into nothingness. The great buildings about me stood out clear and distinct, shining with the wet of the thunderstorm, and picked out in white by the unmelted hailstones piled along their courses. I felt naked in a strange world. I felt as perhaps a bird may feel in the clear air, knowing the hawk wings above and will swoop. My fear grew to frenzy. I took a breathing space, set my teeth, and again grappled fiercely, wrist and knee, with the machine. It gave under my desperate onset and turned over. It struck my chin violently. One hand on the saddle, the other on the lever, I stood panting heavily in attitude to mount again.
+
+“But with this recovery of a prompt retreat my courage recovered. I looked more curiously and less fearfully at this world of the remote future. In a circular opening, high up in the wall of the nearer house, I saw a group of figures clad in rich soft robes. They had seen me, and their faces were directed towards me.
+
+“Then I heard voices approaching me. Coming through the bushes by the White Sphinx were the heads and shoulders of men running. One of these emerged in a pathway leading straight to the little lawn upon which I stood with my machine. He was a slight creature⁠—perhaps four feet high⁠—clad in a purple tunic, girdled at the waist with a leather belt. Sandals or buskins⁠—I could not clearly distinguish which⁠—were on his feet; his legs were bare to the knees, and his head was bare. Noticing that, I noticed for the first time how warm the air was.
+
+“He struck me as being a very beautiful and graceful creature, but indescribably frail. His flushed face reminded me of the more beautiful kind of consumptive⁠—that hectic beauty of which we used to hear so much. At the sight of him I suddenly regained confidence. I took my hands from the machine.
+
+## IV
+
+“In another moment we were standing face to face, I and this fragile thing out of futurity. He came straight up to me and laughed into my eyes. The absence from his bearing of any sign of fear struck me at once. Then he turned to the two others who were following him and spoke to them in a strange and very sweet and liquid tongue.
+
+“There were others coming, and presently a little group of perhaps eight or ten of these exquisite creatures were about me. One of them addressed me. It came into my head, oddly enough, that my voice was too harsh and deep for them. So I shook my head, and, pointing to my ears, shook it again. He came a step forward, hesitated, and then touched my hand. Then I felt other soft little tentacles upon my back and shoulders. They wanted to make sure I was real. There was nothing in this at all alarming. Indeed, there was something in these pretty little people that inspired confidence⁠—a graceful gentleness, a certain childlike ease. And besides, they looked so frail that I could fancy myself flinging the whole dozen of them about like ninepins. But I made a sudden motion to warn them when I saw their little pink hands feeling at the Time Machine. Happily then, when it was not too late, I thought of a danger I had hitherto forgotten, and reaching over the bars of the machine I unscrewed the little levers that would set it in motion, and put these in my pocket. Then I turned again to see what I could do in the way of communication.
+
+“And then, looking more nearly into their features, I saw some further peculiarities in their Dresden-china type of prettiness. Their hair, which was uniformly curly, came to a sharp end at the neck and cheek; there was not the faintest suggestion of it on the face, and their ears were singularly minute. The mouths were small, with bright red, rather thin lips, and the little chins ran to a point. The eyes were large and mild; and⁠—this may seem egotism on my part⁠—I fancied even that there was a certain lack of the interest I might have expected in them.
+
+“As they made no effort to communicate with me, but simply stood round me smiling and speaking in soft cooing notes to each other, I began the conversation. I pointed to the Time Machine and to myself. Then hesitating for a moment how to express time, I pointed to the sun. At once a quaintly pretty little figure in chequered purple and white followed my gesture, and then astonished me by imitating the sound of thunder.
+
+“For a moment I was staggered, though the import of his gesture was plain enough. The question had come into my mind abruptly: were these creatures fools? You may hardly understand how it took me. You see I had always anticipated that the people of the year Eight Hundred and Two Thousand odd would be incredibly in front of us in knowledge, art, everything.

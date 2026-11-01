@@ -1,0 +1,58 @@
+---
+novelSlug: "treasure-island"
+slug: "chapter-5"
+number: 5
+title: "Part 5"
+publishedAt: "2026-11-01"
+description: "Reading part 5 of Treasure Island from a public-domain English edition."
+---
+
+miles away, and was never near the house after my father’s death. I have said the captain was weak, and indeed he seemed rather to grow weaker than to regain his strength. He clambered up and down stairs, and went from the parlor to the bar and back again, and sometimes put his nose out of doors to smell the sea, holding on to the walls as he went for support, and breathing hard and fast, like a man on a steep mountain. He never particularly addressed me, and it is my belief he had as good as forgotten his confidences; but his temper was more flighty, and, allowing for his bodily weakness, more violent than ever. He had an alarming way now when he was drunk of drawing his cutlass and laying it bare before him on the table. But, with all that, he minded people less, and seemed shut up in his own thoughts and rather wandering. Once, for instance, to our extreme wonder, he piped up to a different air, a kind of country love-song, that he must have learned in his youth before he had begun to follow the sea.
+
+So things passed until the day after the funeral and about three o’clock of a bitter, foggy, frosty afternoon, I was standing at the door for a moment, full of sad thoughts about my father, when I saw someone drawing slowly near along the road. He was plainly blind, for he tapped before him with a stick, and wore a great green shade over his eyes and nose; and he was hunched, as if with age or weakness, and wore a huge old tattered sea-cloak with a hood that made him appear positively deformed. I never saw in my life a more dreadful-looking figure. He stopped a little from the inn and, raising his voice in an odd singsong, addressed the air in front of him:
+
+“Will any kind friend inform a poor blind man, who has lost the precious sight of his eyes in the gracious defense of his native country, England, and God bless King George!⁠—where or in what part of this country he may now be?”
+
+“You are at the Admiral Benbow, Black Hill Cove, my good man,” said I.
+
+“I hear a voice,” said he, “a young voice. Will you give me your hand, my kind young friend, and lead me in?”
+
+I held out my hand, and the horrible, soft-spoken, eyeless creature gripped it in a moment like a vise. I was so much startled that I struggled to withdraw, but the blind man pulled me close up to him with a single action of his arm.
+
+“Now, boy,” he said, “take me in to the captain.”
+
+“Sir,” said I, “upon my word I dare not.”
+
+“Oh,” he sneered, “that’s it! Take me in straight, or I’ll break your arm.”
+
+He gave it, as he spoke, a wrench that made me cry out.
+
+“Sir,” said I, “it is for yourself I mean. The captain is not what he used to be. He sits with a drawn cutlass. Another gentleman⁠—”
+
+“Come, now, march,” interrupted he, and I never heard a voice so cruel, and cold, and ugly as that blind man’s. It cowed me more than the pain, and I began to obey him at once, walking straight in at the door and towards the parlor, where the sick old buccaneer was sitting, dazed with rum. The blind man clung close to me, holding me in one iron fist, and leaning almost more of his weight on me than I could carry. “Lead me straight up to him, and when I’m in view, cry out, ‘Here’s a friend for you, Bill.’ If you don’t, I’ll do this,” and with that he gave me a twitch that I thought would have made me faint. Between this and that, I was so utterly terrified by the blind beggar that I forgot my terror of the captain, and as I opened the parlor door, cried out the words he had ordered in a trembling voice.
+
+The poor captain raised his eyes, and at one look the rum went out of him and left him staring sober. The expression of his face was not so much of terror as of mortal sickness. He made a movement to rise, but I do not believe he had enough force left in his body.
+
+“Now, Bill, sit where you are,” said the beggar. “If I can’t see, I can hear a finger stirring. Business is business. Hold out your left hand. Boy, take his left hand by the wrist and bring it near to my right.”
+
+We both obeyed him to the letter, and I saw him pass something from the hollow of the hand that held his stick into the palm of the captain’s, which closed upon it instantly.
+
+“And now that’s done,” said the blind man, and at the words he suddenly left hold of me, and with incredible accuracy and nimbleness, skipped out of the parlor and into the road, where, as I stood motionless, I could hear his stick go tap-tap-tapping into the distance.
+
+It was some time before either I or the captain seemed to gather our senses; but at length, and about the same moment, I released his wrist, which I was still holding, and he drew in his hand, and looked sharply into the palm.
+
+“Ten o’clock!” he cried. “Six hours! We’ll do them yet!” and he sprang to his feet.
+
+Even as he did so, he reeled, put his hand to his throat, stood swaying for a moment, and then, with a peculiar sound, fell from his whole height face foremost to the floor.
+
+I ran to him at once, calling to my mother. But haste was all in vain. The captain had been struck dead by thundering apoplexy. It is a curious thing to understand, for I had certainly never liked the man, though of late I had begun to pity him, but as soon as I saw that he was dead I burst into a flood of tears. It was the second death I had known, and the sorrow of the first was still fresh in my heart.
+
+## IV
+
+The Sea-Chest
+
+I lost no time, of course, in telling my mother all that I knew, and perhaps should have told her long before, and we saw ourselves at once in a difficult and dangerous position. Some of the man’s money⁠—if he had any⁠—was certainly due to us, but it was not likely that our captain’s shipmates, above all the two specimens seen by me⁠—Black Dog and the blind beggar⁠—would be inclined to give up their booty in payment of the dead man’s debts. The captain’s order to mount at once and ride for Doctor Livesey would have left my mother alone and unprotected, which was not to be thought of. Indeed, it seemed impossible for either of us to remain much longer in the house; the fall of coals in the kitchen grate, the very ticking of the clock, filled us with alarm. The neighborhood, to our ears, seemed haunted by approaching footsteps; and what between the dead body of the captain on the parlor floor and the thought of that detestable blind beggar hovering near at hand and ready to return, there were moments when, as the saying goes, I jumped in my skin for terror. Something must speedily be resolved upon, and it occurred to us at last to go forth together and seek help in the neighboring hamlet. No sooner said than done. Bareheaded as we were, we ran out at once in the gathering evening and the frosty fog.
+
+The hamlet lay not many hundred yards away, though out of view, on the other side of the next cove; and what greatly encouraged me, it was in an opposite direction from that whence the blind man had made his appearance, and whither he had presumably returned. We were not many minutes on the road, though we sometimes stopped to lay hold of each other and hearken. But there was no unusual sound⁠—nothing but the low wash of the ripple and the croaking of the inmates of the wood.
+
+It was already candlelight when we reached

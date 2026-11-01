@@ -1,0 +1,64 @@
+---
+novelSlug: "dracula"
+slug: "chapter-59"
+number: 59
+title: "Part 59"
+publishedAt: "2026-11-01"
+description: "Reading part 59 of Dracula from a public-domain English edition."
+---
+
+in a mist, jumping from one tussock to another in the mere blind effort to move on without knowing where I am going.”
+
+“That is good image,” he said. “Well, I shall tell you. My thesis is this: I want you to believe.”
+
+“To believe what?”
+
+“To believe in things that you cannot. Let me illustrate. I heard once of an American who so defined faith: ‘that faculty which enables us to believe things which we know to be untrue.’ For one, I follow that man. He meant that we shall have an open mind, and not let a little bit of truth check the rush of a big truth, like a small rock does a railway truck. We get the small truth first. Good! We keep him, and we value him; but all the same we must not let him think himself all the truth in the universe.”
+
+“Then you want me not to let some previous conviction injure the receptivity of my mind with regard to some strange matter. Do I read your lesson aright?”
+
+“Ah, you are my favourite pupil still. It is worth to teach you. Now that you are willing to understand, you have taken the first step to understand. You think then that those so small holes in the children’s throats were made by the same that made the hole in Miss Lucy?”
+
+“I suppose so.” He stood up and said solemnly:⁠—
+
+“Then you are wrong. Oh, would it were so! but alas! no. It is worse, far, far worse.”
+
+“In God’s name, Professor Van Helsing, what do you mean?” I cried.
+
+He threw himself with a despairing gesture into a chair, and placed his elbows on the table, covering his face with his hands as he spoke:⁠—
+
+“They were made by Miss Lucy!”
+
+## XV
+
+Dr. Seward’s Diary⁠—continued.
+
+For a while sheer anger mastered me; it was as if he had during her life struck Lucy on the face. I smote the table hard and rose up as I said to him:⁠—
+
+“Dr. Van Helsing, are you mad?” He raised his head and looked at me, and somehow the tenderness of his face calmed me at once. “Would I were!” he said. “Madness were easy to bear compared with truth like this. Oh, my friend, why, think you, did I go so far round, why take so long to tell you so simple a thing? Was it because I hate you and have hated you all my life? Was it because I wished to give you pain? Was it that I wanted, now so late, revenge for that time when you saved my life, and from a fearful death? Ah no!”
+
+“Forgive me,” said I. He went on:⁠—
+
+“My friend, it was because I wished to be gentle in the breaking to you, for I know you have loved that so sweet lady. But even yet I do not expect you to believe. It is so hard to accept at once any abstract truth, that we may doubt such to be possible when we have always believed the ‘no’ of it; it is more hard still to accept so sad a concrete truth, and of such a one as Miss Lucy. Tonight I go to prove it. Dare you come with me?”
+
+This staggered me. A man does not like to prove such a truth. Byron excepted from the category, jealousy.
+
+“And prove the very truth he most abhorred.”
+
+He saw my hesitation, and spoke:⁠—
+
+“The logic is simple, no madman’s logic this time, jumping from tussock to tussock in a misty bog. If it be not true, then proof will be relief; at worst it will not harm. If it be true! Ah, there is the dread; yet very dread should help my cause, for in it is some need of belief. Come, I tell you what I propose: first, that we go off now and see that child in the hospital. Dr. Vincent, of the North Hospital, where the papers say the child is, is friend of mine, and I think of yours since you were in class at Amsterdam. He will let two scientists see his case, if he will not let two friends. We shall tell him nothing, but only that we wish to learn. And then⁠—”
+
+“And then?” He took a key from his pocket and held it up. “And then we spend the night, you and I, in the churchyard where Lucy lies. This is the key that lock the tomb. I had it from the coffin-man to give to Arthur.” My heart sank within me, for I felt that there was some fearful ordeal before us. I could do nothing, however, so I plucked up what heart I could and said that we had better hasten, as the afternoon was passing.⁠ ⁠…
+
+We found the child awake. It had had a sleep and taken some food, and altogether was going on well. Dr. Vincent took the bandage from its throat, and showed us the punctures. There was no mistaking the similarity to those which had been on Lucy’s throat. They were smaller, and the edges looked fresher; that was all. We asked Vincent to what he attributed them, and he replied that it must have been a bite of some animal, perhaps a rat; but, for his own part, he was inclined to think that it was one of the bats which are so numerous on the northern heights of London. “Out of so many harmless ones,” he said, “there may be some wild specimen from the South of a more malignant species. Some sailor may have brought one home, and it managed to escape; or even from the Zoölogical Gardens a young one may have got loose, or one be bred there from a vampire. These things do occur, you know. Only ten days ago a wolf got out, and was, I believe, traced up in this direction. For a week after, the children were playing nothing but Red Riding Hood on the Heath and in every alley in the place until this ‘bloofer lady’ scare came along, since when it has been quite a gala-time with them. Even this poor little mite, when he woke up today, asked the nurse if he might go away. When she asked him why he wanted to go, he said he wanted to play with the ‘bloofer lady.’ ”
+
+“I hope,” said Van Helsing, “that when you are sending the child home you will caution its parents to keep strict watch over it. These fancies to stray are most dangerous; and if the child were to remain out another night, it would probably be fatal. But in any case I suppose you will not let it away for some days?”
+
+“Certainly not, not for a week at least; longer if the wound is not healed.”
+
+Our visit to the hospital took more time than we had reckoned on, and the sun had dipped before we came out. When Van Helsing saw how dark it was, he said:⁠—
+
+“There is no hurry. It is more late than I thought. Come, let us seek somewhere that we may eat, and then we shall go on our way.”
+
+We dined at Jack Straw’s Castle along with a little crowd of bicyclists and others who were genially noisy. About ten o’clock we started from the inn. It was then very dark, and the scattered lamps made the darkness greater when we were once outside their individual radius. The Professor had evidently noted the road we were to go, for he went on unhesitatingly; but, as for me, I was in quite a mixup as to locality. As we went further, we met fewer and fewer people, till at last we were somewhat surprised when we met even the patrol of horse police going their usual suburban round. At last we reached the wall of the churchyard, which we climbed over. With some little difficulty⁠—for it was very dark, and the whole place seemed so strange to us⁠—we found the Westenra tomb. The Professor took the key, opened the creaky door, and standing back, politely, but quite unconsciously, motioned me to precede him. There was a delicious irony in the offer, in the courtliness of giving preference on such a ghastly occasion. My companion followed me quickly, and cautiously drew the door to, after carefully ascertaining that the lock was a falling,

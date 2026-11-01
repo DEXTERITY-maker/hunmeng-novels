@@ -1,0 +1,27 @@
+{
+  "slug": "treasure-island",
+  "title": "Treasure Island",
+  "originalTitle": "Treasure Island",
+  "author": "Robert Louis Stevenson",
+  "original": false,
+  "originalUrl": "https://standardebooks.org/ebooks/robert-louis-stevenson/treasure-island",
+  "cover": "/images/novel-placeholder.svg",
+  "description": "A mysterious map leads a young adventurer into danger among sailors, secrets and a legendary buried treasure.",
+  "genres": [
+    "Adventure"
+  ],
+  "tags": [
+    "Public Domain",
+    "Pirates",
+    "Treasure",
+    "Sea"
+  ],
+  "categories": [
+    "Public Domain Classics"
+  ],
+  "originalStatus": "Завершён",
+  "translationStatus": "Завершён",
+  "updatedAt": "2026-11-01",
+  "addedAt": "2026-11-01",
+  "demo": false
+}

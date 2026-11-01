@@ -1,0 +1,28 @@
+{
+  "slug": "the-war-of-the-worlds",
+  "title": "The War of the Worlds",
+  "originalTitle": "The War of the Worlds",
+  "author": "H. G. Wells",
+  "original": false,
+  "originalUrl": "https://standardebooks.org/ebooks/h-g-wells/the-war-of-the-worlds",
+  "cover": "/images/novel-placeholder.svg",
+  "description": "An unexpected invasion from Mars turns ordinary life into a desperate struggle for survival.",
+  "genres": [
+    "Science Fiction",
+    "Adventure"
+  ],
+  "tags": [
+    "Public Domain",
+    "Alien Invasion",
+    "Survival",
+    "Apocalypse"
+  ],
+  "categories": [
+    "Public Domain Classics"
+  ],
+  "originalStatus": "Завершён",
+  "translationStatus": "Завершён",
+  "updatedAt": "2026-11-01",
+  "addedAt": "2026-11-01",
+  "demo": false
+}

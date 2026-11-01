@@ -1,0 +1,28 @@
+{
+  "slug": "the-island-of-doctor-moreau",
+  "title": "The Island of Doctor Moreau",
+  "originalTitle": "The Island of Doctor Moreau",
+  "author": "H. G. Wells",
+  "original": false,
+  "originalUrl": "https://standardebooks.org/ebooks/h-g-wells/the-island-of-doctor-moreau",
+  "cover": "/images/novel-placeholder.svg",
+  "description": "Shipwrecked on a remote island, a traveler encounters disturbing experiments and the strange inhabitants they have produced.",
+  "genres": [
+    "Science Fiction",
+    "Horror"
+  ],
+  "tags": [
+    "Public Domain",
+    "Island",
+    "Experiment",
+    "Survival"
+  ],
+  "categories": [
+    "Public Domain Classics"
+  ],
+  "originalStatus": "Завершён",
+  "translationStatus": "Завершён",
+  "updatedAt": "2026-11-01",
+  "addedAt": "2026-11-01",
+  "demo": false
+}
