@@ -1,0 +1,48 @@
+/* Quiet interface motion: complements existing home hero and reader animations.
+   No content is hidden to animate; themes inherit their own design tokens. */
+.catalog-page .catalog-load-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font: 600 .78rem/1.4 'Manrope Variable', sans-serif;
+}
+.catalog-page .catalog-load-status[hidden] { display: none; }
+.catalog-page .catalog-load-status::before {
+  content: '';
+  flex: none;
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--line);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: hm-catalog-loading .75s linear infinite;
+}
+@keyframes hm-catalog-loading { to { transform: rotate(1turn); } }
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Small tactile responses, without changing geometry or the reading room. */
+  :where(.catalog-page,.library-page,.news-page,.reader-account-page) .button:active:not(:disabled),
+  .news-page .news-filter-tabs a:active {
+    transform: scale(.985);
+  }
+  .catalog-page .catalog-filter-panel {
+    transition: border-color 180ms ease, box-shadow 180ms ease;
+  }
+  .catalog-page .catalog-filter-panel:focus-within {
+    border-color: color-mix(in srgb, var(--accent) 36%, var(--line));
+  }
+  .news-page .news-filter-tabs a {
+    transition: background-color 160ms ease, border-color 160ms ease, transform 160ms ease;
+  }
+  .news-page .news-filter-tabs a:hover:not([aria-current='page']) {
+    border-color: var(--news-forest);
+  }
+  .catalog-page .catalog-novel-card:focus-within {
+    border-color: var(--accent);
+    box-shadow: var(--ed-shadow-raise);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .catalog-page .catalog-load-status::before { animation: none; }
+}
