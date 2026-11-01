@@ -121,6 +121,7 @@ const PAGE_SIZE = 24;
       <div class="catalog-main">
         <div class="results-heading catalog-results-heading">
           <p id="result-count" role="status" aria-live="polite">Novels found: {novels.length}</p>
+          <span id="catalog-load-status" class="catalog-load-status" role="status" aria-live="polite" hidden>Updating catalog…</span>
           <p class="fine">Ratings and views appear only when data is available.</p>
         </div>
         <div id="catalog-results" class="novel-grid">

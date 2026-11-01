@@ -38,6 +38,13 @@ export async function initCatalog() {
   const count = document.getElementById('result-count');
   const empty = document.getElementById('catalog-empty');
   if (!form || !container || !pager || !count || !empty) return;
+  // Keep server-rendered cards readable while the optional search index loads.
+  // Only reveal a status indicator when the request is actually slow.
+  const loadStatus = document.getElementById('catalog-load-status');
+  container.setAttribute('aria-busy', 'true');
+  const slowLoad = window.setTimeout(() => {
+    if (loadStatus) loadStatus.hidden = false;
+  }, 250);
 
   const loadQuery = () => {
     form.reset();
@@ -81,7 +88,8 @@ export async function initCatalog() {
   }
   try {
     const novels = await getCatalogIndex();
-    const render = (syncUrl: boolean, requestedPage?: number) => {
+    let resultAnimation: Animation | undefined;
+    const render = (syncUrl: boolean, requestedPage?: number, animate = false) => {
       const f = new FormData(form);
       const q = fold(String(f.get('search') ?? ''));
       updateTagPicker();
@@ -122,6 +130,15 @@ export async function initCatalog() {
       const desired = requestedPage ?? fromUrl;
       const page = Number.isSafeInteger(desired) ? Math.max(1, Math.min(desired, pages)) : 1;
       container.replaceChildren(...filtered.slice((page - 1) * size, page * size).map(card));
+      // One short grid-level transition, not 24–48 per-card animations.
+      // Filtered links remain clickable and motion-sensitive visitors see no effect.
+      if (animate && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        resultAnimation?.cancel();
+        resultAnimation = container.animate(
+          [{ opacity: 0.78, transform: 'translateY(3px)' }, { opacity: 1, transform: 'translateY(0)' }],
+          { duration: 180, easing: 'cubic-bezier(.22, 1, .36, 1)' },
+        );
+      }
       count.textContent = 'Novels found: ' + filtered.length;
       empty.hidden = filtered.length > 0;
       pager.replaceChildren();
@@ -139,7 +156,7 @@ export async function initCatalog() {
       }
       if (syncUrl) history.replaceState(null,'',linkFor(form,page));
     };
-    const onFilter = () => render(true,1);
+    const onFilter = () => render(true,1,true);
     form.addEventListener('submit',(e)=>{e.preventDefault();onFilter();});
     form.addEventListener('input',(event)=> {
       if (['catalog-tag-search', 'catalog-tag-group'].includes((event.target as HTMLElement).id)) updateTagPicker();
@@ -156,7 +173,7 @@ export async function initCatalog() {
       if (!a || !pager.contains(a)) return;
       const params=new URL(a.href).searchParams;
       e.preventDefault();
-      render(true,Number(params.get('page')||1));
+      render(true,Number(params.get('page')||1),true);
       document.getElementById('result-count')?.scrollIntoView({block:'start'});
     });
     window.addEventListener('popstate',()=>{loadQuery();render(false);});
@@ -164,5 +181,9 @@ export async function initCatalog() {
     void refreshCatalogChapterCounts(novels).then(changed => { if (changed) render(false); });
   } catch {
     count.textContent='Advanced search is temporarily unavailable. Available novels are shown below.';
+  } finally {
+    window.clearTimeout(slowLoad);
+    if (loadStatus) loadStatus.hidden = true;
+    container.removeAttribute('aria-busy');
   }
 }
