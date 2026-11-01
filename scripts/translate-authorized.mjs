@@ -8,7 +8,7 @@ const endpoint = (process.env.SUPABASE_URL ?? '').replace(/\/+$/, '');
 const secret = process.env.SUPABASE_SERVICE_ROLE_KEY ?? '';
 const token = process.env.OPENAI_API_KEY ?? '';
 const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
-const uuidPattern = /^[0-9a-f]{8}-[0-9a-f-]{27,}$/i;
+const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const modelPattern = /^[a-zA-Z0-9][a-zA-Z0-9._-]{1,63}$/;
 const requestTimeout = 120000;
 export function canTranslate(source) { return rightsVerified(source); }
@@ -65,11 +65,14 @@ export async function run() {
   const workSlug = process.env.HUNMENG_SOURCE_SLUG ?? '';
   const limit = Number(process.env.HUNMENG_TRANSLATION_LIMIT ?? '1');
   const execute = process.env.HUNMENG_TRANSLATION_EXECUTE === 'true';
+  const aiRightsConfirmed = process.env.HUNMENG_AI_PROCESSING_AUTHORIZED === 'true';
   const model = process.env.OPENAI_TRANSLATION_MODEL || 'gpt-6.1-terra';
   if (!slugPattern.test(workSlug) || !Number.isSafeInteger(limit) || limit < 1 || limit > 3)
     throw new Error('Specify a valid source slug and 1–3 chapters.');
   if (!/^https:\/\/[a-z0-9.-]+\.supabase\.co$/.test(endpoint) || !secret)
     throw new Error('Editorial database connection is not configured.');
+  if (execute && !aiRightsConfirmed)
+    throw new Error('Explicit confirmation of permitted third-party AI processing is required.');
   if (execute && (!token || !modelPattern.test(model)))
     throw new Error('The private translation provider is not configured.');
   const sourceRows = await db('novel_sources', '?select=id,slug,rights_status,rights_evidence,rights_valid_until,permission_translate,permission_publish,verified_at,updated_at&slug=eq.' + encodeURIComponent(workSlug));
