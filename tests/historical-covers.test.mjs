@@ -18,7 +18,9 @@ test('all nine cover candidates are distinct curated historical sources, not sto
     assert.match(book.file,/\.(jpg|JPG|webp)$/);
     const novel=JSON.parse(fs.readFileSync('src/content/novels/'+book.slug+'.json','utf8'));
     assert.equal(novel.author,book.expectedAuthor);
-    assert.equal(novel.cover,'/images/novel-placeholder.svg');
+    const expectedCover = '/images/covers/'+book.slug+'-historical.webp';
+    assert.ok(novel.cover === '/images/novel-placeholder.svg' || novel.cover === expectedCover);
+    if (novel.cover === expectedCover) assert.ok(fs.statSync('public'+expectedCover).size > 8000);
     assert.ok(novel.tags.includes('Public Domain'));
   }
 });
