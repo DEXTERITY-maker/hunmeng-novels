@@ -17,6 +17,11 @@ on:
         required: true
         default: false
         type: boolean
+      confirm_ai_processing_rights:
+        description: Confirm the license allows submitting this manuscript to the AI provider
+        required: true
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -47,4 +52,5 @@ jobs:
           HUNMENG_SOURCE_SLUG: ${{ inputs.source_slug }}
           HUNMENG_TRANSLATION_LIMIT: ${{ inputs.max_chapters }}
           HUNMENG_TRANSLATION_EXECUTE: ${{ inputs.execute_translation }}
+          HUNMENG_AI_PROCESSING_AUTHORIZED: ${{ inputs.confirm_ai_processing_rights }}
         run: node scripts/translate-authorized.mjs
