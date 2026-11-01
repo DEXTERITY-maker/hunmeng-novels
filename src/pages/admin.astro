@@ -21,6 +21,7 @@ const taxonomy = getTaxonomy(await getLibrary());
       <div class="admin-grid">
         <section class="admin-card" id="admin-sources-section">
           <h2>1. Sources and permissions</h2>
+          <p class="fine"><strong>DaoSearch research (editors):</strong> <a href="https://github.com/DEXTERITY-maker/hunmeng-novels/actions/workflows/daosearch-lookup.yml" target="_blank" rel="noopener noreferrer">Look up Chinese web novels and check duplicates ↗</a>. Searches work by title, author or official source URL. Results are private research notes, not published novels. The external service requires a DaoSearch API key stored as a GitHub Actions secret; all chapter imports still require verified publication rights. <a href="https://daosearch.io/developers" target="_blank" rel="noopener noreferrer">API documentation ↗</a></p>
           <form id="source-form">
             <label>URL slug (Latin letters)
               <input name="slug" required pattern="[a-z0-9]+(-[a-z0-9]+)*" placeholder="my-novel" />
