@@ -1,0 +1,45 @@
+name: Licensed chapter sync (drafts only)
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Only show newly discovered chapter numbers; never fetch text or import
+        type: boolean
+        required: true
+        default: true
+  schedule:
+    - cron: "17,47 * * * *"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hunmeng-licensed-chapter-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    # With an empty provider allowlist and the flag disabled this never calls external APIs.
+    if: ${{ vars.HUNMENG_CHAPTER_SYNC_ENABLED == 'true' || (github.event_name == 'workflow_dispatch' && inputs.dry_run == true) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Check syntax and offline chapter-sync tests
+        run: |
+          node --check scripts/chapter-sync-core.mjs
+          node --check scripts/sync-licensed-chapters.mjs
+          node --test tests/chapter-sync.test.mjs
+      - name: Detect licensed chapters, optionally import as private drafts
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          HUNMENG_CHAPTER_SYNC_ENABLED: ${{ vars.HUNMENG_CHAPTER_SYNC_ENABLED }}
+          HUNMENG_CHAPTER_SYNC_EXECUTE: ${{ github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.dry_run == false) }}
+        run: node scripts/sync-licensed-chapters.mjs
