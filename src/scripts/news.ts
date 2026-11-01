@@ -1,4 +1,4 @@
-const PAGE_SIZE = 4;
+const PAGE_SIZE = 5; // one wide featured card + a 2×2 grid
 const CATEGORIES = ['changelog', 'announcements', 'giveaways'];
 const REACTION_KEY = 'hunmeng-news-reactions:v1';
 

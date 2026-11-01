@@ -18,3 +18,17 @@ export async function getNews() {
     a.id.localeCompare(b.id),
   );
 }
+
+const categoryArt: Record<NewsCategory, string> = {
+  changelog: '/images/profile/header-day-960.webp',
+  announcements: '/images/art/hunmeng-landscape-day-960.webp',
+  giveaways: '/images/events/halloween-2026/gold.webp',
+};
+/** Illustration for a post: its own cover, the cover of a novel it names, or category art. */
+export function newsCover(post: NewsPost, library: Array<{ title: string; cover: string }> = []) {
+  const { cover, coverAlt, coverFit, title, category } = post.data;
+  if (cover) return { src: cover, alt: coverAlt ?? '', fit: coverFit };
+  const novel = library.find((n) => title.toLowerCase().includes(n.title.toLowerCase()));
+  if (novel) return { src: novel.cover, alt: '', fit: 'novel' as const };
+  return { src: categoryArt[category], alt: '', fit: category === 'giveaways' ? 'emblem' as const : 'art' as const };
+}

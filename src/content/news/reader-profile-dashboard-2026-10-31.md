@@ -4,6 +4,9 @@ excerpt: "A refreshed reader profile brings verified milestones, reading progres
 category: changelog
 publishedAt: "2026-10-31"
 order: 835
+cover: "/images/profile/header-night.webp"
+coverAlt: "Night mountain landscape with lit pavilions and a full moon"
+coverFit: art
 ---
 
 The reader profile now has a calmer layout inspired by Hunmeng's light landscape design. The selected avatar, nickname, biography, equipped title and verified rank appear together at the top, with **Edit profile** and **My library** close at hand.

@@ -76,6 +76,11 @@ const news = defineCollection({
     category: z.enum(['changelog', 'announcements', 'giveaways']),
     publishedAt: date,
     order: z.number().int().nonnegative().default(0),
+    // Optional illustration for the card and the article header. 'art' fills the
+    // frame (landscapes, covers); 'emblem' centres a transparent object on parchment.
+    cover: z.string().regex(/^\/images\/[\w\/.-]+\.(?:webp|png|jpg|svg)$/).optional(),
+    coverAlt: z.string().max(160).optional(),
+    coverFit: z.enum(['art', 'emblem']).default('art'),
   }),
 });
 export const collections = { novels, chapters, glossaries, news };

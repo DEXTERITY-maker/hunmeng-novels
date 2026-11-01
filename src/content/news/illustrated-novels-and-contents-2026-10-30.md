@@ -4,6 +4,9 @@ excerpt: "Story-specific illustrations, a redesigned contents window and novel p
 category: changelog
 publishedAt: "2026-10-30"
 order: 700
+cover: "/images/art/comprehension-day-1536.webp"
+coverAlt: "Golden misty mountains and a pavilion from Comprehension Against the Heavens"
+coverFit: art
 ---
 
 Several updates are now available across Hunmeng, with a focus on clearer reading and navigation.

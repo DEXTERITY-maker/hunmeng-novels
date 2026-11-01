@@ -4,6 +4,9 @@ excerpt: "Updated catalog artwork and cards, with search, filtering, pagination 
 category: changelog
 publishedAt: "2026-10-30"
 order: 715
+cover: "/images/art/hunmeng-landscape-night-1536.webp"
+coverAlt: "Hunmeng castle landscape at night"
+coverFit: art
 ---
 
 The catalog has received a visual refresh to make browsing novels easier.

@@ -4,15 +4,26 @@ excerpt: "Six new transparent fantasy emblems bring richer metalwork, illuminate
 category: announcements
 publishedAt: "2026-10-28"
 order: 365
+cover: "/images/mastery/legend.webp"
+coverAlt: "Hunmeng Legend mastery emblem"
+coverFit: emblem
 ---
 
 The **Reader's Path** has received a full visual upgrade. All six mastery emblems now share one artistic direction, with **Hunmeng Legend** as the reference for materials, lighting, detail and craftsmanship.
 
-![The new Hunmeng Legend mastery emblem](/images/mastery/legend.webp)
 
 ### One collection, six distinct identities
 
 Every mastery step has its own jewel-toned, book-inspired illustration:
+
+<div class="news-gallery">
+  <figure><img src="/images/mastery/novice.webp" alt="Novice Reader emblem" loading="lazy" width="300" height="300" /><figcaption>Novice Reader<small>Levels 1–4</small></figcaption></figure>
+  <figure><img src="/images/mastery/reader.webp" alt="Reader emblem" loading="lazy" width="300" height="300" /><figcaption>Reader<small>Levels 5–9</small></figcaption></figure>
+  <figure><img src="/images/mastery/experienced.webp" alt="Experienced Reader emblem" loading="lazy" width="300" height="300" /><figcaption>Experienced Reader<small>Levels 10–19</small></figcaption></figure>
+  <figure><img src="/images/mastery/connoisseur.webp" alt="Connoisseur emblem" loading="lazy" width="300" height="300" /><figcaption>Connoisseur<small>Levels 20–34</small></figcaption></figure>
+  <figure><img src="/images/mastery/master.webp" alt="Master emblem" loading="lazy" width="300" height="300" /><figcaption>Master<small>Levels 35–49</small></figcaption></figure>
+  <figure><img src="/images/mastery/legend.webp" alt="Hunmeng Legend emblem" loading="lazy" width="300" height="300" /><figcaption>Hunmeng Legend<small>Levels 50–500</small></figcaption></figure>
+</div>
 
 - **Novice Reader** (levels 1–4) — an emerald sprout and an open book mark the start of the journey.
 - **Reader** (5–9) — cool silver, elegant foliage and a more developed book motif.
