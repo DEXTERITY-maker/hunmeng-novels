@@ -26,7 +26,7 @@ test('image synchronization checks Commons public-domain status and source check
   execFileSync(process.execPath,['--check','scripts/sync-historical-covers.mjs']);
   assert.match(importScript,/pdMetadata\(info\.extmetadata\)/);
   assert.match(importScript,/createHash\('sha1'\)/);
-  assert.match(importScript,/https:\/\/upload\\\.wikimedia\\\.org/);
+  assert.match(importScript,/Unexpected Commons image format, URI or source digest/);
   assert.match(importScript,/\.webp\(\{quality:84/);
   assert.match(importScript,/Partial release blocked/);
   assert.match(importScript,/sourcePage:wiki/);
