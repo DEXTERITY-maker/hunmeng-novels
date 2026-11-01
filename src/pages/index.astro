@@ -13,6 +13,8 @@ import { visibleExternalNovels } from '../lib/external-catalog';
 import { externalNovelUrl } from '../data/external-novels';
 
 const novels = await getLibrary();
+const unpublishedExternalNovels = visibleExternalNovels.filter(
+  source => !novels.some(novel => novel.slug === source.slug));
 const latestNews = (await getNews()).slice(0, 3);
 const newNovels = novels
   .filter((n) => !!n.addedAt)
@@ -125,13 +127,13 @@ const animatedNovels = newNovels.map((n) => ({
       )}
     </section>
 
-    {visibleExternalNovels.length > 0 && (
+    {unpublishedExternalNovels.length > 0 && (
       <section class="section home-section home-external-section" aria-labelledby="home-external-title">
         <div class="section-heading home-section-heading">
           <div><h2 id="home-external-title">Discover web novels</h2></div>
           <a href="/catalog/">View all →</a>
         </div>
-        {visibleExternalNovels.map(novel => (
+        {unpublishedExternalNovels.map(novel => (
           <article class="home-external-card" data-external-source={novel.externalId}>
             <a class="home-external-cover" href={externalNovelUrl(novel.slug)} aria-label={`Open ${novel.title}`}>
               <img src="/images/novel-placeholder.svg" alt="" width="100" height="150" loading="lazy"/>
