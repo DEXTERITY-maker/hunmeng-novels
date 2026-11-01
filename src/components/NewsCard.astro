@@ -13,7 +13,7 @@ const library = compact ? [] : await getLibrary();
 const cover = newsCover(post, library);
 ---
 <article class:list={['news-card', compact && 'news-card-compact']} data-news-card data-news-category={category}>
-  {!compact && <a class:list={['news-card-image', `news-card-image-${cover.fit}`]} href={newsUrl(post.id)} tabindex="-1" aria-hidden="true"><img src={cover.src} alt="" width="640" height="400" loading="eager" decoding="async" /></a>}
+  {!compact && <a class:list={['news-card-image', `news-card-image-${cover.fit}`]} href={newsUrl(post.id)} tabindex="-1" aria-hidden="true"><img src={cover.src} alt="" width="640" height="400" loading="lazy" decoding="async" /></a>}
   <div class="news-card-body"><div class="news-card-top">
     <span class:list={['news-category', `news-category-${category}`]}>{newsCategories[category]}</span>
     <time datetime={publishedAt}>{dateLabel(publishedAt)}</time>
