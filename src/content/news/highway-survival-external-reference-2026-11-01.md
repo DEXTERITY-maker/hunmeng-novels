@@ -1,6 +1,6 @@
 ---
-title: "Highway Survival added to the external reading list"
-excerpt: "A new outside-reading reference links to Highway Survival: Lathe Is Also a Car, I Handcraft Gatling Gun, with the author, original Chinese title and verified source links."
+title: "Highway Survival appears in the Hunmeng catalog"
+excerpt: "Highway Survival now has a searchable Hunmeng catalog card with a novel detail page and links to WTR-Lab and its Chinese original."
 category: announcements
 publishedAt: "2026-11-01"
 order: 985
@@ -9,11 +9,11 @@ coverAlt: "Autumn mountain landscape in Hunmeng"
 coverFit: art
 ---
 
-**Highway Survival: Lathe Is Also a Car, I Handcraft Gatling Gun** has been added to Hunmeng's external reading references.
+**Highway Survival: Lathe Is Also a Car, I Handcraft Gatling Gun** now appears in the Hunmeng catalog as a clearly labeled external novel, searchable by title and author.
 
 The ongoing Chinese novel by **凨羽** follows Xie Changqing, who starts a road-survival game with an industrial lathe instead of a conventional vehicle. A manufacturing talent gives him an unconventional path toward building defenses, machinery and a mobile base.
 
-[View the novel reference on Hunmeng](/sources/highway-survival-lathe-gatling/)
+[View the novel in Hunmeng](/sources/highway-survival-lathe-gatling/) · [Find it in the catalog](/catalog/?search=Highway%20Survival)
 
 ### Where to read
 

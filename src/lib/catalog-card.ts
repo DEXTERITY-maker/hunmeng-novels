@@ -8,6 +8,10 @@ import { chapterCount } from './format';
 export interface CatalogCardData {
   slug: string;
   url: string;
+  external?: boolean;
+  externalId?: string;
+  sourceName?: string;
+  sourceUrl?: string;
   title: string;
   originalTitle: string;
   author: string;
@@ -48,7 +52,7 @@ const formatDate = (date: string) => new Intl.DateTimeFormat('en-US', {
 export function renderCatalogCard(n: CatalogCardData): string {
   const art = n.art === 'comprehension' || n.art === 'latency' ? n.art : null;
   const author = n.originalTitle === n.title ? n.author : n.originalTitle + ' · ' + n.author;
-  const status = n.original ? n.originalStatus : n.translationStatus;
+  const status = n.external ? 'Original: ' + n.originalStatus : n.original ? n.originalStatus : n.translationStatus;
   const tags = n.tags.slice(0, 3).map(tag =>
     '<a href="/catalog/?include=' + encodeURIComponent(tag) + '">' + escapeHtml(tag) + '</a>'
   ).join('');
@@ -58,24 +62,31 @@ export function renderCatalogCard(n: CatalogCardData): string {
   ].filter(Boolean).join('');
 
   return '<article class="novel-card catalog-novel-card" data-novel="' + escapeHtml(n.slug) + '"' +
-    (art ? ' data-art="' + art + '"' : '') + '>' +
+    (art ? ' data-art="' + art + '"' : '') +
+    (n.external && n.externalId ? ' data-external-source="' + escapeHtml(n.externalId) + '"' : '') + '>' +
     (art ? '<div class="catalog-card-art" aria-hidden="true"></div>' : '') +
     '<a class="cover-link" href="' + escapeHtml(n.url) + '" tabindex="-1" aria-hidden="true">' +
       '<img src="' + escapeHtml(n.cover) + '" alt="" width="260" height="380" loading="lazy"/>' +
     '</a>' +
     '<div class="novel-copy">' +
       '<p class="genre-line">' + n.genres.map(escapeHtml).join(' · ') + '</p>' +
+      (n.external ? '<p class="catalog-external-badge">External novel · chapters hosted elsewhere</p>' : '') +
       '<h2><a href="' + escapeHtml(n.url) + '">' + escapeHtml(n.title) + '</a></h2>' +
       '<p class="original-title">' + escapeHtml(author) + '</p>' +
       '<p class="card-description">' + escapeHtml(n.description) + '</p>' +
       (tags ? '<div class="catalog-card-tags" aria-label="Story tags">' + tags + '</div>' : '') +
       (stats ? '<p class="catalog-card-stats">' + stats + '</p>' : '') +
       '<p class="fine catalog-card-meta">' +
-        '<span>' + icon('book') + escapeHtml(chapterCount(n.chapterCount)) + '</span>' +
+        '<span>' + icon('book') + (n.external ? 'Read on external site' : escapeHtml(chapterCount(n.chapterCount))) + '</span>' +
         '<span>' + icon('status') + escapeHtml(status) + '</span>' +
         '<span>' + icon('clock') + 'Updated <time datetime="' + escapeHtml(n.updatedAt) + '">' + escapeHtml(formatDate(n.updatedAt)) + '</time></span>' +
       '</p>' +
-      '<a class="text-link catalog-read-action" href="' + escapeHtml(n.url) + '">Read novel <span aria-hidden="true">→</span></a>' +
+      (n.external ?
+        '<div class="catalog-card-actions">' +
+          '<a class="text-link catalog-read-action" href="' + escapeHtml(n.url) + '">View novel <span aria-hidden="true">→</span></a>' +
+          (n.sourceUrl ? '<a class="catalog-source-link" href="' + escapeHtml(n.sourceUrl) + '" target="_blank" rel="noopener noreferrer">Read on ' + escapeHtml(n.sourceName ?? 'source') + ' ↗</a>' : '') +
+        '</div>' :
+        '<a class="text-link catalog-read-action" href="' + escapeHtml(n.url) + '">Read novel <span aria-hidden="true">→</span></a>') +
     '</div>' +
   '</article>';
 }

@@ -1,11 +1,12 @@
 ---
 import Layout from '../../../layouts/Layout.astro';
-import NovelCard from '../../../components/NovelCard.astro';
+import { renderCatalogCard } from '../../../lib/catalog-card';
+import { externalCatalogEntries } from '../../../lib/external-catalog';
 import CatalogHero from '../../../components/CatalogHero.astro';
 import { getLibrary } from '../../../lib/content';
 export async function getStaticPaths() {
   const PAGE_SIZE = 24;
-  const novels = await getLibrary();
+  const novels = [...await getLibrary(), ...externalCatalogEntries];
   const pages = Math.ceil(novels.length / PAGE_SIZE);
   return Array.from({ length: Math.max(0, pages - 1) }, (_, index) => {
     const page = index + 2;
@@ -22,7 +23,7 @@ const { novels, page, pages } = Astro.props;
   <main id="main" class="page-shell catalog-page">
     <CatalogHero page={page} pages={pages} />
     <div class="novel-grid">
-      {novels.map((novel) => <NovelCard novel={novel} />)}
+      {novels.map((novel) => <Fragment set:html={renderCatalogCard(novel)} />)}
     </div>
     <nav class="catalog-pagination" aria-label="Catalog pages">
       <a href={page === 2 ? '/catalog/' : `/catalog/page/${page - 1}/`}>← Previous</a>

@@ -9,6 +9,8 @@ import { getLatestChapters } from '../lib/updates';
 import NewsCard from '../components/NewsCard.astro';
 import { getNews } from '../lib/news';
 import serials from '../data/serials';
+import { visibleExternalNovels } from '../lib/external-catalog';
+import { externalNovelUrl } from '../data/external-novels';
 
 const novels = await getLibrary();
 const latestNews = (await getNews()).slice(0, 3);
@@ -122,6 +124,28 @@ const animatedNovels = newNovels.map((n) => ({
         <p class="home-section-empty">New stories will appear here soon.</p>
       )}
     </section>
+
+    {visibleExternalNovels.length > 0 && (
+      <section class="section home-section home-external-section" aria-labelledby="home-external-title">
+        <div class="section-heading home-section-heading">
+          <div><h2 id="home-external-title">Discover web novels</h2></div>
+          <a href="/catalog/">View all →</a>
+        </div>
+        {visibleExternalNovels.map(novel => (
+          <article class="home-external-card" data-external-source={novel.externalId}>
+            <a class="home-external-cover" href={externalNovelUrl(novel.slug)} aria-label={`Open ${novel.title}`}>
+              <img src="/images/novel-placeholder.svg" alt="" width="100" height="150" loading="lazy"/>
+            </a>
+            <div class="home-external-copy">
+              <span class="external-novel-eyebrow">External novel · {novel.sourceName}</span>
+              <h3><a href={externalNovelUrl(novel.slug)}>{novel.title}</a></h3>
+              <p>{novel.summary}</p>
+              <a class="home-external-read" href={externalNovelUrl(novel.slug)}>View novel <span aria-hidden="true">→</span></a>
+            </div>
+          </article>
+        ))}
+      </section>
+    )}
 
     <div class="home-editorial-columns">
     <section id="latest-chapters" class="section home-section" aria-labelledby="updates-title">
