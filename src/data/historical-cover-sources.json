@@ -1,0 +1,79 @@
+{
+  "collection": "Hunmeng first historical cover wave",
+  "editorialRule": "Manual original-edition provenance required; use Wikimedia Commons only when original 2D historical material is marked public domain; do not mislabel a title page as a publisher binding.",
+  "covers": [
+    {
+      "slug": "frankenstein",
+      "file": "Frankenstein 1818 edition title page.jpg",
+      "year": 1818,
+      "kind": "title page of the 1818 first edition",
+      "sourceType": "title-page",
+      "expectedAuthor": "Mary Shelley"
+    },
+    {
+      "slug": "dracula",
+      "file": "Dracula-First-Edition-1897.jpg",
+      "year": 1897,
+      "kind": "original yellow-cloth cover of the 1897 first edition",
+      "sourceType": "first-edition-binding",
+      "expectedAuthor": "Bram Stoker"
+    },
+    {
+      "slug": "the-time-machine",
+      "file": "The Time Machine (Heinemann text) - front cover.jpg",
+      "year": 1895,
+      "kind": "front cover of the William Heinemann 1895 edition",
+      "sourceType": "first-edition-binding",
+      "expectedAuthor": "H. G. Wells"
+    },
+    {
+      "slug": "the-war-of-the-worlds",
+      "file": "The War of the Worlds first edition.jpg",
+      "year": 1898,
+      "kind": "original cover of the 1898 first book edition",
+      "sourceType": "first-edition-binding",
+      "expectedAuthor": "H. G. Wells"
+    },
+    {
+      "slug": "the-wonderful-wizard-of-oz",
+      "file": "The Wonderful Wizard of Oz first edition cover.jpg",
+      "year": 1900,
+      "kind": "W. W. Denslow's original first-edition binding, 1900",
+      "sourceType": "first-edition-binding",
+      "expectedAuthor": "L. Frank Baum"
+    },
+    {
+      "slug": "treasure-island",
+      "file": "Treasure Island (title page, 1883).webp",
+      "year": 1883,
+      "kind": "title page of the first 1883 Cassell book edition",
+      "sourceType": "title-page",
+      "expectedAuthor": "Robert Louis Stevenson"
+    },
+    {
+      "slug": "the-strange-case-of-dr-jekyll-and-mr-hyde",
+      "file": "Strange Case of Dr Jekyll and Mr Hyde 001.jpg",
+      "year": 1886,
+      "kind": "historical 1886 publisher's cover/title page",
+      "sourceType": "publisher-cover-page",
+      "expectedAuthor": "Robert Louis Stevenson"
+    },
+    {
+      "slug": "the-picture-of-dorian-gray",
+      "file": "Houghton HEW 12.10.15 - The Picture of Dorian Gray, 1891 (cover).jpg",
+      "year": 1891,
+      "kind": "first 1891 book-edition cover, Houghton Library, Harvard University",
+      "sourceType": "first-edition-binding",
+      "expectedAuthor": "Oscar Wilde",
+      "credit": "Houghton Library, Harvard University, HEW 12.10.15"
+    },
+    {
+      "slug": "the-island-of-doctor-moreau",
+      "file": "IslandOfDrMoreau.JPG",
+      "year": 1896,
+      "kind": "front cover of the William Heinemann 1896 first edition",
+      "sourceType": "first-edition-binding",
+      "expectedAuthor": "H. G. Wells"
+    }
+  ]
+}
