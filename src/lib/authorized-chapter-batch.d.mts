@@ -11,7 +11,7 @@ export interface VerifiedSource {
   rights_status: string;
   permission_translate: boolean;
   permission_publish: boolean;
-  verified_at: string | null;
+  verified_at?: string | null;
   rights_evidence?: string | null;
   rights_valid_until?: string | null;
 }
