@@ -48,3 +48,60 @@
   .external-novel-actions { width: 100%; }
   .external-novel-actions .button { width: 100%; }
 }
+
+/* External works use the same catalog card hierarchy as locally published novels.
+   A small visible provenance badge prevents implying that Hunmeng hosts chapters. */
+.catalog-novel-card[data-external-source] {
+  border-color: color-mix(in srgb, var(--accent) 29%, var(--line));
+}
+.catalog-external-badge {
+  align-self: flex-start;
+  width: fit-content;
+  padding: 3px 10px;
+  border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--line));
+  border-radius: 999px;
+  background: var(--soft);
+  color: var(--accent);
+  font: 750 .72rem/1.5 'Manrope Variable', sans-serif;
+  letter-spacing: .015em;
+}
+.catalog-card-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px 20px;
+}
+.catalog-source-link {
+  font-size: .85rem;
+  font-weight: 700;
+  color: var(--accent);
+  text-underline-offset: 4px;
+}
+.catalog-source-link:hover { text-decoration: underline; }
+.home-external-card {
+  display: grid;
+  grid-template-columns: 100px minmax(0, 1fr);
+  gap: clamp(16px, 3vw, 25px);
+  padding: clamp(15px, 2.5vw, 22px);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+}
+.home-external-cover {
+  display: block;
+  border-radius: 9px;
+  background: var(--soft);
+  overflow: hidden;
+  align-self: start;
+}
+.home-external-cover img { width: 100%; height: auto; aspect-ratio: 2/3; object-fit: cover; }
+.home-external-copy { display: flex; flex-direction: column; gap: 8px; min-width: 0; align-items: flex-start; }
+.home-external-copy h3 { font-size: clamp(1.08rem, 2.5vw, 1.4rem); overflow-wrap: anywhere; }
+.home-external-copy h3 a:hover { color: var(--accent); }
+.home-external-copy p { color: var(--muted); font-size: .9rem; line-height: 1.6; }
+.home-external-read { color: var(--accent); font-weight: 750; font-size: .85rem; }
+.home-external-read:hover { text-decoration: underline; }
+@media (max-width: 480px) {
+  .home-external-card { grid-template-columns: 76px minmax(0, 1fr); gap: 12px; }
+  .home-external-copy p { font-size: .8rem; }
+}
