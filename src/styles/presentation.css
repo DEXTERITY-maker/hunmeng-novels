@@ -4766,3 +4766,38 @@ html[data-theme='dark'] .news-page .news-filter-tabs a[aria-current='page'] {col
 .news-page .news-feed .news-card-image img,.news-article-shell .news-more .news-card-image img {position:absolute;inset:0;width:100%;height:100%;max-width:none}
 .news-article-shell .news-article-header {border-bottom:0;padding-bottom:0;margin-bottom:0}
 .news-page .news-feed .news-card-image img,.news-article-shell .news-more .news-card-image img {max-height:none;min-height:0}
+
+/* Founder of Hunmeng — unique emblem: avatar badge, title ribbon icon, profile card. */
+.reader-account-page .profile-avatar-wrap {position:relative;display:inline-block;flex:0 0 auto;line-height:0}
+.reader-account-page .profile-founder-badge {position:absolute;z-index:3;top:-6px;right:-10px;width:38%;height:auto;aspect-ratio:1;object-fit:contain;filter:drop-shadow(0 6px 10px rgb(20 30 20 / .35))}
+.reader-account-page .profile-founder-badge[hidden] {display:none}
+.reader-account-page .profile-title-slot .advancement-title-line[data-founder='true']::before {
+  content:'';width:24px;height:24px;flex:0 0 24px;background:url('/images/founder/founder-128.webp') center/contain no-repeat;
+}
+.reader-account-page .profile-founder-card {grid-column:1/-1;display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:8px 28px;padding:22px 26px}
+.reader-account-page .profile-founder-card[hidden] {display:none!important}
+.reader-account-page .profile-founder-card > * {margin:0!important}
+.reader-account-page .profile-founder-art {position:relative;display:grid;justify-items:center;width:220px}
+.reader-account-page .profile-founder-art img {width:200px;height:200px;object-fit:contain;filter:drop-shadow(0 14px 22px rgb(20 40 25 / .3))}
+.reader-account-page .profile-founder-ribbon {
+  position:relative;margin-top:-18px;padding:6px 30px;color:#fff6dc;
+  font:700 .95rem/1 var(--heading-font,Georgia,serif);letter-spacing:.28em;text-transform:uppercase;
+  background:linear-gradient(180deg,#1f6a4c,#164a36);border:1.5px solid #c9a35a;
+  clip-path:polygon(0 0,100% 0,94% 50%,100% 100%,0 100%,6% 50%);box-shadow:0 6px 14px rgb(20 40 25 / .25);
+}
+.reader-account-page .profile-founder-copy {display:grid;gap:8px;min-width:0}
+.reader-account-page .profile-founder-copy h3 {border:0!important;padding:0!important;margin:0!important;font:700 clamp(1.5rem,2.6vw,2rem)/1.2 var(--heading-font,Georgia,serif)}
+.reader-account-page .profile-founder-copy h3::before {display:none}
+.reader-account-page .profile-founder-copy .eyebrow {color:#b88a4a;letter-spacing:.16em;font-weight:800;font-size:.74rem;margin:0}
+.reader-account-page .profile-founder-copy p {margin:0;line-height:1.55}
+.reader-account-page .profile-founder-copy .button {justify-self:start;min-height:44px;padding-inline:22px}
+.header-avatar {position:relative}
+.header-avatar [data-founder-badge] {position:absolute;right:-6px;bottom:-5px;width:18px;height:18px;object-fit:contain;filter:drop-shadow(0 1px 2px rgb(0 0 0 / .35))}
+.header-avatar [data-founder-badge][hidden] {display:none}
+@media(max-width:760px){
+  .reader-account-page .profile-founder-card {grid-template-columns:minmax(0,1fr);justify-items:center;text-align:center;padding:18px 16px}
+  .reader-account-page .profile-founder-art {width:auto}
+  .reader-account-page .profile-founder-art img {width:150px;height:150px}
+  .reader-account-page .profile-founder-copy .button {justify-self:center}
+  .reader-account-page .profile-founder-badge {top:-4px;right:-8px}
+}
