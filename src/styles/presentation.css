@@ -4067,3 +4067,574 @@ html[data-theme='dark'] .reader-account-page #profile-recent-reading h3 svg {col
   .reader-account-page #profile-event-card #profile-event-invitation {grid-template-columns:72px minmax(0,1fr);margin:0 16px 14px}
   .reader-account-page #profile-event-card #profile-event-invitation::before {width:72px;height:72px}
 }
+
+
+/* Reader profile art direction: layout and data hooks remain unchanged.
+   Optional /images/profile/*.webp layers gracefully reveal existing artwork. */
+.reader-account-page {
+  --profile-paper:#f7f1e6;
+  --profile-card:#fffaf1;
+  --profile-inset:#fffdf8;
+  --profile-edge:#dac9ad;
+  --profile-brass:#c49a54;
+  --profile-forest:#18503c;
+  --profile-link:#174a37;
+  --profile-ink:#24392f;
+  --profile-secondary:#665f50;
+  --profile-page-ink:var(--profile-ink);
+  --profile-page-muted:var(--profile-secondary);
+  --profile-page-line:var(--profile-edge);
+  --profile-page-surface:var(--profile-card);
+  --profile-page-soft:var(--profile-inset);
+  --profile-page-accent:var(--profile-link);
+  --profile-gutter:clamp(16px,3vw,42px);
+}
+html[data-theme='sepia'] .reader-account-page {
+  --profile-paper:#eee0c9;--profile-card:#f8ecd7;
+  --profile-inset:#fff4df;--profile-edge:#cbb897;
+  --profile-forest:#51442b;--profile-link:#594326;
+  --profile-ink:#413927;--profile-secondary:#695a43;
+}
+html[data-theme='dark'] .reader-account-page {
+  --profile-paper:#17231f;--profile-card:#22302b;
+  --profile-inset:#293b34;--profile-edge:#65715f;
+  --profile-brass:#d7b77d;--profile-forest:#255e48;
+  --profile-link:#b7dec5;--profile-ink:#f0ecdf;--profile-secondary:#c9d1c4;
+}
+@media (prefers-color-scheme:dark) {
+  html[data-theme='system'] .reader-account-page {
+    --profile-paper:#17231f;--profile-card:#22302b;
+    --profile-inset:#293b34;--profile-edge:#65715f;
+    --profile-brass:#d7b77d;--profile-forest:#255e48;
+    --profile-link:#b7dec5;--profile-ink:#f0ecdf;--profile-secondary:#c9d1c4;
+  }
+}
+body:has(.reader-account-page #auth-logged-in:not([hidden])) {background:#f7f1e6}
+html[data-theme='sepia'] body:has(.reader-account-page #auth-logged-in:not([hidden])) {background:#eee0c9}
+html[data-theme='dark'] body:has(.reader-account-page #auth-logged-in:not([hidden])) {background:#17231f}
+@media (prefers-color-scheme:dark) {
+  html[data-theme='system'] body:has(.reader-account-page #auth-logged-in:not([hidden])) {background:#17231f}
+}
+.reader-account-page:has(#auth-logged-in:not([hidden])) {max-width:none;padding-inline:0;background:var(--profile-paper)}
+.reader-account-page #auth-logged-in.profile-layout {
+  max-width:1500px;margin-inline:auto;padding-inline:var(--profile-gutter);
+  grid-template-columns:220px minmax(0,1fr);column-gap:24px;row-gap:0;
+  position:relative;color:var(--profile-ink);
+}
+.reader-account-page #auth-logged-in.profile-layout::before {
+  content:'';grid-column:1/-1;grid-row:2;align-self:stretch;
+  margin:-28px calc(-1 * var(--profile-gutter)) -12px;
+  border-radius:32px 32px 0 0;background:var(--profile-paper);
+  pointer-events:none;z-index:0;
+}
+/* The banner is a landscape, not a floating card. Missing optional art
+   reveals the existing day/night landscape in the bottom background layer. */
+.reader-account-page .profile-member-hero {
+  grid-template-columns:minmax(0,1fr) minmax(340px,430px);
+  min-height:340px;padding:34px var(--profile-gutter) 62px;
+  margin-inline:calc(-1 * var(--profile-gutter));
+  border:0;border-radius:0;box-shadow:none;
+  background-image:
+    linear-gradient(90deg, var(--profile-paper) 0%,rgb(247 241 230 / .94) 23%,rgb(247 241 230 / .72) 43%,rgb(247 241 230 / .14) 68%,transparent 90%),
+    linear-gradient(0deg,var(--profile-paper) 0%,transparent 21%),
+    url('/images/profile/header-day.webp'),
+    url('/images/art/hunmeng-landscape-day-1536.webp');
+  background-position:center,center,center 40%,center 40%;
+  background-size:cover;background-repeat:no-repeat;
+  color:var(--profile-ink);
+}
+html[data-theme='sepia'] .reader-account-page .profile-member-hero {
+  background-image:
+    linear-gradient(90deg,rgb(238 224 201 / .99),rgb(238 224 201 / .88) 28%,rgb(238 224 201 / .65) 46%,transparent 84%),
+    linear-gradient(0deg,var(--profile-paper),rgb(238 224 201 / .08) 28%),
+    url('/images/profile/header-day.webp'),
+    url('/images/art/hunmeng-landscape-day-1536.webp');
+}
+html[data-theme='dark'] .reader-account-page .profile-member-hero {
+  background-image:
+    linear-gradient(90deg,rgb(23 35 31 / .98),rgb(23 35 31 / .93) 25%,rgb(23 35 31 / .70) 49%,rgb(23 35 31 / .12) 80%),
+    linear-gradient(0deg,var(--profile-paper),transparent 23%),
+    url('/images/profile/header-night.webp'),
+    url('/images/art/hunmeng-landscape-night-1536.webp');
+}
+@media (prefers-color-scheme:dark) {
+  html[data-theme='system'] .reader-account-page .profile-member-hero {
+    background-image:
+      linear-gradient(90deg,rgb(23 35 31 / .98),rgb(23 35 31 / .93) 25%,rgb(23 35 31 / .70) 49%,rgb(23 35 31 / .12) 80%),
+      linear-gradient(0deg,var(--profile-paper),transparent 23%),
+      url('/images/profile/header-night.webp'),
+      url('/images/art/hunmeng-landscape-night-1536.webp');
+  }
+}
+.reader-account-page .profile-member-identity {gap:26px;align-items:center}
+.reader-account-page .profile-member-identity .profile-avatar,
+.reader-account-page .profile-member-identity .profile-avatar[data-reader-rank] {
+  position:relative;overflow:visible;
+  width:170px;height:170px;flex:0 0 170px;
+  font:650 5.5rem/1 var(--heading-font,Georgia,serif);
+  background:var(--avatar-color,#142a40);
+  border:5px solid var(--profile-brass);
+  box-shadow:0 0 0 3px rgb(255 249 232 / .8),0 13px 32px rgb(23 33 29 / .25);
+}
+.reader-account-page .profile-member-identity .profile-avatar::after {
+  content:'';position:absolute;pointer-events:none;
+  /* The wreath art is a square whose arc hugs a circle ~68% of its width,
+     sitting slightly low: scale and centre it on the avatar, nudged down. */
+  width:147%;height:147%;left:-23.5%;top:-16.5%;
+  background:url('/images/profile/avatar-laurel.webp') center/contain no-repeat;
+}
+.reader-account-page .profile-member-copy {gap:10px}
+.reader-account-page .profile-member-copy h2 {
+  font:750 clamp(2.2rem,3.5vw,3.4rem)/1.1 var(--heading-font,Georgia,serif);
+  letter-spacing:-.025em;color:var(--profile-ink);
+}
+.reader-account-page .profile-member-copy #profile-bio {
+  font-style:normal;font-size:1.04rem;line-height:1.55;
+  color:var(--profile-ink);max-width:42ch;
+}
+.reader-account-page .profile-title-slot .advancement-title-line {
+  min-height:35px;border:1.5px solid var(--profile-brass);
+  border-radius:3px;clip-path:polygon(0 0,100% 0,96% 50%,100% 100%,0 100%,4% 50%);
+  padding:7px 24px 7px 22px;
+  background:#164632;
+  box-shadow:inset 0 0 0 2px rgb(233 193 113 / .28),0 4px 11px rgb(16 44 29 / .15);
+}
+.reader-account-page .profile-title-slot .advancement-title-line::before {
+  content:'✦';color:#f1cd89;font-size:.95rem;
+}
+.reader-account-page .profile-title-slot #reader-equipped-title {color:#fff;font:650 .94rem/1.25 var(--heading-font,Georgia,serif)}
+.reader-account-page .profile-rank-slot .advancement-hero {
+  grid-template-columns:118px minmax(0,1fr);gap:20px;
+  padding:0;background:transparent;border:0;border-radius:0;
+  box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;
+}
+.reader-account-page .profile-rank-slot .advancement-intro {
+  padding:2px 0 2px 20px;
+  border-left:1px solid color-mix(in srgb,var(--profile-brass) 80%,transparent);
+  min-width:0;
+}
+.reader-account-page .profile-rank-slot .advancement-emblem-wrap {width:118px;height:135px}
+.reader-account-page .profile-rank-slot .advancement-emblem-wrap img {width:116px;height:135px}
+.reader-account-page .profile-rank-slot #advancement-heading {
+  white-space:normal;font:700 clamp(1.3rem,2vw,1.65rem)/1.18 var(--heading-font,Georgia,serif);
+  color:var(--profile-ink);
+}
+.reader-account-page .profile-rank-slot #reader-xp-progress {
+  height:13px;border-radius:99px;accent-color:var(--profile-forest);background:rgb(108 100 84 / .23);
+}
+.reader-account-page .profile-rank-slot #reader-xp-numbers {color:var(--profile-ink)}
+.reader-account-page .profile-member-actions {padding-left:196px;gap:12px}
+.reader-account-page .profile-member-actions .button:not(.secondary) {
+  background:#17513a;color:white;border-color:#17513a;
+}
+.reader-account-page .profile-member-actions .button.secondary {
+  color:var(--profile-ink);border-color:var(--profile-forest);
+  background:color-mix(in srgb,var(--profile-card) 88%,transparent);
+}
+.reader-account-page .profile-member-actions :is(a,button):focus-visible {outline:3px solid var(--profile-brass);outline-offset:3px}
+/* Slight overlap visually joins the statistics and section navigation to the scene. */
+.reader-account-page .profile-sidebar,
+.reader-account-page .profile-content {position:relative;z-index:1;margin-top:-17px}
+.reader-account-page .profile-content {background:var(--profile-paper);border-radius:22px 22px 0 0;padding:18px 0 28px}
+.reader-account-page .profile-sidebar {
+  overflow:hidden;padding:18px 14px 135px;
+  background-image:
+    linear-gradient(180deg,var(--profile-card) 36%,color-mix(in srgb,var(--profile-card) 88%,transparent) 80%,color-mix(in srgb,var(--profile-card) 58%,transparent)),
+    url('/images/profile/ink-wash-corner.webp'),
+    url('/images/art/hunmeng-landscape-day-960.webp');
+  background-position:center,right bottom,center bottom;
+  background-size:cover,contain,cover;
+  background-repeat:no-repeat;
+  border:1px solid var(--profile-edge);
+  border-radius:22px 22px 18px 18px;
+  box-shadow:0 8px 25px rgb(77 58 27 / .08);
+}
+html[data-theme='dark'] .reader-account-page .profile-sidebar {
+  /* The ink-wash art is light grey: on a dark card it would read as a white smear. */
+  background-image:
+    linear-gradient(180deg,var(--profile-card) 36%,color-mix(in srgb,var(--profile-card) 89%,transparent) 80%,color-mix(in srgb,var(--profile-card) 66%,transparent)),
+    url('/images/art/hunmeng-landscape-night-960.webp');
+  background-position:center,center bottom;background-size:cover,cover;
+}
+.reader-account-page .profile-sidebar nav a {
+  font:600 1rem/1.3 var(--heading-font,Georgia,serif);
+  border-radius:10px;border-left:3px solid transparent;
+  color:var(--profile-ink);
+}
+.reader-account-page .profile-sidebar nav a:hover {background:var(--profile-inset)}
+.reader-account-page .profile-sidebar nav a[aria-current='location'] {
+  background:#17513a;color:white;border-left-color:var(--profile-brass);
+}
+.reader-account-page .profile-sidebar nav a[aria-current='location'] svg {color:white}
+.reader-account-page .profile-sidebar .profile-quicklinks {
+  position:relative;margin-top:26px;padding-top:21px;border-top:1px solid var(--profile-edge);
+}
+.reader-account-page .profile-sidebar .profile-quicklinks::before {
+  content:'◆';position:absolute;top:-10px;left:calc(50% - 12px);
+  width:24px;text-align:center;background:var(--profile-card);
+  color:var(--profile-brass);font-size:.72rem;line-height:20px;
+}
+.reader-account-page .profile-sidebar .profile-library-link {
+  font:600 .93rem/1.3 var(--heading-font,Georgia,serif);color:var(--profile-ink);
+}
+/* The four verified stats read as one horizontal strip. */
+.reader-account-page #profile-details .profile-metrics-slot .advancement-stats {
+  border:1px solid var(--profile-edge);border-radius:17px;
+  background:var(--profile-card);box-shadow:0 7px 24px rgb(89 66 35 / .08);
+}
+.reader-account-page #profile-details .profile-metrics-slot .advancement-stats>div {
+  min-height:107px;column-gap:13px;grid-template-columns:auto minmax(0,max-content);
+  padding:15px 12px;
+}
+.reader-account-page #profile-details .profile-metrics-slot .advancement-stats>div+div::before {background:var(--profile-edge)}
+.reader-account-page .profile-stat-icon {color:#20533e}
+html[data-theme='dark'] .reader-account-page .profile-stat-icon {color:#b7dec5}
+.reader-account-page #profile-details .profile-metrics-slot .advancement-stats span {
+  font:500 .97rem/1.2 var(--heading-font,Georgia,serif);
+  color:var(--profile-ink);opacity:1;
+}
+.reader-account-page #profile-details .profile-metrics-slot .advancement-stats strong {
+  font:750 clamp(1.8rem,2.5vw,2.35rem)/1.08 var(--heading-font,Georgia,serif);
+  color:var(--profile-ink);
+}
+/* Selected tab is a restrained underline, not a filled green button. */
+.reader-account-page .profile-inner-tabs {
+  margin:19px 0 18px;border-bottom:1px solid var(--profile-edge);gap:5px;
+}
+.reader-account-page .profile-inner-tabs button {
+  font:600 1.02rem/1.2 var(--heading-font,Georgia,serif);
+  color:var(--profile-ink);background:transparent;
+  border:1px solid transparent;border-bottom:4px solid transparent;
+  border-radius:10px 10px 0 0;padding:12px 19px;
+  box-shadow:none;
+}
+.reader-account-page .profile-inner-tabs button[aria-selected='true'] {
+  background:color-mix(in srgb,var(--profile-card) 78%,transparent);
+  color:var(--profile-link);border:1px solid var(--profile-edge);
+  border-bottom:4px solid var(--profile-forest);box-shadow:none;
+  margin-bottom:-1px;
+}
+.reader-account-page .profile-inner-tabs button:not([aria-selected='true']):hover {
+  color:var(--profile-link);background:var(--profile-inset);
+}
+/* Warm cards, inner surfaces and intentionally faint optional corner art. */
+.reader-account-page .profile-overview-grid {gap:18px}
+.reader-account-page .profile-dashboard-card {
+  position:relative;isolation:isolate;overflow:hidden;min-width:0;
+  border:1px solid var(--profile-edge);border-radius:18px;
+  background:var(--profile-card);box-shadow:0 9px 24px rgb(85 63 33 / .08);
+}
+.reader-account-page .profile-dashboard-card::after {
+  content:'';position:absolute;z-index:0;pointer-events:none;
+  right:0;bottom:0;width:48%;height:67%;opacity:.13;
+  background:url('/images/profile/ink-wash-corner.webp') right bottom/contain no-repeat;
+}
+.reader-account-page .profile-dashboard-card > * {position:relative;z-index:1}
+.reader-account-page .profile-dashboard-card h3,
+.reader-account-page #profile-details #profile-recent-reading h3 {
+  font:700 1.28rem/1.27 var(--heading-font,Georgia,serif);
+  color:var(--profile-ink);border-bottom:1px solid var(--profile-edge);
+}
+.reader-account-page .profile-dashboard-card h3 svg,
+.reader-account-page #profile-recent-reading h3 svg {color:var(--profile-link)}
+.reader-account-page .profile-card-heading {border-color:var(--profile-edge)}
+.reader-account-page .profile-card-heading a {color:var(--profile-link);text-underline-offset:4px}
+.reader-account-page #profile-continue-slot #profile-recent-list,
+.reader-account-page #profile-goal-slot,
+.reader-account-page #profile-event-awards-slot,
+.reader-account-page #profile-event-invitation,
+.reader-account-page #profile-details .profile-recent-xp .reader-xp-history-list {
+  background:var(--profile-inset);border:1px solid color-mix(in srgb,var(--profile-edge) 76%,transparent);
+  border-radius:13px;margin:0 18px 18px;padding:15px;
+}
+.reader-account-page #profile-continue-slot #profile-recent-list {display:grid;gap:8px}
+.reader-account-page #profile-continue-slot #profile-recent-reading > #profile-recent-list {margin-inline:18px}
+.reader-account-page #profile-details .profile-recent-list li {
+  grid-template-columns:94px minmax(0,1fr);
+  gap:8px 17px;min-width:0;
+}
+.reader-account-page #profile-details .profile-recent-cover {
+  width:94px;height:132px;border-radius:11px;
+  box-shadow:0 9px 19px rgb(42 31 21 / .2);
+}
+.reader-account-page #profile-details .profile-recent-copy strong {font:700 1.27rem/1.23 var(--heading-font,Georgia,serif)}
+.reader-account-page #profile-details .profile-recent-card > a {
+  background:#17513a;border-radius:9px;color:white;padding:10px 15px;
+  min-height:42px;font-weight:700;
+}
+.reader-account-page #profile-details .profile-recent-card > a:hover {background:#206b4f}
+.reader-account-page #profile-details .profile-recent-card > a:focus-visible {outline:3px solid var(--profile-brass);outline-offset:2px}
+/* CSS image overlay: if the pending goal-emblem.webp is absent, the
+   existing Target icon beneath it is still visible. */
+.reader-account-page #profile-goal-slot {
+  display:grid;grid-template-columns:72px minmax(0,1fr);gap:14px;align-items:center;min-width:0;
+}
+.reader-account-page #profile-goal-slot .profile-goal-medallion {
+  position:relative;display:grid;place-items:center;width:72px;height:72px;
+  border-radius:50%;background:color-mix(in srgb,var(--profile-brass) 12%,var(--profile-inset));
+  color:var(--profile-link);
+}
+.reader-account-page #profile-goal-slot .profile-goal-medallion::after {
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:url('/images/profile/goal-emblem.webp') center/contain no-repeat;
+}
+.reader-account-page #profile-goal-slot #reader-next-achievement,
+.reader-account-page #profile-goal-slot #reader-all-achievements {grid-column:2;min-width:0}
+.reader-account-page #profile-details #reader-next-achievement #reader-next-achievement-name {
+  font:700 1.12rem/1.3 var(--heading-font,Georgia,serif);
+}
+.reader-account-page #profile-details #reader-next-achievement progress {
+  display:inline-block;width:calc(100% - 75px);height:16px;accent-color:var(--profile-forest);
+  border-radius:999px;vertical-align:middle;
+}
+.reader-account-page #profile-goal-ratio {
+  display:inline-block;min-width:62px;margin-left:9px;
+  color:var(--profile-ink);font:700 .96rem/1.4 var(--heading-font,Georgia,serif);
+  white-space:nowrap;vertical-align:middle;
+}
+/* Event award and decorative, inert future slot. */
+.reader-account-page #profile-event-awards-slot:has(.halloween-profile-award) {
+  display:grid;grid-template-columns:minmax(0,1fr) 96px;align-items:center;gap:12px;
+}
+.reader-account-page #profile-event-awards-slot .halloween-profile-award {
+  min-width:0;display:flex;align-items:center;gap:14px;background:transparent;border:0;padding:0;
+}
+.reader-account-page #profile-event-awards-slot .halloween-profile-award-image {
+  width:130px;height:130px;flex:0 0 130px;object-fit:contain;
+}
+.reader-account-page #profile-event-awards-slot .halloween-profile-award-info {
+  background:var(--profile-card);border:1px solid var(--profile-edge);border-radius:10px;
+  padding:10px 12px;min-width:0;overflow-wrap:anywhere;
+}
+.reader-account-page .profile-award-placeholder {display:none}
+.reader-account-page #profile-event-awards-slot:has(.halloween-profile-award) > .profile-award-placeholder {
+  display:grid;place-items:center;width:90px;height:90px;
+  background:color-mix(in srgb,var(--profile-brass) 4%,transparent);
+  border:2px dashed var(--profile-edge);
+  color:var(--profile-brass);font:300 2.2rem/1 var(--heading-font,Georgia,serif);
+  clip-path:polygon(29% 0,71% 0,100% 29%,100% 71%,71% 100%,29% 100%,0 71%,0 29%);
+}
+.reader-account-page #profile-event-card #profile-event-invitation {border-color:var(--profile-edge)}
+/* XP list: quiet dates and unboxed green values. */
+.reader-account-page #profile-details .profile-recent-xp .reader-xp-history-list {margin:0 18px 18px;padding:5px 15px}
+.reader-account-page #profile-details .profile-recent-xp .reader-xp-history-list li {
+  min-width:0;column-gap:10px;padding:12px 0;border-color:var(--profile-edge);
+}
+.reader-account-page #profile-details .profile-recent-xp .reader-xp-history-list li::before {background:var(--profile-link)}
+.reader-account-page #profile-details .profile-recent-xp .reader-xp-history-list li strong {
+  padding:0;border-radius:0;background:transparent!important;
+  color:var(--profile-link);font-weight:800;font-size:.92rem;white-space:nowrap;
+}
+.reader-account-page #profile-details .profile-recent-xp .reader-xp-history-list li small {color:var(--profile-secondary)}
+@media(max-width:1100px) {
+  .reader-account-page .profile-member-hero {grid-template-columns:minmax(0,1fr) minmax(280px,340px)}
+  .reader-account-page .profile-member-identity .profile-avatar,
+  .reader-account-page .profile-member-identity .profile-avatar[data-reader-rank] {
+    width:122px;height:122px;flex-basis:122px;font-size:4rem;
+  }
+  .reader-account-page .profile-member-actions {padding-left:148px}
+  .reader-account-page #auth-logged-in.profile-layout {grid-template-columns:192px minmax(0,1fr);gap:0 15px}
+  .reader-account-page #profile-event-awards-slot:has(.halloween-profile-award) {grid-template-columns:minmax(0,1fr) 72px}
+  .reader-account-page #profile-event-awards-slot:has(.halloween-profile-award) > .profile-award-placeholder {width:72px;height:72px}
+}
+@media(max-width:760px) {
+  .reader-account-page {--profile-gutter:14px}
+  .reader-account-page #auth-logged-in.profile-layout {
+    grid-template-columns:minmax(0,1fr);row-gap:0;column-gap:0;
+  }
+  .reader-account-page #auth-logged-in.profile-layout::before {grid-row:2;margin-top:-18px;border-radius:24px 24px 0 0}
+  .reader-account-page .profile-member-hero {
+    grid-template-columns:minmax(0,1fr);
+    grid-template-areas:'identity' 'rank' 'actions';
+    min-height:0;gap:19px;padding:58px 18px 45px;
+    background-image:
+      linear-gradient(180deg,rgb(247 241 230 / .36) 0%,rgb(247 241 230 / .67) 36%,var(--profile-paper) 98%),
+      linear-gradient(90deg,rgb(247 241 230 / .76),transparent 100%),
+      url('/images/profile/header-day.webp'),
+      url('/images/art/hunmeng-landscape-day-960.webp');
+    background-position:center,center,center top,center top;
+    background-size:cover;
+  }
+  html[data-theme='sepia'] .reader-account-page .profile-member-hero {
+    background-image:
+      linear-gradient(180deg,rgb(238 224 201 / .4),rgb(238 224 201 / .76) 42%,var(--profile-paper) 98%),
+      linear-gradient(90deg,rgb(238 224 201 / .76),transparent),
+      url('/images/profile/header-day.webp'),
+      url('/images/art/hunmeng-landscape-day-960.webp');
+  }
+  html[data-theme='dark'] .reader-account-page .profile-member-hero {
+    background-image:
+      linear-gradient(180deg,rgb(23 35 31 / .35),rgb(23 35 31 / .76) 40%,var(--profile-paper) 98%),
+      linear-gradient(90deg,rgb(23 35 31 / .80),transparent),
+      url('/images/profile/header-night.webp'),
+      url('/images/art/hunmeng-landscape-night-960.webp');
+  }
+  .reader-account-page .profile-member-identity {flex-direction:row;align-items:flex-start;gap:14px}
+  .reader-account-page .profile-member-identity .profile-avatar,
+  .reader-account-page .profile-member-identity .profile-avatar[data-reader-rank] {
+    width:100px;height:100px;flex-basis:100px;font-size:3.2rem;border-width:4px;
+  }
+  .reader-account-page .profile-member-copy h2 {font-size:clamp(1.7rem,6vw,2.2rem)}
+  .reader-account-page .profile-member-copy #profile-bio {font-size:.86rem}
+  .reader-account-page .profile-title-slot .advancement-title-line {padding:6px 16px}
+  .reader-account-page .profile-title-slot #reader-equipped-title {font-size:.82rem}
+  .reader-account-page .profile-rank-slot .advancement-hero {
+    grid-template-columns:80px minmax(0,1fr);gap:10px;padding:0;
+  }
+  .reader-account-page .profile-rank-slot .advancement-emblem-wrap {width:80px;height:90px}
+  .reader-account-page .profile-rank-slot .advancement-emblem-wrap img {width:78px;height:90px}
+  .reader-account-page .profile-rank-slot .advancement-intro {padding-left:12px}
+  .reader-account-page .profile-rank-slot #advancement-heading {font-size:1.12rem;white-space:normal}
+  .reader-account-page .profile-member-actions {
+    display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding-left:0;
+  }
+  .reader-account-page .profile-member-actions :is(.button,button) {
+    width:100%;min-width:0;min-height:44px;padding:10px 7px;font-size:.86rem;
+  }
+  .reader-account-page .profile-sidebar {
+    grid-column:1;grid-row:2;margin-top:-15px;position:relative;
+    padding:10px 8px 12px;border-radius:20px 20px 12px 12px;
+    background:var(--profile-card);box-shadow:0 6px 18px rgb(85 63 33 / .05);
+  }
+  .reader-account-page .profile-sidebar nav {grid-template-columns:repeat(3,minmax(0,1fr));gap:3px}
+  .reader-account-page .profile-sidebar nav a {font-size:.85rem;gap:5px;padding:9px 3px}
+  .reader-account-page .profile-sidebar .profile-quicklinks {margin-top:10px;padding-top:12px}
+  .reader-account-page .profile-sidebar .profile-quicklinks::before {top:-10px}
+  .reader-account-page .profile-sidebar .profile-library-link {font-size:.79rem}
+  .reader-account-page .profile-content {
+    grid-column:1;grid-row:3;margin-top:0;padding:14px 0 20px;
+  }
+  .reader-account-page #profile-details .profile-metrics-slot .advancement-stats {
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+  .reader-account-page #profile-details .profile-metrics-slot .advancement-stats>div {
+    min-height:87px;column-gap:9px;padding:13px 6px;
+  }
+  .reader-account-page #profile-details .profile-metrics-slot .advancement-stats>div:nth-child(3)::before {display:none}
+  .reader-account-page #profile-details .profile-metrics-slot .advancement-stats>div:nth-child(n+3) {
+    border-top:1px solid var(--profile-edge);
+  }
+  .reader-account-page #profile-details .profile-metrics-slot .advancement-stats span {font-size:.8rem}
+  .reader-account-page #profile-details .profile-metrics-slot .advancement-stats strong {font-size:1.75rem}
+  .reader-account-page .profile-inner-tabs {gap:0;overflow-x:auto;white-space:nowrap;scrollbar-width:none}
+  .reader-account-page .profile-inner-tabs button {flex:0 0 auto;font-size:.86rem;padding:11px 12px}
+  .reader-account-page .profile-overview-grid {grid-template-columns:minmax(0,1fr);gap:12px}
+  .reader-account-page #profile-details .profile-dashboard-card {max-width:100%;min-width:0}
+  .reader-account-page .profile-dashboard-card h3,
+  .reader-account-page #profile-details #profile-recent-reading h3 {font-size:1.15rem}
+  .reader-account-page #profile-continue-slot #profile-recent-list,
+  .reader-account-page #profile-goal-slot,
+  .reader-account-page #profile-event-awards-slot,
+  .reader-account-page #profile-details .profile-recent-xp .reader-xp-history-list {
+    margin:0 12px 14px;padding:12px;
+  }
+  .reader-account-page #profile-continue-slot #profile-recent-reading > #profile-recent-list {margin-inline:12px}
+  .reader-account-page #profile-details .profile-recent-list li {grid-template-columns:72px minmax(0,1fr);gap:6px 10px}
+  .reader-account-page #profile-details .profile-recent-cover {width:72px;height:104px}
+  .reader-account-page #profile-details .profile-recent-copy strong {font-size:1.05rem}
+  .reader-account-page #profile-goal-slot {grid-template-columns:60px minmax(0,1fr);gap:9px}
+  .reader-account-page #profile-goal-slot .profile-goal-medallion {width:60px;height:60px}
+  .reader-account-page #profile-event-awards-slot:has(.halloween-profile-award) {grid-template-columns:minmax(0,1fr) 58px;gap:6px}
+  .reader-account-page #profile-event-awards-slot .halloween-profile-award-image {width:87px;height:87px;flex-basis:87px}
+  .reader-account-page #profile-event-awards-slot:has(.halloween-profile-award) > .profile-award-placeholder {
+    width:55px;height:55px;font-size:1.6rem;
+  }
+  .reader-account-page #profile-details .profile-recent-xp .reader-xp-history-list {margin:0 12px 14px;padding:4px 12px}
+  .reader-account-page #profile-details .profile-recent-xp .reader-xp-history-list li {column-gap:6px}
+  .reader-account-page #profile-details .profile-recent-xp .reader-xp-history-list li strong {font-size:.82rem}
+}
+@media (prefers-color-scheme:dark) {
+  html[data-theme='system'] .reader-account-page .profile-member-hero {
+    background-image:
+      linear-gradient(90deg,rgb(23 35 31 / .98),rgb(23 35 31 / .93) 25%,rgb(23 35 31 / .70) 49%,rgb(23 35 31 / .12) 80%),
+      linear-gradient(0deg,var(--profile-paper),transparent 23%),
+      url('/images/profile/header-night.webp'),
+      url('/images/art/hunmeng-landscape-night-1536.webp');
+  }
+  @media (max-width:760px) {
+    html[data-theme='system'] .reader-account-page .profile-member-hero {
+      background-image:
+        linear-gradient(180deg,rgb(23 35 31 / .35),rgb(23 35 31 / .76) 40%,var(--profile-paper) 98%),
+        linear-gradient(90deg,rgb(23 35 31 / .80),transparent),
+        url('/images/profile/header-night.webp'),
+        url('/images/art/hunmeng-landscape-night-960.webp');
+    }
+  }
+}
+
+
+/* Screenshot review: seamless right-hand mist keeps rank text legible over
+   the bright landscape without introducing a floating panel. */
+.reader-account-page .profile-member-hero {
+  background-image:
+    linear-gradient(90deg,var(--profile-paper) 0%,rgb(247 241 230 / .94) 23%,rgb(247 241 230 / .72) 43%,rgb(247 241 230 / .14) 68%,transparent 90%),
+    radial-gradient(ellipse 330px 160px at 85% 51%,rgb(255 249 237 / .87),rgb(255 249 237 / .58) 58%,transparent 100%),
+    linear-gradient(0deg,var(--profile-paper),transparent 21%),
+    url('/images/profile/header-day.webp'),
+    url('/images/art/hunmeng-landscape-day-1536.webp');
+  background-position:center,center,center,center 40%,center 40%;
+}
+html[data-theme='sepia'] .reader-account-page .profile-member-hero {
+  background-image:
+    linear-gradient(90deg,rgb(238 224 201 / .99),rgb(238 224 201 / .88) 28%,rgb(238 224 201 / .65) 46%,transparent 84%),
+    radial-gradient(ellipse 330px 160px at 85% 51%,rgb(249 232 202 / .86),rgb(249 232 202 / .53) 58%,transparent 100%),
+    linear-gradient(0deg,var(--profile-paper),rgb(238 224 201 / .08) 28%),
+    url('/images/profile/header-day.webp'),
+    url('/images/art/hunmeng-landscape-day-1536.webp');
+  background-position:center,center,center,center 40%,center 40%;
+}
+@media(max-width:760px) {
+  /* Let the account menu meet the landscape soon after the action buttons. */
+  .reader-account-page .profile-member-hero {
+    padding:32px 18px 4px;gap:12px;
+    background-image:
+      linear-gradient(180deg,rgb(247 241 230 / .36) 0%,rgb(247 241 230 / .67) 36%,var(--profile-paper) 98%),
+      linear-gradient(90deg,rgb(247 241 230 / .76),transparent 100%),
+      url('/images/profile/header-day-960.webp'),
+      url('/images/art/hunmeng-landscape-day-960.webp');
+    background-position:center,center,center top,center top;
+  }
+  .reader-account-page .profile-sidebar {margin-top:-50px}
+  html[data-theme='sepia'] .reader-account-page .profile-member-hero {
+    background-image:
+      linear-gradient(180deg,rgb(238 224 201 / .4),rgb(238 224 201 / .76) 42%,var(--profile-paper) 98%),
+      linear-gradient(90deg,rgb(238 224 201 / .76),transparent),
+      url('/images/profile/header-day-960.webp'),
+      url('/images/art/hunmeng-landscape-day-960.webp');
+  }
+  html[data-theme='dark'] .reader-account-page .profile-member-hero {
+    background-image:
+      linear-gradient(180deg,rgb(23 35 31 / .35),rgb(23 35 31 / .76) 40%,var(--profile-paper) 98%),
+      linear-gradient(90deg,rgb(23 35 31 / .80),transparent),
+      url('/images/profile/header-night-960.webp'),
+      url('/images/art/hunmeng-landscape-night-960.webp');
+  }
+}
+@media (prefers-color-scheme:dark) {
+  @media(max-width:760px) {
+    html[data-theme='system'] .reader-account-page .profile-member-hero {
+      background-image:
+        linear-gradient(180deg,rgb(23 35 31 / .35),rgb(23 35 31 / .76) 40%,var(--profile-paper) 98%),
+        linear-gradient(90deg,rgb(23 35 31 / .80),transparent),
+        url('/images/profile/header-night.webp'),
+        url('/images/art/hunmeng-landscape-night-960.webp');
+    }
+  }
+}
+
+/* Profile art supplied: lighter files on phones, faint ink-wash in dark mode. */
+html[data-theme='dark'] .reader-account-page .profile-dashboard-card::after {opacity:.05}
+@media(prefers-color-scheme:dark){html[data-theme='system'] .reader-account-page .profile-dashboard-card::after {opacity:.05}}
+/* Review fixes: award sits left of the future slot; no empty box without awards;
+   the laurel needs room past the avatar so it is never clipped by the page edge. */
+.reader-account-page #profile-event-awards-slot:not(:has(.halloween-profile-award)) {display:none}
+.reader-account-page #profile-event-awards-slot:has(.halloween-profile-award) > #halloween-profile-awards-section {grid-column:1;grid-row:1;min-width:0;margin:0;padding:0;border:0;background:transparent;box-shadow:none}
+.reader-account-page #profile-event-awards-slot:has(.halloween-profile-award) > .profile-award-placeholder {grid-column:2;grid-row:1;justify-self:end}
+.reader-account-page #profile-event-awards-slot .halloween-profile-award {flex-wrap:wrap}
+.reader-account-page #profile-event-awards-slot .halloween-profile-award-info {flex:1 1 170px}
+.reader-account-page #profile-event-awards-slot .halloween-profile-award > button {flex:0 0 auto}
+.reader-account-page .profile-member-hero {padding-left:calc(var(--profile-gutter) + 48px)}
+@media(max-width:760px){
+  .reader-account-page .profile-member-hero {padding-left:calc(var(--profile-gutter) + 22px)}
+  .reader-account-page #profile-event-awards-slot .halloween-profile-award-image {width:84px;height:84px;flex-basis:84px}
+}

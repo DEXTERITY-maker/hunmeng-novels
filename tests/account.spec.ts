@@ -939,9 +939,27 @@ test('editorial signed-in profile: accessible cards, demo recent covers and resp
   test.skip(info.project.name !== 'desktop', 'The test captures both viewport sizes from the desktop browser only.');
   // Uses the existing mocked reader account / responses; no real account is accessed.
   const state = await mockAuth(page);
-  state.profileUser.user_metadata = { nickname: 'Demo Reader', avatar_color: 'sage', bio: 'Reading across worlds.' };
-  state.rankStats.total_xp = 300;
-  state.rankStats.chapters = 3;
+  // Representative signed-in reader for visual screenshots (synthetic data only).
+  state.profileUser.user_metadata = { nickname: 'Hunmeng', avatar_color: 'navy',
+    bio: 'Reading cultivation and near-future sci-fi every evening.' };
+  const xpAtLevel=(target:number)=>{
+    let total=0;
+    for(let level=1;level<target;level++) {
+      const n=level-1;total+=500+4*n+Math.floor(26*Math.sqrt(n));
+    }
+    return total;
+  };
+  state.rankStats.total_xp = xpAtLevel(25)+135;
+  state.rankStats.last_rank_notified = 'bronze';
+  state.rankStats.selected_title = 'regular';
+  state.rankStats.chapters = 180;
+  state.rankStats.completedNovels = 2;
+  state.rankStats.readingDays = 34;
+  state.xpAwards = [
+    {event_kind:'chapter_finished',novel_slug:'sad-zimy',chapter_slug:'glava-2',xp:80,awarded_at:'2026-10-31T12:00:00Z'},
+    {event_kind:'chapter_finished',novel_slug:'sad-zimy',chapter_slug:'glava-1',xp:80,awarded_at:'2026-10-31T11:00:00Z'},
+    {event_kind:'novel_finished',novel_slug:'khranitel-mayaka',chapter_slug:'glava-3',xp:400,awarded_at:'2026-10-30T12:00:00Z'},
+  ];
   await open(page);
   await page.evaluate(() => localStorage.setItem('hunmeng-novels:v1', JSON.stringify({
     version: 1,
@@ -977,6 +995,28 @@ test('editorial signed-in profile: accessible cards, demo recent covers and resp
       expect(identity).toBeTruthy();
       expect(panel).toBeTruthy();
       expect(recent).toBeTruthy();
+      // The presentational redesign should preserve the older verified tests
+      // while removing the hero card frame and floating rank background.
+      const presentation = await page.locator('.profile-member-hero').evaluate(el => {
+        const style=getComputedStyle(el);
+        return {radius:style.borderTopLeftRadius,border:style.borderTopWidth,image:style.backgroundImage};
+      });
+      expect(presentation.radius).toBe('0px');
+      expect(presentation.border).toBe('0px');
+      // Phones load the 960 px copy of the same header art.
+      expect(presentation.image).toMatch(theme === 'dark' ? /header-night(-960)?\.webp/ : /header-day(-960)?\.webp/);
+      expect(presentation.image).toContain('hunmeng-landscape-');
+      const rankPlate=await page.locator('.profile-rank-slot .advancement-hero').evaluate(el => ({
+        background:getComputedStyle(el).backgroundColor,border:getComputedStyle(el).borderTopWidth,
+      }));
+      expect(rankPlate.background).toBe('rgba(0, 0, 0, 0)');
+      expect(rankPlate.border).toBe('0px');
+      if(width===1440) expect(hero!.height).toBeGreaterThanOrEqual(330);
+      if(width===390) {
+        const count=await page.locator('#profile-metrics-slot .advancement-stats').evaluate(el =>
+          getComputedStyle(el).gridTemplateColumns.split(' ').length);
+        expect(count).toBe(2);
+      }
       expect(identity!.x).toBeGreaterThanOrEqual(hero!.x - 1);
       expect(identity!.x + identity!.width).toBeLessThanOrEqual(hero!.x + hero!.width + 1);
       expect(recent!.x).toBeGreaterThanOrEqual(panel!.x - 1);

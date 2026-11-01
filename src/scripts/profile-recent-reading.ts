@@ -50,7 +50,7 @@ export function initProfileRecentReading() {
         bar.max=100;bar.value=percent;
         bar.setAttribute('aria-label',`${novel.title}: current chapter progress`);
         const link=document.createElement('a');
-        link.href=action.url;link.textContent='Read now →';
+        link.href=action.url;link.textContent='Continue reading →';
         copy.append(title,detail,bar);
         item.append(cover,copy,link);
         list.append(item);
