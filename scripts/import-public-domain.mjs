@@ -83,7 +83,7 @@ function importOne(b,tmp) {
   const dest=path.join(tmp,b.repo);
   git('clone','--depth=1','--filter=blob:none','--sparse','--branch=master',
     'https://github.com/standardebooks/'+b.repo+'.git',dest);
-  git('-C',dest,'sparse-checkout','set','src/epub/text','src/epub/content.opf','LICENSE.md');
+  git('-C',dest,'sparse-checkout','set','--no-cone','/src/epub/text/','/src/epub/content.opf','/LICENSE.md');
   const head=execFileSync('git',['-C',dest,'rev-parse','HEAD'],{encoding:'utf8'}).trim();
   if(head!==b.sha)throw Error('Pinned revision changed: '+b.repo);
   const chapters=sourceFiles(dest,b);
