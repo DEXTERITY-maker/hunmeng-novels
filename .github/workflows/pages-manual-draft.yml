@@ -31,7 +31,8 @@ jobs:
          startsWith(github.event.head_commit.message, 'design(ui): publish Hunmeng editorial redesign 2026-10-29 [deploy cloudflare]') ||
          startsWith(github.event.head_commit.message, 'chore(release): publish reader panorama 2026-10-30 [deploy cloudflare]') ||
          startsWith(github.event.head_commit.message, 'chore(release): publish official news notes 2026-10-30 [deploy cloudflare]') ||
-         startsWith(github.event.head_commit.message, 'chore(release): publish interface motion polish 2026-11-01 [deploy cloudflare]'))))
+         startsWith(github.event.head_commit.message, 'chore(release): publish interface motion polish 2026-11-01 [deploy cloudflare]') ||
+         startsWith(github.event.head_commit.message, 'content(news): publish interface motion announcement 2026-11-01 [deploy cloudflare]'))))
     runs-on: ubuntu-latest
     environment: pages-production
     timeout-minutes: 30
