@@ -593,10 +593,11 @@
       "messageId": 17
     },
     "alices-adventures-in-wonderland:8": {
-      "status": "reserved",
+      "status": "sent",
       "slug": "chapter-8",
       "title": "Part 8",
-      "novelTitle": "Alice's Adventures in Wonderland"
+      "novelTitle": "Alice's Adventures in Wonderland",
+      "messageId": 18
     }
   }
 }
