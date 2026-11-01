@@ -572,10 +572,11 @@
       "messageId": 14
     },
     "alices-adventures-in-wonderland:5": {
-      "status": "reserved",
+      "status": "sent",
       "slug": "chapter-5",
       "title": "Part 5",
-      "novelTitle": "Alice's Adventures in Wonderland"
+      "novelTitle": "Alice's Adventures in Wonderland",
+      "messageId": 15
     }
   }
 }
