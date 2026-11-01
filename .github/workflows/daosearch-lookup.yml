@@ -1,0 +1,67 @@
+name: DaoSearch — editorial lookup and duplicate check
+
+on:
+  workflow_dispatch:
+    inputs:
+      query:
+        description: Book title or original source URL (choose this OR author)
+        required: false
+        type: string
+      author:
+        description: Author search (leave query empty)
+        required: false
+        type: string
+      source:
+        description: Optional Chinese platform filter
+        required: true
+        default: all
+        type: choice
+        options:
+          - all
+          - qidian
+          - fanqie
+          - jjwxc
+          - faloo
+          - qimao
+          - zongheng
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hunmeng-daosearch-editorial
+  cancel-in-progress: false
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout Hunmeng catalog
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - name: Prepare Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Verify read-only lookup and duplicate matching
+        run: node --test tests/daosearch-discovery.test.mjs
+      - name: Query DaoSearch securely and compare protected editorial sources
+        env:
+          DAOSEARCH_KEY: ${{ secrets.DAOSEARCH_KEY }}
+          DAOSEARCH_QUERY: ${{ inputs.query }}
+          DAOSEARCH_AUTHOR: ${{ inputs.author }}
+          DAOSEARCH_SOURCE: ${{ inputs.source }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          DAOSEARCH_REPORT_PATH: ${{ runner.temp }}/daosearch-report.json
+        run: node scripts/daosearch-lookup.mjs
+      - name: Attach read-only editorial results
+        uses: actions/upload-artifact@v4
+        with:
+          name: daosearch-research-report
+          path: ${{ runner.temp }}/daosearch-report.json
+          if-no-files-found: error
+          retention-days: 3
