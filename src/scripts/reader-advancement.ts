@@ -2,6 +2,10 @@ import type { SupabaseClient,User } from '@supabase/supabase-js';
 import {halloweenPrizes,halloweenBadge} from '../lib/halloween-event';
 type HalloweenAward={event_id:string;place:number;title_id:string;title:string;badge:string;awarded_at:string};
 let halloweenAwards:HalloweenAward[]=[];
+let isFounder=false;
+let lastStats:VerifiedStats|null=null;
+const FOUNDER_TITLE='Founder of Hunmeng';
+const founderHintKey=(userId:string)=>`hunmeng-novels:founder:v1:${userId}`;
 import { repository, onStorageChange } from '../lib/storage';
 import { ranks,readerMasteryTiers,titles,achievements,levelFromTotalXp,getReaderMastery,nextRankMilestone,nextVerifiedAchievement,rankImage,masteryImage,titleStatus,emptyVerifiedStats,type VerifiedStats } from '../lib/reader-progression';
 
@@ -108,7 +112,10 @@ function renderStats(s:VerifiedStats) {
   if(sidebar){sidebar.src=rankImage(level.rank.id);sidebar.alt=`${level.rank.en} rank emblem`;sidebar.hidden=false;}
   const selected=titles.find(t=>t.id===s.selected_title&&titleStatus(t.id,s).unlocked)??titles[0];
   const eventEquipped=halloweenAwards.find(award=>award.title_id===s.selected_title);
-  stat('reader-equipped-title',eventEquipped?.title??selected.en);
+  const founderEquipped=isFounder&&s.selected_title==='founder';
+  stat('reader-equipped-title',founderEquipped?FOUNDER_TITLE:eventEquipped?.title??selected.en);
+  const ribbon=document.getElementById('reader-equipped-title')?.closest<HTMLElement>('.advancement-title-line');
+  if(ribbon)ribbon.dataset.founder=String(founderEquipped);
   const maxed=level.maxed;
   const progress=document.getElementById('reader-xp-progress') as HTMLProgressElement;
   progress.max=maxed?1:level.nextXp;
@@ -219,6 +226,18 @@ export function initReaderAdvancement(client: SupabaseClient) {
     stat('halloween-profile-awards-status','Event title equipped.');
     await loadVerified(owner,requestCount);
   });
+  document.getElementById('profile-founder-equip')?.addEventListener('click',async event=>{
+    const button=event.currentTarget as HTMLButtonElement;
+    const owner=activeUser;
+    if(!owner||!clientRef||!isFounder||button.disabled)return;
+    button.disabled=true;
+    stat('profile-founder-status','Equipping the Founder title…');
+    const {data,error}=await clientRef.rpc('reader_select_title',{p_title:'founder'});
+    if(owner!==activeUser)return;
+    if(error||data!==true){stat('profile-founder-status','Could not equip this title.');button.disabled=false;return;}
+    stat('profile-founder-status','Founder title equipped.');
+    await loadVerified(owner,requestCount);
+  });
   document.querySelectorAll<HTMLButtonElement>('[data-equip-title]').forEach(button=>{
     button.addEventListener('click',async()=>{
       const owner=activeUser;
@@ -257,6 +276,7 @@ export function initReaderAdvancement(client: SupabaseClient) {
     const root=document.getElementById('reader-advancement')!;
     if(!user){
       halloweenAwards=[];
+      isFounder=false;lastStats=null;paintFounder();
       const rewardPanel=document.getElementById('halloween-profile-awards-section');
       if(rewardPanel)rewardPanel.hidden=true;
       document.getElementById('halloween-profile-awards')?.replaceChildren();
@@ -294,6 +314,8 @@ async function loadVerified(userId:string,seq:number) {
   if(unlocked)celebrateMastery(userId,seq,unlocked);
   void loadXpHistory(userId,seq);
   void loadHalloweenAwards(userId,seq,values);
+  lastStats=values;
+  void loadFounder(userId,seq);
   // A first login simply remembers the initial rank. Only genuine promotions
   // display the modal, and acknowledgement persists server-side.
   if(values.last_rank_notified===rank.id)return;
@@ -416,5 +438,37 @@ async function loadHalloweenAwards(userId:string,seq:number,stats:VerifiedStats)
     const equipped=award.title_id===stats.selected_title;
     button.textContent=equipped?'Equipped':'Equip title';button.disabled=equipped;
     article.append(fallback,image,info,button);list.append(article);
+  }
+}
+
+/** Unique founder emblem. Optional RPC: before the migration it is absent and nothing shows. */
+async function loadFounder(userId:string,seq:number){
+  if(!clientRef)return;
+  let founder=false;
+  try{
+    const {data,error}=await clientRef.rpc('reader_is_founder');
+    founder=!error&&data===true;
+  }catch{founder=false;}
+  if(userId!==activeUser||seq!==requestCount)return;
+  isFounder=founder;
+  try{
+    // Display hint for the header avatar on other pages; never used for access.
+    if(founder)localStorage.setItem(founderHintKey(userId),'1');
+    else localStorage.removeItem(founderHintKey(userId));
+    window.dispatchEvent(new CustomEvent('reader:founder-change'));
+  }catch{/* storage unavailable */}
+  paintFounder();
+  if(founder&&lastStats)renderStats(lastStats);
+}
+function paintFounder(){
+  const card=document.getElementById('profile-founder-card');
+  const badge=document.getElementById('profile-founder-badge');
+  if(card)card.hidden=!isFounder;
+  if(badge)badge.hidden=!isFounder;
+  const equip=document.getElementById('profile-founder-equip') as HTMLButtonElement|null;
+  if(equip){
+    const equipped=isFounder&&lastStats?.selected_title==='founder';
+    equip.disabled=equipped;
+    equip.textContent=equipped?'Equipped':'Equip title';
   }
 }

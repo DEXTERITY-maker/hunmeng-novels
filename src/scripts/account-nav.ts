@@ -2,7 +2,7 @@ import { READER_AUTH_KEY } from '../lib/auth-constants';
 import { readProfile } from '../lib/profile';
 export function initAccountNav() {
   const render = () => {
-    let user: { user_metadata?: unknown } | undefined;
+    let user: { user_metadata?: unknown; id?: string } | undefined;
     try {
       const saved = JSON.parse(localStorage.getItem(READER_AUTH_KEY) ?? 'null');
       // A local display hint only. Every account action still verifies its session.
@@ -29,11 +29,25 @@ export function initAccountNav() {
       }
       initial.textContent = saved ? (profile.nickname ? [...profile.nickname][0].toLocaleUpperCase('en') : '?') : '';
       avatar.dataset.avatar = saved ? profile.avatar_color : '';
+      // Founder badge: a display hint saved by the profile page after a server check.
+      let founder = false;
+      try { founder = saved && !!user?.id && localStorage.getItem(`hunmeng-novels:founder:v1:${user.id}`) === '1'; } catch { founder = false; }
+      let badge = avatar.querySelector<HTMLImageElement>('[data-founder-badge]');
+      if (founder && !badge) {
+        badge = document.createElement('img');
+        badge.dataset.founderBadge = '';
+        badge.src = '/images/founder/founder-128.webp';
+        badge.alt = '';
+        badge.width = 18; badge.height = 18;
+        avatar.append(badge);
+      }
+      if (badge) badge.hidden = !founder;
     }
   };
   render();
   window.addEventListener('storage', event => { if (event.key === READER_AUTH_KEY || event.key === null) render(); });
   window.addEventListener('reader:auth-change', render);
+  window.addEventListener('reader:founder-change', render);
   window.addEventListener('pageshow', render);
   document.querySelector<HTMLButtonElement>('[data-header-signout]')?.addEventListener('click', async event => {
     const button = event.currentTarget as HTMLButtonElement;

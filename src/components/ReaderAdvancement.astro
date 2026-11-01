@@ -12,6 +12,19 @@ import Icon from './Icon.astro';
   </div>
   <section id="overview" class="profile-tab-panel" role="tabpanel" aria-labelledby="profile-tab-overview" tabindex="0">
     <div class="profile-overview-grid">
+      <section id="profile-founder-card" class="profile-dashboard-card profile-founder-card" aria-labelledby="profile-founder-title" hidden>
+        <div class="profile-founder-art">
+          <img src="/images/founder/founder.webp" alt="Founder of Hunmeng emblem: a crowned pavilion rising from an open book" width="220" height="220" loading="lazy" />
+          <span class="profile-founder-ribbon" aria-hidden="true">Founder</span>
+        </div>
+        <div class="profile-founder-copy">
+          <p class="eyebrow">✦ Unique emblem</p>
+          <h3 id="profile-founder-title">Founder of Hunmeng</h3>
+          <p>The creator of Hunmeng. This emblem and title exist for one account only.</p>
+          <button type="button" class="button" id="profile-founder-equip">Equip title</button>
+          <p id="profile-founder-status" class="fine" role="status" aria-live="polite"></p>
+        </div>
+      </section>
       <div id="profile-continue-slot" class="profile-dashboard-card"></div>
       <section class="profile-dashboard-card profile-goal-card" aria-labelledby="profile-goal-title">
         <h3 id="profile-goal-title"><Icon name="target" size={22} />Next goal</h3>

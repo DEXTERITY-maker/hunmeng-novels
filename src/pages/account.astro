@@ -46,7 +46,10 @@ const profileCatalog=(await getLibrary()).map(n=>({slug:n.slug,title:n.title,cha
         <div id="auth-logged-in" class="profile-layout" hidden>
           <header id="profile-member-hero" class="profile-member-hero" aria-label="Reader profile">
             <div class="profile-member-identity">
-              <span id="profile-avatar" class="profile-avatar" data-avatar="sage" aria-hidden="true">R</span>
+              <span class="profile-avatar-wrap">
+                <span id="profile-avatar" class="profile-avatar" data-avatar="sage" aria-hidden="true">R</span>
+                <img id="profile-founder-badge" class="profile-founder-badge" src="/images/founder/founder-128.webp" alt="Founder of Hunmeng emblem" width="64" height="64" hidden />
+              </span>
               <div class="profile-member-copy">
                 <h2 id="profile-name" role="heading" aria-level="1">Reader</h2>
                 <div id="profile-title-slot" class="profile-title-slot"></div>

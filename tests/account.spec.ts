@@ -1105,3 +1105,23 @@ test('profile dashboard: keyboard tabs and URL state, edit dialog focus and live
   await expect(page.evaluate(() => document.documentElement.scrollWidth <= innerWidth+1)).resolves.toBe(true);
   expect(readerSafeRequests(state.requests)).toBe(true);
 });
+
+test('founder account sees the unique emblem card, avatar badge and title ribbon',async({page})=>{
+ const state=await mockAuth(page);
+ state.rankStats.selected_title='founder';
+ await page.route('**/rest/v1/rpc/reader_is_founder',route=>route.fulfill({status:200,contentType:'application/json',
+  headers:{'Access-Control-Allow-Origin':'*','Access-Control-Allow-Headers':'*'},body:'true'}));
+ await loginFixture(page);
+ await expect(page.locator('#profile-founder-card')).toBeVisible();
+ await expect(page.locator('#profile-founder-badge')).toBeVisible();
+ await expect(page.locator('#reader-equipped-title')).toHaveText('Founder of Hunmeng');
+ await expect(page.locator('#profile-founder-equip')).toHaveText('Equipped');
+ expect(readerSafeRequests(state.requests)).toBe(true);
+});
+test('regular readers never see the founder emblem',async({page})=>{
+ await mockAuth(page);
+ await loginFixture(page);
+ await expect(page.locator('#reader-advancement')).toHaveAttribute('data-status','ready');
+ await expect(page.locator('#profile-founder-card')).toBeHidden();
+ await expect(page.locator('#profile-founder-badge')).toBeHidden();
+});
