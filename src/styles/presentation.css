@@ -4765,3 +4765,4 @@ html[data-theme='dark'] .news-page .news-filter-tabs a[aria-current='page'] {col
 .news-page .news-feed .news-card-image,.news-article-shell .news-more .news-card-image {position:relative}
 .news-page .news-feed .news-card-image img,.news-article-shell .news-more .news-card-image img {position:absolute;inset:0;width:100%;height:100%;max-width:none}
 .news-article-shell .news-article-header {border-bottom:0;padding-bottom:0;margin-bottom:0}
+.news-page .news-feed .news-card-image img,.news-article-shell .news-more .news-card-image img {max-height:none;min-height:0}
