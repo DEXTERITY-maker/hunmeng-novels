@@ -621,10 +621,11 @@
       "messageId": 21
     },
     "alices-adventures-in-wonderland:12": {
-      "status": "reserved",
+      "status": "sent",
       "slug": "chapter-12",
       "title": "Part 12",
-      "novelTitle": "Alice's Adventures in Wonderland"
+      "novelTitle": "Alice's Adventures in Wonderland",
+      "messageId": 22
     }
   }
 }
