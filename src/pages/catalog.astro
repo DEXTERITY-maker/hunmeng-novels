@@ -1,13 +1,15 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import NovelCard from '../components/NovelCard.astro';
+import { renderCatalogCard } from '../lib/catalog-card';
 import CatalogHero from '../components/CatalogHero.astro';
-import { externalNovels, externalNovelUrl } from '../data/external-novels';
+import { externalCatalogEntries } from '../lib/external-catalog';
 import { getLibrary } from '../lib/content';
 import { getTaxonomy } from '../lib/taxonomy';
 const novels = await getLibrary();
-const { genres, tags, groups } = getTaxonomy(novels);
-const categories = [...new Set(novels.flatMap((n) => n.categories))].sort((a, b) => a.localeCompare(b, 'en'));
+// External listings are searchable, but are not published chapters or reader rewards.
+const catalogItems = [...novels, ...externalCatalogEntries];
+const { genres, tags, groups } = getTaxonomy(catalogItems);
+const categories = [...new Set(catalogItems.flatMap((n) => n.categories))].sort((a, b) => a.localeCompare(b, 'en'));
 const pickerTags = [...tags].sort((a, b) => b.count - a.count || a.label.localeCompare(b.label, 'en'));
 const PAGE_SIZE = 24;
 ---
@@ -121,46 +123,21 @@ const PAGE_SIZE = 24;
       </form>
       <div class="catalog-main">
         <div class="results-heading catalog-results-heading">
-          <p id="result-count" role="status" aria-live="polite">Novels found: {novels.length}</p>
+          <p id="result-count" role="status" aria-live="polite">Novels found: {catalogItems.length}</p>
           <span id="catalog-load-status" class="catalog-load-status" role="status" aria-live="polite" hidden>Updating catalog…</span>
-          <p class="fine">Ratings and views appear only when data is available.</p>
+          <p class="fine">External novels are clearly marked and link to their reading sources.</p>
         </div>
         <div id="catalog-results" class="novel-grid">
-          {novels.slice(0, PAGE_SIZE).map((novel) => <NovelCard novel={novel} />)}
+          {catalogItems.slice(0, PAGE_SIZE).map((novel) => <Fragment set:html={renderCatalogCard(novel)} />)}
         </div>
-        <p id="catalog-empty" class="empty-state" hidden={novels.length > 0}>{novels.length ? 'Nothing found. Try removing some filters.' : 'No novels are published yet. New releases will appear here.'}</p>
+        <p id="catalog-empty" class="empty-state" hidden={catalogItems.length > 0}>{catalogItems.length ? 'Nothing found. Try removing some filters.' : 'No novels are published yet. New releases will appear here.'}</p>
         <nav id="catalog-pagination" class="catalog-pagination" aria-label="Catalog pages" hidden></nav>
         <noscript>
           <p class="notice">Interactive search requires JavaScript. The first novels are shown above; you can browse the full catalog using the page links.</p>
-          {novels.length > PAGE_SIZE && <a class="button secondary" href="/catalog/page/2/">Next catalog page →</a>}
+          {catalogItems.length > PAGE_SIZE && <a class="button secondary" href="/catalog/page/2/">Next catalog page →</a>}
         </noscript>
       </div>
     </div>
-    {externalNovels.length > 0 && (
-      <section class="catalog-external-sources" aria-labelledby="catalog-external-title">
-        <div class="catalog-external-heading">
-          <h2 id="catalog-external-title">External reading references</h2>
-          <p>Discover titles hosted elsewhere · no chapters on Hunmeng</p>
-        </div>
-        {externalNovels.map(novel => (
-          <article class="external-novel-card" data-external-source={novel.externalId}>
-            <a class="external-novel-thumb" href={externalNovelUrl(novel.slug)} aria-label={`Details: ${novel.title}`}>
-              <img src="/images/novel-placeholder.svg" alt="" width="110" height="165" loading="lazy" />
-            </a>
-            <div class="external-novel-card-copy">
-              <p class="external-novel-eyebrow">External source · {novel.status}</p>
-              <h3><a href={externalNovelUrl(novel.slug)}>{novel.title}</a></h3>
-              <p class="external-novel-original" lang="zh">{novel.originalTitle} · {novel.author}</p>
-              <p class="external-novel-card-description">{novel.summary}</p>
-              <div class="external-novel-links">
-                <a href={externalNovelUrl(novel.slug)}>Details on Hunmeng →</a>
-                <a href={novel.sourceUrl} target="_blank" rel="noopener noreferrer">Read on {novel.sourceName} ↗</a>
-              </div>
-            </div>
-          </article>
-        ))}
-      </section>
-    )}
   </main>
   <script>
     import { initCatalog } from '../scripts/catalog';
