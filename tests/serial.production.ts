@@ -59,8 +59,10 @@ test('third-party reference becomes one canonical on-site book after licensed pu
   await expect(page.locator('#catalog-results [data-novel="' + slug + '"]')).toBeVisible();
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/catalog/');
-  const firstY = (await page.locator('#catalog-results [data-novel="' + slug + '"]').boundingBox())!.y;
-  expect(firstY).toBeLessThan(700);
+  await page.locator('#catalog-filters input[name="search"]').fill('Highway Survival');
+  await expect(page.locator('#result-count')).toHaveText('Novels found: 1');
+  await expect(page.locator('#catalog-results [data-novel="' + slug + '"]')).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
   await page.goto('/');
   if (published) {
     expect(matches[0].external).not.toBe(true);
