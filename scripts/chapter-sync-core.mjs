@@ -28,7 +28,7 @@ export function validateConfig(raw) {
     const host = url.hostname.toLowerCase();
     if (url.protocol !== 'https:' || url.username || url.password || url.port ||
         url.pathname !== '/' || url.search || url.hash || host === 'localhost' ||
-        !host.includes('.') || /^[\d.]+$/.test(host) || host.includes(':') ||
+        !host.includes('.') || /^[\d.]+$/.test(host) || host.includes(':') || host === 'wtr-lab.com' || host.endsWith('.wtr-lab.com') ||
         /\.(local|internal|localhost|test|invalid|example)$/.test(host))
       throw new Error('Source must be a publicly hosted HTTPS origin');
     if (!pathPattern.test(source.listPath ?? '') ||
@@ -153,6 +153,10 @@ export async function syncLicensedSource(source, adapter, options = {}) {
       if (current.id !== initial.id || !sourceCanImport(source, current, now))
         throw new Error('Source rights changed during import');
       const full = validateFullChapter(await adapter.loadChapter(source, meta.id), meta);
+      // Recheck after the potentially slow external fetch, before storing any text.
+      const latest = await adapter.readSource(source.slug);
+      if (latest.id !== initial.id || !sourceCanImport(source, latest, now))
+        throw new Error('Source rights changed before draft insertion');
       // The DB has unique (source_id, chapter_number): racing jobs cannot duplicate.
       const inserted = await adapter.insertDraft(initial.id, full);
       if (inserted) summary.imported++;
