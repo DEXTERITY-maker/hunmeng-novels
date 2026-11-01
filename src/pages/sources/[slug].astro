@@ -1,29 +1,32 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import { externalNovels } from '../../data/external-novels';
+import { getLibrary } from '../../lib/content';
 
 export function getStaticPaths() {
   return externalNovels.map(novel => ({ params: { slug: novel.slug }, props: { novel } }));
 }
 const { novel } = Astro.props;
+// When rights-approved chapters are published, use the canonical on-site book.
+const onSiteNovel = (await getLibrary()).find(book => book.slug === novel.slug);
 ---
 
 <Layout
-  title={`${novel.title} — external novel reference`}
+  title={`${novel.title} — ${onSiteNovel ? 'read on Hunmeng' : 'external novel reference'}`}
   description={novel.summary}
 >
   <main id="main" class="page-shell external-novel-page">
     <nav class="novel-detail-breadcrumb" aria-label="Breadcrumb">
       <a href="/catalog/">← Catalog</a><span aria-hidden="true">/</span>
-      <span aria-current="page">External novel</span>
+      <span aria-current="page">{onSiteNovel ? 'Published novel' : 'External novel'}</span>
     </nav>
     <article class="external-novel-detail">
       <div class="external-novel-cover">
         <img src="/images/novel-placeholder.svg" alt="" width="260" height="380" />
-        <span>External reference</span>
+        <span>{onSiteNovel ? 'Read on Hunmeng' : 'External reference'}</span>
       </div>
       <div class="external-novel-copy">
-        <p class="external-novel-eyebrow">From another library · not hosted on Hunmeng</p>
+        <p class="external-novel-eyebrow">{onSiteNovel ? 'Now published on Hunmeng' : 'External novel · chapters hosted elsewhere'}</p>
         <h1>{novel.title}</h1>
         <p class="external-novel-original" lang="zh">{novel.originalTitle}</p>
         <p class="external-novel-author">By <strong lang="zh">{novel.author}</strong></p>
@@ -33,10 +36,11 @@ const { novel } = Astro.props;
         </div>
         <p class="external-novel-status"><strong>Original status:</strong> {novel.status}</p>
         <div class="external-novel-actions">
-          <a class="button" href={novel.sourceUrl} target="_blank" rel="noopener noreferrer">Read on {novel.sourceName} ↗</a>
+          {onSiteNovel && <a class="button" href={onSiteNovel.url}>Read on Hunmeng →</a>}
+          <a class:list={['button', onSiteNovel && 'secondary']} href={novel.sourceUrl} target="_blank" rel="noopener noreferrer">Read on {novel.sourceName} ↗</a>
           <a class="button secondary" href={novel.originalUrl} target="_blank" rel="noopener noreferrer">Chinese original ↗</a>
         </div>
-        <p class="fine">These links open third-party websites. Hunmeng does not host or translate chapters of this work. Publication rights have not been verified.</p>
+        <p class="fine">{onSiteNovel ? 'Authorized translated chapters are available in the Hunmeng reader. External reading sources remain linked for attribution.' : 'These links open third-party websites. Hunmeng does not host or translate chapters of this work while publication rights remain unverified.'}</p>
       </div>
     </article>
     <section class="external-novel-summary" aria-labelledby="external-synopsis-title">
