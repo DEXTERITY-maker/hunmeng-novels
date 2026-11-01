@@ -1,0 +1,40 @@
+name: Preview nine historical covers without publication
+on:
+  pull_request:
+    paths:
+      - 'src/data/historical-cover-sources.json'
+      - 'scripts/sync-historical-covers.mjs'
+      - 'tests/historical-covers.test.mjs'
+      - '.github/workflows/verify-historical-covers.yml'
+      - '.github/workflows/publish-historical-covers.yml'
+permissions:
+  contents: read
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 17
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Check historical cover source manifest
+        run: node --test tests/historical-covers.test.mjs
+      - name: Verify copyright metadata and download nine historic covers
+        run: node scripts/sync-historical-covers.mjs
+      - name: Verify all nine approved book records and output images
+        run: |
+          node -e "const fs=require('fs');const x=JSON.parse(fs.readFileSync('src/data/historical-covers-provenance.json'));if(x.covers.length!==9)process.exit(1);for(const a of x.covers){if(!fs.existsSync('public'+a.image))process.exit(1);const b=JSON.parse(fs.readFileSync('src/content/novels/'+a.slug+'.json'));if(b.cover!==a.image)process.exit(1)}"
+      - name: Validate production build with all historical cover assets
+        run: npm run build
+      - name: Check all nine cover images and launch announcement are in output
+        run: |
+          test -s dist/news/historical-covers-first-classics-2026-11-01/index.html
+          test "$(find dist/images/covers -name '*-historical.webp' | wc -l)" -eq 9
+          grep -q 'frankenstein-historical.webp' dist/novel/frankenstein/index.html
+          grep -q 'treasure-island-historical.webp' dist/novel/treasure-island/index.html
