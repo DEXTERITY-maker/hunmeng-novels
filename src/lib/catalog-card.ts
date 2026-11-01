@@ -81,10 +81,12 @@ export function renderCatalogCard(n: CatalogCardData): string {
         '<span>' + icon('status') + escapeHtml(status) + '</span>' +
         '<span>' + icon('clock') + 'Updated <time datetime="' + escapeHtml(n.updatedAt) + '">' + escapeHtml(formatDate(n.updatedAt)) + '</time></span>' +
       '</p>' +
-      '<div class="catalog-card-actions">' +
-        '<a class="text-link catalog-read-action" href="' + escapeHtml(n.url) + '">' + (n.external ? 'View novel' : 'Read novel') + ' <span aria-hidden="true">→</span></a>' +
-        (n.external && n.sourceUrl ? '<a class="catalog-source-link" href="' + escapeHtml(n.sourceUrl) + '" target="_blank" rel="noopener noreferrer">Read on ' + escapeHtml(n.sourceName ?? 'source') + ' ↗</a>' : '') +
-      '</div>' +
+      (n.external ?
+        '<div class="catalog-card-actions">' +
+          '<a class="text-link catalog-read-action" href="' + escapeHtml(n.url) + '">View novel <span aria-hidden="true">→</span></a>' +
+          (n.sourceUrl ? '<a class="catalog-source-link" href="' + escapeHtml(n.sourceUrl) + '" target="_blank" rel="noopener noreferrer">Read on ' + escapeHtml(n.sourceName ?? 'source') + ' ↗</a>' : '') +
+        '</div>' :
+        '<a class="text-link catalog-read-action" href="' + escapeHtml(n.url) + '">Read novel <span aria-hidden="true">→</span></a>') +
     '</div>' +
   '</article>';
 }
