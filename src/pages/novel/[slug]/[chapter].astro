@@ -1,7 +1,7 @@
 ---
 import ReaderView from '../../../components/ReaderView.astro';
 import { getLibrary } from '../../../lib/content';
-import serials from '../../../data/serials.json';
+import serials from '../../../data/serials';
 export async function getStaticPaths() {
   return (await getLibrary()).flatMap(n => {
     const local = n.chapters.map((c, i) => ({

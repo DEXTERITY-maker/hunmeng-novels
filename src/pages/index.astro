@@ -8,7 +8,7 @@ import { getLibrary, dateLabel, chapterCount } from '../lib/content';
 import { getLatestChapters } from '../lib/updates';
 import NewsCard from '../components/NewsCard.astro';
 import { getNews } from '../lib/news';
-import serials from '../data/serials.json';
+import serials from '../data/serials';
 
 const novels = await getLibrary();
 const latestNews = (await getNews()).slice(0, 3);

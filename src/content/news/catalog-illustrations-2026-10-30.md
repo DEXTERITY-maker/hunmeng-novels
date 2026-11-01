@@ -14,10 +14,10 @@ The catalog has received a visual refresh to make browsing novels easier.
 ### What's new
 
 - **Themed catalog banner.** The castle landscape now has a nighttime version for the dark theme.
-- **Story-specific artwork.** *Comprehension Against the Heavens* displays golden mountains, while *The Latency of Tomorrow* displays rainy Shenzhen.
+- **Story-specific artwork.** The original artwork showcase was added in this release; its two in-house novels have since been withdrawn from the public catalog.
 - **Clearer novel cards.** Each card shows its cover, genres, title, author, a short description, up to three existing tags, chapter count, status and update date.
 - **Improved mobile cards.** Covers, text and **Read novel** buttons have more room on smaller screens.
-- **Less repeated information.** The duplicate **Science fiction** category was removed from the *The Latency of Tomorrow* page because it already appears as a genre.
+- **Less repeated information.** Categories that duplicate a novel's genres are no longer repeated on its detail page.
 
 ### What stays the same
 

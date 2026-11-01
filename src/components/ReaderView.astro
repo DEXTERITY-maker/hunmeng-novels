@@ -7,7 +7,7 @@ import { CHAPTERS_PER_PAGE, chapterListUrl } from '../lib/pagination';
 import { chapterReportUrl, chapterStructuredData, placeholderCover, socialCover } from '../lib/seo';
 import { site } from '../config/site';
 import type { CollectionEntry } from 'astro:content';
-import serials from '../data/serials.json';
+import serials from '../data/serials';
 interface Props { novel: Novel; chapter?: CollectionEntry<'chapters'>; index: number; remoteNumber?: number; remoteTitle?: string }
 const { novel: n, chapter: localChapter, index, remoteNumber, remoteTitle } = Astro.props;
 const remote = remoteNumber !== undefined;

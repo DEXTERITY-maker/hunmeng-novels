@@ -23,4 +23,4 @@ The design adapts to light, dark and sepia appearances and respects reduced-moti
 
 No new novels or chapters were published as part of this design update. The novel-request system is not part of this release.
 
-[Explore the catalog](/catalog/) · [Browse the latest news](/news/) · [Start reading](/novel/the-latency-of-tomorrow/)
+[Explore the catalog](/catalog/) · [Browse the latest news](/news/)

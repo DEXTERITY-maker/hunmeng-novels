@@ -22,4 +22,4 @@ This is a **layout and usability update**, not a change to the reading or reward
 
 These improvements are designed to make browsing and reading more comfortable on every visit.
 
-[Explore the updated catalog](/catalog/) · [Return to the home page](/) · [Start reading](/novel/the-latency-of-tomorrow/)
+[Explore the updated catalog](/catalog/) · [Return to the home page](/)

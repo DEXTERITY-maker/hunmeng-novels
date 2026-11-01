@@ -4,8 +4,8 @@ excerpt: "Story-specific illustrations, a redesigned contents window and novel p
 category: changelog
 publishedAt: "2026-10-30"
 order: 700
-cover: "/images/art/comprehension-day-1536.webp"
-coverAlt: "Golden misty mountains and a pavilion from Comprehension Against the Heavens"
+cover: "/images/art/hunmeng-landscape-day-1536.webp"
+coverAlt: "Autumn mountain landscape from the Hunmeng reading interface"
 coverFit: art
 ---
 
@@ -13,7 +13,7 @@ Several updates are now available across Hunmeng, with a focus on clearer readin
 
 ### Story-specific illustrations
 
-Each novel now has artwork suited to its setting. *Comprehension Against the Heavens* features golden misty mountains and a pavilion, with a moonlit version for the dark theme. *The Latency of Tomorrow* features a rainy Shenzhen riverside at night. The castle landscape remains on the homepage and in the catalog.
+Novel artwork can adapt to the setting and selected theme. The original titles used for the initial visual showcase have since been withdrawn from the public catalog. The castle landscape remains on the homepage and in the catalog.
 
 ### Updated chapter contents
 
@@ -37,4 +37,4 @@ The [Contact page](/contacts/) now lists an email address, Telegram contact and 
 
 Accounts, library shelves, reading progress, ratings, XP and ranks remain unchanged. No new chapters were published as part of these updates.
 
-[Read The Latency of Tomorrow](/novel/the-latency-of-tomorrow/) · [Read Comprehension Against the Heavens](/novel/comprehension-against-the-heavens/) · [Contact Hunmeng](/contacts/)
+[Explore the catalog](/catalog/) · [Contact Hunmeng](/contacts/)
