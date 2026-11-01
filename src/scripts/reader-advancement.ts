@@ -363,7 +363,8 @@ async function loadXpHistory(userId:string,seq:number) {
     const chapterNumber=knownNumber || (parsedNumber ? Number(parsedNumber) : null);
     label.textContent=isChapter ? `Chapter ${chapterNumber || entry.chapter_slug} · ${novelTitle}` :
       entry.event_kind==='novel_finished' ? `Novel completed · ${novelTitle}` :
-      isEvent ? 'Halloween Reading Week prize' : 'Verified XP award';
+      isEvent ? 'Halloween Reading Week prize' :
+      entry.event_kind==='admin_grant' ? 'Administrator XP grant' : 'Verified XP award';
     const detail=document.createElement('small');
     const date=Date.parse(entry.awarded_at);
     const when=Number.isFinite(date) ? new Intl.DateTimeFormat('en-GB',{day:'numeric',month:'short'}).format(new Date(date)) : 'Date unavailable';
