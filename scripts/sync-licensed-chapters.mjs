@@ -37,7 +37,11 @@ function restHeaders() {
   return { apikey: secret, Authorization: `Bearer ${secret}`, 'Content-Type': 'application/json' };
 }
 async function rest(table, query, method = 'GET', body) {
-  return requestJson(supabasePath(table, query), { method, body, headers: restHeaders() });
+  return requestJson(supabasePath(table, query), {
+    method, body,
+    headers: { ...restHeaders(), ...(method === 'POST'
+      ? { Prefer: 'resolution=ignore-duplicates,return=representation' } : {}) },
+  });
 }
 async function readSource(slug) {
   const rows = await rest('novel_sources', `slug=eq.${encodeURIComponent(slug)}&select=*`);
