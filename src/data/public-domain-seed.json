@@ -1,0 +1,206 @@
+{
+  "edition": "2026-11-01",
+  "licensePolicy": "Public-domain original English text with source-editor contributions dedicated under CC0; author died before 1950; source repo and commit pinned.",
+  "maxBooksPerRun": 10,
+  "books": [
+    {
+      "slug": "frankenstein",
+      "title": "Frankenstein; or, The Modern Prometheus",
+      "author": "Mary Shelley",
+      "authorDeathYear": 1851,
+      "originalPublicationYear": 1818,
+      "repo": "mary-shelley_frankenstein",
+      "sha": "3909a2b9d956377e797e235562cd237d3667fa9b",
+      "url": "https://standardebooks.org/ebooks/mary-shelley/frankenstein",
+      "genres": [
+        "Science Fiction",
+        "Horror"
+      ],
+      "tags": [
+        "Gothic",
+        "Science",
+        "Monsters"
+      ],
+      "description": "A scientist's audacious attempt to create life sets in motion a haunting story of responsibility, loneliness and the consequences of ambition."
+    },
+    {
+      "slug": "dracula",
+      "title": "Dracula",
+      "author": "Bram Stoker",
+      "authorDeathYear": 1912,
+      "originalPublicationYear": 1897,
+      "repo": "bram-stoker_dracula",
+      "sha": "e9968b274918e5a79b8e34cc93e50492363d1612",
+      "url": "https://standardebooks.org/ebooks/bram-stoker/dracula",
+      "genres": [
+        "Horror",
+        "Fantasy"
+      ],
+      "tags": [
+        "Vampires",
+        "Gothic",
+        "Mystery"
+      ],
+      "description": "Letters and journals recount a terrifying encounter with a Transylvanian count and a desperate struggle to confront a supernatural threat."
+    },
+    {
+      "slug": "the-time-machine",
+      "title": "The Time Machine",
+      "author": "H. G. Wells",
+      "authorDeathYear": 1946,
+      "originalPublicationYear": 1895,
+      "repo": "h-g-wells_the-time-machine",
+      "sha": "9fd22d612e6ed35cd07a8ed5e3ccdc4856c05088",
+      "url": "https://standardebooks.org/ebooks/h-g-wells/the-time-machine",
+      "genres": [
+        "Science Fiction",
+        "Adventure"
+      ],
+      "tags": [
+        "Time Travel",
+        "Dystopia",
+        "Future"
+      ],
+      "description": "A Victorian inventor ventures into a distant future and discovers a society transformed beyond recognition."
+    },
+    {
+      "slug": "the-war-of-the-worlds",
+      "title": "The War of the Worlds",
+      "author": "H. G. Wells",
+      "authorDeathYear": 1946,
+      "originalPublicationYear": 1898,
+      "repo": "h-g-wells_the-war-of-the-worlds",
+      "sha": "7c2c332ce1ce8025d07ec982b02dad293dc63671",
+      "url": "https://standardebooks.org/ebooks/h-g-wells/the-war-of-the-worlds",
+      "genres": [
+        "Science Fiction",
+        "Adventure"
+      ],
+      "tags": [
+        "Alien Invasion",
+        "Survival",
+        "Apocalypse"
+      ],
+      "description": "An unexpected invasion from Mars turns ordinary life into a desperate struggle for survival."
+    },
+    {
+      "slug": "the-wonderful-wizard-of-oz",
+      "title": "The Wonderful Wizard of Oz",
+      "author": "L. Frank Baum",
+      "authorDeathYear": 1919,
+      "originalPublicationYear": 1900,
+      "repo": "l-frank-baum_the-wonderful-wizard-of-oz",
+      "sha": "ec37bfee7c2840e7a7ed305f5cda0e42f3fafca7",
+      "url": "https://standardebooks.org/ebooks/l-frank-baum/the-wonderful-wizard-of-oz",
+      "genres": [
+        "Fantasy",
+        "Adventure"
+      ],
+      "tags": [
+        "Magic",
+        "Journey",
+        "Friendship"
+      ],
+      "description": "Swept into an unfamiliar land, Dorothy follows a remarkable road alongside companions who each seek something precious."
+    },
+    {
+      "slug": "treasure-island",
+      "title": "Treasure Island",
+      "author": "Robert Louis Stevenson",
+      "authorDeathYear": 1894,
+      "originalPublicationYear": 1883,
+      "repo": "robert-louis-stevenson_treasure-island",
+      "sha": "86380ddddb73e7b22a41405cf8b70e72bcaf2d30",
+      "url": "https://standardebooks.org/ebooks/robert-louis-stevenson/treasure-island",
+      "genres": [
+        "Adventure"
+      ],
+      "tags": [
+        "Pirates",
+        "Treasure",
+        "Sea"
+      ],
+      "description": "A mysterious map leads a young adventurer into danger among sailors, secrets and a legendary buried treasure."
+    },
+    {
+      "slug": "the-strange-case-of-dr-jekyll-and-mr-hyde",
+      "title": "The Strange Case of Dr. Jekyll and Mr. Hyde",
+      "author": "Robert Louis Stevenson",
+      "authorDeathYear": 1894,
+      "originalPublicationYear": 1886,
+      "repo": "robert-louis-stevenson_the-strange-case-of-dr-jekyll-and-mr-hyde",
+      "sha": "bb6ccb4d19e94d71588dbacbd3a48aa6cd1846ed",
+      "url": "https://standardebooks.org/ebooks/robert-louis-stevenson/the-strange-case-of-dr-jekyll-and-mr-hyde",
+      "genres": [
+        "Horror",
+        "Mystery"
+      ],
+      "tags": [
+        "Gothic",
+        "Identity",
+        "Science"
+      ],
+      "description": "A lawyer investigates the unsettling connection between a respected doctor and a menacing stranger."
+    },
+    {
+      "slug": "the-picture-of-dorian-gray",
+      "title": "The Picture of Dorian Gray",
+      "author": "Oscar Wilde",
+      "authorDeathYear": 1900,
+      "originalPublicationYear": 1890,
+      "repo": "oscar-wilde_the-picture-of-dorian-gray",
+      "sha": "c6b6877688d7652e74c3db4e21322adcb27cadcd",
+      "url": "https://standardebooks.org/ebooks/oscar-wilde/the-picture-of-dorian-gray",
+      "genres": [
+        "Fantasy",
+        "Horror"
+      ],
+      "tags": [
+        "Supernatural",
+        "Gothic",
+        "Mystery"
+      ],
+      "description": "A beautiful young man's wish about his portrait sets him on a troubling path through vanity and temptation."
+    },
+    {
+      "slug": "alices-adventures-in-wonderland",
+      "title": "Alice's Adventures in Wonderland",
+      "author": "Lewis Carroll",
+      "authorDeathYear": 1898,
+      "originalPublicationYear": 1865,
+      "repo": "lewis-carroll_alices-adventures-in-wonderland_john-tenniel",
+      "sha": "60e942b4f9dba672841470e9b6ec63956bfb8e7d",
+      "url": "https://standardebooks.org/ebooks/lewis-carroll/alices-adventures-in-wonderland/john-tenniel",
+      "genres": [
+        "Fantasy",
+        "Adventure"
+      ],
+      "tags": [
+        "Magic",
+        "Portal Fantasy",
+        "Wonderland"
+      ],
+      "description": "Following a hurried white rabbit, Alice finds herself in a whimsical realm where familiar rules no longer apply."
+    },
+    {
+      "slug": "the-island-of-doctor-moreau",
+      "title": "The Island of Doctor Moreau",
+      "author": "H. G. Wells",
+      "authorDeathYear": 1946,
+      "originalPublicationYear": 1896,
+      "repo": "h-g-wells_the-island-of-doctor-moreau",
+      "sha": "7ebb34774fbb4637469dd13dee0b7af7e563e248",
+      "url": "https://standardebooks.org/ebooks/h-g-wells/the-island-of-doctor-moreau",
+      "genres": [
+        "Science Fiction",
+        "Horror"
+      ],
+      "tags": [
+        "Island",
+        "Experiment",
+        "Survival"
+      ],
+      "description": "Shipwrecked on a remote island, a traveler encounters disturbing experiments and the strange inhabitants they have produced."
+    }
+  ]
+}
