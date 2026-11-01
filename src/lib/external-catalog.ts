@@ -32,3 +32,11 @@ export const externalCatalogEntries: CatalogIndexNovel[] = visibleExternalNovels
   views: null,
   rating: null,
 }));
+
+/** A source is displayed as a local published novel once an authorized chapter exists.
+ * This prevents duplicate cards and preserves a stable slug as the book is promoted.
+ */
+export function unpublishedExternalEntries(publishedSlugs: Iterable<string>) {
+  const published = new Set(publishedSlugs);
+  return externalCatalogEntries.filter(item => !published.has(item.slug));
+}

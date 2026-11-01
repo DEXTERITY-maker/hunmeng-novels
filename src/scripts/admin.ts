@@ -1,9 +1,11 @@
 import { rightsStatusLabels, jobStatusLabels } from '../lib/labels';
+import { parseLicensedChapterBatch, rightsVerified } from '../lib/authorized-chapter-batch.mjs';
 import { backendConfigured, BackendError, getStaffRole, rest, signOut, type ApiRecord, type StaffRole } from '../lib/backend';
 
 type Source = {
   id: string; slug: string; original_title: string; rights_status: string;
   permission_publish: boolean; permission_translate: boolean; rights_evidence?: string;
+  verified_at?: string | null; rights_valid_until?: string | null;
 };
 type Term = { id: string; source_id: string; original_term: string; translated_term: string };
 type Job = {
@@ -67,6 +69,8 @@ export async function initAdmin() {
   const sourceForm = document.querySelector<HTMLFormElement>('#source-form')!;
   const termForm = document.querySelector<HTMLFormElement>('#term-form')!;
   const jobForm = document.querySelector<HTMLFormElement>('#job-form')!;
+  const batchForm = document.querySelector<HTMLFormElement>('#chapter-batch-form')!;
+  const batchStatus = document.getElementById('chapter-batch-status')!;
   const sourcesDiv = document.getElementById('admin-source-list')!;
   const termsDiv = document.getElementById('admin-term-list')!;
   const jobsDiv = document.getElementById('admin-job-list')!;
@@ -100,7 +104,7 @@ export async function initAdmin() {
   document.addEventListener('visibilitychange', () => void checkAccess());
   window.setInterval(() => void checkAccess(), 60000);
   function sourceOptions() {
-    for (const form of [rightsForm, termForm, jobForm]) {
+    for (const form of [rightsForm, termForm, jobForm, batchForm]) {
       const select = form.elements.namedItem('source_id') as HTMLSelectElement;
       const selected = select.value;
       select.replaceChildren();
@@ -114,7 +118,7 @@ export async function initAdmin() {
   }
   async function load() {
     sources = await rest<Source[]>('novel_sources', 'GET',
-      'select=id,slug,original_title,rights_status,permission_publish,permission_translate,rights_evidence&order=created_at.desc');
+      'select=id,slug,original_title,rights_status,permission_publish,permission_translate,rights_evidence,verified_at,rights_valid_until&order=created_at.desc');
     terms = await rest<Term[]>('novel_terms','GET',
       'select=id,source_id,original_term,translated_term&order=original_term.asc');
     jobs = await rest<Job[]>('novel_translation_jobs','GET',
@@ -304,6 +308,63 @@ export async function initAdmin() {
       if (rows.length !== 1) throw new Error('The server did not confirm the saved chapter.');
     }
     return requestedStatus === 'review' ? 'Chapter saved in review.' : 'Draft saved privately.';
+  });
+  // Import only explicitly supplied licensed text; no chapter scraping and no auto-publication.
+  // Server RLS and the approval trigger are additional independent boundaries.
+  const readLicensedBatch = () => {
+    if (workspace.hidden) throw new Error('Editorial access is required.');
+    const selected = sources.find(source => source.id === value(batchForm, 'source_id'));
+    if (!selected || !rightsVerified(selected))
+      throw new Error('This source has no current verified translation and publication rights.');
+    if (!new FormData(batchForm).has('confirm_license'))
+      throw new Error('Confirm that you are authorized to provide and republish this text.');
+    const drafts = parseLicensedChapterBatch(value(batchForm, 'batch'));
+    return { selected, drafts };
+  };
+  document.getElementById('chapter-batch-preview')?.addEventListener('click', () => {
+    try {
+      const { selected, drafts } = readLicensedBatch();
+      batchStatus.textContent = 'Validated ' + drafts.length + ' private draft(s) for ' + selected.slug +
+        '. No chapters have been imported or published.';
+    } catch (error) {
+      batchStatus.textContent = error instanceof Error ? error.message : 'Invalid chapter batch.';
+    }
+  });
+  batchForm.addEventListener('submit', async event => {
+    event.preventDefault();
+    const controls = Array.from(batchForm.querySelectorAll<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement | HTMLButtonElement>('input, select, textarea, button'));
+    try {
+      const { selected, drafts } = readLicensedBatch();
+      controls.forEach(control => { control.disabled = true; });
+      batchStatus.textContent = 'Checking duplicates and saving private drafts…';
+      const numbers = drafts.map(draft => draft.chapter_number).join(',');
+      const existing = await rest<{ id: string; chapter_number: number }[]>('novel_translation_jobs', 'GET',
+        'select=id,chapter_number&source_id=eq.' + encodeURIComponent(selected.id) +
+        '&chapter_number=in.(' + numbers + ')');
+      if (existing.length) throw new Error('One or more chapter numbers already exist for this source. Nothing imported.');
+      let completed = 0;
+      for (const draft of drafts) {
+        // Re-evaluate source rights before each write and let server-side policies enforce all mutations.
+        const current = await rest<Source[]>('novel_sources', 'GET',
+          'select=id,rights_status,permission_publish,permission_translate,rights_evidence,verified_at,rights_valid_until&id=eq.' +
+          encodeURIComponent(selected.id));
+        if (!rightsVerified(current[0])) throw new Error('Source rights were changed or expired.');
+        const rows = await rest<Job[]>('novel_translation_jobs', 'POST', '', {
+          ...draft, source_id: selected.id,
+        });
+        if (rows.length !== 1) throw new Error('Database did not confirm this draft.');
+        completed++;
+      }
+      batchForm.reset();
+      await load();
+      batchStatus.textContent = 'Saved ' + completed + ' private draft(s). None published. Open the review queue to continue.';
+    } catch (error) {
+      batchStatus.textContent = error instanceof Error ? error.message :
+        'Import failed. Inspect the private queue before retrying; some drafts may already have been saved.';
+      notify(error);
+    } finally {
+      controls.forEach(control => { control.disabled = false; });
+    }
   });
   document.getElementById('admin-refresh')?.addEventListener('click',()=> {
     void load().catch(notify);

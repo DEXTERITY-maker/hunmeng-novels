@@ -125,8 +125,31 @@ const taxonomy = getTaxonomy(await getLibrary());
           </form>
           <p class="fine">Drafts are never published automatically. Machine translations from n8n or another service must be reviewed by an editor.</p>
         </section>
+        <section class="admin-card admin-wide" aria-labelledby="licensed-import-title">
+          <h2 id="licensed-import-title">4. Import authorized chapters</h2>
+          <p>Paste a JSON batch of 1–10 chapters from a manuscript you are authorized to translate and publish. The text is saved privately as drafts; it is never fetched automatically from an external website or published at import.</p>
+          <p class="notice">Only sources with documented, verified permission for both translation and publication are accepted. External-source links alone are not permission.</p>
+          <form id="chapter-batch-form">
+            <label>Licensed source
+              <select name="source_id" required></select>
+            </label>
+            <label>Chapter batch (JSON)
+              <textarea name="batch" rows="11" required spellcheck="false" placeholder='{"chapters":[{"chapter_number":1,"chapter_slug":"chapter-1","chapter_title":"Chapter 1","chapter_description":"An opening chapter summary.","original_text":"Original authorized manuscript text (at least 80 characters).","translated_text":""}]}'></textarea>
+            </label>
+            <label class="admin-check">
+              <input type="checkbox" name="confirm_license" required />
+              I confirm that this manuscript is supplied with documented translation and republication permission.
+            </label>
+            <div class="admin-actions">
+              <button type="button" class="button secondary" id="chapter-batch-preview">Validate batch</button>
+              <button type="submit" class="button">Import as private drafts</button>
+            </div>
+            <p class="fine" id="chapter-batch-status" role="status" aria-live="polite">No batch loaded.</p>
+          </form>
+          <p class="fine">A staff editor can fill translations individually. Machine translation can be prepared separately in the protected, opt-in editorial workflow. Every chapter still needs human review and an administrator's approval.</p>
+        </section>
         <section class="admin-card admin-wide">
-          <h2>4. Review and publication queue</h2>
+          <h2>5. Review and publication queue</h2>
           <p>Approval requires documented permissions, the source text, a translation, a description, a glossary, and notes from a human reviewer.</p>
           <button id="admin-refresh" class="button secondary" type="button">Refresh queue</button>
           <div id="admin-job-list"></div>
