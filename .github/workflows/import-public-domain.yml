@@ -1,0 +1,90 @@
+name: Import verified public-domain novels to Hunmeng
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      max_novels:
+        description: Max public-domain novels to add (1-10)
+        required: true
+        default: '10'
+        type: choice
+        options: ['1','2','3','4','5','6','7','8','9','10']
+permissions:
+  contents: write
+concurrency:
+  group: hunmeng-pages-production
+  cancel-in-progress: false
+jobs:
+  ingest:
+    if: >-
+      github.ref == 'refs/heads/main' &&
+      (github.event_name == 'workflow_dispatch' ||
+       (github.event_name == 'push' &&
+        startsWith(github.event.head_commit.message,
+          'feat(import): launch verified public domain reading 2026-11-01 [deploy cloudflare]')))
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    environment: pages-production
+    steps:
+      - name: Checkout approved source
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Install pinned dependencies
+        run: npm ci
+      - name: Check editorial safeguards and existing content
+        run: node --test tests/*.test.mjs
+      - name: Install browser test runtime
+        run: npx playwright install --with-deps chromium
+      - name: Prepare isolated demo site
+        run: npm run build:demo
+      - name: Run browser regressions before importing
+        run: npm test
+      - name: Clear demo content and build cache
+        run: rm -rf .astro dist node_modules/.astro
+      - name: Import pinned CC0 public-domain editions into native reader pages
+        env:
+          HUNMENG_PUBLIC_DOMAIN_LIMIT: ${{ inputs.max_novels || '10' }}
+        run: node scripts/import-public-domain.mjs
+      - name: Verify first batch has ten new complete novels
+        if: github.event_name == 'push'
+        run: |
+          test "$(git ls-files --others --exclude-standard src/content/novels | wc -l)" -eq 10
+      - name: Validate all generated novel and chapter assets
+        run: |
+          npm run build
+          node scripts/audit-build.mjs
+          node scripts/validate-serials.mjs
+      - name: Check no legacy withdrawn/demonstration originals returned
+        run: |
+          test ! -e dist/novel/khranitel-mayaka
+          test ! -e dist/novel/sad-zimy
+          test ! -e dist/novel/comprehension-against-the-heavens
+          test ! -e dist/novel/the-latency-of-tomorrow
+          node -e "const fs=require('node:fs');const n=JSON.parse(fs.readFileSync('dist/catalog.json','utf8'));if(n.some(x=>x.demo===true))process.exit(1)"
+      - name: Commit eligible books and release announcement
+        id: commit
+        run: |
+          git config user.name "Hunmeng Public Domain Publisher"
+          git config user.email "actions@users.noreply.github.com"
+          git add src/content/novels src/content/chapters src/content/glossaries src/content/news
+          if ! git diff --cached --quiet; then
+            git commit -m "content(licensed): publish verified public-domain novels"
+            git push origin HEAD:main
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Publish validated static reader in Cloudflare
+        if: steps.commit.outputs.changed == 'true'
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy dist --project-name=hunmeng-novels --branch=main
