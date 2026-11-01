@@ -22,7 +22,8 @@ function getInput(env = process.env) {
   return { query, author, source };
 }
 function fetchPath(url, base, headers, fetcher) {
-  const endpoint = new URL(url, base);
+  const relative = url.startsWith('/') && !url.startsWith('/api/v1/') ? url.slice(1) : url;
+  const endpoint = new URL(relative, base);
   if (endpoint.origin !== new URL(base).origin || !endpoint.pathname.startsWith('/api/v1/'))
     throw new Error('Refusing to send a secret to an unexpected destination.');
   return fetcher(endpoint, { method:'GET', redirect:'manual', headers,
