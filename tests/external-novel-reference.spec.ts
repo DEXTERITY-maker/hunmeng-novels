@@ -21,7 +21,7 @@ test('external novel reference has author and source links but no unauthorized l
   await expect(page.locator('.external-novel-author')).toContainText('凨羽');
   await expect(page.getByRole('link', { name: 'Read on WTR-Lab' })).toHaveAttribute('href', 'https://wtr-lab.com/en/novel/109475/highway-survival-lathe-is-also-a-car-i-handcraft-gatling-gun');
   await expect(page.getByRole('link', { name: 'Chinese original' })).toHaveAttribute('href', 'https://fanqienovel.com/page/7673414027619339289');
-  await expect(page.locator('.external-novel-copy')).toContainText('Publication rights have not been verified');
+  await expect(page.locator('.external-novel-copy')).toContainText('publication rights remain unverified');
   await expect(page.locator('.novel-read-label, .chapter-list, [data-continue]')).toHaveCount(0);
 });
 
