@@ -682,6 +682,12 @@
       "title": "Part 20",
       "novelTitle": "Alice's Adventures in Wonderland",
       "messageId": 30
+    },
+    "dracula:1": {
+      "status": "reserved",
+      "slug": "chapter-1",
+      "title": "Part 1",
+      "novelTitle": "Dracula"
     }
   }
 }
