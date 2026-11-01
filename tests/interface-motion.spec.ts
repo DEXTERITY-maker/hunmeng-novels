@@ -49,3 +49,30 @@ test('catalog filtering animates once but honours reduced-motion settings', asyn
     getComputedStyle(el, '::before').animationName);
   expect(spinner).toBe('none');
 });
+
+for (const width of [390, 1366]) {
+  test(`motion polish keeps catalog readable at ${width}px in every theme`, async ({ page }, info) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/catalog/');
+    await expect(page.locator('#catalog-results')).not.toHaveAttribute('aria-busy', 'true');
+    for (const theme of ['light', 'dark', 'sepia']) {
+      await page.locator('html').evaluate((el, value) => {
+        el.setAttribute('data-theme', value);
+      }, theme);
+      await expect(page.locator('#catalog-results .catalog-novel-card').first()).toBeVisible();
+      await expect(page.locator('#catalog-load-status')).toBeHidden();
+      const contrast = await page.locator('#catalog-results .catalog-novel-card').first().evaluate(el => {
+        const style = getComputedStyle(el);
+        return { border: style.borderColor, background: style.backgroundColor };
+      });
+      expect(contrast.border).not.toBe('rgba(0, 0, 0, 0)');
+      expect(contrast.background).not.toBe('rgba(0, 0, 0, 0)');
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+      await page.screenshot({
+        path: info.outputPath(`hunmeng-motion-${theme}-${width}.png`),
+        animations: 'disabled',
+        fullPage: false,
+      });
+    }
+  });
+}
