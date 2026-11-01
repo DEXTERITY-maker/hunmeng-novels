@@ -72,6 +72,10 @@ export function element<K extends keyof HTMLElementTagNameMap>(
 }
 
 export interface CatalogIndexNovel {
+  external?: boolean;
+  externalId?: string;
+  sourceName?: string;
+  sourceUrl?: string;
   serial?: boolean;
   original?: boolean;
   art?: 'comprehension' | 'latency';
