@@ -88,6 +88,7 @@ export async function initCatalog() {
   }
   try {
     const novels = await getCatalogIndex();
+    empty.textContent = novels.length ? 'Nothing found. Try removing some filters.' : 'No novels are published yet. New releases will appear here.';
     let resultAnimation: Animation | undefined;
     const render = (syncUrl: boolean, requestedPage?: number, animate = false) => {
       const f = new FormData(form);

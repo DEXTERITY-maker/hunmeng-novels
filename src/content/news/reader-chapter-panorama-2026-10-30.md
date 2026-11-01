@@ -4,8 +4,8 @@ excerpt: "Illustrated chapter headers and refined reading controls, with reading
 category: changelog
 publishedAt: "2026-10-30"
 order: 717
-cover: "/images/art/latency-night-1536.webp"
-coverAlt: "Rainy Shenzhen riverside at night from The Latency of Tomorrow"
+cover: "/images/art/hunmeng-landscape-night-1536.webp"
+coverAlt: "Mountain pavilions in the Hunmeng night landscape"
 coverFit: art
 ---
 

@@ -127,7 +127,7 @@ const PAGE_SIZE = 24;
         <div id="catalog-results" class="novel-grid">
           {novels.slice(0, PAGE_SIZE).map((novel) => <NovelCard novel={novel} />)}
         </div>
-        <p id="catalog-empty" class="empty-state" hidden>Nothing found. Try removing some filters.</p>
+        <p id="catalog-empty" class="empty-state" hidden={novels.length > 0}>{novels.length ? 'Nothing found. Try removing some filters.' : 'No novels are published yet. New releases will appear here.'}</p>
         <nav id="catalog-pagination" class="catalog-pagination" aria-label="Catalog pages" hidden></nav>
         <noscript>
           <p class="notice">Interactive search requires JavaScript. The first novels are shown above; you can browse the full catalog using the page links.</p>
