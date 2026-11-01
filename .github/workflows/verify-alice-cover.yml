@@ -1,0 +1,33 @@
+name: Verify historical Alice cover without publishing
+on:
+  pull_request:
+    paths:
+      - 'scripts/sync-alice-historical-cover.mjs'
+      - '.github/workflows/publish-alice-historical-cover.yml'
+      - '.github/workflows/verify-alice-cover.yml'
+      - 'tests/alice-original-cover.test.mjs'
+
+permissions:
+  contents: read
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - run: node --test tests/alice-original-cover.test.mjs
+      - name: Fetch historical image and create local preview
+        run: node scripts/sync-alice-historical-cover.mjs
+      - name: Validate novel metadata and new image
+        run: |
+          test -s public/images/covers/alices-adventures-in-wonderland-1865.jpg
+          npm run build
+          test -s dist/images/covers/alices-adventures-in-wonderland-1865.jpg
+          grep -q 'alices-adventures-in-wonderland-1865.jpg' dist/novel/alices-adventures-in-wonderland/index.html
