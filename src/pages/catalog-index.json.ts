@@ -1,12 +1,13 @@
 import type { APIRoute } from 'astro';
 import { getLibrary } from '../lib/content';
 import serials from '../data/serials';
+import { externalCatalogEntries } from '../lib/external-catalog';
 
 // Lightweight search index excludes chapter lists and full text.
 export const GET: APIRoute = async () =>
   new Response(
     JSON.stringify(
-      (await getLibrary()).map((n) => ({
+      [...(await getLibrary()).map((n) => ({
         slug: n.slug,
         serial: serials.some(s => s.slug === n.slug),
         original: n.original,
@@ -27,7 +28,7 @@ export const GET: APIRoute = async () =>
         url: n.url,
         views: n.views ?? null,
         rating: n.rating ?? null,
-      })),
+      })), ...externalCatalogEntries],
     ),
     { headers: { 'Content-Type': 'application/json; charset=utf-8' } },
   );
