@@ -34,7 +34,10 @@ async function stage(){
       !Number.isInteger(j.chapter_number)||j.chapter_number<1||
       !j.reviewed_by||!j.approved_at||String(j.qa_notes||'').trim().length<20||
       String(j.original_text||'').trim().length<80||
-      String(j.translated_text||'').trim().length<80||
+      // The public reader build requires 4,000–8,500 Unicode characters per chapter.
+      // Skip unsuitable drafts before writing novel metadata or triggering the build.
+      Array.from(String(j.translated_text||'').trim()).length<4000||
+      Array.from(String(j.translated_text||'').trim()).length>8500||
       String(j.chapter_description||'').trim().length<10||!safeText(j.translated_text)){
       console.log('SKIP missing rights/review/QA: '+j.id);continue;
     }
