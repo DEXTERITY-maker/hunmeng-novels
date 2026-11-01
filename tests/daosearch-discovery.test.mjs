@@ -68,7 +68,7 @@ test('a live lookup stays read-only, detects the existing Highway Survival entry
     visited.push(address);
     if(address.includes('/search?'))return send([book]);
     if(address.includes('/books/fanqie/'))return send(book);
-    if(address.includes('supabase.co/rest/v1/'))return send([],200,{'content-range':'0-0/0'});
+    if(address.includes('supabase.co/rest/v1/'))return new Response(JSON.stringify([]),{status:200,headers:{'content-range':'0-0/0','Content-Type':'application/json'}});
     throw Error('Unexpected request '+address);
   };
   const report=await run({
