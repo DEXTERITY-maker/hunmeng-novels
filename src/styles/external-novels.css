@@ -1,0 +1,50 @@
+/* External references are visually separated from locally published novels.
+   Use theme tokens and existing cover art only: never hotlink third-party covers. */
+.catalog-external-sources { margin: 24px 0 30px; }
+.catalog-external-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin-bottom: 12px; }
+.catalog-external-heading h2 { font-size: clamp(1.2rem, 2.5vw, 1.6rem); color: var(--ink); }
+.catalog-external-heading p { color: var(--muted); font-size: .84rem; }
+.external-novel-card, .external-novel-detail, .external-novel-summary {
+  border: 1px solid var(--line);
+  border-radius: 17px;
+  background: var(--surface);
+  box-shadow: 0 6px 25px rgb(20 39 33 / .06);
+}
+.external-novel-card { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 20px; padding: 17px; }
+.external-novel-thumb { border-radius: 10px; background: var(--soft); overflow: hidden; align-self: start; }
+.external-novel-thumb img { width: 100%; height: auto; aspect-ratio: 2 / 3; object-fit: cover; }
+.external-novel-card-copy { display: flex; flex-direction: column; align-items: flex-start; gap: 7px; min-width: 0; }
+.external-novel-eyebrow { color: var(--accent); font-weight: 750; font-size: .74rem; letter-spacing: .04em; text-transform: uppercase; }
+.external-novel-card h3 { font-size: clamp(1.06rem, 2.3vw, 1.35rem); line-height: 1.32; overflow-wrap: anywhere; }
+.external-novel-card h3 a:hover { color: var(--accent); }
+.external-novel-original { color: var(--muted); font-size: .91rem; overflow-wrap: anywhere; }
+.external-novel-card-description { line-height: 1.55; color: var(--ink); font-size: .9rem; }
+.external-novel-links { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 6px; align-items: center; }
+.external-novel-links a:first-child { font-weight: 700; color: var(--accent); }
+.external-novel-links a { font-size: .84rem; text-underline-offset: 3px; }
+.external-novel-links a:hover { text-decoration: underline; }
+.external-novel-page { padding-top: 26px; }
+.external-novel-detail { display: grid; grid-template-columns: minmax(145px, 230px) minmax(0, 1fr); gap: clamp(18px, 4vw, 42px); padding: clamp(18px, 3.5vw, 32px); margin-top: 20px; }
+.external-novel-cover { position: relative; align-self: start; border-radius: 12px; overflow: hidden; background: var(--soft); }
+.external-novel-cover img { width: 100%; aspect-ratio: 2 / 3; object-fit: cover; }
+.external-novel-cover span { position: absolute; bottom: 0; inset-inline: 0; padding: 7px; text-align: center; background: color-mix(in srgb,var(--bg) 92%,transparent); color: var(--ink); font-size: .74rem; font-weight: 750; }
+.external-novel-copy { min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 13px; }
+.external-novel-copy h1 { font-size: clamp(1.6rem, 3.4vw, 2.6rem); overflow-wrap: anywhere; }
+.external-novel-author,.external-novel-status { color: var(--muted); }
+.external-novel-author strong,.external-novel-status strong { color: var(--ink); }
+.external-novel-tags { display: flex; flex-wrap: wrap; gap: 7px; }
+.external-novel-tags span { border: 1px solid var(--line); background: var(--soft); color: var(--ink); padding: 4px 9px; border-radius: 8px; font-size: .77rem; }
+.external-novel-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 9px; }
+.external-novel-actions .button { min-height: 44px; }
+.external-novel-summary { padding: clamp(18px, 3vw, 28px); margin-top: 20px; }
+.external-novel-summary h2 { margin-bottom: 12px; }
+.external-novel-summary p { line-height: 1.7; max-width: 780px; }
+.external-novel-summary .fine { margin-top: 12px; }
+@media (max-width: 560px) {
+  .external-novel-card { grid-template-columns: 76px minmax(0, 1fr); gap: 12px; padding: 12px; }
+  .external-novel-card-description { font-size: .82rem; }
+  .external-novel-detail { grid-template-columns: 1fr; }
+  .external-novel-cover { width: min(170px, 58%); }
+  .external-novel-actions { width: 100%; }
+  .external-novel-actions .button { width: 100%; }
+}
