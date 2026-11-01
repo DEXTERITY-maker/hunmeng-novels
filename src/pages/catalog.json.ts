@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
 import { getLibrary, chapterUrl } from '../lib/content';
-import serials from '../data/serials.json';
+import serials from '../data/serials';
 export const GET: APIRoute = async () =>
   new Response(
     JSON.stringify(

@@ -7,7 +7,7 @@ import { getLibrary, dateLabel, chapterCount, chapterUrl } from '../../../lib/co
 import { chapterListUrl } from '../../../lib/pagination';
 import { novelStructuredData, placeholderCover, socialCover } from '../../../lib/seo';
 import { site } from '../../../config/site';
-import serials from '../../../data/serials.json';
+import serials from '../../../data/serials';
 export async function getStaticPaths() {
   return (await getLibrary()).map((n) => ({ params: { slug: n.slug }, props: { novel: n } }));
 }

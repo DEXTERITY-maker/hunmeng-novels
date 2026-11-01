@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
 import { getLibrary } from '../lib/content';
-import serials from '../data/serials.json';
+import serials from '../data/serials';
 
 // Lightweight search index excludes chapter lists and full text.
 export const GET: APIRoute = async () =>
