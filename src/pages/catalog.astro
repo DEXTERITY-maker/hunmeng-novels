@@ -2,12 +2,12 @@
 import Layout from '../layouts/Layout.astro';
 import { renderCatalogCard } from '../lib/catalog-card';
 import CatalogHero from '../components/CatalogHero.astro';
-import { externalCatalogEntries } from '../lib/external-catalog';
+import { unpublishedExternalEntries } from '../lib/external-catalog';
 import { getLibrary } from '../lib/content';
 import { getTaxonomy } from '../lib/taxonomy';
 const novels = await getLibrary();
 // External listings are searchable, but are not published chapters or reader rewards.
-const catalogItems = [...novels, ...externalCatalogEntries];
+const catalogItems = [...novels, ...unpublishedExternalEntries(novels.map(n => n.slug))];
 const { genres, tags, groups } = getTaxonomy(catalogItems);
 const categories = [...new Set(catalogItems.flatMap((n) => n.categories))].sort((a, b) => a.localeCompare(b, 'en'));
 const pickerTags = [...tags].sort((a, b) => b.count - a.count || a.label.localeCompare(b.label, 'en'));
