@@ -31,11 +31,12 @@ test('withdrawn novel, chapter and schedule routes return 404', async ({ request
   }
 });
 
-test('homepage and news remain available after original works are withdrawn', async ({ page, request }) => {
+test('homepage and news remain available after original works are withdrawn', async ({ page, request }, info) => {
   await page.goto('/');
   await expect(page.locator('#home-title')).toBeVisible();
   await expect(page.locator('#latest-news')).toBeVisible();
   const news = await request.get('/news/original-novels-withdrawn-2026-11-01/');
   expect(news.status()).toBe(200);
   await expect(page.locator('#new-novels')).toBeVisible();
+  await page.screenshot({ path: info.outputPath('hunmeng-home-withdrawn-originals.png'), animations: 'disabled', fullPage: false });
 });
