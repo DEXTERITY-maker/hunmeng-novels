@@ -4761,3 +4761,7 @@ html[data-theme='dark'] .news-page .news-filter-tabs a[aria-current='page'] {col
   .news-article-shell .news-article-body {font-size:1rem}
   .news-article-shell .news-gallery {grid-template-columns:repeat(2,minmax(0,1fr));padding:14px}
 }
+/* Review: images always fill their frame; one divider under the lead. */
+.news-page .news-feed .news-card-image,.news-article-shell .news-more .news-card-image {position:relative}
+.news-page .news-feed .news-card-image img,.news-article-shell .news-more .news-card-image img {position:absolute;inset:0;width:100%;height:100%;max-width:none}
+.news-article-shell .news-article-header {border-bottom:0;padding-bottom:0;margin-bottom:0}
