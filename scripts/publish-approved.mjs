@@ -76,6 +76,9 @@ async function stage(){
     await fs.writeFile(file,lines.join('\n'));
     const novelMetadata = JSON.parse(await fs.readFile(novelFile, 'utf8'));
     const publicationDate = today();
+    // Keep catalogue sorting and the visible update date in sync with newly published chapters.
+    novelMetadata.updatedAt = publicationDate;
+    await fs.writeFile(novelFile, JSON.stringify(novelMetadata, null, 2) + '\n');
     const notes = [
       ...(isNewNovel ? [makePublicationNews({
         kind: 'novel', novelSlug: source.slug, novelTitle: novelMetadata.title, date: publicationDate,
