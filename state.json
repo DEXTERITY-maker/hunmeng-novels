@@ -549,6 +549,12 @@
       "title": "Part 1",
       "novelTitle": "Alice's Adventures in Wonderland",
       "messageId": 11
+    },
+    "alices-adventures-in-wonderland:2": {
+      "status": "reserved",
+      "slug": "chapter-2",
+      "title": "Part 2",
+      "novelTitle": "Alice's Adventures in Wonderland"
     }
   }
 }
