@@ -650,3 +650,12 @@ html[data-theme="dark"] body.hm-editorial-site {background:#172923;}
   .hm-editorial-site .header-actions .header-icon-button { width:32px; min-width:32px; }
   .hm-editorial-site .v3-mobile-menu > summary { width:32px; }
 }
+
+/* Brand's own .brand-title has an explicit font-size in the shared stylesheet;
+   shrinking the parent .brand alone cannot prevent 320px header overflow. */
+@media(max-width:630px) {
+  .hm-editorial-site .site-header .brand-title { font-size:1.15rem; letter-spacing:-.045em; }
+}
+@media(max-width:350px) {
+  .hm-editorial-site .site-header .brand-title { font-size:1.02rem; }
+}
