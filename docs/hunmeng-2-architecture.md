@@ -1,6 +1,6 @@
 # Hunmeng 2.0 — architecture and phased rebuild
 
-Status: **exploratory design prototype**, not a production release. The current website and release workflows remain the source of truth.
+Status: **four-stage V2 preview implemented in PR #130; CI, design review and production promotion are separate gates.** This is not a production release. Review [release-candidate checklist](./hunmeng-2-release-candidate.md) before any launch.
 
 ## Product goals
 
@@ -12,7 +12,7 @@ Status: **exploratory design prototype**, not a production release. The current 
 ## Stage 1: isolated homepage pilot (this PR)
 
 - New `/v2/` landing page uses `getLibrary()`, `getLatestChapters()`, `getNews()` and rights-safe `unpublishedExternalEntries()` directly. It contains no invented books or live ranking data.
-- Search submits to the existing `/catalog/` route and its search/filter contract.
+- Search submits to the isolated `/v2/catalog/` preview with the same tested filter contract; the original `/catalog/` route remains unchanged.
 - Book cards and chapters link to the existing, canonical reader routes; external references remain labeled and link only to their existing metadata pages.
 - Reuse `Layout.astro` and its session, appearance, storage, security headers, account navigation and footer. No duplicate auth or storage implementation.
 - V2 selectors live in `src/styles/v2-home.css`. Do not append generic overrides to the existing large stylesheets or change V1 components.
@@ -61,8 +61,8 @@ Status: **exploratory design prototype**, not a production release. The current 
 
 ## Stage 4 pilot: existing-role editorial command center
 
-- New independent `/v2/admin/` interface presents sources and rights, terminology, chapter drafts, licensed batch import, the review and publication queue, and administrator-only review moderation as one clearly navigated workflow.
-- The route **reuses unchanged `initAdmin()` and `initAdminReviews()`** and existing forms, field names, DOM element IDs, permissions checks, session storage and Supabase RLS. It introduces no new endpoint, credential, role, SQL operation or bypass.
+- New independent `/v2/admin/` interface presents sources and rights, terminology, chapter drafts, licensed batch import, the review and publication queue, and administrator-only review moderation as one clearly navigated workflow. The command center now shows a read-only count summary for the already fetched source list and the most recent 100 jobs, plus a client-only workflow-state filter.
+- The route reuses **the existing `initAdmin()` and `initAdminReviews()` modules**, forms, field names, DOM IDs, Supabase RLS and staff permissions. V2-only read-only queue presentation was added to `initAdmin()`, and `/v2/admin/` explicitly uses the same isolated admin session store as `/admin/`. It introduces no new endpoint, credential, role, SQL operation or bypass.
 - All workspace navigation and editorial forms stay inside `#admin-workspace[hidden]` until `getStaffRole()` confirms authorized editor or administrator access. Role changes and sign-outs use existing lock logic.
 - The V2 admin path gets the same no-referrer policy, URL credential sanitization and account-navigation suppression as the original `/admin/`. The route is `noindex` and excluded from the sitemap.
 - Editorial tasks stay readable in the absence of additional JavaScript beyond the existing editor modules. No novel publishing, rights approval, import or review is silently triggered by navigation.
@@ -84,6 +84,6 @@ Status: **exploratory design prototype**, not a production release. The current 
 - All links have a valid destination in existing routes, the search uses real query parameters, images come from already reviewed local assets.
 - At 320, 390, 768 and 1280 CSS pixels the page does not horizontally overflow.
 - Reduced motion does not hide or animate necessary content; no secrets, credentials, or new network dependencies are added.
-- CI passes Node/Playwright; any snapshots and accessibility issues are reviewed before adoption.
+- CI passes Node/Playwright on the final exact SHA; no historic green run substitutes for the final commit. The cross-route smoke test is `tests/v2-integration.spec.ts` and detailed release gates are documented in `docs/hunmeng-2-release-candidate.md`.
 
 The V2 pilot is English because the existing public website is English. Future localization is a separately reviewed decision; database labels and user-created text are not silently translated.
