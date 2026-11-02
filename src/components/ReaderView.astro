@@ -41,7 +41,7 @@ const usesPlaceholder = n.cover === placeholderCover;
   structuredData={structuredData}
   noindex={remote || preview}
   reader
-  bodyClass={preview ? 'v2-reader' : undefined}
+  bodyClass={preview || import.meta.env.HUNMENG_V2_PUBLIC === '1' ? 'v2-reader' : undefined}
 >
   <header class="reader-header reader-chrome">
     <a href={n.url} class="reader-back" aria-label="Back to novel" title="Back to novel">

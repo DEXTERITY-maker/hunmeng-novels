@@ -1,10 +1,12 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import V2Catalog from '../components/V2Catalog.astro';
 import { renderCatalogCard } from '../lib/catalog-card';
 import CatalogHero from '../components/CatalogHero.astro';
 import { unpublishedExternalEntries } from '../lib/external-catalog';
 import { getLibrary } from '../lib/content';
 import { getTaxonomy } from '../lib/taxonomy';
+const launched = import.meta.env.HUNMENG_V2_PUBLIC === '1';
 const novels = await getLibrary();
 // External listings are searchable, but are not published chapters or reader rewards.
 const catalogItems = [...novels, ...unpublishedExternalEntries(novels.map(n => n.slug))];
@@ -15,9 +17,11 @@ const PAGE_SIZE = 24;
 ---
 
 <Layout
-  title="Web novel catalog — advanced search"
-  description="Explore Hunmeng novels by title, author, category, genre, tags, ratings, and recent updates."
+  title={launched ? "Hunmeng 2.0 — Discover stories" : "Web novel catalog — advanced search"}
+  description={launched ? "Find published books and clearly labeled external stories with Hunmeng 2.0 search." : "Explore Hunmeng novels by title, author, category, genre, tags, ratings, and recent updates."}
 >
+  {launched && <V2Catalog launched />}
+  {!launched && (
   <main id="main" class="page-shell catalog-page">
     <CatalogHero />
     <div class="catalog-layout">
@@ -139,6 +143,7 @@ const PAGE_SIZE = 24;
       </div>
     </div>
   </main>
+  )}
   <script>
     import { initCatalog } from '../scripts/catalog';
     void initCatalog();

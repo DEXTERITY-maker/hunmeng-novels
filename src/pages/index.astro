@@ -1,5 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import V2Home from '../components/V2Home.astro';
 import Icon from '../components/Icon.astro';
 
 import MotionNovelGrid from '../components/MotionNovelGrid';
@@ -12,6 +13,7 @@ import serials from '../data/serials';
 import { visibleExternalNovels } from '../lib/external-catalog';
 import { externalNovelUrl } from '../data/external-novels';
 
+const launched = import.meta.env.HUNMENG_V2_PUBLIC === '1';
 const novels = await getLibrary();
 const unpublishedExternalNovels = visibleExternalNovels.filter(
   source => !novels.some(novel => novel.slug === source.slug));
@@ -38,9 +40,11 @@ const animatedNovels = newNovels.map((n) => ({
 ---
 
 <Layout
-  title="Web novels: new stories and latest chapters"
-  description="Hunmeng — read web novels in English. Discover new stories, fresh chapters, and a comfortable reading experience."
+  title={launched ? "Hunmeng 2.0 — A thousand worlds, one reading room" : "Web novels: new stories and latest chapters"}
+  description={launched ? "Explore published web novels, curated stories and a comfortable reading experience in Hunmeng 2.0." : "Hunmeng — read web novels in English. Discover new stories, fresh chapters, and a comfortable reading experience."}
 >
+  {launched && <V2Home launched />}
+  {!launched && (
   <main id="main" class="page-shell home-page">
     <section class="home-hero" aria-labelledby="home-title">
       <div class="home-hero-copy">
@@ -250,6 +254,7 @@ const animatedNovels = newNovels.map((n) => ({
       )}
     </section>
   </main>
+  )}
   <script>
     import {HALLOWEEN_START,HALLOWEEN_END} from '../lib/halloween-event';
     const eventBanner=document.getElementById('halloween-home-banner');
