@@ -92,3 +92,47 @@ jobs:
           TIMEWEB_API_TOKEN: ${{ secrets.TIMEWEB_API_TOKEN }}
           DEPLOY_SHA: ${{ github.sha }}
         run: node scripts/deploy-timeweb.mjs
+
+  v2-public-readiness:
+    name: Hunmeng 2.0 canonical-route release checks
+    # Keep the existing V1 test job and add a real release-flag build and
+    # browser test on candidate branches, not a bypass of the default suite.
+    if: >-
+      startsWith(github.head_ref, 'release/hunmeng-2-') ||
+      startsWith(github.ref, 'refs/heads/release/hunmeng-2-')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Build and test public V2 routes with synthetic content
+        env:
+          HUNMENG_V2_PUBLIC: '1'
+        run: |
+          npm run build:demo
+          npx playwright test --config playwright.v2-release.config.ts
+      - name: Save V2 public-route screenshots for final approval
+        if: always() && github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: hunmeng-v2-public-release-preview-${{ github.run_id }}
+          path: test-results/**/hunmeng-v2-public-*.png
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Verify production build never ships demonstration books
+        env:
+          HUNMENG_V2_PUBLIC: '1'
+          SITE_URL: https://hunmeng-novel.ru
+        run: |
+          rm -rf .astro dist node_modules/.astro
+          npm run build
+          test ! -e dist/novel/khranitel-mayaka
+          test ! -e dist/novel/sad-zimy
+          grep -q 'class="v2-home"' dist/index.html
+          grep -q 'v2-catalog-page' dist/catalog/index.html
+          test -e dist/v2/index.html
+          ! grep -q '/v2/' dist/sitemap-0.xml
