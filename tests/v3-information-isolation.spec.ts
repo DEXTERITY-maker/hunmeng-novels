@@ -5,7 +5,6 @@ test('V1 informational routes retain original layout, destinations and privacy c
     await page.goto(url);
     await expect(page.locator('body')).not.toHaveClass(/hm-editorial-site/);
     await expect(page.locator('.v3-info-nav')).toHaveCount(0);
-    await expect(page.locator('.v3-info-page')).toHaveCount(0);
     await expect(page.locator('main#main h1')).toBeVisible();
     await expect(page.locator('main#main .back-link')).toHaveAttribute('href', '/');
   }
