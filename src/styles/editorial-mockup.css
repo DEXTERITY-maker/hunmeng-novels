@@ -178,3 +178,16 @@
  .editorial-mockup-page .em-header-tabs a { font-size:.68rem; padding:5px 1px 9px; }
  .editorial-mockup-page .em-hero-landscape::after { width:176px; height:153px; top:-10%; left:-7%; }
 }
+
+/* The visual newsletter control links to the existing official Telegram channel.
+   It does not collect addresses or imply a backend that does not exist. */
+.editorial-mockup-page .em-newsletter-signup { width:min(100%,510px); display:flex; align-items:center; gap:11px; padding:5px 5px 5px 16px; background:#fffbf0; color:#25513f; border-radius:100px; margin-top:20px; font-size:.73rem; }
+.editorial-mockup-page .em-newsletter-signup > span:nth-child(2) { flex:1; min-width:0; }
+.editorial-mockup-page .em-newsletter-signup .em-newsletter-button { margin:0; white-space:nowrap; border-radius:100px; padding:11px 17px; }
+.editorial-mockup-page .em-socials { display:flex; justify-content:center; align-items:center; gap:14px; margin-top:30px; }
+.editorial-mockup-page .em-socials a { width:37px; height:37px; border-radius:50%; display:grid; place-items:center; font-size:1rem; color:#e9f5e8; background:#135942; }
+.editorial-mockup-page .em-socials a:hover { background:#b27d32; }
+@media(max-width:360px) {
+ .editorial-mockup-page .em-newsletter-signup { gap:7px; padding-left:10px; font-size:.65rem; }
+ .editorial-mockup-page .em-newsletter-signup .em-newsletter-button { padding:10px 11px; }
+}

@@ -2,6 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import { getLibrary } from '../lib/content';
 import { getNews, newsUrl } from '../lib/news';
+import { site } from '../config/site';
 import '../styles/editorial-mockup.css';
 
 const novels = await getLibrary();
@@ -132,9 +133,9 @@ const collections = [
           <div class="em-heading"><h2 id="em-guide-title">In-Depth Reading</h2><a href="/genres/">Explore more →</a></div>
           <a class="em-guide" href="/genres/"><span class="em-guide-icon" aria-hidden="true">▣</span><span><strong>Find Your Next Great Read</strong><small>Explore genres, discover authors, and find your own reading path.</small><span class="em-guide-tags"><b>Discover</b><b>Genres</b><b>Reading guide</b></span></span></a>
         </section>
-        <section class="em-newsletter" aria-labelledby="em-newsletter-title"><div><p class="em-eyebrow">STAY INSPIRED</p><h2 id="em-newsletter-title">Your next story<br/>is waiting.</h2><p>Find new releases, timeless reads and quiet moments in your personal library.</p><a href="/account/" class="em-newsletter-button">Join Hunmeng →</a></div><span class="em-bamboo" aria-hidden="true">❧</span></section>
+        <section class="em-newsletter" aria-labelledby="em-newsletter-title"><div><p class="em-eyebrow">STAY IN THE LOOP</p><h2 id="em-newsletter-title">Join Our<br/>Reading Community</h2><p>Discover new books, chapter announcements and reading updates through our official channel.</p><div class="em-newsletter-signup"><span aria-hidden="true">✉</span><span>Hunmeng reading updates</span><a href={site.contacts.telegramChannel} target="_blank" rel="noopener noreferrer" class="em-newsletter-button">Subscribe →</a></div></div><span class="em-bamboo" aria-hidden="true">❧</span></section>
       </div>
-      <footer class="em-footer"><a href="/" class="em-footer-logo">✦ Hunmeng</a><p>A thoughtful digital reading home, connecting timeless stories, ideas, and people.</p><div class="em-footer-columns"><nav aria-label="Browse"><strong>Browse</strong><a href="/catalog/">Books</a><a href="/updates/">Latest chapters</a><a href="/genres/">Categories</a></nav><nav aria-label="Resources"><strong>Resources</strong><a href="/library/">My library</a><a href="/authors/">Authors</a><a href="/news/">News</a></nav><nav aria-label="About"><strong>About</strong><a href="/about/">Our story</a><a href="/contacts/">Contact</a><a href="/rules/">Terms & privacy</a></nav></div><p class="em-copyright">© 2026 Hunmeng. All rights reserved.</p><p class="em-preview-notice">Design preview · <a href="/">Return to the live site ↗</a></p></footer>
+      <footer class="em-footer"><a href="/" class="em-footer-logo">✦ Hunmeng</a><p>A thoughtful digital reading home, connecting timeless stories, ideas, and people.</p><div class="em-footer-columns"><nav aria-label="Browse"><strong>Browse</strong><a href="/catalog/">Books</a><a href="/updates/">Latest chapters</a><a href="/genres/">Categories</a></nav><nav aria-label="Resources"><strong>Resources</strong><a href="/library/">My library</a><a href="/authors/">Authors</a><a href="/news/">News</a></nav><nav aria-label="About"><strong>About</strong><a href="/about/">Our story</a><a href="/contacts/">Contact</a><a href="/rules/">Terms & privacy</a></nav></div><div class="em-socials" aria-label="Official Hunmeng channels"><a href={site.contacts.telegramChannel} target="_blank" rel="noopener noreferrer" aria-label="Hunmeng Telegram channel">✈</a><a href={'mailto:' + site.contacts.email} aria-label="Email Hunmeng">✉</a></div><p class="em-copyright">© 2026 Hunmeng. All rights reserved.</p><p class="em-preview-notice">Design preview · <a href="/">Return to the live site ↗</a></p></footer>
     </div>
   </main>
 </Layout>

@@ -14,7 +14,8 @@ test('design mockup is noindexed and uses real library content', async ({ page }
   await expect(page.locator('.em-collection')).toHaveCount(3);
   expect(await page.locator('.em-editor-row').count()).toBeGreaterThan(0);
   await expect(page.locator('.em-article-row').first()).toHaveAttribute('href', /^\/news\//);
-  await expect(page.locator('a.em-newsletter-button')).toHaveAttribute('href','/account/');
+  await expect(page.locator('a.em-newsletter-button')).toHaveAttribute('href', /^https:\/\/t\.me\//);
+  await expect(page.locator('.em-newsletter input')).toHaveCount(0);
 });
 
 test('design mockup search and navigation remain functional', async ({ page }) => {
