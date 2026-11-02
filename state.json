@@ -689,6 +689,2622 @@
       "title": "Part 1",
       "novelTitle": "Dracula",
       "messageId": 32
+    },
+    "dracula:2": {
+      "status": "baseline",
+      "slug": "chapter-2",
+      "title": "Part 2",
+      "novelTitle": "Dracula"
+    },
+    "dracula:3": {
+      "status": "baseline",
+      "slug": "chapter-3",
+      "title": "Part 3",
+      "novelTitle": "Dracula"
+    },
+    "dracula:4": {
+      "status": "baseline",
+      "slug": "chapter-4",
+      "title": "Part 4",
+      "novelTitle": "Dracula"
+    },
+    "dracula:5": {
+      "status": "baseline",
+      "slug": "chapter-5",
+      "title": "Part 5",
+      "novelTitle": "Dracula"
+    },
+    "dracula:6": {
+      "status": "baseline",
+      "slug": "chapter-6",
+      "title": "Part 6",
+      "novelTitle": "Dracula"
+    },
+    "dracula:7": {
+      "status": "baseline",
+      "slug": "chapter-7",
+      "title": "Part 7",
+      "novelTitle": "Dracula"
+    },
+    "dracula:8": {
+      "status": "baseline",
+      "slug": "chapter-8",
+      "title": "Part 8",
+      "novelTitle": "Dracula"
+    },
+    "dracula:9": {
+      "status": "baseline",
+      "slug": "chapter-9",
+      "title": "Part 9",
+      "novelTitle": "Dracula"
+    },
+    "dracula:10": {
+      "status": "baseline",
+      "slug": "chapter-10",
+      "title": "Part 10",
+      "novelTitle": "Dracula"
+    },
+    "dracula:11": {
+      "status": "baseline",
+      "slug": "chapter-11",
+      "title": "Part 11",
+      "novelTitle": "Dracula"
+    },
+    "dracula:12": {
+      "status": "baseline",
+      "slug": "chapter-12",
+      "title": "Part 12",
+      "novelTitle": "Dracula"
+    },
+    "dracula:13": {
+      "status": "baseline",
+      "slug": "chapter-13",
+      "title": "Part 13",
+      "novelTitle": "Dracula"
+    },
+    "dracula:14": {
+      "status": "baseline",
+      "slug": "chapter-14",
+      "title": "Part 14",
+      "novelTitle": "Dracula"
+    },
+    "dracula:15": {
+      "status": "baseline",
+      "slug": "chapter-15",
+      "title": "Part 15",
+      "novelTitle": "Dracula"
+    },
+    "dracula:16": {
+      "status": "baseline",
+      "slug": "chapter-16",
+      "title": "Part 16",
+      "novelTitle": "Dracula"
+    },
+    "dracula:17": {
+      "status": "baseline",
+      "slug": "chapter-17",
+      "title": "Part 17",
+      "novelTitle": "Dracula"
+    },
+    "dracula:18": {
+      "status": "baseline",
+      "slug": "chapter-18",
+      "title": "Part 18",
+      "novelTitle": "Dracula"
+    },
+    "dracula:19": {
+      "status": "baseline",
+      "slug": "chapter-19",
+      "title": "Part 19",
+      "novelTitle": "Dracula"
+    },
+    "dracula:20": {
+      "status": "baseline",
+      "slug": "chapter-20",
+      "title": "Part 20",
+      "novelTitle": "Dracula"
+    },
+    "dracula:21": {
+      "status": "baseline",
+      "slug": "chapter-21",
+      "title": "Part 21",
+      "novelTitle": "Dracula"
+    },
+    "dracula:22": {
+      "status": "baseline",
+      "slug": "chapter-22",
+      "title": "Part 22",
+      "novelTitle": "Dracula"
+    },
+    "dracula:23": {
+      "status": "baseline",
+      "slug": "chapter-23",
+      "title": "Part 23",
+      "novelTitle": "Dracula"
+    },
+    "dracula:24": {
+      "status": "baseline",
+      "slug": "chapter-24",
+      "title": "Part 24",
+      "novelTitle": "Dracula"
+    },
+    "dracula:25": {
+      "status": "baseline",
+      "slug": "chapter-25",
+      "title": "Part 25",
+      "novelTitle": "Dracula"
+    },
+    "dracula:26": {
+      "status": "baseline",
+      "slug": "chapter-26",
+      "title": "Part 26",
+      "novelTitle": "Dracula"
+    },
+    "dracula:27": {
+      "status": "baseline",
+      "slug": "chapter-27",
+      "title": "Part 27",
+      "novelTitle": "Dracula"
+    },
+    "dracula:28": {
+      "status": "baseline",
+      "slug": "chapter-28",
+      "title": "Part 28",
+      "novelTitle": "Dracula"
+    },
+    "dracula:29": {
+      "status": "baseline",
+      "slug": "chapter-29",
+      "title": "Part 29",
+      "novelTitle": "Dracula"
+    },
+    "dracula:30": {
+      "status": "baseline",
+      "slug": "chapter-30",
+      "title": "Part 30",
+      "novelTitle": "Dracula"
+    },
+    "dracula:31": {
+      "status": "baseline",
+      "slug": "chapter-31",
+      "title": "Part 31",
+      "novelTitle": "Dracula"
+    },
+    "dracula:32": {
+      "status": "baseline",
+      "slug": "chapter-32",
+      "title": "Part 32",
+      "novelTitle": "Dracula"
+    },
+    "dracula:33": {
+      "status": "baseline",
+      "slug": "chapter-33",
+      "title": "Part 33",
+      "novelTitle": "Dracula"
+    },
+    "dracula:34": {
+      "status": "baseline",
+      "slug": "chapter-34",
+      "title": "Part 34",
+      "novelTitle": "Dracula"
+    },
+    "dracula:35": {
+      "status": "baseline",
+      "slug": "chapter-35",
+      "title": "Part 35",
+      "novelTitle": "Dracula"
+    },
+    "dracula:36": {
+      "status": "baseline",
+      "slug": "chapter-36",
+      "title": "Part 36",
+      "novelTitle": "Dracula"
+    },
+    "dracula:37": {
+      "status": "baseline",
+      "slug": "chapter-37",
+      "title": "Part 37",
+      "novelTitle": "Dracula"
+    },
+    "dracula:38": {
+      "status": "baseline",
+      "slug": "chapter-38",
+      "title": "Part 38",
+      "novelTitle": "Dracula"
+    },
+    "dracula:39": {
+      "status": "baseline",
+      "slug": "chapter-39",
+      "title": "Part 39",
+      "novelTitle": "Dracula"
+    },
+    "dracula:40": {
+      "status": "baseline",
+      "slug": "chapter-40",
+      "title": "Part 40",
+      "novelTitle": "Dracula"
+    },
+    "dracula:41": {
+      "status": "baseline",
+      "slug": "chapter-41",
+      "title": "Part 41",
+      "novelTitle": "Dracula"
+    },
+    "dracula:42": {
+      "status": "baseline",
+      "slug": "chapter-42",
+      "title": "Part 42",
+      "novelTitle": "Dracula"
+    },
+    "dracula:43": {
+      "status": "baseline",
+      "slug": "chapter-43",
+      "title": "Part 43",
+      "novelTitle": "Dracula"
+    },
+    "dracula:44": {
+      "status": "baseline",
+      "slug": "chapter-44",
+      "title": "Part 44",
+      "novelTitle": "Dracula"
+    },
+    "dracula:45": {
+      "status": "baseline",
+      "slug": "chapter-45",
+      "title": "Part 45",
+      "novelTitle": "Dracula"
+    },
+    "dracula:46": {
+      "status": "baseline",
+      "slug": "chapter-46",
+      "title": "Part 46",
+      "novelTitle": "Dracula"
+    },
+    "dracula:47": {
+      "status": "baseline",
+      "slug": "chapter-47",
+      "title": "Part 47",
+      "novelTitle": "Dracula"
+    },
+    "dracula:48": {
+      "status": "baseline",
+      "slug": "chapter-48",
+      "title": "Part 48",
+      "novelTitle": "Dracula"
+    },
+    "dracula:49": {
+      "status": "baseline",
+      "slug": "chapter-49",
+      "title": "Part 49",
+      "novelTitle": "Dracula"
+    },
+    "dracula:50": {
+      "status": "baseline",
+      "slug": "chapter-50",
+      "title": "Part 50",
+      "novelTitle": "Dracula"
+    },
+    "dracula:51": {
+      "status": "baseline",
+      "slug": "chapter-51",
+      "title": "Part 51",
+      "novelTitle": "Dracula"
+    },
+    "dracula:52": {
+      "status": "baseline",
+      "slug": "chapter-52",
+      "title": "Part 52",
+      "novelTitle": "Dracula"
+    },
+    "dracula:53": {
+      "status": "baseline",
+      "slug": "chapter-53",
+      "title": "Part 53",
+      "novelTitle": "Dracula"
+    },
+    "dracula:54": {
+      "status": "baseline",
+      "slug": "chapter-54",
+      "title": "Part 54",
+      "novelTitle": "Dracula"
+    },
+    "dracula:55": {
+      "status": "baseline",
+      "slug": "chapter-55",
+      "title": "Part 55",
+      "novelTitle": "Dracula"
+    },
+    "dracula:56": {
+      "status": "baseline",
+      "slug": "chapter-56",
+      "title": "Part 56",
+      "novelTitle": "Dracula"
+    },
+    "dracula:57": {
+      "status": "baseline",
+      "slug": "chapter-57",
+      "title": "Part 57",
+      "novelTitle": "Dracula"
+    },
+    "dracula:58": {
+      "status": "baseline",
+      "slug": "chapter-58",
+      "title": "Part 58",
+      "novelTitle": "Dracula"
+    },
+    "dracula:59": {
+      "status": "baseline",
+      "slug": "chapter-59",
+      "title": "Part 59",
+      "novelTitle": "Dracula"
+    },
+    "dracula:60": {
+      "status": "baseline",
+      "slug": "chapter-60",
+      "title": "Part 60",
+      "novelTitle": "Dracula"
+    },
+    "dracula:61": {
+      "status": "baseline",
+      "slug": "chapter-61",
+      "title": "Part 61",
+      "novelTitle": "Dracula"
+    },
+    "dracula:62": {
+      "status": "baseline",
+      "slug": "chapter-62",
+      "title": "Part 62",
+      "novelTitle": "Dracula"
+    },
+    "dracula:63": {
+      "status": "baseline",
+      "slug": "chapter-63",
+      "title": "Part 63",
+      "novelTitle": "Dracula"
+    },
+    "dracula:64": {
+      "status": "baseline",
+      "slug": "chapter-64",
+      "title": "Part 64",
+      "novelTitle": "Dracula"
+    },
+    "dracula:65": {
+      "status": "baseline",
+      "slug": "chapter-65",
+      "title": "Part 65",
+      "novelTitle": "Dracula"
+    },
+    "dracula:66": {
+      "status": "baseline",
+      "slug": "chapter-66",
+      "title": "Part 66",
+      "novelTitle": "Dracula"
+    },
+    "dracula:67": {
+      "status": "baseline",
+      "slug": "chapter-67",
+      "title": "Part 67",
+      "novelTitle": "Dracula"
+    },
+    "dracula:68": {
+      "status": "baseline",
+      "slug": "chapter-68",
+      "title": "Part 68",
+      "novelTitle": "Dracula"
+    },
+    "dracula:69": {
+      "status": "baseline",
+      "slug": "chapter-69",
+      "title": "Part 69",
+      "novelTitle": "Dracula"
+    },
+    "dracula:70": {
+      "status": "baseline",
+      "slug": "chapter-70",
+      "title": "Part 70",
+      "novelTitle": "Dracula"
+    },
+    "dracula:71": {
+      "status": "baseline",
+      "slug": "chapter-71",
+      "title": "Part 71",
+      "novelTitle": "Dracula"
+    },
+    "dracula:72": {
+      "status": "baseline",
+      "slug": "chapter-72",
+      "title": "Part 72",
+      "novelTitle": "Dracula"
+    },
+    "dracula:73": {
+      "status": "baseline",
+      "slug": "chapter-73",
+      "title": "Part 73",
+      "novelTitle": "Dracula"
+    },
+    "dracula:74": {
+      "status": "baseline",
+      "slug": "chapter-74",
+      "title": "Part 74",
+      "novelTitle": "Dracula"
+    },
+    "dracula:75": {
+      "status": "baseline",
+      "slug": "chapter-75",
+      "title": "Part 75",
+      "novelTitle": "Dracula"
+    },
+    "dracula:76": {
+      "status": "baseline",
+      "slug": "chapter-76",
+      "title": "Part 76",
+      "novelTitle": "Dracula"
+    },
+    "dracula:77": {
+      "status": "baseline",
+      "slug": "chapter-77",
+      "title": "Part 77",
+      "novelTitle": "Dracula"
+    },
+    "dracula:78": {
+      "status": "baseline",
+      "slug": "chapter-78",
+      "title": "Part 78",
+      "novelTitle": "Dracula"
+    },
+    "dracula:79": {
+      "status": "baseline",
+      "slug": "chapter-79",
+      "title": "Part 79",
+      "novelTitle": "Dracula"
+    },
+    "dracula:80": {
+      "status": "baseline",
+      "slug": "chapter-80",
+      "title": "Part 80",
+      "novelTitle": "Dracula"
+    },
+    "dracula:81": {
+      "status": "baseline",
+      "slug": "chapter-81",
+      "title": "Part 81",
+      "novelTitle": "Dracula"
+    },
+    "dracula:82": {
+      "status": "baseline",
+      "slug": "chapter-82",
+      "title": "Part 82",
+      "novelTitle": "Dracula"
+    },
+    "dracula:83": {
+      "status": "baseline",
+      "slug": "chapter-83",
+      "title": "Part 83",
+      "novelTitle": "Dracula"
+    },
+    "dracula:84": {
+      "status": "baseline",
+      "slug": "chapter-84",
+      "title": "Part 84",
+      "novelTitle": "Dracula"
+    },
+    "dracula:85": {
+      "status": "baseline",
+      "slug": "chapter-85",
+      "title": "Part 85",
+      "novelTitle": "Dracula"
+    },
+    "dracula:86": {
+      "status": "baseline",
+      "slug": "chapter-86",
+      "title": "Part 86",
+      "novelTitle": "Dracula"
+    },
+    "dracula:87": {
+      "status": "baseline",
+      "slug": "chapter-87",
+      "title": "Part 87",
+      "novelTitle": "Dracula"
+    },
+    "dracula:88": {
+      "status": "baseline",
+      "slug": "chapter-88",
+      "title": "Part 88",
+      "novelTitle": "Dracula"
+    },
+    "dracula:89": {
+      "status": "baseline",
+      "slug": "chapter-89",
+      "title": "Part 89",
+      "novelTitle": "Dracula"
+    },
+    "dracula:90": {
+      "status": "baseline",
+      "slug": "chapter-90",
+      "title": "Part 90",
+      "novelTitle": "Dracula"
+    },
+    "dracula:91": {
+      "status": "baseline",
+      "slug": "chapter-91",
+      "title": "Part 91",
+      "novelTitle": "Dracula"
+    },
+    "dracula:92": {
+      "status": "baseline",
+      "slug": "chapter-92",
+      "title": "Part 92",
+      "novelTitle": "Dracula"
+    },
+    "dracula:93": {
+      "status": "baseline",
+      "slug": "chapter-93",
+      "title": "Part 93",
+      "novelTitle": "Dracula"
+    },
+    "dracula:94": {
+      "status": "baseline",
+      "slug": "chapter-94",
+      "title": "Part 94",
+      "novelTitle": "Dracula"
+    },
+    "dracula:95": {
+      "status": "baseline",
+      "slug": "chapter-95",
+      "title": "Part 95",
+      "novelTitle": "Dracula"
+    },
+    "dracula:96": {
+      "status": "baseline",
+      "slug": "chapter-96",
+      "title": "Part 96",
+      "novelTitle": "Dracula"
+    },
+    "dracula:97": {
+      "status": "baseline",
+      "slug": "chapter-97",
+      "title": "Part 97",
+      "novelTitle": "Dracula"
+    },
+    "dracula:98": {
+      "status": "baseline",
+      "slug": "chapter-98",
+      "title": "Part 98",
+      "novelTitle": "Dracula"
+    },
+    "dracula:99": {
+      "status": "baseline",
+      "slug": "chapter-99",
+      "title": "Part 99",
+      "novelTitle": "Dracula"
+    },
+    "dracula:100": {
+      "status": "baseline",
+      "slug": "chapter-100",
+      "title": "Part 100",
+      "novelTitle": "Dracula"
+    },
+    "dracula:101": {
+      "status": "baseline",
+      "slug": "chapter-101",
+      "title": "Part 101",
+      "novelTitle": "Dracula"
+    },
+    "dracula:102": {
+      "status": "baseline",
+      "slug": "chapter-102",
+      "title": "Part 102",
+      "novelTitle": "Dracula"
+    },
+    "dracula:103": {
+      "status": "baseline",
+      "slug": "chapter-103",
+      "title": "Part 103",
+      "novelTitle": "Dracula"
+    },
+    "dracula:104": {
+      "status": "baseline",
+      "slug": "chapter-104",
+      "title": "Part 104",
+      "novelTitle": "Dracula"
+    },
+    "dracula:105": {
+      "status": "baseline",
+      "slug": "chapter-105",
+      "title": "Part 105",
+      "novelTitle": "Dracula"
+    },
+    "dracula:106": {
+      "status": "baseline",
+      "slug": "chapter-106",
+      "title": "Part 106",
+      "novelTitle": "Dracula"
+    },
+    "dracula:107": {
+      "status": "baseline",
+      "slug": "chapter-107",
+      "title": "Part 107",
+      "novelTitle": "Dracula"
+    },
+    "dracula:108": {
+      "status": "baseline",
+      "slug": "chapter-108",
+      "title": "Part 108",
+      "novelTitle": "Dracula"
+    },
+    "dracula:109": {
+      "status": "baseline",
+      "slug": "chapter-109",
+      "title": "Part 109",
+      "novelTitle": "Dracula"
+    },
+    "dracula:110": {
+      "status": "baseline",
+      "slug": "chapter-110",
+      "title": "Part 110",
+      "novelTitle": "Dracula"
+    },
+    "dracula:111": {
+      "status": "baseline",
+      "slug": "chapter-111",
+      "title": "Part 111",
+      "novelTitle": "Dracula"
+    },
+    "dracula:112": {
+      "status": "baseline",
+      "slug": "chapter-112",
+      "title": "Part 112",
+      "novelTitle": "Dracula"
+    },
+    "dracula:113": {
+      "status": "baseline",
+      "slug": "chapter-113",
+      "title": "Part 113",
+      "novelTitle": "Dracula"
+    },
+    "dracula:114": {
+      "status": "baseline",
+      "slug": "chapter-114",
+      "title": "Part 114",
+      "novelTitle": "Dracula"
+    },
+    "dracula:115": {
+      "status": "baseline",
+      "slug": "chapter-115",
+      "title": "Part 115",
+      "novelTitle": "Dracula"
+    },
+    "frankenstein:2": {
+      "status": "baseline",
+      "slug": "chapter-2",
+      "title": "Part 2",
+      "novelTitle": "Frankenstein; or, The Modern Prometheus"
+    },
+    "frankenstein:3": {
+      "status": "baseline",
+      "slug": "chapter-3",
+      "title": "Part 3",
+      "novelTitle": "Frankenstein; or, The Modern Prometheus"
+    },
+    "frankenstein:4": {
+      "status": "baseline",
+      "slug": "chapter-4",
+      "title": "Part 4",
+      "novelTitle": "Frankenstein; or, The Modern Prometheus"
+    },
+    "frankenstein:5": {
+      "status": "baseline",
+      "slug": "chapter-5",
+      "title": "Part 5",
+      "novelTitle": "Frankenstein; or, The Modern Prometheus"
+    },
+    "frankenstein:6": {
+      "status": "baseline",
+      "slug": "chapter-6",
+      "title": "Part 6",
+      "novelTitle": "Frankenstein; or, The Modern Prometheus"
+    },
+    "frankenstein:7": {
+      "status": "baseline",
+      "slug": "chapter-7",
+      "title": "Part 7",
+      "novelTitle": "Frankenstein; or, The Modern Prometheus"
+    },
+    "frankenstein:8": {
+      "status": "baseline",
+      "slug": "chapter-8",
+      "title": "Part 8",
+      "novelTitle": "Frankenstein; or, The Modern Prometheus"
+    },
+    "frankenstein:9": {
+      "status": "baseline",
+      "slug": "chapter-9",
+      "title": "Part 9",
+      "novelTitle": "Frankenstein; or, The Modern Prometheus"
+    },
+    "frankenstein:10": {
+      "status": "baseline",
+      "slug": "chapter-10",
+      "title": "Part 10",
+      "novelTitle": "Frankenstein; or, The Modern Prometheus"
+    },
+    "frankenstein:11": {
+      "status": "baseline",
+      "slug": "chapter-11",
+      "title": "Part 11",
+      "novelTitle": "Frankenstein; or, The Modern Prometheus"
+    },
+    "frankenstein:12": {
+      "status": "baseline",
+      "slug": "chapter-12",
+      "title": "Part 12",
+      "novelTitle": "Frankenstein; or, The Modern Prometheus"
+    },
+    "frankenstein:13": {
+      "status": "baseline",
+      "slug": "chapter-13",
+      "title": "Part 13",
+      "novelTitle": "Frankenstein; or, The Modern Prometheus"
+    },
+    "frankenstein:14": {
+      "status": "baseline",
+      "slug": "chapter-14",
+      "title": "Part 14",
+      "novelTitle": "Frankenstein; or, The Modern Prometheus"
+    },
+    "frankenstein:15": {
+      "status": "baseline",
+      "slug": "chapter-15",
+      "title": "Part 15",
+      "novelTitle": "Frankenstein; or, The Modern Prometheus"
+    },
+    "frankenstein:16": {
+      "status": "baseline",
+      "slug": "chapter-16",
+      "title": "Part 16",
+      "novelTitle": "Frankenstein; or, The Modern Prometheus"
+    },
+    "frankenstein:17": {
+      "status": "baseline",
+      "slug": "chapter-17",
+      "title": "Part 17",
+      "novelTitle": "Frankenstein; or, The Modern Prometheus"
+    },
+    "frankenstein:18": {
+      "status": "baseline",
+      "slug": "chapter-18",
+      "title": "Part 18",
+      "novelTitle": "Frankenstein; or, The Modern Prometheus"
+    },
+    "frankenstein:19": {
+      "status": "baseline",
+      "slug": "chapter-19",
+      "title": "Part 19",
+      "novelTitle": "Frankenstein; or, The Modern Prometheus"
+    },
+    "frankenstein:20": {
+      "status": "baseline",
+      "slug": "chapter-20",
+      "title": "Part 20",
+      "novelTitle": "Frankenstein; or, The Modern Prometheus"
+    },
+    "frankenstein:21": {
+      "status": "baseline",
+      "slug": "chapter-21",
+      "title": "Part 21",
+      "novelTitle": "Frankenstein; or, The Modern Prometheus"
+    },
+    "frankenstein:22": {
+      "status": "baseline",
+      "slug": "chapter-22",
+      "title": "Part 22",
+      "novelTitle": "Frankenstein; or, The Modern Prometheus"
+    },
+    "frankenstein:23": {
+      "status": "baseline",
+      "slug": "chapter-23",
+      "title": "Part 23",
+      "novelTitle": "Frankenstein; or, The Modern Prometheus"
+    },
+    "frankenstein:24": {
+      "status": "baseline",
+      "slug": "chapter-24",
+      "title": "Part 24",
+      "novelTitle": "Frankenstein; or, The Modern Prometheus"
+    },
+    "frankenstein:25": {
+      "status": "baseline",
+      "slug": "chapter-25",
+      "title": "Part 25",
+      "novelTitle": "Frankenstein; or, The Modern Prometheus"
+    },
+    "frankenstein:26": {
+      "status": "baseline",
+      "slug": "chapter-26",
+      "title": "Part 26",
+      "novelTitle": "Frankenstein; or, The Modern Prometheus"
+    },
+    "frankenstein:27": {
+      "status": "baseline",
+      "slug": "chapter-27",
+      "title": "Part 27",
+      "novelTitle": "Frankenstein; or, The Modern Prometheus"
+    },
+    "frankenstein:28": {
+      "status": "baseline",
+      "slug": "chapter-28",
+      "title": "Part 28",
+      "novelTitle": "Frankenstein; or, The Modern Prometheus"
+    },
+    "frankenstein:29": {
+      "status": "baseline",
+      "slug": "chapter-29",
+      "title": "Part 29",
+      "novelTitle": "Frankenstein; or, The Modern Prometheus"
+    },
+    "frankenstein:30": {
+      "status": "baseline",
+      "slug": "chapter-30",
+      "title": "Part 30",
+      "novelTitle": "Frankenstein; or, The Modern Prometheus"
+    },
+    "frankenstein:31": {
+      "status": "baseline",
+      "slug": "chapter-31",
+      "title": "Part 31",
+      "novelTitle": "Frankenstein; or, The Modern Prometheus"
+    },
+    "frankenstein:32": {
+      "status": "baseline",
+      "slug": "chapter-32",
+      "title": "Part 32",
+      "novelTitle": "Frankenstein; or, The Modern Prometheus"
+    },
+    "frankenstein:33": {
+      "status": "baseline",
+      "slug": "chapter-33",
+      "title": "Part 33",
+      "novelTitle": "Frankenstein; or, The Modern Prometheus"
+    },
+    "frankenstein:34": {
+      "status": "baseline",
+      "slug": "chapter-34",
+      "title": "Part 34",
+      "novelTitle": "Frankenstein; or, The Modern Prometheus"
+    },
+    "frankenstein:35": {
+      "status": "baseline",
+      "slug": "chapter-35",
+      "title": "Part 35",
+      "novelTitle": "Frankenstein; or, The Modern Prometheus"
+    },
+    "frankenstein:36": {
+      "status": "baseline",
+      "slug": "chapter-36",
+      "title": "Part 36",
+      "novelTitle": "Frankenstein; or, The Modern Prometheus"
+    },
+    "frankenstein:37": {
+      "status": "baseline",
+      "slug": "chapter-37",
+      "title": "Part 37",
+      "novelTitle": "Frankenstein; or, The Modern Prometheus"
+    },
+    "frankenstein:38": {
+      "status": "baseline",
+      "slug": "chapter-38",
+      "title": "Part 38",
+      "novelTitle": "Frankenstein; or, The Modern Prometheus"
+    },
+    "frankenstein:39": {
+      "status": "baseline",
+      "slug": "chapter-39",
+      "title": "Part 39",
+      "novelTitle": "Frankenstein; or, The Modern Prometheus"
+    },
+    "frankenstein:40": {
+      "status": "baseline",
+      "slug": "chapter-40",
+      "title": "Part 40",
+      "novelTitle": "Frankenstein; or, The Modern Prometheus"
+    },
+    "frankenstein:41": {
+      "status": "baseline",
+      "slug": "chapter-41",
+      "title": "Part 41",
+      "novelTitle": "Frankenstein; or, The Modern Prometheus"
+    },
+    "frankenstein:42": {
+      "status": "baseline",
+      "slug": "chapter-42",
+      "title": "Part 42",
+      "novelTitle": "Frankenstein; or, The Modern Prometheus"
+    },
+    "frankenstein:43": {
+      "status": "baseline",
+      "slug": "chapter-43",
+      "title": "Part 43",
+      "novelTitle": "Frankenstein; or, The Modern Prometheus"
+    },
+    "frankenstein:44": {
+      "status": "baseline",
+      "slug": "chapter-44",
+      "title": "Part 44",
+      "novelTitle": "Frankenstein; or, The Modern Prometheus"
+    },
+    "frankenstein:45": {
+      "status": "baseline",
+      "slug": "chapter-45",
+      "title": "Part 45",
+      "novelTitle": "Frankenstein; or, The Modern Prometheus"
+    },
+    "frankenstein:46": {
+      "status": "baseline",
+      "slug": "chapter-46",
+      "title": "Part 46",
+      "novelTitle": "Frankenstein; or, The Modern Prometheus"
+    },
+    "frankenstein:47": {
+      "status": "baseline",
+      "slug": "chapter-47",
+      "title": "Part 47",
+      "novelTitle": "Frankenstein; or, The Modern Prometheus"
+    },
+    "frankenstein:48": {
+      "status": "baseline",
+      "slug": "chapter-48",
+      "title": "Part 48",
+      "novelTitle": "Frankenstein; or, The Modern Prometheus"
+    },
+    "frankenstein:49": {
+      "status": "baseline",
+      "slug": "chapter-49",
+      "title": "Part 49",
+      "novelTitle": "Frankenstein; or, The Modern Prometheus"
+    },
+    "frankenstein:50": {
+      "status": "baseline",
+      "slug": "chapter-50",
+      "title": "Part 50",
+      "novelTitle": "Frankenstein; or, The Modern Prometheus"
+    },
+    "frankenstein:51": {
+      "status": "baseline",
+      "slug": "chapter-51",
+      "title": "Part 51",
+      "novelTitle": "Frankenstein; or, The Modern Prometheus"
+    },
+    "frankenstein:52": {
+      "status": "baseline",
+      "slug": "chapter-52",
+      "title": "Part 52",
+      "novelTitle": "Frankenstein; or, The Modern Prometheus"
+    },
+    "frankenstein:53": {
+      "status": "baseline",
+      "slug": "chapter-53",
+      "title": "Part 53",
+      "novelTitle": "Frankenstein; or, The Modern Prometheus"
+    },
+    "frankenstein:54": {
+      "status": "baseline",
+      "slug": "chapter-54",
+      "title": "Part 54",
+      "novelTitle": "Frankenstein; or, The Modern Prometheus"
+    },
+    "frankenstein:55": {
+      "status": "baseline",
+      "slug": "chapter-55",
+      "title": "Part 55",
+      "novelTitle": "Frankenstein; or, The Modern Prometheus"
+    },
+    "frankenstein:56": {
+      "status": "baseline",
+      "slug": "chapter-56",
+      "title": "Part 56",
+      "novelTitle": "Frankenstein; or, The Modern Prometheus"
+    },
+    "frankenstein:57": {
+      "status": "baseline",
+      "slug": "chapter-57",
+      "title": "Part 57",
+      "novelTitle": "Frankenstein; or, The Modern Prometheus"
+    },
+    "frankenstein:58": {
+      "status": "baseline",
+      "slug": "chapter-58",
+      "title": "Part 58",
+      "novelTitle": "Frankenstein; or, The Modern Prometheus"
+    },
+    "frankenstein:59": {
+      "status": "baseline",
+      "slug": "chapter-59",
+      "title": "Part 59",
+      "novelTitle": "Frankenstein; or, The Modern Prometheus"
+    },
+    "frankenstein:60": {
+      "status": "baseline",
+      "slug": "chapter-60",
+      "title": "Part 60",
+      "novelTitle": "Frankenstein; or, The Modern Prometheus"
+    },
+    "the-island-of-doctor-moreau:2": {
+      "status": "baseline",
+      "slug": "chapter-2",
+      "title": "Part 2",
+      "novelTitle": "The Island of Doctor Moreau"
+    },
+    "the-island-of-doctor-moreau:3": {
+      "status": "baseline",
+      "slug": "chapter-3",
+      "title": "Part 3",
+      "novelTitle": "The Island of Doctor Moreau"
+    },
+    "the-island-of-doctor-moreau:4": {
+      "status": "baseline",
+      "slug": "chapter-4",
+      "title": "Part 4",
+      "novelTitle": "The Island of Doctor Moreau"
+    },
+    "the-island-of-doctor-moreau:5": {
+      "status": "baseline",
+      "slug": "chapter-5",
+      "title": "Part 5",
+      "novelTitle": "The Island of Doctor Moreau"
+    },
+    "the-island-of-doctor-moreau:6": {
+      "status": "baseline",
+      "slug": "chapter-6",
+      "title": "Part 6",
+      "novelTitle": "The Island of Doctor Moreau"
+    },
+    "the-island-of-doctor-moreau:7": {
+      "status": "baseline",
+      "slug": "chapter-7",
+      "title": "Part 7",
+      "novelTitle": "The Island of Doctor Moreau"
+    },
+    "the-island-of-doctor-moreau:8": {
+      "status": "baseline",
+      "slug": "chapter-8",
+      "title": "Part 8",
+      "novelTitle": "The Island of Doctor Moreau"
+    },
+    "the-island-of-doctor-moreau:9": {
+      "status": "baseline",
+      "slug": "chapter-9",
+      "title": "Part 9",
+      "novelTitle": "The Island of Doctor Moreau"
+    },
+    "the-island-of-doctor-moreau:10": {
+      "status": "baseline",
+      "slug": "chapter-10",
+      "title": "Part 10",
+      "novelTitle": "The Island of Doctor Moreau"
+    },
+    "the-island-of-doctor-moreau:11": {
+      "status": "baseline",
+      "slug": "chapter-11",
+      "title": "Part 11",
+      "novelTitle": "The Island of Doctor Moreau"
+    },
+    "the-island-of-doctor-moreau:12": {
+      "status": "baseline",
+      "slug": "chapter-12",
+      "title": "Part 12",
+      "novelTitle": "The Island of Doctor Moreau"
+    },
+    "the-island-of-doctor-moreau:13": {
+      "status": "baseline",
+      "slug": "chapter-13",
+      "title": "Part 13",
+      "novelTitle": "The Island of Doctor Moreau"
+    },
+    "the-island-of-doctor-moreau:14": {
+      "status": "baseline",
+      "slug": "chapter-14",
+      "title": "Part 14",
+      "novelTitle": "The Island of Doctor Moreau"
+    },
+    "the-island-of-doctor-moreau:15": {
+      "status": "baseline",
+      "slug": "chapter-15",
+      "title": "Part 15",
+      "novelTitle": "The Island of Doctor Moreau"
+    },
+    "the-island-of-doctor-moreau:16": {
+      "status": "baseline",
+      "slug": "chapter-16",
+      "title": "Part 16",
+      "novelTitle": "The Island of Doctor Moreau"
+    },
+    "the-island-of-doctor-moreau:17": {
+      "status": "baseline",
+      "slug": "chapter-17",
+      "title": "Part 17",
+      "novelTitle": "The Island of Doctor Moreau"
+    },
+    "the-island-of-doctor-moreau:18": {
+      "status": "baseline",
+      "slug": "chapter-18",
+      "title": "Part 18",
+      "novelTitle": "The Island of Doctor Moreau"
+    },
+    "the-island-of-doctor-moreau:19": {
+      "status": "baseline",
+      "slug": "chapter-19",
+      "title": "Part 19",
+      "novelTitle": "The Island of Doctor Moreau"
+    },
+    "the-island-of-doctor-moreau:20": {
+      "status": "baseline",
+      "slug": "chapter-20",
+      "title": "Part 20",
+      "novelTitle": "The Island of Doctor Moreau"
+    },
+    "the-island-of-doctor-moreau:21": {
+      "status": "baseline",
+      "slug": "chapter-21",
+      "title": "Part 21",
+      "novelTitle": "The Island of Doctor Moreau"
+    },
+    "the-island-of-doctor-moreau:22": {
+      "status": "baseline",
+      "slug": "chapter-22",
+      "title": "Part 22",
+      "novelTitle": "The Island of Doctor Moreau"
+    },
+    "the-island-of-doctor-moreau:23": {
+      "status": "baseline",
+      "slug": "chapter-23",
+      "title": "Part 23",
+      "novelTitle": "The Island of Doctor Moreau"
+    },
+    "the-island-of-doctor-moreau:24": {
+      "status": "baseline",
+      "slug": "chapter-24",
+      "title": "Part 24",
+      "novelTitle": "The Island of Doctor Moreau"
+    },
+    "the-island-of-doctor-moreau:25": {
+      "status": "baseline",
+      "slug": "chapter-25",
+      "title": "Part 25",
+      "novelTitle": "The Island of Doctor Moreau"
+    },
+    "the-island-of-doctor-moreau:26": {
+      "status": "baseline",
+      "slug": "chapter-26",
+      "title": "Part 26",
+      "novelTitle": "The Island of Doctor Moreau"
+    },
+    "the-island-of-doctor-moreau:27": {
+      "status": "baseline",
+      "slug": "chapter-27",
+      "title": "Part 27",
+      "novelTitle": "The Island of Doctor Moreau"
+    },
+    "the-island-of-doctor-moreau:28": {
+      "status": "baseline",
+      "slug": "chapter-28",
+      "title": "Part 28",
+      "novelTitle": "The Island of Doctor Moreau"
+    },
+    "the-island-of-doctor-moreau:29": {
+      "status": "baseline",
+      "slug": "chapter-29",
+      "title": "Part 29",
+      "novelTitle": "The Island of Doctor Moreau"
+    },
+    "the-island-of-doctor-moreau:30": {
+      "status": "baseline",
+      "slug": "chapter-30",
+      "title": "Part 30",
+      "novelTitle": "The Island of Doctor Moreau"
+    },
+    "the-island-of-doctor-moreau:31": {
+      "status": "baseline",
+      "slug": "chapter-31",
+      "title": "Part 31",
+      "novelTitle": "The Island of Doctor Moreau"
+    },
+    "the-island-of-doctor-moreau:32": {
+      "status": "baseline",
+      "slug": "chapter-32",
+      "title": "Part 32",
+      "novelTitle": "The Island of Doctor Moreau"
+    },
+    "the-island-of-doctor-moreau:33": {
+      "status": "baseline",
+      "slug": "chapter-33",
+      "title": "Part 33",
+      "novelTitle": "The Island of Doctor Moreau"
+    },
+    "the-picture-of-dorian-gray:2": {
+      "status": "baseline",
+      "slug": "chapter-2",
+      "title": "Part 2",
+      "novelTitle": "The Picture of Dorian Gray"
+    },
+    "the-picture-of-dorian-gray:3": {
+      "status": "baseline",
+      "slug": "chapter-3",
+      "title": "Part 3",
+      "novelTitle": "The Picture of Dorian Gray"
+    },
+    "the-picture-of-dorian-gray:4": {
+      "status": "baseline",
+      "slug": "chapter-4",
+      "title": "Part 4",
+      "novelTitle": "The Picture of Dorian Gray"
+    },
+    "the-picture-of-dorian-gray:5": {
+      "status": "baseline",
+      "slug": "chapter-5",
+      "title": "Part 5",
+      "novelTitle": "The Picture of Dorian Gray"
+    },
+    "the-picture-of-dorian-gray:6": {
+      "status": "baseline",
+      "slug": "chapter-6",
+      "title": "Part 6",
+      "novelTitle": "The Picture of Dorian Gray"
+    },
+    "the-picture-of-dorian-gray:7": {
+      "status": "baseline",
+      "slug": "chapter-7",
+      "title": "Part 7",
+      "novelTitle": "The Picture of Dorian Gray"
+    },
+    "the-picture-of-dorian-gray:8": {
+      "status": "baseline",
+      "slug": "chapter-8",
+      "title": "Part 8",
+      "novelTitle": "The Picture of Dorian Gray"
+    },
+    "the-picture-of-dorian-gray:9": {
+      "status": "baseline",
+      "slug": "chapter-9",
+      "title": "Part 9",
+      "novelTitle": "The Picture of Dorian Gray"
+    },
+    "the-picture-of-dorian-gray:10": {
+      "status": "baseline",
+      "slug": "chapter-10",
+      "title": "Part 10",
+      "novelTitle": "The Picture of Dorian Gray"
+    },
+    "the-picture-of-dorian-gray:11": {
+      "status": "baseline",
+      "slug": "chapter-11",
+      "title": "Part 11",
+      "novelTitle": "The Picture of Dorian Gray"
+    },
+    "the-picture-of-dorian-gray:12": {
+      "status": "baseline",
+      "slug": "chapter-12",
+      "title": "Part 12",
+      "novelTitle": "The Picture of Dorian Gray"
+    },
+    "the-picture-of-dorian-gray:13": {
+      "status": "baseline",
+      "slug": "chapter-13",
+      "title": "Part 13",
+      "novelTitle": "The Picture of Dorian Gray"
+    },
+    "the-picture-of-dorian-gray:14": {
+      "status": "baseline",
+      "slug": "chapter-14",
+      "title": "Part 14",
+      "novelTitle": "The Picture of Dorian Gray"
+    },
+    "the-picture-of-dorian-gray:15": {
+      "status": "baseline",
+      "slug": "chapter-15",
+      "title": "Part 15",
+      "novelTitle": "The Picture of Dorian Gray"
+    },
+    "the-picture-of-dorian-gray:16": {
+      "status": "baseline",
+      "slug": "chapter-16",
+      "title": "Part 16",
+      "novelTitle": "The Picture of Dorian Gray"
+    },
+    "the-picture-of-dorian-gray:17": {
+      "status": "baseline",
+      "slug": "chapter-17",
+      "title": "Part 17",
+      "novelTitle": "The Picture of Dorian Gray"
+    },
+    "the-picture-of-dorian-gray:18": {
+      "status": "baseline",
+      "slug": "chapter-18",
+      "title": "Part 18",
+      "novelTitle": "The Picture of Dorian Gray"
+    },
+    "the-picture-of-dorian-gray:19": {
+      "status": "baseline",
+      "slug": "chapter-19",
+      "title": "Part 19",
+      "novelTitle": "The Picture of Dorian Gray"
+    },
+    "the-picture-of-dorian-gray:20": {
+      "status": "baseline",
+      "slug": "chapter-20",
+      "title": "Part 20",
+      "novelTitle": "The Picture of Dorian Gray"
+    },
+    "the-picture-of-dorian-gray:21": {
+      "status": "baseline",
+      "slug": "chapter-21",
+      "title": "Part 21",
+      "novelTitle": "The Picture of Dorian Gray"
+    },
+    "the-picture-of-dorian-gray:22": {
+      "status": "baseline",
+      "slug": "chapter-22",
+      "title": "Part 22",
+      "novelTitle": "The Picture of Dorian Gray"
+    },
+    "the-picture-of-dorian-gray:23": {
+      "status": "baseline",
+      "slug": "chapter-23",
+      "title": "Part 23",
+      "novelTitle": "The Picture of Dorian Gray"
+    },
+    "the-picture-of-dorian-gray:24": {
+      "status": "baseline",
+      "slug": "chapter-24",
+      "title": "Part 24",
+      "novelTitle": "The Picture of Dorian Gray"
+    },
+    "the-picture-of-dorian-gray:25": {
+      "status": "baseline",
+      "slug": "chapter-25",
+      "title": "Part 25",
+      "novelTitle": "The Picture of Dorian Gray"
+    },
+    "the-picture-of-dorian-gray:26": {
+      "status": "baseline",
+      "slug": "chapter-26",
+      "title": "Part 26",
+      "novelTitle": "The Picture of Dorian Gray"
+    },
+    "the-picture-of-dorian-gray:27": {
+      "status": "baseline",
+      "slug": "chapter-27",
+      "title": "Part 27",
+      "novelTitle": "The Picture of Dorian Gray"
+    },
+    "the-picture-of-dorian-gray:28": {
+      "status": "baseline",
+      "slug": "chapter-28",
+      "title": "Part 28",
+      "novelTitle": "The Picture of Dorian Gray"
+    },
+    "the-picture-of-dorian-gray:29": {
+      "status": "baseline",
+      "slug": "chapter-29",
+      "title": "Part 29",
+      "novelTitle": "The Picture of Dorian Gray"
+    },
+    "the-picture-of-dorian-gray:30": {
+      "status": "baseline",
+      "slug": "chapter-30",
+      "title": "Part 30",
+      "novelTitle": "The Picture of Dorian Gray"
+    },
+    "the-picture-of-dorian-gray:31": {
+      "status": "baseline",
+      "slug": "chapter-31",
+      "title": "Part 31",
+      "novelTitle": "The Picture of Dorian Gray"
+    },
+    "the-picture-of-dorian-gray:32": {
+      "status": "baseline",
+      "slug": "chapter-32",
+      "title": "Part 32",
+      "novelTitle": "The Picture of Dorian Gray"
+    },
+    "the-picture-of-dorian-gray:33": {
+      "status": "baseline",
+      "slug": "chapter-33",
+      "title": "Part 33",
+      "novelTitle": "The Picture of Dorian Gray"
+    },
+    "the-picture-of-dorian-gray:34": {
+      "status": "baseline",
+      "slug": "chapter-34",
+      "title": "Part 34",
+      "novelTitle": "The Picture of Dorian Gray"
+    },
+    "the-picture-of-dorian-gray:35": {
+      "status": "baseline",
+      "slug": "chapter-35",
+      "title": "Part 35",
+      "novelTitle": "The Picture of Dorian Gray"
+    },
+    "the-picture-of-dorian-gray:36": {
+      "status": "baseline",
+      "slug": "chapter-36",
+      "title": "Part 36",
+      "novelTitle": "The Picture of Dorian Gray"
+    },
+    "the-picture-of-dorian-gray:37": {
+      "status": "baseline",
+      "slug": "chapter-37",
+      "title": "Part 37",
+      "novelTitle": "The Picture of Dorian Gray"
+    },
+    "the-picture-of-dorian-gray:38": {
+      "status": "baseline",
+      "slug": "chapter-38",
+      "title": "Part 38",
+      "novelTitle": "The Picture of Dorian Gray"
+    },
+    "the-picture-of-dorian-gray:39": {
+      "status": "baseline",
+      "slug": "chapter-39",
+      "title": "Part 39",
+      "novelTitle": "The Picture of Dorian Gray"
+    },
+    "the-picture-of-dorian-gray:40": {
+      "status": "baseline",
+      "slug": "chapter-40",
+      "title": "Part 40",
+      "novelTitle": "The Picture of Dorian Gray"
+    },
+    "the-picture-of-dorian-gray:41": {
+      "status": "baseline",
+      "slug": "chapter-41",
+      "title": "Part 41",
+      "novelTitle": "The Picture of Dorian Gray"
+    },
+    "the-picture-of-dorian-gray:42": {
+      "status": "baseline",
+      "slug": "chapter-42",
+      "title": "Part 42",
+      "novelTitle": "The Picture of Dorian Gray"
+    },
+    "the-picture-of-dorian-gray:43": {
+      "status": "baseline",
+      "slug": "chapter-43",
+      "title": "Part 43",
+      "novelTitle": "The Picture of Dorian Gray"
+    },
+    "the-picture-of-dorian-gray:44": {
+      "status": "baseline",
+      "slug": "chapter-44",
+      "title": "Part 44",
+      "novelTitle": "The Picture of Dorian Gray"
+    },
+    "the-picture-of-dorian-gray:45": {
+      "status": "baseline",
+      "slug": "chapter-45",
+      "title": "Part 45",
+      "novelTitle": "The Picture of Dorian Gray"
+    },
+    "the-picture-of-dorian-gray:46": {
+      "status": "baseline",
+      "slug": "chapter-46",
+      "title": "Part 46",
+      "novelTitle": "The Picture of Dorian Gray"
+    },
+    "the-picture-of-dorian-gray:47": {
+      "status": "baseline",
+      "slug": "chapter-47",
+      "title": "Part 47",
+      "novelTitle": "The Picture of Dorian Gray"
+    },
+    "the-picture-of-dorian-gray:48": {
+      "status": "baseline",
+      "slug": "chapter-48",
+      "title": "Part 48",
+      "novelTitle": "The Picture of Dorian Gray"
+    },
+    "the-picture-of-dorian-gray:49": {
+      "status": "baseline",
+      "slug": "chapter-49",
+      "title": "Part 49",
+      "novelTitle": "The Picture of Dorian Gray"
+    },
+    "the-picture-of-dorian-gray:50": {
+      "status": "baseline",
+      "slug": "chapter-50",
+      "title": "Part 50",
+      "novelTitle": "The Picture of Dorian Gray"
+    },
+    "the-picture-of-dorian-gray:51": {
+      "status": "baseline",
+      "slug": "chapter-51",
+      "title": "Part 51",
+      "novelTitle": "The Picture of Dorian Gray"
+    },
+    "the-picture-of-dorian-gray:52": {
+      "status": "baseline",
+      "slug": "chapter-52",
+      "title": "Part 52",
+      "novelTitle": "The Picture of Dorian Gray"
+    },
+    "the-picture-of-dorian-gray:53": {
+      "status": "baseline",
+      "slug": "chapter-53",
+      "title": "Part 53",
+      "novelTitle": "The Picture of Dorian Gray"
+    },
+    "the-picture-of-dorian-gray:54": {
+      "status": "baseline",
+      "slug": "chapter-54",
+      "title": "Part 54",
+      "novelTitle": "The Picture of Dorian Gray"
+    },
+    "the-picture-of-dorian-gray:55": {
+      "status": "baseline",
+      "slug": "chapter-55",
+      "title": "Part 55",
+      "novelTitle": "The Picture of Dorian Gray"
+    },
+    "the-picture-of-dorian-gray:56": {
+      "status": "baseline",
+      "slug": "chapter-56",
+      "title": "Part 56",
+      "novelTitle": "The Picture of Dorian Gray"
+    },
+    "the-picture-of-dorian-gray:57": {
+      "status": "baseline",
+      "slug": "chapter-57",
+      "title": "Part 57",
+      "novelTitle": "The Picture of Dorian Gray"
+    },
+    "the-picture-of-dorian-gray:58": {
+      "status": "baseline",
+      "slug": "chapter-58",
+      "title": "Part 58",
+      "novelTitle": "The Picture of Dorian Gray"
+    },
+    "the-picture-of-dorian-gray:59": {
+      "status": "baseline",
+      "slug": "chapter-59",
+      "title": "Part 59",
+      "novelTitle": "The Picture of Dorian Gray"
+    },
+    "the-strange-case-of-dr-jekyll-and-mr-hyde:2": {
+      "status": "baseline",
+      "slug": "chapter-2",
+      "title": "Part 2",
+      "novelTitle": "The Strange Case of Dr. Jekyll and Mr. Hyde"
+    },
+    "the-strange-case-of-dr-jekyll-and-mr-hyde:3": {
+      "status": "baseline",
+      "slug": "chapter-3",
+      "title": "Part 3",
+      "novelTitle": "The Strange Case of Dr. Jekyll and Mr. Hyde"
+    },
+    "the-strange-case-of-dr-jekyll-and-mr-hyde:4": {
+      "status": "baseline",
+      "slug": "chapter-4",
+      "title": "Part 4",
+      "novelTitle": "The Strange Case of Dr. Jekyll and Mr. Hyde"
+    },
+    "the-strange-case-of-dr-jekyll-and-mr-hyde:5": {
+      "status": "baseline",
+      "slug": "chapter-5",
+      "title": "Part 5",
+      "novelTitle": "The Strange Case of Dr. Jekyll and Mr. Hyde"
+    },
+    "the-strange-case-of-dr-jekyll-and-mr-hyde:6": {
+      "status": "baseline",
+      "slug": "chapter-6",
+      "title": "Part 6",
+      "novelTitle": "The Strange Case of Dr. Jekyll and Mr. Hyde"
+    },
+    "the-strange-case-of-dr-jekyll-and-mr-hyde:7": {
+      "status": "baseline",
+      "slug": "chapter-7",
+      "title": "Part 7",
+      "novelTitle": "The Strange Case of Dr. Jekyll and Mr. Hyde"
+    },
+    "the-strange-case-of-dr-jekyll-and-mr-hyde:8": {
+      "status": "baseline",
+      "slug": "chapter-8",
+      "title": "Part 8",
+      "novelTitle": "The Strange Case of Dr. Jekyll and Mr. Hyde"
+    },
+    "the-strange-case-of-dr-jekyll-and-mr-hyde:9": {
+      "status": "baseline",
+      "slug": "chapter-9",
+      "title": "Part 9",
+      "novelTitle": "The Strange Case of Dr. Jekyll and Mr. Hyde"
+    },
+    "the-strange-case-of-dr-jekyll-and-mr-hyde:10": {
+      "status": "baseline",
+      "slug": "chapter-10",
+      "title": "Part 10",
+      "novelTitle": "The Strange Case of Dr. Jekyll and Mr. Hyde"
+    },
+    "the-strange-case-of-dr-jekyll-and-mr-hyde:11": {
+      "status": "baseline",
+      "slug": "chapter-11",
+      "title": "Part 11",
+      "novelTitle": "The Strange Case of Dr. Jekyll and Mr. Hyde"
+    },
+    "the-strange-case-of-dr-jekyll-and-mr-hyde:12": {
+      "status": "baseline",
+      "slug": "chapter-12",
+      "title": "Part 12",
+      "novelTitle": "The Strange Case of Dr. Jekyll and Mr. Hyde"
+    },
+    "the-strange-case-of-dr-jekyll-and-mr-hyde:13": {
+      "status": "baseline",
+      "slug": "chapter-13",
+      "title": "Part 13",
+      "novelTitle": "The Strange Case of Dr. Jekyll and Mr. Hyde"
+    },
+    "the-strange-case-of-dr-jekyll-and-mr-hyde:14": {
+      "status": "baseline",
+      "slug": "chapter-14",
+      "title": "Part 14",
+      "novelTitle": "The Strange Case of Dr. Jekyll and Mr. Hyde"
+    },
+    "the-strange-case-of-dr-jekyll-and-mr-hyde:15": {
+      "status": "baseline",
+      "slug": "chapter-15",
+      "title": "Part 15",
+      "novelTitle": "The Strange Case of Dr. Jekyll and Mr. Hyde"
+    },
+    "the-strange-case-of-dr-jekyll-and-mr-hyde:16": {
+      "status": "baseline",
+      "slug": "chapter-16",
+      "title": "Part 16",
+      "novelTitle": "The Strange Case of Dr. Jekyll and Mr. Hyde"
+    },
+    "the-strange-case-of-dr-jekyll-and-mr-hyde:17": {
+      "status": "baseline",
+      "slug": "chapter-17",
+      "title": "Part 17",
+      "novelTitle": "The Strange Case of Dr. Jekyll and Mr. Hyde"
+    },
+    "the-strange-case-of-dr-jekyll-and-mr-hyde:18": {
+      "status": "baseline",
+      "slug": "chapter-18",
+      "title": "Part 18",
+      "novelTitle": "The Strange Case of Dr. Jekyll and Mr. Hyde"
+    },
+    "the-strange-case-of-dr-jekyll-and-mr-hyde:19": {
+      "status": "baseline",
+      "slug": "chapter-19",
+      "title": "Part 19",
+      "novelTitle": "The Strange Case of Dr. Jekyll and Mr. Hyde"
+    },
+    "the-time-machine:2": {
+      "status": "baseline",
+      "slug": "chapter-2",
+      "title": "Part 2",
+      "novelTitle": "The Time Machine"
+    },
+    "the-time-machine:3": {
+      "status": "baseline",
+      "slug": "chapter-3",
+      "title": "Part 3",
+      "novelTitle": "The Time Machine"
+    },
+    "the-time-machine:4": {
+      "status": "baseline",
+      "slug": "chapter-4",
+      "title": "Part 4",
+      "novelTitle": "The Time Machine"
+    },
+    "the-time-machine:5": {
+      "status": "baseline",
+      "slug": "chapter-5",
+      "title": "Part 5",
+      "novelTitle": "The Time Machine"
+    },
+    "the-time-machine:6": {
+      "status": "baseline",
+      "slug": "chapter-6",
+      "title": "Part 6",
+      "novelTitle": "The Time Machine"
+    },
+    "the-time-machine:7": {
+      "status": "baseline",
+      "slug": "chapter-7",
+      "title": "Part 7",
+      "novelTitle": "The Time Machine"
+    },
+    "the-time-machine:8": {
+      "status": "baseline",
+      "slug": "chapter-8",
+      "title": "Part 8",
+      "novelTitle": "The Time Machine"
+    },
+    "the-time-machine:9": {
+      "status": "baseline",
+      "slug": "chapter-9",
+      "title": "Part 9",
+      "novelTitle": "The Time Machine"
+    },
+    "the-time-machine:10": {
+      "status": "baseline",
+      "slug": "chapter-10",
+      "title": "Part 10",
+      "novelTitle": "The Time Machine"
+    },
+    "the-time-machine:11": {
+      "status": "baseline",
+      "slug": "chapter-11",
+      "title": "Part 11",
+      "novelTitle": "The Time Machine"
+    },
+    "the-time-machine:12": {
+      "status": "baseline",
+      "slug": "chapter-12",
+      "title": "Part 12",
+      "novelTitle": "The Time Machine"
+    },
+    "the-time-machine:13": {
+      "status": "baseline",
+      "slug": "chapter-13",
+      "title": "Part 13",
+      "novelTitle": "The Time Machine"
+    },
+    "the-time-machine:14": {
+      "status": "baseline",
+      "slug": "chapter-14",
+      "title": "Part 14",
+      "novelTitle": "The Time Machine"
+    },
+    "the-time-machine:15": {
+      "status": "baseline",
+      "slug": "chapter-15",
+      "title": "Part 15",
+      "novelTitle": "The Time Machine"
+    },
+    "the-time-machine:16": {
+      "status": "baseline",
+      "slug": "chapter-16",
+      "title": "Part 16",
+      "novelTitle": "The Time Machine"
+    },
+    "the-time-machine:17": {
+      "status": "baseline",
+      "slug": "chapter-17",
+      "title": "Part 17",
+      "novelTitle": "The Time Machine"
+    },
+    "the-time-machine:18": {
+      "status": "baseline",
+      "slug": "chapter-18",
+      "title": "Part 18",
+      "novelTitle": "The Time Machine"
+    },
+    "the-time-machine:19": {
+      "status": "baseline",
+      "slug": "chapter-19",
+      "title": "Part 19",
+      "novelTitle": "The Time Machine"
+    },
+    "the-time-machine:20": {
+      "status": "baseline",
+      "slug": "chapter-20",
+      "title": "Part 20",
+      "novelTitle": "The Time Machine"
+    },
+    "the-time-machine:21": {
+      "status": "baseline",
+      "slug": "chapter-21",
+      "title": "Part 21",
+      "novelTitle": "The Time Machine"
+    },
+    "the-time-machine:22": {
+      "status": "baseline",
+      "slug": "chapter-22",
+      "title": "Part 22",
+      "novelTitle": "The Time Machine"
+    },
+    "the-time-machine:23": {
+      "status": "baseline",
+      "slug": "chapter-23",
+      "title": "Part 23",
+      "novelTitle": "The Time Machine"
+    },
+    "the-time-machine:24": {
+      "status": "baseline",
+      "slug": "chapter-24",
+      "title": "Part 24",
+      "novelTitle": "The Time Machine"
+    },
+    "the-time-machine:25": {
+      "status": "baseline",
+      "slug": "chapter-25",
+      "title": "Part 25",
+      "novelTitle": "The Time Machine"
+    },
+    "the-war-of-the-worlds:2": {
+      "status": "baseline",
+      "slug": "chapter-2",
+      "title": "Part 2",
+      "novelTitle": "The War of the Worlds"
+    },
+    "the-war-of-the-worlds:3": {
+      "status": "baseline",
+      "slug": "chapter-3",
+      "title": "Part 3",
+      "novelTitle": "The War of the Worlds"
+    },
+    "the-war-of-the-worlds:4": {
+      "status": "baseline",
+      "slug": "chapter-4",
+      "title": "Part 4",
+      "novelTitle": "The War of the Worlds"
+    },
+    "the-war-of-the-worlds:5": {
+      "status": "baseline",
+      "slug": "chapter-5",
+      "title": "Part 5",
+      "novelTitle": "The War of the Worlds"
+    },
+    "the-war-of-the-worlds:6": {
+      "status": "baseline",
+      "slug": "chapter-6",
+      "title": "Part 6",
+      "novelTitle": "The War of the Worlds"
+    },
+    "the-war-of-the-worlds:7": {
+      "status": "baseline",
+      "slug": "chapter-7",
+      "title": "Part 7",
+      "novelTitle": "The War of the Worlds"
+    },
+    "the-war-of-the-worlds:8": {
+      "status": "baseline",
+      "slug": "chapter-8",
+      "title": "Part 8",
+      "novelTitle": "The War of the Worlds"
+    },
+    "the-war-of-the-worlds:9": {
+      "status": "baseline",
+      "slug": "chapter-9",
+      "title": "Part 9",
+      "novelTitle": "The War of the Worlds"
+    },
+    "the-war-of-the-worlds:10": {
+      "status": "baseline",
+      "slug": "chapter-10",
+      "title": "Part 10",
+      "novelTitle": "The War of the Worlds"
+    },
+    "the-war-of-the-worlds:11": {
+      "status": "baseline",
+      "slug": "chapter-11",
+      "title": "Part 11",
+      "novelTitle": "The War of the Worlds"
+    },
+    "the-war-of-the-worlds:12": {
+      "status": "baseline",
+      "slug": "chapter-12",
+      "title": "Part 12",
+      "novelTitle": "The War of the Worlds"
+    },
+    "the-war-of-the-worlds:13": {
+      "status": "baseline",
+      "slug": "chapter-13",
+      "title": "Part 13",
+      "novelTitle": "The War of the Worlds"
+    },
+    "the-war-of-the-worlds:14": {
+      "status": "baseline",
+      "slug": "chapter-14",
+      "title": "Part 14",
+      "novelTitle": "The War of the Worlds"
+    },
+    "the-war-of-the-worlds:15": {
+      "status": "baseline",
+      "slug": "chapter-15",
+      "title": "Part 15",
+      "novelTitle": "The War of the Worlds"
+    },
+    "the-war-of-the-worlds:16": {
+      "status": "baseline",
+      "slug": "chapter-16",
+      "title": "Part 16",
+      "novelTitle": "The War of the Worlds"
+    },
+    "the-war-of-the-worlds:17": {
+      "status": "baseline",
+      "slug": "chapter-17",
+      "title": "Part 17",
+      "novelTitle": "The War of the Worlds"
+    },
+    "the-war-of-the-worlds:18": {
+      "status": "baseline",
+      "slug": "chapter-18",
+      "title": "Part 18",
+      "novelTitle": "The War of the Worlds"
+    },
+    "the-war-of-the-worlds:19": {
+      "status": "baseline",
+      "slug": "chapter-19",
+      "title": "Part 19",
+      "novelTitle": "The War of the Worlds"
+    },
+    "the-war-of-the-worlds:20": {
+      "status": "baseline",
+      "slug": "chapter-20",
+      "title": "Part 20",
+      "novelTitle": "The War of the Worlds"
+    },
+    "the-war-of-the-worlds:21": {
+      "status": "baseline",
+      "slug": "chapter-21",
+      "title": "Part 21",
+      "novelTitle": "The War of the Worlds"
+    },
+    "the-war-of-the-worlds:22": {
+      "status": "baseline",
+      "slug": "chapter-22",
+      "title": "Part 22",
+      "novelTitle": "The War of the Worlds"
+    },
+    "the-war-of-the-worlds:23": {
+      "status": "baseline",
+      "slug": "chapter-23",
+      "title": "Part 23",
+      "novelTitle": "The War of the Worlds"
+    },
+    "the-war-of-the-worlds:24": {
+      "status": "baseline",
+      "slug": "chapter-24",
+      "title": "Part 24",
+      "novelTitle": "The War of the Worlds"
+    },
+    "the-war-of-the-worlds:25": {
+      "status": "baseline",
+      "slug": "chapter-25",
+      "title": "Part 25",
+      "novelTitle": "The War of the Worlds"
+    },
+    "the-war-of-the-worlds:26": {
+      "status": "baseline",
+      "slug": "chapter-26",
+      "title": "Part 26",
+      "novelTitle": "The War of the Worlds"
+    },
+    "the-war-of-the-worlds:27": {
+      "status": "baseline",
+      "slug": "chapter-27",
+      "title": "Part 27",
+      "novelTitle": "The War of the Worlds"
+    },
+    "the-war-of-the-worlds:28": {
+      "status": "baseline",
+      "slug": "chapter-28",
+      "title": "Part 28",
+      "novelTitle": "The War of the Worlds"
+    },
+    "the-war-of-the-worlds:29": {
+      "status": "baseline",
+      "slug": "chapter-29",
+      "title": "Part 29",
+      "novelTitle": "The War of the Worlds"
+    },
+    "the-war-of-the-worlds:30": {
+      "status": "baseline",
+      "slug": "chapter-30",
+      "title": "Part 30",
+      "novelTitle": "The War of the Worlds"
+    },
+    "the-war-of-the-worlds:31": {
+      "status": "baseline",
+      "slug": "chapter-31",
+      "title": "Part 31",
+      "novelTitle": "The War of the Worlds"
+    },
+    "the-war-of-the-worlds:32": {
+      "status": "baseline",
+      "slug": "chapter-32",
+      "title": "Part 32",
+      "novelTitle": "The War of the Worlds"
+    },
+    "the-war-of-the-worlds:33": {
+      "status": "baseline",
+      "slug": "chapter-33",
+      "title": "Part 33",
+      "novelTitle": "The War of the Worlds"
+    },
+    "the-war-of-the-worlds:34": {
+      "status": "baseline",
+      "slug": "chapter-34",
+      "title": "Part 34",
+      "novelTitle": "The War of the Worlds"
+    },
+    "the-war-of-the-worlds:35": {
+      "status": "baseline",
+      "slug": "chapter-35",
+      "title": "Part 35",
+      "novelTitle": "The War of the Worlds"
+    },
+    "the-war-of-the-worlds:36": {
+      "status": "baseline",
+      "slug": "chapter-36",
+      "title": "Part 36",
+      "novelTitle": "The War of the Worlds"
+    },
+    "the-war-of-the-worlds:37": {
+      "status": "baseline",
+      "slug": "chapter-37",
+      "title": "Part 37",
+      "novelTitle": "The War of the Worlds"
+    },
+    "the-war-of-the-worlds:38": {
+      "status": "baseline",
+      "slug": "chapter-38",
+      "title": "Part 38",
+      "novelTitle": "The War of the Worlds"
+    },
+    "the-war-of-the-worlds:39": {
+      "status": "baseline",
+      "slug": "chapter-39",
+      "title": "Part 39",
+      "novelTitle": "The War of the Worlds"
+    },
+    "the-war-of-the-worlds:40": {
+      "status": "baseline",
+      "slug": "chapter-40",
+      "title": "Part 40",
+      "novelTitle": "The War of the Worlds"
+    },
+    "the-war-of-the-worlds:41": {
+      "status": "baseline",
+      "slug": "chapter-41",
+      "title": "Part 41",
+      "novelTitle": "The War of the Worlds"
+    },
+    "the-war-of-the-worlds:42": {
+      "status": "baseline",
+      "slug": "chapter-42",
+      "title": "Part 42",
+      "novelTitle": "The War of the Worlds"
+    },
+    "the-war-of-the-worlds:43": {
+      "status": "baseline",
+      "slug": "chapter-43",
+      "title": "Part 43",
+      "novelTitle": "The War of the Worlds"
+    },
+    "the-war-of-the-worlds:44": {
+      "status": "baseline",
+      "slug": "chapter-44",
+      "title": "Part 44",
+      "novelTitle": "The War of the Worlds"
+    },
+    "the-war-of-the-worlds:45": {
+      "status": "baseline",
+      "slug": "chapter-45",
+      "title": "Part 45",
+      "novelTitle": "The War of the Worlds"
+    },
+    "the-war-of-the-worlds:46": {
+      "status": "baseline",
+      "slug": "chapter-46",
+      "title": "Part 46",
+      "novelTitle": "The War of the Worlds"
+    },
+    "the-war-of-the-worlds:47": {
+      "status": "baseline",
+      "slug": "chapter-47",
+      "title": "Part 47",
+      "novelTitle": "The War of the Worlds"
+    },
+    "the-wonderful-wizard-of-oz:2": {
+      "status": "baseline",
+      "slug": "chapter-2",
+      "title": "Part 2",
+      "novelTitle": "The Wonderful Wizard of Oz"
+    },
+    "the-wonderful-wizard-of-oz:3": {
+      "status": "baseline",
+      "slug": "chapter-3",
+      "title": "Part 3",
+      "novelTitle": "The Wonderful Wizard of Oz"
+    },
+    "the-wonderful-wizard-of-oz:4": {
+      "status": "baseline",
+      "slug": "chapter-4",
+      "title": "Part 4",
+      "novelTitle": "The Wonderful Wizard of Oz"
+    },
+    "the-wonderful-wizard-of-oz:5": {
+      "status": "baseline",
+      "slug": "chapter-5",
+      "title": "Part 5",
+      "novelTitle": "The Wonderful Wizard of Oz"
+    },
+    "the-wonderful-wizard-of-oz:6": {
+      "status": "baseline",
+      "slug": "chapter-6",
+      "title": "Part 6",
+      "novelTitle": "The Wonderful Wizard of Oz"
+    },
+    "the-wonderful-wizard-of-oz:7": {
+      "status": "baseline",
+      "slug": "chapter-7",
+      "title": "Part 7",
+      "novelTitle": "The Wonderful Wizard of Oz"
+    },
+    "the-wonderful-wizard-of-oz:8": {
+      "status": "baseline",
+      "slug": "chapter-8",
+      "title": "Part 8",
+      "novelTitle": "The Wonderful Wizard of Oz"
+    },
+    "the-wonderful-wizard-of-oz:9": {
+      "status": "baseline",
+      "slug": "chapter-9",
+      "title": "Part 9",
+      "novelTitle": "The Wonderful Wizard of Oz"
+    },
+    "the-wonderful-wizard-of-oz:10": {
+      "status": "baseline",
+      "slug": "chapter-10",
+      "title": "Part 10",
+      "novelTitle": "The Wonderful Wizard of Oz"
+    },
+    "the-wonderful-wizard-of-oz:11": {
+      "status": "baseline",
+      "slug": "chapter-11",
+      "title": "Part 11",
+      "novelTitle": "The Wonderful Wizard of Oz"
+    },
+    "the-wonderful-wizard-of-oz:12": {
+      "status": "baseline",
+      "slug": "chapter-12",
+      "title": "Part 12",
+      "novelTitle": "The Wonderful Wizard of Oz"
+    },
+    "the-wonderful-wizard-of-oz:13": {
+      "status": "baseline",
+      "slug": "chapter-13",
+      "title": "Part 13",
+      "novelTitle": "The Wonderful Wizard of Oz"
+    },
+    "the-wonderful-wizard-of-oz:14": {
+      "status": "baseline",
+      "slug": "chapter-14",
+      "title": "Part 14",
+      "novelTitle": "The Wonderful Wizard of Oz"
+    },
+    "the-wonderful-wizard-of-oz:15": {
+      "status": "baseline",
+      "slug": "chapter-15",
+      "title": "Part 15",
+      "novelTitle": "The Wonderful Wizard of Oz"
+    },
+    "the-wonderful-wizard-of-oz:16": {
+      "status": "baseline",
+      "slug": "chapter-16",
+      "title": "Part 16",
+      "novelTitle": "The Wonderful Wizard of Oz"
+    },
+    "the-wonderful-wizard-of-oz:17": {
+      "status": "baseline",
+      "slug": "chapter-17",
+      "title": "Part 17",
+      "novelTitle": "The Wonderful Wizard of Oz"
+    },
+    "the-wonderful-wizard-of-oz:18": {
+      "status": "baseline",
+      "slug": "chapter-18",
+      "title": "Part 18",
+      "novelTitle": "The Wonderful Wizard of Oz"
+    },
+    "the-wonderful-wizard-of-oz:19": {
+      "status": "baseline",
+      "slug": "chapter-19",
+      "title": "Part 19",
+      "novelTitle": "The Wonderful Wizard of Oz"
+    },
+    "the-wonderful-wizard-of-oz:20": {
+      "status": "baseline",
+      "slug": "chapter-20",
+      "title": "Part 20",
+      "novelTitle": "The Wonderful Wizard of Oz"
+    },
+    "the-wonderful-wizard-of-oz:21": {
+      "status": "baseline",
+      "slug": "chapter-21",
+      "title": "Part 21",
+      "novelTitle": "The Wonderful Wizard of Oz"
+    },
+    "the-wonderful-wizard-of-oz:22": {
+      "status": "baseline",
+      "slug": "chapter-22",
+      "title": "Part 22",
+      "novelTitle": "The Wonderful Wizard of Oz"
+    },
+    "the-wonderful-wizard-of-oz:23": {
+      "status": "baseline",
+      "slug": "chapter-23",
+      "title": "Part 23",
+      "novelTitle": "The Wonderful Wizard of Oz"
+    },
+    "the-wonderful-wizard-of-oz:24": {
+      "status": "baseline",
+      "slug": "chapter-24",
+      "title": "Part 24",
+      "novelTitle": "The Wonderful Wizard of Oz"
+    },
+    "the-wonderful-wizard-of-oz:25": {
+      "status": "baseline",
+      "slug": "chapter-25",
+      "title": "Part 25",
+      "novelTitle": "The Wonderful Wizard of Oz"
+    },
+    "the-wonderful-wizard-of-oz:26": {
+      "status": "baseline",
+      "slug": "chapter-26",
+      "title": "Part 26",
+      "novelTitle": "The Wonderful Wizard of Oz"
+    },
+    "the-wonderful-wizard-of-oz:27": {
+      "status": "baseline",
+      "slug": "chapter-27",
+      "title": "Part 27",
+      "novelTitle": "The Wonderful Wizard of Oz"
+    },
+    "the-wonderful-wizard-of-oz:28": {
+      "status": "baseline",
+      "slug": "chapter-28",
+      "title": "Part 28",
+      "novelTitle": "The Wonderful Wizard of Oz"
+    },
+    "the-wonderful-wizard-of-oz:29": {
+      "status": "baseline",
+      "slug": "chapter-29",
+      "title": "Part 29",
+      "novelTitle": "The Wonderful Wizard of Oz"
+    },
+    "treasure-island:2": {
+      "status": "baseline",
+      "slug": "chapter-2",
+      "title": "Part 2",
+      "novelTitle": "Treasure Island"
+    },
+    "treasure-island:3": {
+      "status": "baseline",
+      "slug": "chapter-3",
+      "title": "Part 3",
+      "novelTitle": "Treasure Island"
+    },
+    "treasure-island:4": {
+      "status": "baseline",
+      "slug": "chapter-4",
+      "title": "Part 4",
+      "novelTitle": "Treasure Island"
+    },
+    "treasure-island:5": {
+      "status": "baseline",
+      "slug": "chapter-5",
+      "title": "Part 5",
+      "novelTitle": "Treasure Island"
+    },
+    "treasure-island:6": {
+      "status": "baseline",
+      "slug": "chapter-6",
+      "title": "Part 6",
+      "novelTitle": "Treasure Island"
+    },
+    "treasure-island:7": {
+      "status": "baseline",
+      "slug": "chapter-7",
+      "title": "Part 7",
+      "novelTitle": "Treasure Island"
+    },
+    "treasure-island:8": {
+      "status": "baseline",
+      "slug": "chapter-8",
+      "title": "Part 8",
+      "novelTitle": "Treasure Island"
+    },
+    "treasure-island:9": {
+      "status": "baseline",
+      "slug": "chapter-9",
+      "title": "Part 9",
+      "novelTitle": "Treasure Island"
+    },
+    "treasure-island:10": {
+      "status": "baseline",
+      "slug": "chapter-10",
+      "title": "Part 10",
+      "novelTitle": "Treasure Island"
+    },
+    "treasure-island:11": {
+      "status": "baseline",
+      "slug": "chapter-11",
+      "title": "Part 11",
+      "novelTitle": "Treasure Island"
+    },
+    "treasure-island:12": {
+      "status": "baseline",
+      "slug": "chapter-12",
+      "title": "Part 12",
+      "novelTitle": "Treasure Island"
+    },
+    "treasure-island:13": {
+      "status": "baseline",
+      "slug": "chapter-13",
+      "title": "Part 13",
+      "novelTitle": "Treasure Island"
+    },
+    "treasure-island:14": {
+      "status": "baseline",
+      "slug": "chapter-14",
+      "title": "Part 14",
+      "novelTitle": "Treasure Island"
+    },
+    "treasure-island:15": {
+      "status": "baseline",
+      "slug": "chapter-15",
+      "title": "Part 15",
+      "novelTitle": "Treasure Island"
+    },
+    "treasure-island:16": {
+      "status": "baseline",
+      "slug": "chapter-16",
+      "title": "Part 16",
+      "novelTitle": "Treasure Island"
+    },
+    "treasure-island:17": {
+      "status": "baseline",
+      "slug": "chapter-17",
+      "title": "Part 17",
+      "novelTitle": "Treasure Island"
+    },
+    "treasure-island:18": {
+      "status": "baseline",
+      "slug": "chapter-18",
+      "title": "Part 18",
+      "novelTitle": "Treasure Island"
+    },
+    "treasure-island:19": {
+      "status": "baseline",
+      "slug": "chapter-19",
+      "title": "Part 19",
+      "novelTitle": "Treasure Island"
+    },
+    "treasure-island:20": {
+      "status": "baseline",
+      "slug": "chapter-20",
+      "title": "Part 20",
+      "novelTitle": "Treasure Island"
+    },
+    "treasure-island:21": {
+      "status": "baseline",
+      "slug": "chapter-21",
+      "title": "Part 21",
+      "novelTitle": "Treasure Island"
+    },
+    "treasure-island:22": {
+      "status": "baseline",
+      "slug": "chapter-22",
+      "title": "Part 22",
+      "novelTitle": "Treasure Island"
+    },
+    "treasure-island:23": {
+      "status": "baseline",
+      "slug": "chapter-23",
+      "title": "Part 23",
+      "novelTitle": "Treasure Island"
+    },
+    "treasure-island:24": {
+      "status": "baseline",
+      "slug": "chapter-24",
+      "title": "Part 24",
+      "novelTitle": "Treasure Island"
+    },
+    "treasure-island:25": {
+      "status": "baseline",
+      "slug": "chapter-25",
+      "title": "Part 25",
+      "novelTitle": "Treasure Island"
+    },
+    "treasure-island:26": {
+      "status": "baseline",
+      "slug": "chapter-26",
+      "title": "Part 26",
+      "novelTitle": "Treasure Island"
+    },
+    "treasure-island:27": {
+      "status": "baseline",
+      "slug": "chapter-27",
+      "title": "Part 27",
+      "novelTitle": "Treasure Island"
+    },
+    "treasure-island:28": {
+      "status": "baseline",
+      "slug": "chapter-28",
+      "title": "Part 28",
+      "novelTitle": "Treasure Island"
+    },
+    "treasure-island:29": {
+      "status": "baseline",
+      "slug": "chapter-29",
+      "title": "Part 29",
+      "novelTitle": "Treasure Island"
+    },
+    "treasure-island:30": {
+      "status": "baseline",
+      "slug": "chapter-30",
+      "title": "Part 30",
+      "novelTitle": "Treasure Island"
+    },
+    "treasure-island:31": {
+      "status": "baseline",
+      "slug": "chapter-31",
+      "title": "Part 31",
+      "novelTitle": "Treasure Island"
+    },
+    "treasure-island:32": {
+      "status": "baseline",
+      "slug": "chapter-32",
+      "title": "Part 32",
+      "novelTitle": "Treasure Island"
+    },
+    "treasure-island:33": {
+      "status": "baseline",
+      "slug": "chapter-33",
+      "title": "Part 33",
+      "novelTitle": "Treasure Island"
+    },
+    "treasure-island:34": {
+      "status": "baseline",
+      "slug": "chapter-34",
+      "title": "Part 34",
+      "novelTitle": "Treasure Island"
+    },
+    "treasure-island:35": {
+      "status": "baseline",
+      "slug": "chapter-35",
+      "title": "Part 35",
+      "novelTitle": "Treasure Island"
+    },
+    "treasure-island:36": {
+      "status": "baseline",
+      "slug": "chapter-36",
+      "title": "Part 36",
+      "novelTitle": "Treasure Island"
+    },
+    "treasure-island:37": {
+      "status": "baseline",
+      "slug": "chapter-37",
+      "title": "Part 37",
+      "novelTitle": "Treasure Island"
+    },
+    "treasure-island:38": {
+      "status": "baseline",
+      "slug": "chapter-38",
+      "title": "Part 38",
+      "novelTitle": "Treasure Island"
+    },
+    "treasure-island:39": {
+      "status": "baseline",
+      "slug": "chapter-39",
+      "title": "Part 39",
+      "novelTitle": "Treasure Island"
+    },
+    "treasure-island:40": {
+      "status": "baseline",
+      "slug": "chapter-40",
+      "title": "Part 40",
+      "novelTitle": "Treasure Island"
+    },
+    "treasure-island:41": {
+      "status": "baseline",
+      "slug": "chapter-41",
+      "title": "Part 41",
+      "novelTitle": "Treasure Island"
+    },
+    "treasure-island:42": {
+      "status": "baseline",
+      "slug": "chapter-42",
+      "title": "Part 42",
+      "novelTitle": "Treasure Island"
+    },
+    "treasure-island:43": {
+      "status": "baseline",
+      "slug": "chapter-43",
+      "title": "Part 43",
+      "novelTitle": "Treasure Island"
+    },
+    "treasure-island:44": {
+      "status": "baseline",
+      "slug": "chapter-44",
+      "title": "Part 44",
+      "novelTitle": "Treasure Island"
+    },
+    "treasure-island:45": {
+      "status": "baseline",
+      "slug": "chapter-45",
+      "title": "Part 45",
+      "novelTitle": "Treasure Island"
+    },
+    "treasure-island:46": {
+      "status": "baseline",
+      "slug": "chapter-46",
+      "title": "Part 46",
+      "novelTitle": "Treasure Island"
+    },
+    "treasure-island:47": {
+      "status": "baseline",
+      "slug": "chapter-47",
+      "title": "Part 47",
+      "novelTitle": "Treasure Island"
+    },
+    "treasure-island:48": {
+      "status": "baseline",
+      "slug": "chapter-48",
+      "title": "Part 48",
+      "novelTitle": "Treasure Island"
+    },
+    "treasure-island:49": {
+      "status": "baseline",
+      "slug": "chapter-49",
+      "title": "Part 49",
+      "novelTitle": "Treasure Island"
+    },
+    "treasure-island:50": {
+      "status": "baseline",
+      "slug": "chapter-50",
+      "title": "Part 50",
+      "novelTitle": "Treasure Island"
+    },
+    "frankenstein:1": {
+      "status": "baseline",
+      "slug": "chapter-1",
+      "title": "Part 1",
+      "novelTitle": "Frankenstein; or, The Modern Prometheus"
+    },
+    "the-island-of-doctor-moreau:1": {
+      "status": "baseline",
+      "slug": "chapter-1",
+      "title": "Part 1",
+      "novelTitle": "The Island of Doctor Moreau"
+    },
+    "the-picture-of-dorian-gray:1": {
+      "status": "baseline",
+      "slug": "chapter-1",
+      "title": "Part 1",
+      "novelTitle": "The Picture of Dorian Gray"
+    },
+    "the-strange-case-of-dr-jekyll-and-mr-hyde:1": {
+      "status": "baseline",
+      "slug": "chapter-1",
+      "title": "Part 1",
+      "novelTitle": "The Strange Case of Dr. Jekyll and Mr. Hyde"
+    },
+    "the-time-machine:1": {
+      "status": "baseline",
+      "slug": "chapter-1",
+      "title": "Part 1",
+      "novelTitle": "The Time Machine"
+    },
+    "the-war-of-the-worlds:1": {
+      "status": "baseline",
+      "slug": "chapter-1",
+      "title": "Part 1",
+      "novelTitle": "The War of the Worlds"
+    },
+    "the-wonderful-wizard-of-oz:1": {
+      "status": "baseline",
+      "slug": "chapter-1",
+      "title": "Part 1",
+      "novelTitle": "The Wonderful Wizard of Oz"
+    },
+    "treasure-island:1": {
+      "status": "baseline",
+      "slug": "chapter-1",
+      "title": "Part 1",
+      "novelTitle": "Treasure Island"
     }
   }
 }
