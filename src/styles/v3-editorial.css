@@ -597,3 +597,12 @@ html[data-theme="dark"] body.hm-editorial-site {background:#172923;}
  .v3-art-direction .v2-news-item .v3-article-copy > p:first-child { font-size:.61rem; }
  .v3-art-direction .v3-depth-card small { font-size:.73rem; }
 }
+
+/* Portrait artwork places the featured book just below the search/chips.
+   Kicker and inventory metadata remain on desktop, where there is room. */
+@media(max-width:630px) {
+ .v3-art-direction .v2-kicker,
+ .v3-art-direction .v2-hero-foot { display:none; }
+ .v3-art-direction .v2-hero-copy { padding-top:27px; }
+ .v3-art-direction .v2-hero-visual { padding-top:12px; }
+}

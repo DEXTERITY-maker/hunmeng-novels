@@ -89,6 +89,9 @@ test('editorial art direction keeps all major sections inside mobile and desktop
     if (width === 390) {
       const heroArt = await page.locator('.v2-hero').evaluate(el => getComputedStyle(el).backgroundImage);
       expect(heroArt).toContain('hero-mountains-mobile.svg');
+      await expect(page.locator('.v2-kicker')).toBeHidden();
+      await expect(page.locator('.v2-hero-foot')).toBeHidden();
+
       const readability = await page.evaluate(() => {
         const px = (selector: string) => Number.parseFloat(getComputedStyle(document.querySelector(selector)!).fontSize);
         return {
