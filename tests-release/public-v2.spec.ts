@@ -82,3 +82,21 @@ test('public V2 screenshot evidence and browser errors on all launch pages', asy
   }
   expect(errors).toEqual([]);
 });
+
+test('public V2 novel details keep actions and chapters with the new editorial shell', async ({ page }, testInfo) => {
+  for (const width of [320, 390, 768, 1280]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/novel/khranitel-mayaka/');
+    await expect(page.locator('body')).toHaveClass(/hm-editorial-site/);
+    await expect(page.locator('.v3-novel-nav a')).toHaveCount(5);
+    await expect(page.locator('.v3-novel-nav a[aria-current="page"]')).toHaveAttribute('href', '/catalog/');
+    await expect(page.locator('.novel-detail')).toBeVisible();
+    await expect(page.locator('.novel-primary-read')).toHaveAttribute('href', '/novel/khranitel-mayaka/glava-1/');
+    await expect(page.locator('.personal-rating-stars button')).toHaveCount(5);
+    await expect(page.locator('.chapter-list a').first()).toHaveAttribute('href', '/novel/khranitel-mayaka/glava-1/');
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'book overflow @ ' + width).toBe(true);
+    if (width === 390 || width === 1280) {
+      await page.screenshot({ path: testInfo.outputPath('hunmeng-v2-public-book-' + width + '.png'), fullPage: true, animations: 'disabled' });
+    }
+  }
+});
