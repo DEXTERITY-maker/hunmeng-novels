@@ -52,6 +52,8 @@ export async function loadLatest(env, novels, fetcher = fetch) {
         const date = new Date(launchMoscowDate + 'T09:00:00Z');
         date.setUTCDate(date.getUTCDate() + Math.max(0, row.number - edition.initial_chapters));
         const publishedAt = row.number <= edition.initial_chapters ? launch.toISOString() : date.toISOString();
+        // RLS is the authority; a second time check fails closed if it is misconfigured.
+        if (Date.parse(publishedAt) > Date.now()) continue;
         chapters.push({novelSlug:novel.slug,novelTitle:novel.title,slug:'chapter-'+row.number,number:row.number,title:row.title,publishedAt});
       }
     }
