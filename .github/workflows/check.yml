@@ -1,5 +1,10 @@
 name: Проверка статической сборки
 on: [push, pull_request, workflow_dispatch]
+# Cancel obsolete test runs for this branch or pull request; keep push and PR
+# checks independent. Only final-commit results are eligible for release.
+concurrency:
+  group: hunmeng-ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 jobs:
   build:
     runs-on: ubuntu-latest
