@@ -1,4 +1,4 @@
-import {createTelegramRequest,safeTelegramFailure,reservedChapterKeys} from './telegram-delivery-safety.mjs';
+import {createTelegramRequest,safeTelegramFailure,reservedChapterKeys,selectManualRecovery} from './telegram-delivery-safety.mjs';
 import {execFileSync} from 'node:child_process';
 import {readFileSync} from 'node:fs';
 import {chapterKey,chapterLink,announcement,decideChapters,applyChapterMarker,parseChapterMarkdown,validateReleasedChapters,deliverChapters} from './telegram-chapters-core.mjs';
@@ -14,6 +14,8 @@ const dry=process.env.DRY_RUN==='true';
 const eventName=process.env.GITHUB_EVENT_NAME||'';
 const event=process.env.GITHUB_EVENT_PATH?JSON.parse(readFileSync(process.env.GITHUB_EVENT_PATH,'utf8')):{};
 const mode=process.env.NOTIFICATION_MODE||'all';
+const recoveryKey=process.env.RECOVERY_KEY||'';
+const recoveryConfirmed=process.env.RECOVERY_CONFIRMED==='true';
 const request=async(url,headers={})=>{
   let r;
   try{r=await fetch(url,{headers,signal:AbortSignal.timeout(15000),redirect:'error'});}
@@ -112,12 +114,51 @@ async function publishedCommit(){
 }
 const telegram=createTelegramRequest({token:process.env.TELEGRAM_BOT_TOKEN});
 
+/** This one-off path never calls deliverChapters and never processes the backlog. */
+async function recoverOneReservedChapter(ledger) {
+  if(eventName!=='workflow_dispatch')fail('Recovery is manual-only');
+  const chapter=selectManualRecovery(ledger.data,recoveryKey);
+  const sha=await publishedCommit();
+  if(!sha)fail('No successful deployment for recovery');
+  const published=localChapters(sha).chapters;
+  if(!published.some(ch=>chapterKey(ch)===recoveryKey&&ch.slug===chapter.slug&&ch.title===chapter.title))
+    fail('Recovery chapter does not match deployed content');
+  if(!await reachable(chapterLink(chapter,ORIGIN)))
+    fail('Recovery chapter unavailable on the live site');
+  if(dry) {
+    info('RECOVERY DRY RUN: one reserved chapter '+recoveryKey+'; no Telegram requests or ledger changes');
+    return;
+  }
+  if(!recoveryConfirmed)fail('Recovery requires explicit confirmation that the channel was checked');
+  // No automatic retry; even an ambiguous success remains reserved.
+  let stage='telegram_preflight';
+  try {
+    await telegram('getMe');
+    stage='telegram_send';
+    const sent=await telegram('sendMessage',{
+      chat_id:CHANNEL,text:announcement(chapter,ORIGIN),
+      link_preview_options:{is_disabled:false,prefer_large_media:true},
+    });
+    stage='confirm_ledger';
+    const next=applyChapterMarker(ledger.data,chapter,'sent');
+    next.chapters[recoveryKey].messageId=sent.message_id;
+    writeLedger(ledger,next);
+    info('Manual recovery confirmed '+recoveryKey+'; messageId='+sent.message_id);
+  } catch(error) {
+    info('Manual recovery stopped: stage='+stage+'; chapter='+recoveryKey+'; '+safeTelegramFailure(error)+'; no automatic resend');
+    process.exitCode=1;
+  }
+}
+
 async function main(){
   if(!['all','scheduled','deployed'].includes(mode))fail('Invalid workflow mode');
   if(eventName==='workflow_run'&&(event.workflow_run?.conclusion!=='success'||event.workflow_run?.head_branch!=='main')){
     info('No successful main branch deployment; no changes');return;
   }
   const ledger=readLedger(),previous=ledger.data;
+  if(recoveryKey){
+    await recoverOneReservedChapter(ledger);return;
+  }
   const reserved=reservedChapterKeys(previous);
   if(reserved.length){
     info('Manual reconciliation required: '+reserved.length+' reserved notices; no automatic send');
