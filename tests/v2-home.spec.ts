@@ -141,7 +141,11 @@ test('editorial header matches mobile reference with functional navigation, with
   await expect(menu).not.toHaveAttribute('open', '');
   await menu.getByRole('button', { name: 'Open site menu' }).click();
   await expect(menu).toHaveAttribute('open', '');
-  await page.locator('.v3-primary-nav a').first().click();
+  // The open dropdown deliberately overlays left-hand nav links.
+  // Click an unobstructed spot on the hero to verify click-away dismissal.
+  const heroBox = await page.locator('.v2-hero').boundingBox();
+  expect(heroBox).not.toBeNull();
+  await page.mouse.click(heroBox!.x + heroBox!.width - 8, heroBox!.y + 8);
   await expect(menu).not.toHaveAttribute('open', '');
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
   await page.setViewportSize({ width: 1280, height: 900 });
