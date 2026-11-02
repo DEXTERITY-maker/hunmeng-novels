@@ -206,17 +206,26 @@ async function main(){
     }
   }
   let current=active;
+  let deliveryStage='start', deliveryKey='none';
   try{
     current=await deliverChapters(active,newCandidates,{
-      persist:async next=>{writeLedger(ledger,next);current=next;},
+      persist:async next=>{
+        const changed=Object.entries(next.chapters).find(([key,entry])=>entry.status!==current.chapters?.[key]?.status);
+        deliveryKey=changed?.[0]??'none';
+        deliveryStage=changed?.[1]?.status==='reserved'?'reserve_ledger':
+          changed?.[1]?.status==='sent'?'confirm_ledger':'ledger_write';
+        writeLedger(ledger,next);current=next;
+      },
       send:async chapter=>{
+        deliveryKey=chapterKey(chapter);
+        deliveryStage='telegram_send';
         const result=await telegram('sendMessage',{chat_id:CHANNEL,text:announcement(chapter,ORIGIN),link_preview_options:{is_disabled:false,prefer_large_media:true}});
         info('Telegram confirmed '+chapterKey(chapter));
         return result;
       },
     });
   }catch(error){
-    info('Delivery stopped: '+safeTelegramFailure(error)+'; reserved notice requires manual checking; no automatic resend');
+    info('Delivery stopped: stage='+deliveryStage+'; chapter='+deliveryKey+'; '+safeTelegramFailure(error)+'; reserved notice requires manual checking; no automatic resend');
     process.exitCode=1;return;
   }
   if(current.deployedSha!==sha)writeLedger(ledger,{...current,deployedSha:sha});
