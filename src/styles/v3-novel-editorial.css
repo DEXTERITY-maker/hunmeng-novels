@@ -1,0 +1,174 @@
+/* Hunmeng 2.0 book detail. A purely visual overlay, restricted to the
+   public V2 launch flag. Original novel routes retain their V1 appearance. */
+.hm-editorial-site .v3-novel-nav {
+  width: min(1120px,calc(100% - 38px));
+  margin: 0 auto;
+}
+.hm-editorial-site .novel-art-band {
+  opacity: .83;
+  filter: saturate(.8);
+}
+.hm-editorial-site .novel-page {
+  --bg: #fcf8ed;
+  --surface: #fffdf6;
+  --ink: #213b30;
+  --muted: #64746a;
+  --line: #e7ddc9;
+  --accent: #08624a;
+  --soft: #f3ead7;
+  --ed-rule: #e7ddc9;
+  --ed-ink: #213b30;
+  --ed-accent-tint: #f2ead9;
+  width: min(1120px,calc(100% - 38px));
+  max-width: 1120px;
+  padding: 16px 0 78px;
+  color: var(--ink);
+}
+.hm-editorial-site .novel-page .novel-detail {
+  border: 1px solid #e4d6ba;
+  border-radius: 20px;
+  background: linear-gradient(135deg,#fffdf6 0%,#fcf7ec 76%,#f4ead5 100%);
+  box-shadow: 0 16px 45px #1c43221b;
+  padding: clamp(20px,3.2vw,36px);
+  gap: clamp(20px,3.4vw,36px);
+}
+.hm-editorial-site .novel-page .novel-detail-breadcrumb {
+  color: #617568;
+  font-size: .78rem;
+}
+.hm-editorial-site .novel-page .novel-detail-breadcrumb a {
+  color: #0b654e;
+  font-weight: 740;
+}
+.hm-editorial-site .novel-page .novel-book-shell {
+  transform: perspective(850px) rotateY(-2deg);
+  box-shadow: 12px 23px 32px #0c282635,-5px 5px 10px #0c28261a;
+}
+.hm-editorial-site .novel-page .detail-copy h1 {
+  font-family: 'Noto Serif Variable',Georgia,serif;
+  color: #103e30;
+  font-weight: 550;
+  line-height: 1.17;
+  letter-spacing: -.045em;
+}
+.hm-editorial-site .novel-page .genre-links a {
+  color: #0b624b;
+  font-weight: 720;
+  text-decoration-color: #c8a75f;
+  text-underline-offset: 4px;
+}
+.hm-editorial-site .novel-page .author { color: #566e5d; }
+.hm-editorial-site .novel-page .original-title { color: #6e7867; }
+.hm-editorial-site .novel-page .detail-actions { gap: 9px; flex-wrap: wrap; }
+.hm-editorial-site .novel-page .novel-primary-read {
+  border: 1px solid #c49845;
+  border-radius: 999px;
+  background: linear-gradient(145deg,#efd18a,#daa956);
+  color: #15392e;
+  box-shadow: inset 0 1px #fff8dd,0 6px 16px #533e211c;
+  min-height: 46px;
+  font-weight: 780;
+}
+.hm-editorial-site .novel-page .novel-primary-read:hover {
+  background: #f4d58c;
+  border-color: #b88836;
+}
+.hm-editorial-site .novel-page .detail-contents-link {
+  color: #0c624b;
+  min-height: 44px;
+  align-items: center;
+}
+.hm-editorial-site .novel-page .telegram-chapter-cta a {
+  color: #0a624b;
+}
+.hm-editorial-site .novel-page .serial-publication-stats > span {
+  border: 1px solid #e4d8c0;
+  background: #f8f2e4;
+  color: #294839;
+  border-radius: 999px;
+}
+.hm-editorial-site .novel-page .novel-facts {
+  border-color: #e3d8c4;
+  gap: 10px 16px;
+}
+.hm-editorial-site .novel-page .novel-facts > div { border-color: #e3d8c4; }
+.hm-editorial-site .novel-page .novel-facts dt { color: #667468; }
+.hm-editorial-site .novel-page .novel-facts dd { color: #1d4534; }
+.hm-editorial-site .novel-page .personal-rating {
+  border-color: #e5dac5;
+}
+.hm-editorial-site .novel-page .novel-detail-tags a,
+.hm-editorial-site .novel-page .work-categories a {
+  border: 1px solid #dfd4bf;
+  border-radius: 999px;
+  background: #fffaf0;
+  color: #31523e;
+}
+.hm-editorial-site .novel-page .synopsis-panel,
+.hm-editorial-site .novel-page .contents-section .chapter-list,
+.hm-editorial-site .novel-page .author-section,
+.hm-editorial-site .novel-page .glossary-section {
+  background: #fffdf6;
+  border-color: #e5d8c3;
+  border-radius: 17px;
+  box-shadow: 0 9px 27px #46372514;
+}
+.hm-editorial-site .novel-page .synopsis-panel h2,
+.hm-editorial-site .novel-page .section-heading h2 {
+  color: #174332;
+  font-family: 'Noto Serif Variable',Georgia,serif;
+  font-weight: 560;
+}
+.hm-editorial-site .novel-page .synopsis-panel .detail-description {
+  color: #36483b;
+  line-height: 1.88;
+}
+.hm-editorial-site .novel-page .novel-section-nav {
+  border-color: #dccdb2;
+  gap: 14px;
+}
+.hm-editorial-site .novel-page .novel-section-nav a {
+  color: #245b45;
+  font-weight: 720;
+  border-radius: 999px;
+  padding-inline: 14px;
+}
+.hm-editorial-site .novel-page .novel-section-nav a:hover {
+  color: #064d3c;
+  background: #f2ead9;
+}
+.hm-editorial-site .novel-page .contents-section .chapter-list { padding-block: 5px; }
+.hm-editorial-site .novel-page .chapter-list a:hover { background: #f5eedf; }
+.hm-editorial-site .novel-page .chapter-number { color: #966925; }
+.hm-editorial-site .novel-page .chapter-pages-footer .button {
+  border-radius: 999px;
+  border-color: #ddc9a5;
+}
+.hm-editorial-site .novel-page a:focus-visible,
+.hm-editorial-site .novel-page button:focus-visible {
+  outline: 3px solid #bd8c40;
+  outline-offset: 3px;
+}
+@media (max-width: 760px) {
+  .hm-editorial-site .v3-novel-nav,
+  .hm-editorial-site .novel-page { width: min(100% - 30px,1120px); }
+  .hm-editorial-site .novel-page { padding: 10px 0 55px; }
+  .hm-editorial-site .novel-page .novel-detail {
+    padding: 18px;
+    border-radius: 17px;
+  }
+  .hm-editorial-site .novel-page .novel-section-nav { gap: 4px; }
+  .hm-editorial-site .novel-page .novel-section-nav a { padding-inline: 9px; }
+}
+@media (max-width: 480px) {
+  .hm-editorial-site .v3-novel-nav,
+  .hm-editorial-site .novel-page { width: calc(100% - 24px); }
+  .hm-editorial-site .novel-page .novel-detail { padding: 15px; }
+  .hm-editorial-site .novel-page .novel-section-nav { justify-content: flex-start; }
+  .hm-editorial-site .novel-page .novel-section-nav a { font-size: .78rem; }
+  .hm-editorial-site .novel-page .synopsis-panel { padding: 19px 18px; }
+  .hm-editorial-site .novel-page .chapter-list time { font-size: .72rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hm-editorial-site .novel-page .novel-book-shell { transform: none; }
+}
