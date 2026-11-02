@@ -1,4 +1,4 @@
-# Hunmeng Novels · English edition · v0.6.1
+# Hunmeng Novels · English edition · v0.7.0
 
 Hunmeng is a static Astro + TypeScript web novel library with an English interface.
 
@@ -29,6 +29,7 @@ Structure longer posts with a short lead paragraph, `###` sections ("What's new"
 The notes below describe past releases and their settings. Addresses ending in `twc1.net`, references to `hunmeng.net`, and Timeweb deployment instructions are outdated and must not be used for the current website.
 
 - Genre and tag directories: `/genres/` and `/tags/`, with searchable groups, local book counts, and catalog links. The catalog supports all/any included tags plus exclusions. Vocabulary and reference notes: [docs/taxonomy.md](docs/taxonomy.md).
+- 0.7.0: improved Telegram chapter cards and read links, secret-safe notification diagnostics, protection against repeat/bulk announcements, and a staged private-chat reader assistant. The private assistant **requires separately configured Supabase guard tables, Cloudflare secrets, and an explicitly registered Telegram webhook** and is not enabled by merging or deploying this commit. The notification ledger, reader accounts, shelves, and progress remain unchanged by this release metadata.
 - 0.6.1: compact header with four navigation sections, quick title/author search and genre/tag links, a keyboard-accessible theme panel, and an avatar menu for sign-in, profile, reading settings and local sign-out. On mobile the brand/actions and navigation occupy two compact rows. Library, reading progress and preferences are preserved.
 - 0.6.0: refreshed discovery pages, larger covers, early reading actions and contents links, a persistent header appearance selector, useful genre/tag defaults, shareable directory searches, and catalog search that stays responsive while chapter counts refresh.
 - Validate: `node --test tests/*.test.mjs`, then `npm run build:demo` and `npm test` (Chromium required). Browser tests need the demo build; do not deploy it.
