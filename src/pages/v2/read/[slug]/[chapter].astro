@@ -1,0 +1,16 @@
+---
+import ReaderView from '../../../../components/ReaderView.astro';
+import { getLibrary } from '../../../../lib/content';
+
+// Preview only the chapters that are already published in Astro content.
+// Scheduled/remote chapter gates stay on the existing canonical reader routes.
+export async function getStaticPaths() {
+  return (await getLibrary()).flatMap(novel =>
+    novel.chapters.map((chapter, index) => ({
+      params: { slug: novel.slug, chapter: chapter.data.slug },
+      props: { novel, chapter, index },
+    })),
+  );
+}
+---
+<ReaderView {...Astro.props} preview />

@@ -6,10 +6,11 @@ import Icon from './Icon.astro';
 import { CHAPTERS_PER_PAGE, chapterListUrl } from '../lib/pagination';
 import { chapterReportUrl, chapterStructuredData, placeholderCover, socialCover } from '../lib/seo';
 import { site } from '../config/site';
+import '../styles/v2-reader.css';
 import type { CollectionEntry } from 'astro:content';
 import serials from '../data/serials';
-interface Props { novel: Novel; chapter?: CollectionEntry<'chapters'>; index: number; remoteNumber?: number; remoteTitle?: string }
-const { novel: n, chapter: localChapter, index, remoteNumber, remoteTitle } = Astro.props;
+interface Props { novel: Novel; chapter?: CollectionEntry<'chapters'>; index: number; remoteNumber?: number; remoteTitle?: string; preview?: boolean }
+const { novel: n, chapter: localChapter, index, remoteNumber, remoteTitle, preview = false } = Astro.props;
 const remote = remoteNumber !== undefined;
 const serial = serials.find(s => s.slug === n.slug);
 const c = localChapter ?? { data: { novelSlug: n.slug, slug: `chapter-${remoteNumber}`, number: remoteNumber!, title: remoteTitle!, description: `Read chapter ${remoteNumber} of ${n.title} when released.`, publishedAt: '' } };
@@ -21,6 +22,11 @@ const nearby = n.chapters.slice(Math.max(0, index - 10), Math.min(n.chapterCount
 const tocPage = Math.floor(index / CHAPTERS_PER_PAGE) + 1;
 const structuredData = localChapter ? chapterStructuredData(n, localChapter, Astro.site || site.url) : undefined;
 const reportHref = chapterReportUrl(site.reportUrl, n.slug, c.data.number);
+// V2 preview routes reuse real chapters and the same reader storage keys.
+// Only chapter-to-chapter links are scoped to the preview; novel and index URLs remain canonical.
+const readerChapterUrl = (chapterSlug: string) => preview
+  ? `/v2/read/${encodeURIComponent(n.slug)}/${encodeURIComponent(chapterSlug)}/`
+  : chapterUrl(n.slug, chapterSlug);
 const coverIsSvg = n.cover.endsWith('.svg');
 const usesPlaceholder = n.cover === placeholderCover;
 ---
@@ -33,8 +39,9 @@ const usesPlaceholder = n.cover === placeholderCover;
   ogImageHeight={coverIsSvg ? 760 : undefined}
   ogImageAlt={usesPlaceholder ? undefined : `Novel cover “${n.title}”`}
   structuredData={structuredData}
-  noindex={remote}
+  noindex={remote || preview}
   reader
+  bodyClass={preview ? 'v2-reader' : undefined}
 >
   <header class="reader-header reader-chrome">
     <a href={n.url} class="reader-back" aria-label="Back to novel" title="Back to novel">
@@ -60,6 +67,12 @@ const usesPlaceholder = n.cover === placeholderCover;
       </details>
     </div>
   </header>
+  {preview && (
+    <nav class="v2-reader-preview-bar" aria-label="Preview navigation">
+      <span class="v2-reader-preview-brand"><span aria-hidden="true">✦</span> Hunmeng 2.0 · Reader preview</span>
+      <span class="v2-reader-preview-links"><a href="/v2/">Reading room</a><a href="/v2/catalog/">Discover books</a><a href={chapterUrl(n.slug, c.data.slug)}>Original reader ↗</a></span>
+    </nav>
+  )}
   <div class="reading-progress">
     <progress
       id="reading-progress"
@@ -103,12 +116,12 @@ const usesPlaceholder = n.cover === placeholderCover;
     <p id="reader-reward-status" class="reader-reward-status" role="status" aria-live="polite" hidden></p>
     <nav class="chapter-end-nav" aria-label="Chapter navigation" hidden={remote} data-release-unlock>
       {prev ? (
-        <a class="button secondary chapter-previous" href={chapterUrl(n.slug, prev.data.slug)}>← Previous chapter</a>
+        <a class="button secondary chapter-previous" href={readerChapterUrl(prev.data.slug)}>← Previous chapter</a>
       ) : (
         <span class="button secondary chapter-unavailable" aria-disabled="true">← First chapter</span>
       )}
       {next ? (
-        <a class="button chapter-next" href={chapterUrl(n.slug, next.data.slug)}>Next chapter →</a>
+        <a class="button chapter-next" href={readerChapterUrl(next.data.slug)}>Next chapter →</a>
       ) : (
         <span class="button chapter-unavailable" aria-disabled="true">Last published chapter</span>
       )}
@@ -140,7 +153,7 @@ const usesPlaceholder = n.cover === placeholderCover;
     </span>
     <div class="toolbar-arrows">
       {prev ? (
-        <a href={chapterUrl(n.slug, prev.data.slug)} aria-label="Previous chapter">
+        <a href={readerChapterUrl(prev.data.slug)} aria-label="Previous chapter">
           ←
         </a>
       ) : (
@@ -149,7 +162,7 @@ const usesPlaceholder = n.cover === placeholderCover;
         </span>
       )}
       {next ? (
-        <a href={chapterUrl(n.slug, next.data.slug)} aria-label="Next chapter">
+        <a href={readerChapterUrl(next.data.slug)} aria-label="Next chapter">
           →
         </a>
       ) : (
@@ -260,7 +273,7 @@ const usesPlaceholder = n.cover === placeholderCover;
       {nearby.map((ch) => (
         <li>
           <a
-            href={chapterUrl(n.slug, ch.data.slug)}
+            href={readerChapterUrl(ch.data.slug)}
             aria-label={`Chapter ${ch.data.number}. ${ch.data.title}`}
             aria-current={ch.data.slug === c.data.slug ? 'page' : undefined}
           >

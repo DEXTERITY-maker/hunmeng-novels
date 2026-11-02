@@ -42,6 +42,16 @@ Status: **exploratory design prototype**, not a production release. The current 
 - Never infer release rights from external catalog listings; RLS and editorial checks remain authoritative.
 - Test light/dark/sepia, zoom, reduced motion, screen-reader landmarks, 320px layouts, chapter links, bookmarks, and local/cloud-progress conflicts.
 
+## Stage 3 pilot: isolated, shared-engine reader
+
+- Existing chapter pages `/novel/:slug/:chapter/` continue unchanged. A separate `/v2/read/:slug/:chapter/` route renders **already published local** chapter content only.
+- The V2 route uses the existing `ReaderView`, `initReader`, paragraph bookmarks, reading settings, current shelf/progress keys and the same reward guards. No schema migration or new API integration is introduced.
+- V2 chapter navigation stays in the preview for adjacent published chapters; links to the novel detail and original reader remain canonical.
+- Prototype pages are `noindex` and excluded from the sitemap. The existing `reader-page` and V1 class rules are unaffected.
+- V2 uses a scoped `body.v2-reader` visual layer. Styling must respect light/dark/sepia and must not override the reader's per-book font size, spacing or width preferences.
+- Scheduled remote chapters remain exclusively on existing guarded canonical routes. Do not generate V2 scheduled shells or bypass their release checks.
+- Verify actual chapter content, V2 next/previous navigation, cross-view local progress, settings, bookmarks, keyboard controls and 320px overflow in demo browser tests.
+
 ## Stage 4: staff/admin
 
 - Audit current admin tasks and simplify information architecture before changing authorization.
