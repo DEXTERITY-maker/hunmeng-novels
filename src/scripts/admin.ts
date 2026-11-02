@@ -33,8 +33,10 @@ export async function initAdmin() {
       document.getElementById(id)?.replaceChildren();
     // Never retain editorial counts on screen after staff authorization is lost.
     for (const counter of document.querySelectorAll<HTMLElement>('[data-v2-admin-stat]')) counter.textContent = '—';
-    if (queueVisibility) queueVisibility.textContent = 'Editorial access required.';
-    if (queueFilter) queueFilter.value = '';
+    const queueStatus = document.getElementById('v2-admin-queue-visible');
+    if (queueStatus) queueStatus.textContent = 'Editorial access required.';
+    const queueSelector = document.querySelector<HTMLSelectElement>('#v2-admin-queue-filter');
+    if (queueSelector) queueSelector.value = '';
     loginLink.hidden = false;
     message.textContent = text;
   };
