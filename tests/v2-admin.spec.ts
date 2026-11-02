@@ -75,6 +75,37 @@ test('V2 administrator sees the same authorized forms and navigates without writ
   await expect(page.locator('#admin-status')).toContainText('signed out');
 });
 
+test('V2 queue metrics show only fetched staff records and refresh without writes', async ({page}) => {
+  const mock = await mockAdmin(page, 'admin');
+  let sourceCount = 2;
+  await page.route('https://*.supabase.co/rest/v1/novel_sources?**', async route => {
+    const sources = [
+      {id:'src-1',slug:'licensed-novel',original_title:'Licensed novel',rights_status:'verified',
+        permission_translate:true,permission_publish:true,verified_at:'2026-11-01',
+        rights_evidence:'Rights holder has expressly authorized translation and publication.',rights_valid_until:null},
+      {id:'src-2',slug:'pending-novel',original_title:'Pending novel',rights_status:'pending',
+        permission_translate:false,permission_publish:false,verified_at:null,rights_evidence:null},
+    ];
+    await route.fulfill({json:sources.slice(0,sourceCount)});
+  });
+  await page.route('https://*.supabase.co/rest/v1/novel_terms?**', route => route.fulfill({json:[]}));
+  await page.route('https://*.supabase.co/rest/v1/novel_translation_jobs?**', route => route.fulfill({json:[
+    {id:'draft-1',source_id:'src-1',chapter_number:1,chapter_title:'First',chapter_slug:'chapter-1',status:'draft',updated_at:'2026-11-01',qa_notes:'',original_text:'',translated_text:'',chapter_description:''},
+    {id:'review-1',source_id:'src-1',chapter_number:2,chapter_title:'Second',chapter_slug:'chapter-2',status:'review',updated_at:'2026-11-01',qa_notes:'',original_text:'',translated_text:'',chapter_description:''},
+    {id:'approved-1',source_id:'src-1',chapter_number:3,chapter_title:'Third',chapter_slug:'chapter-3',status:'approved',updated_at:'2026-11-01',qa_notes:'',original_text:'',translated_text:'',chapter_description:''},
+  ]}));
+  await enter(page);
+  await expect(page.locator('[data-v2-admin-stat="sources"]')).toHaveText('2');
+  await expect(page.locator('[data-v2-admin-stat="verified"]')).toHaveText('1');
+  await expect(page.locator('[data-v2-admin-stat="draft"]')).toHaveText('1');
+  await expect(page.locator('[data-v2-admin-stat="review"]')).toHaveText('1');
+  await expect(page.locator('[data-v2-admin-stat="approved"]')).toHaveText('1');
+  sourceCount = 1;
+  await page.getByRole('button', {name:'Refresh queue'}).click();
+  await expect(page.locator('[data-v2-admin-stat="sources"]')).toHaveText('1');
+  expect(mock.requests.some(r => ['POST','PATCH','DELETE'].includes(r.method))).toBe(false);
+});
+
 test('V2 editor retains draft tools without gaining administrative permissions', async ({page}) => {
   await mockAdmin(page, 'editor');
   await enter(page);
