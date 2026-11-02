@@ -74,6 +74,18 @@ test('V2 reader has no horizontal overflow on narrow screens', async ({ page }) 
     await page.goto(preview);
     await expect(page.locator('#chapter-text p').first()).toBeVisible();
     await expect(page.locator('.v2-reader-preview-bar')).toBeVisible();
+    if (width <= 390) {
+      const bar = await page.locator('.v2-reader-preview-bar').boundingBox();
+      const heading = await page.locator('.reader-heading').boundingBox();
+      expect(bar).not.toBeNull();
+      expect(heading).not.toBeNull();
+      // The preview navigation must not push the chapter title far below the fold.
+      expect(heading!.y - (bar!.y + bar!.height), 'excess space above chapter at ' + width).toBeLessThan(70);
+      const typography = await page.locator('#chapter-text').evaluate(el => ({
+        hyphens: getComputedStyle(el).hyphens, align: getComputedStyle(el).textAlign,
+      }));
+      expect(typography).toEqual({hyphens:'manual',align:'left'});
+    }
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'width ' + width).toBe(true);
     for (const selector of ['.reader-heading', '.chapter-text', '.v2-reader-preview-bar']) {
       const rect = await page.locator(selector).first().boundingBox();
