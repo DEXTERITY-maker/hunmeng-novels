@@ -12,7 +12,7 @@ test('historical v0.1.0 release note and current package version are consistent'
   ]);
   const pkg = JSON.parse(pkgText);
   const lock = JSON.parse(lockText);
-  assert.equal(pkg.version, '0.6.1');
+  assert.equal(pkg.version, '0.7.0');
   assert.equal(lock.version, pkg.version);
   assert.equal(lock.packages[''].version, pkg.version);
   assert.match(note, /^---\ntitle: "Hunmeng v0\.1\.0 — a new chapter for the website"/);
