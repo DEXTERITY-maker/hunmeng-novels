@@ -55,3 +55,16 @@ export function createTelegramRequest({token, fetchImpl = fetch, sleep = ms => n
     return payload.result;
   };
 }
+
+
+/** Deliberately allowlisted one-off recovery; refuses any other chapter or ledger state. */
+export function selectManualRecovery(state, key) {
+  if (key !== 'dracula:1') throw new Error('Manual recovery target not allowed');
+  const reserved = reservedChapterKeys(state);
+  if (reserved.length !== 1 || reserved[0] !== key) throw new Error('Exactly one matching reserved chapter required');
+  const record = state.chapters[key];
+  if (record.status !== 'reserved' || record.slug !== 'chapter-1' ||
+      record.title !== 'Part 1' || record.novelTitle !== 'Dracula')
+    throw new Error('Reserved chapter metadata differs from approved recovery');
+  return {novelSlug:'dracula',number:1,slug:record.slug,title:record.title,novelTitle:record.novelTitle};
+}
