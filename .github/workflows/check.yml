@@ -132,7 +132,7 @@ jobs:
           npm run build
           test ! -e dist/novel/khranitel-mayaka
           test ! -e dist/novel/sad-zimy
-          grep -q 'class="v2-home"' dist/index.html
+          grep -Eq 'class="v2-home([[:space:]]|")' dist/index.html
           grep -q 'v2-catalog-page' dist/catalog/index.html
           test -e dist/v2/index.html
           ! grep -q '/v2/' dist/sitemap-0.xml
