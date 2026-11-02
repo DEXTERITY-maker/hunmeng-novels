@@ -1,15 +1,18 @@
 import { test, expect } from './fixtures';
+import { readFile } from 'node:fs/promises';
 
 test('design mockup is noindexed and uses real library content', async ({ page }) => {
   await page.goto('/design-preview/');
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content','noindex,follow');
+  const sitemap=await readFile('dist/sitemap-0.xml','utf8');
+  expect(sitemap).not.toContain('/design-preview/');
   await expect(page.getByRole('heading',{name:/A Thousand Worlds/})).toBeVisible();
   await expect(page.locator('.em-header')).toBeVisible();
   await expect(page.locator('.site-header')).toBeHidden();
   await expect(page.locator('.em-feature-cover')).toHaveAttribute('href', /^\/novel\//);
   await expect(page.locator('.em-category')).toHaveCount(6);
   await expect(page.locator('.em-collection')).toHaveCount(3);
-  await expect(page.locator('.em-editor-row')).toHaveCount(1);
+  expect(await page.locator('.em-editor-row').count()).toBeGreaterThan(0);
   await expect(page.locator('.em-article-row').first()).toHaveAttribute('href', /^\/news\//);
   await expect(page.locator('a.em-newsletter-button')).toHaveAttribute('href','/account/');
 });

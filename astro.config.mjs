@@ -26,7 +26,7 @@ export default defineConfig({
       const path = new URL(page).pathname;
       // Scheduled shells carry no article text and stay out of search results.
       const scheduled = /^\/novel\/the-latency-of-tomorrow\/chapter-(\d+)\/$/.exec(path);
-      return !['/404/', '/library/', '/account/'].includes(path) && !path.startsWith('/v2/') && !path.startsWith('/admin/') &&
+      return !['/404/', '/library/', '/account/', '/design-preview/'].includes(path) && !path.startsWith('/v2/') && !path.startsWith('/admin/') &&
         !path.endsWith('/releases/') && !(scheduled && Number(scheduled[1]) > 50);
     } }),
     ...(demoContent ? [demoAssets] : []),
