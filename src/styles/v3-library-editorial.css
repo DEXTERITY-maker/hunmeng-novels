@@ -49,7 +49,7 @@
   letter-spacing: -.05em;
   margin-block: 9px 13px;
 }
-.hm-editorial-site .library-page .library-hero-copy > p:last-child {
+.hm-editorial-site .library-page .library-hero.landscape-banner .library-hero-copy > p:last-child {
   color: #eaf0e5;
   font-size: .88rem;
   line-height: 1.75;
