@@ -32,6 +32,6 @@ test('native chapter importer and safe workflow are syntactically valid and gate
   assert.match(action, /npm test/);
   assert.match(action, /npm run build/);
   assert.match(action, /scripts\/validate-serials\.mjs/);
-  assert.match(action, /cloudflare\/wrangler-action@v4/);
+  assert.match(action, /cloudflare\/wrangler-action@953926a2e2182532811c01a25e53647d93bf07c0 # v4/);
   assert.doesNotMatch(action, /schedule:|cron:/);
 });

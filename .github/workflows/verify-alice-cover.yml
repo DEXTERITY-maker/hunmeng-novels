@@ -3,9 +3,14 @@ on:
   pull_request:
     paths:
       - 'scripts/sync-alice-historical-cover.mjs'
+      - 'scripts/verify-alice-cover-preview.mjs'
+      - 'public/images/covers/alices-adventures-in-wonderland-1865.jpg'
+      - 'src/content/novels/alices-adventures-in-wonderland.json'
+      - 'src/content/news/alice-historical-cover-2026-11-01.md'
       - '.github/workflows/publish-alice-historical-cover.yml'
       - '.github/workflows/verify-alice-cover.yml'
       - 'tests/alice-original-cover.test.mjs'
+      - 'tests/alice-cover-preview.test.mjs'
 
 permissions:
   contents: read
@@ -22,12 +27,12 @@ jobs:
           node-version: '24'
           cache: npm
       - run: npm ci
-      - run: node --test tests/alice-original-cover.test.mjs
-      - name: Fetch historical image and create local preview
-        run: node scripts/sync-alice-historical-cover.mjs
-      - name: Validate novel metadata and new image
+      - run: node --test tests/alice-original-cover.test.mjs tests/alice-cover-preview.test.mjs
+      - name: Verify committed historical cover and provenance
+        run: node scripts/verify-alice-cover-preview.mjs
+      - name: Validate the production build and cover page
         run: |
-          test -s public/images/covers/alices-adventures-in-wonderland-1865.jpg
           npm run build
           test -s dist/images/covers/alices-adventures-in-wonderland-1865.jpg
           grep -q 'alices-adventures-in-wonderland-1865.jpg' dist/novel/alices-adventures-in-wonderland/index.html
+          test -s dist/news/alice-historical-cover-2026-11-01/index.html
