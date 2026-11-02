@@ -63,7 +63,7 @@ const number = new Intl.NumberFormat('en-US');
                   <h2><a href={featured.url}>{featured.title}</a></h2>
                   <p class="v2-spotlight-author">by {featured.author}</p>
                   <p class="v2-spotlight-meta">{chapterCount(featured.chapterCount)}</p>
-                  <a class="v2-spotlight-link" href={featured.firstUrl}>Start reading <span aria-hidden="true">↗</span></a>
+                  <a class="v2-spotlight-link" href={`/v2/read/${encodeURIComponent(featured.slug)}/${encodeURIComponent(featured.chapters[0].data.slug)}/`}>Try the V2 reader <span aria-hidden="true">↗</span></a>
                 </div>
               </div>
             </article>

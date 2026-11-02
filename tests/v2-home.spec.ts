@@ -6,6 +6,7 @@ test('Hunmeng 2.0 preview is index-safe and powered by the published library', a
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex,follow');
   await expect(page.getByRole('heading', { name: /A thousand worlds/ })).toBeVisible();
   await expect(page.locator('.v2-spotlight-cover')).toHaveAttribute('href', /^\/novel\//);
+  await expect(page.getByRole('link', { name: /Try the V2 reader/ })).toHaveAttribute('href', /^\/v2\/read\/[^/]+\/[^/]+\/$/);
   await expect(page.locator('.v2-book')).toHaveCount(2);
   await expect(page.locator('.v2-book-cover').first()).toHaveAttribute('href', /^\/novel\//);
   await expect(page.locator('.v2-chapter-row').first()).toHaveAttribute('href', /^\/novel\//);
