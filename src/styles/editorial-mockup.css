@@ -7,7 +7,7 @@
 .editorial-mockup a { text-decoration:none; }
 .editorial-mockup :is(a,button,input):focus-visible { outline:3px solid #b78328; outline-offset:3px; }
 .em-frame { max-width:1180px; margin:auto; background:#fffaf1; box-shadow:0 0 80px #342c1712; overflow:hidden; }
-.em-preview-notice { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:12px clamp(18px,4vw,54px); font-size:.72rem; color:#3c6356; background:#f5e9cf; }
+.em-preview-notice { margin-top:18px; font-size:.65rem; color:#758278; }
 .em-preview-notice a { color:#07533f; font-weight:750; }
 .em-hero { position:relative; overflow:hidden; padding:clamp(24px,5vw,68px) clamp(18px,4.6vw,70px) 26px; background:radial-gradient(ellipse at 82% 16%,#d5a65e9c 0%,transparent 19%),linear-gradient(155deg,#0c5948,#003d33 60%,#062b2c); color:#fff8e8; isolation:isolate; }
 .em-hero-landscape { position:absolute; inset:0; z-index:-1; background:linear-gradient(180deg,#003b32b5,#003b3290),url('/images/art/hunmeng-landscape-night-1536.webp') center 35%/cover; opacity:.65; }
@@ -142,3 +142,39 @@
 }
 @media(max-width:360px) { .em-feature-body { grid-template-columns:35% minmax(0,1fr); gap:10px; }.em-feature-actions { flex-direction:column; align-items:flex-start; }.em-hero-pills { gap:4px; }.em-hero-pills a { padding:6px 7px; }.em-preview-notice { flex-wrap:wrap; } }
 @media(prefers-reduced-motion:no-preference) { .em-category,.em-collection { transition:transform .18s ease,box-shadow .18s ease; } }
+
+/* Preview header matches the approved mobile concept without modifying the live site's navigation. */
+.editorial-mockup-page > .site-header { display:none; }
+.editorial-mockup-page .em-header { background:#fffaf0; border-bottom:1px solid #e7dfcc; }
+.editorial-mockup-page .em-header-bar { display:flex; align-items:center; gap:16px; min-height:66px; padding:8px clamp(16px,4.6vw,60px); }
+.editorial-mockup-page .em-menu { position:relative; z-index:30; }
+.editorial-mockup-page .em-menu summary { list-style:none; display:grid; place-items:center; color:#254b40; font-size:1.35rem; width:44px; height:44px; border-radius:10px; cursor:pointer; }
+.editorial-mockup-page .em-menu summary::-webkit-details-marker { display:none; }
+.editorial-mockup-page .em-menu summary:hover { background:#eee8d8; }
+.editorial-mockup-page .em-menu-panel { position:absolute; left:0; top:calc(100% + 7px); width:min(280px,calc(100vw - 24px)); padding:9px; background:#fffcf4; border:1px solid #e3dcc9; border-radius:15px; box-shadow:0 15px 38px #18352c30; display:grid; gap:3px; }
+.editorial-mockup-page .em-menu:not([open]) .em-menu-panel { display:none; }
+.editorial-mockup-page .em-menu-panel a { padding:12px 14px; border-radius:9px; font-size:.82rem; color:#1c4535; }
+.editorial-mockup-page .em-menu-panel a:hover { background:#f0e9d9; }
+.editorial-mockup-page .em-wordmark { display:inline-flex; gap:8px; align-items:center; font:600 1.42rem/1 'Noto Serif Variable',Georgia,serif; letter-spacing:-.035em; color:#192f29; }
+.editorial-mockup-page .em-wordmark img { width:26px; height:26px; object-fit:contain; }
+.editorial-mockup-page .em-header-actions { margin-left:auto; display:flex; gap:8px; align-items:center; }
+.editorial-mockup-page .em-header-actions a { width:42px; height:42px; border-radius:50%; display:grid; place-items:center; color:#21493b; }
+.editorial-mockup-page .em-header-actions a:hover { background:#f0e9d9; }
+.editorial-mockup-page .em-header-actions .em-account-action { background:#f0e2d4; color:#543d86; }
+.editorial-mockup-page .em-header-tabs { display:flex; gap:clamp(10px,4vw,50px); align-items:center; justify-content:center; padding:0 clamp(12px,4vw,50px); overflow-x:auto; scrollbar-width:none; }
+.editorial-mockup-page .em-header-tabs::-webkit-scrollbar { display:none; }
+.editorial-mockup-page .em-header-tabs a { font-size:.79rem; font-weight:650; flex:none; color:#40584f; padding:9px 3px 12px; border-bottom:3px solid transparent; }
+.editorial-mockup-page .em-header-tabs a:hover { color:#07543e; }
+.editorial-mockup-page .em-header-tabs a[aria-current="page"] { color:#00533d; border-bottom-color:#d6a957; }
+.editorial-mockup-page .em-hero-landscape::after { content:''; position:absolute; pointer-events:none; left:-4%; top:-22%; width:310px; height:265px; background:url('/images/art/editorial-botanical-branch.svg') top left/contain no-repeat; opacity:.88; }
+.editorial-mockup-page .em-newsletter .em-bamboo { font-family:Georgia,serif; color:#efcb83; transform:rotate(-24deg); }
+@media(max-width:650px) {
+ .editorial-mockup-page .em-header-bar { min-height:55px; padding:4px 12px; gap:10px; }
+ .editorial-mockup-page .em-wordmark { font-size:1.17rem; }
+ .editorial-mockup-page .em-wordmark img { width:22px; height:22px; }
+ .editorial-mockup-page .em-header-actions { gap:1px; }
+ .editorial-mockup-page .em-header-actions a { width:38px; height:38px; }
+ .editorial-mockup-page .em-header-tabs { gap:clamp(18px,5vw,35px); justify-content:space-between; }
+ .editorial-mockup-page .em-header-tabs a { font-size:.68rem; padding:5px 1px 9px; }
+ .editorial-mockup-page .em-hero-landscape::after { width:176px; height:153px; top:-10%; left:-7%; }
+}

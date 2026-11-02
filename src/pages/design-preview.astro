@@ -25,7 +25,37 @@ const collections = [
 <Layout title="Hunmeng — Editorial design preview" description="A visual preview of the next Hunmeng reading room." noindex bodyClass="editorial-mockup-page">
   <main id="main" class="editorial-mockup">
     <div class="em-frame">
-      <div class="em-preview-notice"><span>✦ Design preview · inspired by the approved mobile mockup</span><a href="/">Current website ↗</a></div>
+    <header class="em-header">
+      <div class="em-header-bar">
+        <details class="em-menu">
+          <summary aria-label="Open site menu"><span aria-hidden="true">☰</span></summary>
+          <nav class="em-menu-panel" aria-label="Expanded site navigation">
+            <a href="/">Home</a><a href="/catalog/">Books</a><a href="/news/">Articles</a>
+            <a href="/library/">Collections & my library</a><a href="/about/">About</a>
+            <a href="/account/">Account</a>
+          </nav>
+        </details>
+        <a class="em-wordmark" href="/" aria-label="Hunmeng home">
+          <img src="/images/hunmeng-emblem.png" width="27" height="27" alt="" />
+          <span>Hunmeng</span>
+        </a>
+        <div class="em-header-actions">
+          <a href="/catalog/" aria-label="Search the catalog" title="Search">
+            <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="10.5" cy="10.5" r="6.8"/><path d="m15.5 15.5 5.3 5.3"/></svg>
+          </a>
+          <a class="em-account-action" href="/account/" aria-label="My account" title="My account">
+            <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="3.3"/><path d="M5.5 20c.4-4.3 2.5-6.3 6.5-6.3s6.1 2 6.5 6.3"/></svg>
+          </a>
+        </div>
+      </div>
+      <nav class="em-header-tabs" aria-label="Editorial preview navigation">
+        <a href="/design-preview/" aria-current="page">Home</a>
+        <a href="/catalog/">Books</a>
+        <a href="/news/">Articles</a>
+        <a href="/library/">Collections</a>
+        <a href="/about/">About</a>
+      </nav>
+    </header>
       <section class="em-hero" aria-labelledby="em-hero-title">
         <div class="em-hero-landscape" aria-hidden="true"></div>
         <div class="em-hero-copy">
@@ -104,7 +134,7 @@ const collections = [
         </section>
         <section class="em-newsletter" aria-labelledby="em-newsletter-title"><div><p class="em-eyebrow">STAY INSPIRED</p><h2 id="em-newsletter-title">Your next story<br/>is waiting.</h2><p>Find new releases, timeless reads and quiet moments in your personal library.</p><a href="/account/" class="em-newsletter-button">Join Hunmeng →</a></div><span class="em-bamboo" aria-hidden="true">❧</span></section>
       </div>
-      <footer class="em-footer"><a href="/" class="em-footer-logo">✦ Hunmeng</a><p>A thoughtful digital reading home, connecting timeless stories, ideas, and people.</p><div class="em-footer-columns"><nav aria-label="Browse"><strong>Browse</strong><a href="/catalog/">Books</a><a href="/updates/">Latest chapters</a><a href="/genres/">Categories</a></nav><nav aria-label="Resources"><strong>Resources</strong><a href="/library/">My library</a><a href="/authors/">Authors</a><a href="/news/">News</a></nav><nav aria-label="About"><strong>About</strong><a href="/about/">Our story</a><a href="/contacts/">Contact</a><a href="/rules/">Terms & privacy</a></nav></div><p class="em-copyright">© 2026 Hunmeng. All rights reserved.</p></footer>
+      <footer class="em-footer"><a href="/" class="em-footer-logo">✦ Hunmeng</a><p>A thoughtful digital reading home, connecting timeless stories, ideas, and people.</p><div class="em-footer-columns"><nav aria-label="Browse"><strong>Browse</strong><a href="/catalog/">Books</a><a href="/updates/">Latest chapters</a><a href="/genres/">Categories</a></nav><nav aria-label="Resources"><strong>Resources</strong><a href="/library/">My library</a><a href="/authors/">Authors</a><a href="/news/">News</a></nav><nav aria-label="About"><strong>About</strong><a href="/about/">Our story</a><a href="/contacts/">Contact</a><a href="/rules/">Terms & privacy</a></nav></div><p class="em-copyright">© 2026 Hunmeng. All rights reserved.</p><p class="em-preview-notice">Design preview · <a href="/">Return to the live site ↗</a></p></footer>
     </div>
   </main>
 </Layout>
