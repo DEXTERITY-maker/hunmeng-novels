@@ -11,8 +11,11 @@ body.v2-reader {
   outline-offset: 3px;
 }
 .v2-reader .v2-reader-preview-bar {
+  /* The existing reader header is fixed at y=0 with z-index:20.
+     Keep preview links below it and clickable, including after chapter navigation. */
   position: relative;
-  z-index: 5;
+  z-index: 21;
+  margin-top: 65px;
   display: flex;
   align-items: center;
   flex-wrap: wrap;
@@ -138,7 +141,7 @@ body.v2-reader {
 }
 .v2-reader.reader-focus-mode .reader-heading.reader-heading-with-art::before { display: none; }
 @media(max-width: 720px) {
-  .v2-reader .v2-reader-preview-bar { padding: 10px 16px; font-size: .63rem; }
+  .v2-reader .v2-reader-preview-bar { margin-top: 61px; padding: 10px 16px; font-size: .63rem; }
   .v2-reader .v2-reader-preview-links { gap: 7px 14px; }
   .v2-reader .reader-main > .reader-heading { margin: 17px auto 32px; padding: 30px 20px; border-radius: 13px; }
   .v2-reader .reader-heading h1 { font-size: clamp(1.7rem, 6vw, 2.5rem); }
