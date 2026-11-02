@@ -10,6 +10,8 @@ test('artless demo novel remains a readable library row with a genuine shelf con
   });
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/library/');
+  await expect(page.locator('body')).not.toHaveClass(/hm-editorial-site/);
+  await expect(page.locator('.v3-library-nav')).toHaveCount(0);
   const row = page.locator('.library-novel-row');
   await expect(row).toHaveCount(1);
   await expect(row).not.toHaveAttribute('data-art', /.+/);
