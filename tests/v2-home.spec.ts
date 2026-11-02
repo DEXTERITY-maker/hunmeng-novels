@@ -89,6 +89,19 @@ test('editorial art direction keeps all major sections inside mobile and desktop
     if (width === 390) {
       const heroArt = await page.locator('.v2-hero').evaluate(el => getComputedStyle(el).backgroundImage);
       expect(heroArt).toContain('hero-mountains-mobile.svg');
+      const readability = await page.evaluate(() => {
+        const px = (selector: string) => Number.parseFloat(getComputedStyle(document.querySelector(selector)!).fontSize);
+        return {
+          category: px('.v3-category-description strong'),
+          collection: px('.v3-collection-card strong'),
+          article: px('.v2-news-item h3'),
+          excerpt: px('.v2-news-excerpt'),
+        };
+      });
+      expect(readability.category).toBeGreaterThanOrEqual(14);
+      expect(readability.collection).toBeGreaterThanOrEqual(12);
+      expect(readability.article).toBeGreaterThanOrEqual(14);
+      expect(readability.excerpt).toBeGreaterThanOrEqual(11);
     }
     if (width === 390 || width === 1280) {
       await page.screenshot({path:testInfo.outputPath('hunmeng-editorial-home-' + width + '.png'), fullPage:true, animations:'disabled'});

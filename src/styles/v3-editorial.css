@@ -580,3 +580,20 @@ html[data-theme="dark"] body.hm-editorial-site {background:#172923;}
   .hm-editorial-site .site-footer .footer-link-group a { min-height:31px; font-size:.66rem; line-height:1.35; overflow-wrap:anywhere; }
   .hm-editorial-site .v3-footer-socials { margin-top:20px; }
 }
+
+/* Legibility pass: the approved illustration uses small metadata but real
+   phone rendering must keep titles and descriptions readable at 320–390px. */
+@media(max-width:630px) {
+ .v3-art-direction .v3-category-description small { font-size:.7rem; }
+ .v3-art-direction .v3-category-description strong { font-size:.9rem; }
+ .v3-art-direction .v3-collection-card strong { font-size:.8rem; line-height:1.35; }
+ .v3-art-direction .v3-collection-card small { font-size:.69rem; line-height:1.4; }
+ .v3-art-direction .v2-book h3 { font-size:.9rem; }
+ .v3-art-direction .v2-book-genre,
+ .v3-art-direction .v2-book-byline,
+ .v3-art-direction .v2-book-count { font-size:.68rem; }
+ .v3-art-direction .v2-news-item h3 { font-size:.88rem; }
+ .v3-art-direction .v2-news-excerpt { font-size:.7rem; }
+ .v3-art-direction .v2-news-item .v3-article-copy > p:first-child { font-size:.61rem; }
+ .v3-art-direction .v3-depth-card small { font-size:.73rem; }
+}
