@@ -185,7 +185,7 @@
   .hm-editorial-site .v3-library-nav,
   .hm-editorial-site .library-page { width: min(100% - 30px,1120px); }
   .hm-editorial-site .library-page { padding: 8px 0 60px; }
-  .hm-editorial-site .library-page .library-hero {
+  .hm-editorial-site .library-page .library-hero.landscape-banner {
     min-height: 215px;
     padding: 28px 23px;
     border-radius: 16px 16px 21px 21px;
@@ -199,7 +199,7 @@
 @media (max-width: 390px) {
   .hm-editorial-site .v3-library-nav,
   .hm-editorial-site .library-page { width: calc(100% - 24px); }
-  .hm-editorial-site .library-page .library-hero { padding: 26px 20px; }
+  .hm-editorial-site .library-page .library-hero.landscape-banner { padding: 26px 20px; }
   .hm-editorial-site .library-page .shelf-tab { min-height: 86px; padding: 12px; }
   .hm-editorial-site .library-page .library-novel-row { padding: 12px; }
 }
