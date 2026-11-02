@@ -2,9 +2,9 @@
 import Layout from '../layouts/Layout.astro';
 import '../styles/v3-editorial.css';
 import '../styles/v3-information-editorial.css';
-const editorial = import.meta.env.HUNMENG_V2_PUBLIC === '1';
 import { site } from '../config/site';
 import { contactChannels } from '../lib/contacts';
+const editorial = import.meta.env.HUNMENG_V2_PUBLIC === '1';
 const channels = contactChannels(site.contacts);
 const reportChannels = channels.filter(channel => channel.label !== 'Telegram channel');
 ---
