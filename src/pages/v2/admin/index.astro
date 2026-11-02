@@ -1,0 +1,241 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import '../../../styles/v2-admin.css';
+import { originalStatusLabels, translationStatusLabels, termTypeLabels } from '../../../lib/labels';
+import { getLibrary } from '../../../lib/content';
+import { getTaxonomy } from '../../../lib/taxonomy';
+const taxonomy = getTaxonomy(await getLibrary());
+---
+<Layout title="Hunmeng 2.0 — Editorial workspace preview" noindex description="A private preview of the existing Hunmeng editorial workflow. Requires existing staff permissions.">
+  <main id="main" class="page-shell admin-page v2-admin-page">
+    <div class="v2-admin-preview">
+      <span><span aria-hidden="true">✦</span> Hunmeng 2.0 · Editorial preview</span>
+      <a href="/admin/">Return to the original dashboard ↗</a>
+    </div>
+    <header class="v2-admin-hero" aria-labelledby="v2-admin-title">
+      <div>
+        <p class="v2-admin-overline">HUNMENG · EDITORIAL OFFICE</p>
+        <h1 id="v2-admin-title">A clearer way to <em>publish stories.</em></h1>
+        <p>Manage licensed sources, translation drafts, terminology, human reviews, and publication readiness — with existing staff authorization.</p>
+      </div>
+      <div class="v2-admin-hero-caption" aria-label="Editorial safety principle">
+        <span aria-hidden="true">✦</span>
+        <strong>Permissions first.</strong>
+        <small>Every sensitive action is still checked by the server.</small>
+      </div>
+    </header>
+    <p id="admin-status" role="status" class="notice">Checking editorial access…</p>
+    <div class="admin-auth-actions">
+      <a id="admin-login-link" class="button" href="/admin/login/">Editorial sign-in</a>
+      <button id="admin-signout" class="button secondary" type="button" hidden>Sign out of editorial tools</button>
+    </div>
+    <noscript><p class="notice">Enable JavaScript to sign in and use editorial tools.</p></noscript>
+    <div id="admin-workspace" hidden>
+      <div class="v2-admin-summary" aria-label="Editorial workflow overview">
+        <div><span>01</span><strong>Verify rights</strong><small>Confirm source permissions</small></div>
+        <div><span>02</span><strong>Prepare chapters</strong><small>Draft and organize translations</small></div>
+        <div><span>03</span><strong>Review work</strong><small>Human editorial checks</small></div>
+        <div><span>04</span><strong>Approve release</strong><small>Administrator decision</small></div>
+      </div>
+      <section class="v2-admin-live" aria-labelledby="v2-admin-live-title">
+        <div class="v2-admin-live-heading">
+          <div>
+            <p class="v2-admin-overline">LIVE EDITORIAL SNAPSHOT</p>
+            <h2 id="v2-admin-live-title">Your current queue</h2>
+          </div>
+          <p class="v2-admin-live-note">Loaded from your authorized editorial workspace. Draft and review counts cover the 100 most recent jobs, not the entire history.</p>
+        </div>
+        <dl class="v2-admin-counters" aria-live="polite" aria-atomic="true">
+          <div><dt>Sources visible</dt><dd data-v2-admin-stat="sources">—</dd></div>
+          <div><dt>Rights verified</dt><dd data-v2-admin-stat="verified">—</dd></div>
+          <div><dt>Draft chapters</dt><dd data-v2-admin-stat="draft">—</dd></div>
+          <div><dt>Awaiting review</dt><dd data-v2-admin-stat="review">—</dd></div>
+          <div><dt>Approved chapters</dt><dd data-v2-admin-stat="approved">—</dd></div>
+        </dl>
+      </section>
+      <div class="v2-admin-layout">
+        <nav class="v2-admin-nav" aria-label="Editorial workspace sections">
+          <div class="v2-admin-nav-heading">
+            <span class="v2-admin-nav-kicker">YOUR WORKSPACE</span>
+            <h2>Editorial tools</h2>
+            <p>Choose a task below. All actions use the existing editorial system.</p>
+          </div>
+          <a href="#admin-sources-section"><span>01</span> Sources and rights</a>
+          <a href="#v2-admin-glossary"><span>02</span> Glossary</a>
+          <a href="#v2-admin-chapter"><span>03</span> Chapter drafts</a>
+          <a href="#v2-admin-import"><span>04</span> Licensed import</a>
+          <a href="#v2-admin-queue"><span>05</span> Review and publication</a>
+          <div class="v2-admin-nav-help">
+            <strong>Need an editorial workflow?</strong>
+            <a href="/studio/">Private writing studio ↗</a>
+            <a href="/admin/">Original dashboard ↗</a>
+          </div>
+        </nav>
+        <div class="admin-grid">
+        <section class="admin-card" id="admin-sources-section">
+          <h2>1. Sources and permissions</h2>
+          <p class="fine"><strong>DaoSearch research (editors):</strong> <a href="https://github.com/DEXTERITY-maker/hunmeng-novels/actions/workflows/daosearch-lookup.yml" target="_blank" rel="noopener noreferrer">Look up Chinese web novels and check duplicates ↗</a>. Searches work by title, author or official source URL. Results are private research notes, not published novels. The external service requires a DaoSearch API key stored as a GitHub Actions secret; all chapter imports still require verified publication rights. <a href="https://daosearch.io/developers" target="_blank" rel="noopener noreferrer">API documentation ↗</a></p>
+          <form id="source-form">
+            <label>URL slug (Latin letters)
+              <input name="slug" required pattern="[a-z0-9]+(-[a-z0-9]+)*" placeholder="my-novel" />
+            </label>
+            <label>Original title
+              <input name="original_title" required maxlength="250" />
+            </label>
+            <label>English title
+              <input name="title_ru" required maxlength="250" />
+            </label>
+            <label>English description (at least 20 characters)
+              <textarea name="description_ru" rows="4" required minlength="20"></textarea>
+            </label>
+            <label>Author
+              <input name="author_name" maxlength="150" />
+            </label>
+            <label>Genres, separated by commas
+              <input name="genres" value="Fantasy" list="genre-suggestions" required />
+            </label>
+            <label>Tags, separated by commas
+              <input name="tags" placeholder="Transmigration, Cultivation" list="tag-suggestions" />
+            </label>
+            <datalist id="genre-suggestions">{taxonomy.genres.map(term => <option value={term.label} />)}</datalist>
+            <datalist id="tag-suggestions">{taxonomy.tags.map(term => <option value={term.label} />)}</datalist>
+            <p class="fine">Use consistent labels from <a href="/genres/" target="_blank" rel="noopener">Genres</a> and <a href="/tags/" target="_blank" rel="noopener">Tags</a>. Enter multiple labels separated by commas.</p>
+            <label>Original status
+              <select name="original_status">
+                {Object.entries(originalStatusLabels).map(([value, label]) => <option value={value}>{label}</option>)}
+              </select>
+            </label>
+            <label>Translation status
+              <select name="translation_status">
+                {Object.entries(translationStatusLabels).map(([value, label]) => <option value={value}>{label}</option>)}
+              </select>
+            </label>
+            <label>Source URL (HTTPS)
+              <input name="original_url" type="url" required placeholder="https://..." />
+            </label>
+            <button class="button" type="submit">Create source</button>
+          </form>
+          <p class="fine">Permissions are checked separately. Adding a source link does not grant permission to translate it.</p>
+          <div id="admin-source-list"></div>
+          <form id="rights-form">
+            <h3>Verify or revoke permissions (administrators only)</h3>
+            <label>Original <select name="source_id" required></select></label>
+            <label>Status
+              <select name="rights_status">
+                <option value="pending">Awaiting verification</option>
+                <option value="verified">Permission verified</option>
+                <option value="expired">Expired</option>
+                <option value="revoked">Revoked</option>
+              </select>
+            </label>
+            <label>Permission document, link, or rights holder details
+              <textarea name="rights_evidence" rows="3" placeholder="At least 20 characters to verify permissions"></textarea>
+            </label>
+            <label>Valid until (optional)
+              <input name="rights_valid_until" type="date" />
+            </label>
+            <label class="admin-check"><input type="checkbox" name="permission_translate" />Translation permitted</label>
+            <label class="admin-check"><input type="checkbox" name="permission_publish" />Publication permitted</label>
+            <button class="button secondary" type="submit">Save permissions</button>
+          </form>
+        </section>
+        <section class="admin-card" id="v2-admin-glossary">
+          <h2>2. Glossary</h2>
+          <form id="term-form">
+            <label>Original <select name="source_id" required></select></label>
+            <label>Original term <input name="original_term" required maxlength="200" /></label>
+            <label>Approved translation <input name="translated_term" required maxlength="200" /></label>
+            <label>Term type
+              <select name="term_type">
+                {Object.entries(termTypeLabels).map(([value, label]) => <option value={value}>{label}</option>)}
+              </select>
+            </label>
+            <label>Note <input name="note" maxlength="300" /></label>
+            <button class="button" type="submit">Add term</button>
+          </form>
+          <div id="admin-term-list"></div>
+        </section>
+        <section class="admin-card admin-wide" id="v2-admin-chapter">
+          <h2>3. Prepare a chapter translation</h2>
+          <form id="job-form">
+            <div class="admin-row">
+              <label>Original <select name="source_id" required></select></label>
+              <label>Chapter number <input name="chapter_number" type="number" min="1" required /></label>
+            </div>
+            <div class="admin-row">
+              <label>Chapter URL slug <input name="chapter_slug" required placeholder="glava-1" pattern="[a-z0-9]+(-[a-z0-9]+)*" /></label>
+              <label>Chapter title <input name="chapter_title" required maxlength="200" /></label>
+            </div>
+            <label>Short description (10–200 characters)
+              <textarea name="chapter_description" rows="2" minlength="10" maxlength="200"></textarea>
+            </label>
+            <label>Source text <textarea name="original_text" rows="8"></textarea></label>
+            <label>Translation draft (Markdown) <textarea name="translated_text" rows="12"></textarea></label>
+            <div class="admin-actions">
+              <button class="button secondary" type="submit" data-job-status="save">Save draft</button>
+              <button class="button" type="submit" data-job-status="review">Send for review</button>
+              <button class="button secondary" type="submit" data-job-status="draft" hidden>Return to draft</button>
+            </div>
+          </form>
+          <p class="fine">Drafts are never published automatically. Machine translations from n8n or another service must be reviewed by an editor.</p>
+        </section>
+        <section class="admin-card admin-wide" id="v2-admin-import" aria-labelledby="licensed-import-title">
+          <h2 id="licensed-import-title">4. Import authorized chapters</h2>
+          <p>Paste a JSON batch of 1–10 chapters from a manuscript you are authorized to translate and publish. The text is saved privately as drafts; it is never fetched automatically from an external website or published at import.</p>
+          <p class="notice">Only sources with documented, verified permission for both translation and publication are accepted. External-source links alone are not permission.</p>
+          <form id="chapter-batch-form">
+            <label>Licensed source
+              <select name="source_id" required></select>
+            </label>
+            <label>Chapter batch (JSON)
+              <textarea name="batch" rows="11" required spellcheck="false" placeholder='{"chapters":[{"chapter_number":1,"chapter_slug":"chapter-1","chapter_title":"Chapter 1","chapter_description":"An opening chapter summary.","original_text":"Original authorized manuscript text (at least 80 characters).","translated_text":""}]}'></textarea>
+            </label>
+            <label class="admin-check">
+              <input type="checkbox" name="confirm_license" required />
+              I confirm that this manuscript is supplied with documented translation and republication permission.
+            </label>
+            <div class="admin-actions">
+              <button type="button" class="button secondary" id="chapter-batch-preview">Validate batch</button>
+              <button type="submit" class="button">Import as private drafts</button>
+            </div>
+            <p class="fine" id="chapter-batch-status" role="status" aria-live="polite">No batch loaded.</p>
+          </form>
+          <p class="fine">A staff editor can fill translations individually. Machine translation can be prepared separately in the protected, opt-in editorial workflow. Every chapter still needs human review and an administrator's approval.</p>
+        </section>
+        <section class="admin-card admin-wide" id="v2-admin-queue">
+          <h2>5. Review and publication queue</h2>
+          <p>Approval requires documented permissions, the source text, a translation, a description, a glossary, and notes from a human reviewer.</p>
+          <div class="v2-admin-queue-controls">
+            <label for="v2-admin-queue-filter">Show jobs
+              <select id="v2-admin-queue-filter">
+                <option value="">All recent jobs</option>
+                <option value="draft">Drafts</option>
+                <option value="review">Awaiting review</option>
+                <option value="approved">Approved</option>
+                <option value="published">Published</option>
+              </select>
+            </label>
+            <button id="admin-refresh" class="button secondary" type="button">Refresh queue</button>
+          </div>
+          <p id="v2-admin-queue-visible" role="status" aria-live="polite" class="fine">Load your editorial queue to see jobs.</p>
+          <div id="admin-job-list"></div>
+        </section>
+        <section id="admin-reader-reviews" class="admin-card admin-wide" hidden>
+          <h2>5. Reader review moderation</h2>
+          <p>Only verified administrator approval publishes reviews and counts toward the Reviewer title. Rejecting an approved review revokes that credit.</p>
+          <p id="admin-reader-reviews-status" class="fine" role="status"></p>
+          <button type="button" id="admin-reader-reviews-refresh" class="button secondary">Refresh reader reviews</button>
+          <div id="admin-reader-reviews-list" class="admin-reader-reviews-list"></div>
+        </section>
+        </div>
+      </div>
+    </div>
+    <p class="fine admin-help">A database administrator assigns editorial roles. The interface does not grant permissions: PostgreSQL RLS policies and server constraints check every action.</p>
+  </main>
+  <script>
+    import { initAdmin } from '../../../scripts/admin';
+    import { initAdminReviews } from '../../../scripts/admin-reviews';
+    void initAdmin();
+    void initAdminReviews().catch(() => {});
+  </script>
+</Layout>

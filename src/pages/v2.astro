@@ -1,0 +1,172 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { getLibrary, chapterCount, dateLabel } from '../lib/content';
+import { getLatestChapters } from '../lib/updates';
+import { getNews, newsUrl } from '../lib/news';
+import { unpublishedExternalEntries } from '../lib/external-catalog';
+import '../styles/v2-home.css';
+
+// Hunmeng 2.0 is a read-only design pilot: production sources and URLs remain canonical.
+const novels = await getLibrary();
+const featured = novels[0];
+const selection = [...novels]
+  .sort((a, b) => (b.addedAt ?? b.updatedAt).localeCompare(a.addedAt ?? a.updatedAt))
+  .slice(0, 6);
+const latestChapters = getLatestChapters(novels).slice(0, 4);
+const latestNews = (await getNews()).slice(0, 3);
+const external = unpublishedExternalEntries(novels.map(n => n.slug)).slice(0, 2);
+const genres = [...new Set(novels.flatMap(n => n.genres))].slice(0, 6);
+const chapterTotal = novels.reduce((count, novel) => count + novel.chapterCount, 0);
+const number = new Intl.NumberFormat('en-US');
+---
+
+<Layout
+  title="Hunmeng 2.0 — Reading room preview"
+  description="A preview of the next Hunmeng reading experience. Discover books, follow chapters, and browse the real library."
+  noindex
+>
+  <main id="main" class="v2-home">
+    <div class="v2-shell">
+      <div class="v2-preview-bar">
+        <span class="v2-preview-label"><span class="v2-preview-dot" aria-hidden="true"></span> Hunmeng 2.0 · Design preview</span>
+        <a href="/">Return to the current website <span aria-hidden="true">↗</span></a>
+      </div>
+
+      <section class="v2-hero" aria-labelledby="v2-hero-title">
+        <div class="v2-hero-copy">
+          <p class="v2-kicker">THE HUNMENG READING ROOM <span aria-hidden="true">✦</span></p>
+          <h1 id="v2-hero-title">A thousand worlds.<br /><em>One quiet place.</em></h1>
+          <p class="v2-lead">Find a story that stays with you. Explore timeless classics, follow new chapters, and make room for a little wonder.</p>
+          <form class="v2-search" role="search" action="/v2/catalog/" method="get">
+            <label class="v2-visually-hidden" for="v2-search-input">Search by title or author</label>
+            <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="10.8" cy="10.8" r="7.2"/><path d="m16 16 5 5"/></svg>
+            <input id="v2-search-input" name="search" type="search" placeholder="Search stories or authors" autocomplete="off" required />
+            <button type="submit">Find a story <span aria-hidden="true">↗</span></button>
+          </form>
+          <div class="v2-hero-foot">
+            <span><strong>{number.format(novels.length)}</strong> published books</span>
+            <span class="v2-foot-divider" aria-hidden="true"></span>
+            <span><strong>{number.format(chapterTotal)}</strong> chapters to explore</span>
+          </div>
+        </div>
+        <div class="v2-hero-visual">
+          <div class="v2-hero-art" aria-hidden="true"></div>
+          {featured ? (
+            <article class="v2-spotlight" aria-label="Featured reading">
+              <div class="v2-spotlight-heading"><span class="v2-spotlight-mark">✦</span><span>EDITOR'S SHELF</span><span class="v2-spotlight-index">01 / {number.format(novels.length)}</span></div>
+              <div class="v2-spotlight-body">
+                <a href={featured.url} class="v2-spotlight-cover" aria-label={'Explore ' + featured.title}>
+                  <img src={featured.cover} alt="" width="230" height="335" loading="eager" fetchpriority="high" />
+                </a>
+                <div class="v2-spotlight-details">
+                  <p class="v2-spotlight-genre">{featured.genres.slice(0, 2).join(' · ')}</p>
+                  <h2><a href={featured.url}>{featured.title}</a></h2>
+                  <p class="v2-spotlight-author">by {featured.author}</p>
+                  <p class="v2-spotlight-meta">{chapterCount(featured.chapterCount)}</p>
+                  <a class="v2-spotlight-link" href={`/v2/read/${encodeURIComponent(featured.slug)}/${encodeURIComponent(featured.chapters[0].data.slug)}/`}>Try the V2 reader <span aria-hidden="true">↗</span></a>
+                </div>
+              </div>
+            </article>
+          ) : (
+            <div class="v2-spotlight v2-spotlight-empty">
+              <span aria-hidden="true">✦</span>
+              <strong>Good stories take time.</strong>
+              <p>New books will be featured here when they are published.</p>
+              <a href="/v2/catalog/">Explore the catalog <span aria-hidden="true">↗</span></a>
+            </div>
+          )}
+        </div>
+      </section>
+
+      <nav class="v2-discover" aria-label="Explore the reading room">
+        <a href="/v2/catalog/"><span class="v2-discover-symbol" aria-hidden="true">◈</span><span><strong>Browse the library</strong><small>All published books</small></span><span aria-hidden="true">↗</span></a>
+        <a href="/genres/"><span class="v2-discover-symbol" aria-hidden="true">✧</span><span><strong>Explore genres</strong><small>Find your next world</small></span><span aria-hidden="true">↗</span></a>
+        <a href="/updates/"><span class="v2-discover-symbol" aria-hidden="true">◷</span><span><strong>Latest chapters</strong><small>Pick up a new chapter</small></span><span aria-hidden="true">↗</span></a>
+      </nav>
+
+      <section class="v2-section" aria-labelledby="v2-shelf-title">
+        <div class="v2-section-header">
+          <div><p class="v2-section-eyebrow">DISCOVER SOMETHING NEW</p><h2 id="v2-shelf-title">A shelf for <em>every reader.</em></h2></div>
+          <a class="v2-text-link" href="/v2/catalog/">View all novels <span aria-hidden="true">↗</span></a>
+        </div>
+        {genres.length > 0 && (
+          <nav class="v2-genre-strip" aria-label="Popular genres">
+            <a class="v2-genre-all" href="/genres/">Genres <span aria-hidden="true">↗</span></a>
+            {genres.map(genre => <a href={'/v2/catalog/?genre=' + encodeURIComponent(genre)}>{genre}</a>)}
+          </nav>
+        )}
+        {selection.length ? (
+          <div class="v2-book-grid">
+            {selection.map((novel, index) => (
+              <article class="v2-book">
+                <a class="v2-book-cover" href={novel.url} aria-label={'View ' + novel.title}>
+                  <img src={novel.cover} alt="" width="240" height="350" loading="lazy" decoding="async" />
+                  <span class="v2-book-number">{String(index + 1).padStart(2, '0')}</span>
+                </a>
+                <p class="v2-book-genre">{novel.genres.slice(0, 2).join(' · ')}</p>
+                <h3><a href={novel.url}>{novel.title}</a></h3>
+                <p class="v2-book-byline">{novel.author}</p>
+                <p class="v2-book-count">{chapterCount(novel.chapterCount)}</p>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <div class="v2-empty-state"><strong>The next great read is on its way.</strong><p>Published books will appear here as soon as they are available.</p><a href="/news/">Read library news →</a></div>
+        )}
+      </section>
+
+      <div class="v2-editorial-grid">
+        <section class="v2-section v2-updates" aria-labelledby="v2-updates-title">
+          <div class="v2-section-header">
+            <div><p class="v2-section-eyebrow">FRESH FROM THE LIBRARY</p><h2 id="v2-updates-title">New chapters</h2></div>
+            <a class="v2-text-link" href="/updates/">All updates <span aria-hidden="true">↗</span></a>
+          </div>
+          {latestChapters.length ? (
+            <ol class="v2-chapter-list">
+              {latestChapters.map(chapter => (
+                <li><a href={chapter.url} class="v2-chapter-row">
+                  <span class="v2-chapter-thumbnail"><img src={chapter.cover} alt="" loading="lazy" width="58" height="80" decoding="async" /></span>
+                  <span class="v2-chapter-copy"><small>{chapter.novel}</small><strong>Chapter {chapter.number}: {chapter.title}</strong><time datetime={chapter.date}>{dateLabel(chapter.date)}</time></span>
+                  <span class="v2-row-arrow" aria-hidden="true">↗</span>
+                </a></li>
+              ))}
+            </ol>
+          ) : <p class="v2-empty-inline">Newly published chapters will appear here.</p>}
+        </section>
+        <section class="v2-section v2-news" aria-labelledby="v2-news-title">
+          <div class="v2-section-header">
+            <div><p class="v2-section-eyebrow">BEHIND THE BOOKS</p><h2 id="v2-news-title">From Hunmeng</h2></div>
+            <a class="v2-text-link" href="/news/">All news <span aria-hidden="true">↗</span></a>
+          </div>
+          {latestNews.length ? (
+            <div class="v2-news-list">
+              {latestNews.map(post => (
+                <article class="v2-news-item">
+                  <p><span>{post.data.category === 'changelog' ? 'UPDATE' : 'NEWS'}</span><time datetime={post.data.publishedAt}>{dateLabel(post.data.publishedAt)}</time></p>
+                  <h3><a href={newsUrl(post.id)}>{post.data.title}</a></h3>
+                  <p class="v2-news-excerpt">{post.data.excerpt}</p>
+                </article>
+              ))}
+            </div>
+          ) : <p class="v2-empty-inline">News from Hunmeng will appear here.</p>}
+        </section>
+      </div>
+
+      {external.length > 0 && (
+        <section class="v2-external" aria-labelledby="v2-external-title">
+          <div><p class="v2-section-eyebrow">BEYOND THE LIBRARY</p><h2 id="v2-external-title">Explore external stories</h2>
+            <p>Curated references to other reading platforms. These are not chapters hosted by Hunmeng.</p>
+          </div>
+          <ul>{external.map(item => <li><a href={item.url}>{item.title} <span aria-hidden="true">↗</span></a><small>{item.sourceName} · External listing</small></li>)}</ul>
+        </section>
+      )}
+
+      <section class="v2-reading-cta" aria-labelledby="v2-reading-title">
+        <div><p class="v2-section-eyebrow">YOUR OWN PACE</p><h2 id="v2-reading-title">The story is yours<br /><em>to return to.</em></h2><p>Come back to your shelves, continue a chapter, or discover the next world.</p></div>
+        <div class="v2-reading-actions"><a href="/library/">Open my library <span aria-hidden="true">↗</span></a><a href="/account/">Reading account <span aria-hidden="true">→</span></a></div>
+      </section>
+
+      <div class="v2-bottom-note"><span>Hunmeng 2.0 · Preview edition</span><span>Made for readers, built on the existing library.</span></div>
+    </div>
+  </main>
+</Layout>
