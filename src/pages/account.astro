@@ -6,9 +6,22 @@ import ReaderAdvancement from '../components/ReaderAdvancement.astro';
 import ReaderSyncPanel from '../components/ReaderSyncPanel.astro';
 import Icon from '../components/Icon.astro';
 import { getLibrary } from '../lib/content';
+import '../styles/v3-editorial.css';
+import '../styles/v3-profile-editorial.css';
+const editorial = import.meta.env.HUNMENG_V2_PUBLIC === '1';
 const profileCatalog=(await getLibrary()).map(n=>({slug:n.slug,title:n.title,chapters:n.chapters.map(c=>({slug:c.data.slug,number:c.data.number}))}));
 ---
-<Layout title="Sign in or register" noindex description="Sign in to Hunmeng or create a reader account with your email and password.">
+<Layout title="Sign in or register" noindex description="Sign in to Hunmeng or create a reader account with your email and password." bodyClass={editorial ? 'hm-editorial-site' : undefined}>
+  {editorial && (
+    <nav class="v3-primary-nav v3-profile-nav" aria-label="Reading room navigation">
+      <a href="/">Home</a>
+      <a href="/catalog/">Books</a>
+      <a href="/news/">Articles</a>
+      <a href="/#v3-collections">Collections</a>
+      <a href="/library/">My library</a>
+      <a href="/account/" aria-current="page">Profile</a>
+    </nav>
+  )}
   <main id="main" class="page-shell account-page reader-account-page">
     <header id="profile-guest-hero" class="page-heading landscape-banner profile-hero">
       <div class="profile-hero-copy">

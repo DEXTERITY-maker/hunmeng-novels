@@ -1,0 +1,168 @@
+/* Hunmeng 2.0 profile and sign-in: purely scoped visual refinements.
+   Account authentication, settings, rewards, profile storage and consent are
+   owned by existing scripts. This file never changes or hides their state. */
+.hm-editorial-site .v3-profile-nav {
+  width: min(1120px,calc(100% - 38px));
+  margin: 0 auto;
+}
+.hm-editorial-site .reader-account-page {
+  --bg: #fcf8ed;
+  --surface: #fffdf6;
+  --ink: #223b30;
+  --muted: #607268;
+  --line: #e7dbc7;
+  --accent: #0b6049;
+  --soft: #f4eddf;
+  width: min(1120px,calc(100% - 38px));
+  max-width: 1120px;
+  padding: 14px 0 80px;
+  color: var(--ink);
+}
+.hm-editorial-site .reader-account-page .profile-hero {
+  min-height: 224px;
+  padding: clamp(24px,5vw,54px);
+  border: 1px solid #cfc39f;
+  border-radius: 19px 19px 26px 26px;
+  background: linear-gradient(108deg,#072d29e8,#0a463ac9 59%,#123e3488),
+    url('/images/editorial/hero-mountains.svg') center 44% / cover no-repeat;
+  box-shadow: 0 13px 36px #243e2527;
+}
+.hm-editorial-site .reader-account-page .profile-hero :is(h1,p) {
+  color: #fff8e7;
+  text-shadow: none;
+}
+.hm-editorial-site .reader-account-page .profile-hero .eyebrow {
+  color: #eed092;
+  font: 770 .67rem/1.4 'Manrope Variable',sans-serif;
+  letter-spacing: .18em;
+}
+.hm-editorial-site .reader-account-page .profile-hero h1 {
+  max-width: 780px;
+  font: 560 clamp(2.05rem,4.6vw,3.7rem)/1.16 'Noto Serif Variable',Georgia,serif;
+  letter-spacing: -.045em;
+  margin: 12px 0;
+}
+.hm-editorial-site .reader-account-page .profile-hero-copy > p:last-child {
+  color: #e6eee4;
+  line-height: 1.75;
+}
+.hm-editorial-site .reader-account-page #account-status {
+  color: #43664f;
+  border-color: #ded2b9;
+  border-radius: 12px;
+}
+.hm-editorial-site .reader-account-page #auth-fields {
+  width: min(100%,660px);
+  margin: 25px auto 35px;
+  border: 1px solid #e1d6c2;
+  border-radius: 18px;
+  background: #fffdf6;
+  box-shadow: 0 15px 42px #3f35201b;
+  padding: clamp(22px,4vw,35px);
+}
+.hm-editorial-site .reader-account-page .auth-mode-switch {
+  border-color: #e2d5bd;
+}
+.hm-editorial-site .reader-account-page .auth-mode-switch button {
+  border-radius: 999px;
+  min-height: 44px;
+}
+.hm-editorial-site .reader-account-page :is(#auth-form input,#profile-form input,#profile-form textarea) {
+  min-height: 45px;
+  border: 1px solid #dccdb3;
+  border-radius: 10px;
+  background: #fffaf0;
+  color: #234739;
+}
+.hm-editorial-site .reader-account-page :is(#reader-auth-submit,#profile-edit-open) {
+  min-height: 44px;
+  border-radius: 999px;
+  background: #0a5945;
+  color: #fff9ea;
+}
+.hm-editorial-site .reader-account-page .profile-member-hero {
+  --profile-landscape: url('/images/editorial/hero-mountains.svg');
+  border-color: #d5c3a3;
+  border-radius: 19px;
+  background-image: linear-gradient(95deg,#fffaf1ef 4%,#fffaf1d9 50%,#e9e3d9a6 100%),
+    var(--profile-landscape);
+  box-shadow: 0 12px 32px #40311a1a;
+}
+.hm-editorial-site .reader-account-page .profile-member-copy :is(h2,p) {
+  color: #294b38;
+}
+.hm-editorial-site .reader-account-page .profile-avatar {
+  border-color: #bc985f;
+  box-shadow: 0 0 0 5px #fff9e9,0 7px 20px #20372830;
+}
+.hm-editorial-site .reader-account-page .profile-member-actions .button {
+  border-radius: 999px;
+}
+.hm-editorial-site .reader-account-page .profile-sidebar,
+.hm-editorial-site .reader-account-page .profile-panel {
+  border: 1px solid #e3d7c3;
+  background: #fffdf6;
+  border-radius: 17px;
+  box-shadow: 0 9px 30px #4c351617;
+}
+.hm-editorial-site .reader-account-page .profile-sidebar nav a {
+  border-radius: 11px;
+  color: #325b45;
+  min-height: 44px;
+}
+.hm-editorial-site .reader-account-page .profile-sidebar nav a[aria-current],
+.hm-editorial-site .reader-account-page .profile-sidebar nav a:hover {
+  background: #e9eee4;
+  color: #09503e;
+}
+.hm-editorial-site .reader-account-page .profile-panel :is(h2,h3),
+.hm-editorial-site .reader-account-page .profile-member-copy h2 {
+  color: #1a4734;
+  font-family: 'Noto Serif Variable',Georgia,serif;
+  letter-spacing: -.025em;
+}
+.hm-editorial-site .reader-account-page .profile-quicklinks a {
+  border-radius: 11px;
+}
+.hm-editorial-site .reader-account-page .advancement-hero,
+.hm-editorial-site .reader-account-page .profile-recent-reading {
+  border-color: #e5d8c2;
+  background: #faf6eb;
+  border-radius: 15px;
+}
+.hm-editorial-site .reader-account-page .profile-edit-dialog {
+  border-radius: 19px;
+  border-color: #e5d7bc;
+  background: #fffdf6;
+  color: #264b38;
+}
+.hm-editorial-site .reader-account-page .profile-edit-dialog button,
+.hm-editorial-site .reader-account-page .profile-panel .button {
+  border-radius: 999px;
+}
+.hm-editorial-site .reader-account-page :is(a,button,input,textarea,select):focus-visible {
+  outline: 3px solid #c09349;
+  outline-offset: 3px;
+}
+@media (max-width: 760px) {
+  .hm-editorial-site .v3-profile-nav,
+  .hm-editorial-site .reader-account-page { width: min(100% - 30px,1120px); }
+  .hm-editorial-site .reader-account-page { padding: 10px 0 60px; }
+  .hm-editorial-site .reader-account-page .profile-hero {
+    min-height: 190px;
+    padding: 28px 23px;
+    border-radius: 16px 16px 22px 22px;
+  }
+  .hm-editorial-site .reader-account-page .profile-member-hero {
+    background-position: center;
+  }
+}
+@media (max-width: 390px) {
+  .hm-editorial-site .v3-profile-nav,
+  .hm-editorial-site .reader-account-page { width: calc(100% - 24px); }
+  .hm-editorial-site .reader-account-page .profile-hero { padding: 25px 20px; }
+  .hm-editorial-site .reader-account-page #auth-fields { padding: 19px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hm-editorial-site .reader-account-page :is(.button,.profile-sidebar a) { transition: none; }
+}

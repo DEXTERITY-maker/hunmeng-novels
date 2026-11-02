@@ -149,3 +149,26 @@ test('public V2 library keeps real shelves and local reading progress inside res
   await expect(page.locator('.library-novel-row')).toHaveCount(1);
   expect(errors).toEqual([]);
 });
+
+test('public V2 account keeps guest sign-in protected with responsive editorial framing', async ({ page }, testInfo) => {
+  const errors: string[] = [];
+  page.on('pageerror', error => errors.push(error.message));
+  for (const width of [320, 390, 768, 1280]) {
+    await page.setViewportSize({width, height:900});
+    await page.goto('/account/');
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex,follow');
+    await expect(page.locator('body')).toHaveClass(/hm-editorial-site/);
+    await expect(page.locator('.v3-profile-nav a')).toHaveCount(6);
+    await expect(page.locator('.v3-profile-nav a[aria-current="page"]')).toHaveAttribute('href','/account/');
+    await expect(page.locator('#auth-fields')).toBeVisible();
+    await expect(page.locator('#auth-logged-in')).toBeHidden();
+    await expect(page.locator('#auth-form input[name="email"]')).toBeAttached();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1),
+      'account viewport ' + width).toBe(true);
+    if (width === 390 || width === 1280) {
+      await page.screenshot({path:testInfo.outputPath('hunmeng-v2-public-profile-guest-' + width + '.png'),
+        fullPage:true, animations:'disabled'});
+    }
+  }
+  expect(errors).toEqual([]);
+});
