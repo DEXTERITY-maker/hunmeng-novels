@@ -659,3 +659,39 @@ html[data-theme="dark"] body.hm-editorial-site {background:#172923;}
 @media(max-width:350px) {
   .hm-editorial-site .site-header .brand-title { font-size:1.02rem; }
 }
+
+/* Competing global responsive .header-inner rules use grid and wrap.
+   Specificity here intentionally wins for the new editorial page only. */
+@media(max-width:630px) {
+  body.hm-editorial-site .site-header .header-inner {
+    display:flex;
+    flex-flow:row nowrap;
+    align-items:center;
+    justify-content:flex-start;
+    min-height:54px;
+    width:100%;
+    max-width:100%;
+    gap:6px;
+    padding:7px 10px;
+  }
+  body.hm-editorial-site .site-header .header-inner > .v3-mobile-menu {
+    flex:0 0 auto;
+    align-self:center;
+  }
+  body.hm-editorial-site .site-header .header-inner > .brand {
+    flex:0 1 auto;
+    min-width:0;
+    max-width:calc(100% - 154px);
+    margin-right:auto;
+  }
+  body.hm-editorial-site .site-header .header-inner > .header-actions {
+    flex:0 0 auto;
+    min-width:0;
+    width:auto;
+    margin-left:0;
+    align-self:center;
+  }
+  body.hm-editorial-site .site-header .header-inner > nav:not(.v3-mobile-menu) {
+    display:none;
+  }
+}

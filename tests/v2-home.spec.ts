@@ -119,6 +119,21 @@ test('editorial header matches mobile reference with functional navigation, with
   await expect(menu).toBeVisible();
   await expect(page.locator('.header-actions .header-search')).toBeVisible();
   await expect(page.locator('.header-actions .header-account')).toBeVisible();
+  const header = await page.locator('.site-header').boundingBox();
+  const menuBox = await menu.boundingBox();
+  const brandBox = await page.locator('.site-header .brand').boundingBox();
+  const actionsBox = await page.locator('.site-header .header-actions').boundingBox();
+  expect(header).not.toBeNull();
+  expect(menuBox).not.toBeNull();
+  expect(brandBox).not.toBeNull();
+  expect(actionsBox).not.toBeNull();
+  expect(header!.height, 'mobile header should remain a compact single row').toBeLessThan(85);
+  for (const [name, box] of [['menu', menuBox!], ['brand', brandBox!], ['actions', actionsBox!]] as const) {
+    const y = box.y + box.height / 2;
+    expect(Math.abs(y - (menuBox!.y + menuBox!.height / 2)), name + ' should align with menu').toBeLessThan(19);
+    expect(box.x, name + ' left').toBeGreaterThanOrEqual(-1);
+    expect(box.x + box.width, name + ' right').toBeLessThanOrEqual(391);
+  }
   await menu.getByRole('button', { name: 'Open site menu' }).click();
   await expect(menu).toHaveAttribute('open', '');
   await expect(menu.getByRole('navigation', { name: 'Mobile Hunmeng menu' }).getByRole('link', { name: 'Books' })).toHaveAttribute('href', '/catalog/');
