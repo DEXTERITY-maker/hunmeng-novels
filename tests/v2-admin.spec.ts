@@ -56,6 +56,8 @@ test('V2 administrator sees the same authorized forms and navigates without writ
   await enter(page);
   await expect(page.locator('#admin-workspace')).toBeVisible();
   await expect(page.locator('#admin-status')).toContainText('Administrator');
+  expect(await page.evaluate(key => sessionStorage.getItem(key) !== null, sessionKey)).toBe(true);
+  expect(await page.evaluate(key => localStorage.getItem(key), sessionKey)).toBeNull();
   await expect(page.locator('[data-v2-admin-stat="sources"]')).toHaveText('0');
   await expect(page.locator('[data-v2-admin-stat="draft"]')).toHaveText('0');
   await expect(page.locator('[data-v2-admin-stat="review"]')).toHaveText('0');

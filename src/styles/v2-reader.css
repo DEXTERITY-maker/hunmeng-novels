@@ -14,7 +14,7 @@ body.v2-reader {
   /* The existing reader header is fixed at y=0 with z-index:20.
      Keep preview links below it and clickable, including after chapter navigation. */
   position: relative;
-  z-index: 21;
+  z-index: 1;
   margin-top: 65px;
   display: flex;
   align-items: center;

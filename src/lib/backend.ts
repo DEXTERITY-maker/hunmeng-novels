@@ -4,7 +4,9 @@ const key = (import.meta.env.PUBLIC_SUPABASE_PUBLISHABLE_KEY as string | undefin
 export const backendConfigured = /^https:\/\/[a-z0-9.-]+\.supabase\.co$/.test(url) && key.startsWith('sb_publishable_');
 const SESSION_KEY = 'hunmeng-novels:session:v1';
 const ADMIN_SESSION_KEY = 'hunmeng-novels:admin-session:v1';
-const isAdmin = () => location.pathname.startsWith('/admin/');
+// V2 is still the editorial site. It must use the same isolated tab-only staff
+// session, never the reader account's localStorage credentials.
+const isAdmin = () => location.pathname.startsWith('/admin/') || location.pathname.startsWith('/v2/admin/');
 const sessionStore = () => isAdmin() ? sessionStorage : localStorage;
 const sessionKey = () => isAdmin() ? ADMIN_SESSION_KEY : SESSION_KEY;
 
