@@ -68,6 +68,8 @@ test('editorial discovery shares the homepage shell without changing the legacy 
     await page.setViewportSize({ width, height: 900 });
     await page.goto('/v2/catalog/?genre=Fantasy');
     await expect(page.locator('body')).toHaveClass(/hm-editorial-site/);
+    await expect(page.locator('.v3-primary-nav a')).toHaveCount(5);
+    await expect(page.locator('.v3-primary-nav a[aria-current="page"]')).toHaveAttribute('href', '/v2/catalog/');
     await expect(page.locator('.site-footer .footer-link-group')).toHaveCount(3);
     await expect(page.getByRole('navigation', { name: 'Official Hunmeng contact channels' })).toBeVisible();
     await expect(page.locator('#result-count')).toHaveText('Novels found: 2');
