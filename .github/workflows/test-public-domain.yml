@@ -6,7 +6,7 @@ on:
       - 'src/data/public-domain-seed.json'
       - '.github/workflows/import-public-domain.yml'
       - '.github/workflows/test-public-domain.yml'
-      - 'tests/public-domain-import.test.mjs'
+      - 'tests/public-domain-import*.test.mjs'
 permissions:
   contents: read
 jobs:
@@ -22,13 +22,9 @@ jobs:
           node-version: '24'
           cache: npm
       - run: npm ci
-      - name: Verify source records and importer syntax
-        run: node --test tests/public-domain-import.test.mjs
-      - name: Import all ten books to an ephemeral workspace
-        run: node scripts/import-public-domain.mjs
-      - name: Assert all book files exist and full chapters validate
-        run: |
-          test "$(git ls-files --others --exclude-standard src/content/novels | wc -l)" -eq 10
-          node scripts/validate-serials.mjs
+      - name: Verify source records and offline import scenarios
+        run: node --test tests/public-domain-import*.test.mjs
+      - name: Validate checked-in chapters
+        run: node scripts/validate-serials.mjs
       - name: Build the full on-site reading experience
         run: npm run build
