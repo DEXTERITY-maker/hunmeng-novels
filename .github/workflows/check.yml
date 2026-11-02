@@ -115,6 +115,14 @@ jobs:
         run: |
           npm run build:demo
           npx playwright test --config playwright.v2-release.config.ts
+      - name: Save V2 public-route screenshots for final approval
+        if: always() && github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: hunmeng-v2-public-release-preview-${{ github.run_id }}
+          path: test-results/**/hunmeng-v2-public-*.png
+          if-no-files-found: warn
+          retention-days: 14
       - name: Verify production build never ships demonstration books
         env:
           HUNMENG_V2_PUBLIC: '1'

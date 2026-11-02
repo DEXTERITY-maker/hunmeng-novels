@@ -60,3 +60,25 @@ test('V2 live home and catalog stay inside the narrow mobile viewport', async ({
     }
   }
 });
+
+test('public V2 screenshot evidence and browser errors on all launch pages', async ({ page }, testInfo) => {
+  const errors: string[] = [];
+  page.on('pageerror', error => errors.push(error.message));
+  const routes = [
+    {url: '/', name: 'home', selector: 'main.v2-home'},
+    {url: '/catalog/', name: 'catalog', selector: 'main.v2-catalog-page'},
+    {url: '/novel/khranitel-mayaka/glava-1/', name: 'reader', selector: 'body.v2-reader #chapter-text'},
+    {url: '/v2/admin/', name: 'admin-guest', selector: 'main.v2-admin-page'},
+  ];
+  for (const route of routes) {
+    await page.goto(route.url);
+    await expect(page.locator(route.selector)).toBeVisible();
+    if (route.name === 'admin-guest') await expect(page.locator('#admin-workspace')).toBeHidden();
+    await page.screenshot({
+      path: testInfo.outputPath('hunmeng-v2-public-' + route.name + '.png'),
+      fullPage: false,
+      animations: 'disabled',
+    });
+  }
+  expect(errors).toEqual([]);
+});
