@@ -1,3 +1,4 @@
+import {createTelegramRequest,safeTelegramFailure,reservedChapterKeys} from './telegram-delivery-safety.mjs';
 import {execFileSync} from 'node:child_process';
 import {readFileSync} from 'node:fs';
 import {chapterKey,chapterLink,announcement,decideChapters,applyChapterMarker,parseChapterMarkdown,validateReleasedChapters,deliverChapters} from './telegram-chapters-core.mjs';
@@ -109,30 +110,19 @@ async function publishedCommit(){
   }
   fail('No successful published Cloudflare revision found');
 }
-async function telegram(method,body){
-  const token=process.env.TELEGRAM_BOT_TOKEN;
-  if(!token)fail('Missing Telegram bot secret');
-  // Never print HTTP URLs containing the token or raw request errors.
-  let res;
-  try{
-    res=await fetch('https://api.telegram.org/bot'+token+'/'+method,{
-      method:body?'POST':'GET',
-      headers:body?{'content-type':'application/json'}:undefined,
-      body:body?JSON.stringify(body):undefined,
-      signal:AbortSignal.timeout(15000),
-    });
-  }catch{fail('Telegram unavailable; inspect reserved notice if present');}
-  if(!res.ok)fail('Telegram request failed; inspect reserved notice if present');
-  let json;try{json=await res.json();}catch{fail('Invalid Telegram reply');}
-  if(!json.ok)fail('Telegram did not confirm delivery');
-  return json.result;
-}
+const telegram=createTelegramRequest({token:process.env.TELEGRAM_BOT_TOKEN});
+
 async function main(){
   if(!['all','scheduled','deployed'].includes(mode))fail('Invalid workflow mode');
   if(eventName==='workflow_run'&&(event.workflow_run?.conclusion!=='success'||event.workflow_run?.head_branch!=='main')){
     info('No successful main branch deployment; no changes');return;
   }
   const ledger=readLedger(),previous=ledger.data;
+  const reserved=reservedChapterKeys(previous);
+  if(reserved.length){
+    info('Manual reconciliation required: '+reserved.length+' reserved notices; no automatic send');
+    if(!dry){process.exitCode=1;return;}
+  }
   const sha=await publishedCommit();
   if(!sha){info('Deployment did not publish; no changes');return;}
   if(previous?.deployedSha&&sha!==previous.deployedSha){
@@ -174,6 +164,12 @@ async function main(){
   const launchKeys=new Set(launchBaseline.map(chapterKey));
   const newCandidates=plan.pending.filter(ch=>!launchKeys.has(chapterKey(ch))&&(scheduledKeys.has(chapterKey(ch))||!beforeKeys.has(chapterKey(ch))));
   const candidates=plan.baseline?[]:newCandidates;
+  // A new book import must not flood the announcement channel.
+  // Large batches require editorial review; never silently mark them sent.
+  if(!dry&&newCandidates.length>10){
+    info('Bulk safety stop: '+newCandidates.length+' pending notices exceed the per-run limit of 10; manual review required');
+    process.exitCode=1;return;
+  }
   // A chapter must exist on the live site; do not announce a commit that has not propagated.
   for(const ch of candidates){
     if(!await reachable(chapterLink(ch,ORIGIN))){
@@ -204,7 +200,10 @@ async function main(){
   if(active!==previous)writeLedger(ledger,active);
   if(newCandidates.length){
     try{await telegram('getMe');}
-    catch{info('Telegram unavailable at preflight; no changes');return;}
+    catch(error){
+      info('Telegram preflight failed: '+safeTelegramFailure(error)+'; no changes');
+      process.exitCode=1;return;
+    }
   }
   let current=active;
   try{
@@ -216,8 +215,8 @@ async function main(){
         return result;
       },
     });
-  }catch{
-    info('Delivery stopped: reserved chapter requires manual checking; no automatic resend');
+  }catch(error){
+    info('Delivery stopped: '+safeTelegramFailure(error)+'; reserved notice requires manual checking; no automatic resend');
     process.exitCode=1;return;
   }
   if(current.deployedSha!==sha)writeLedger(ledger,{...current,deployedSha:sha});
