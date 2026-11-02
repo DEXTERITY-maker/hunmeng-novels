@@ -57,6 +57,11 @@ test('Hunmeng 2.0 supports reduced motion and preserves the original homepage', 
 test('editorial-inspired homepage uses real genres, working collections and no dummy inventory', async ({ page }) => {
   await page.goto('/v2/');
   await expect(page.locator('.v3-primary-nav a')).toHaveCount(5);
+  await expect(page.getByRole('navigation', {name:'Official Hunmeng contact channels'})).toBeVisible();
+  await expect(page.locator('.site-footer .footer-link-group')).toHaveCount(3);
+  await expect(page.locator('.site-footer .v3-footer-socials a').first()).toHaveAttribute('href',/^https:\/\/t\.me\//);
+  await expect(page.locator('.site-footer .footer-link-group').last().getByRole('link',{name:'Contact us'})).toHaveAttribute('href','/contacts/');
+
   await expect(page.locator('.v3-welcome')).toBeVisible();
   await expect(page.locator('.v3-category-row')).toHaveCount(6);
   await expect(page.locator('.v3-collection-card')).toHaveCount(3);

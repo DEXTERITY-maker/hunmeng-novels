@@ -543,3 +543,40 @@ html[data-theme="dark"] body.hm-editorial-site {background:#172923;}
     gap:3px 7px;
   }
 }
+
+/* Refine only the new editorial homepage footer to match the approved image. */
+.hm-editorial-site .site-footer { max-width:1120px; }
+.hm-editorial-site .site-footer-inner {
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:26px clamp(20px,5vw,65px);
+  padding-inline:clamp(12px,4vw,58px);
+}
+.hm-editorial-site .site-footer-identity {
+  grid-column:1/-1;
+  text-align:center;
+  justify-self:center;
+}
+.hm-editorial-site .site-footer-identity .brand { justify-content:center; }
+.hm-editorial-site .site-footer-identity > p {
+  max-width:540px; margin:12px auto 0;
+  font-size:.8rem; line-height:1.6;
+}
+.hm-editorial-site .footer-link-group { align-items:flex-start; }
+.hm-editorial-site .footer-link-group h2 { color:#263d30; letter-spacing:.04em; }
+.hm-editorial-site .footer-link-group nav { display:flex; flex-direction:column; align-items:flex-start; }
+.hm-editorial-site .v3-footer-socials { display:flex; justify-content:center; align-items:center; gap:16px; margin-top:24px; }
+.hm-editorial-site .v3-footer-socials a {
+  display:grid; place-items:center; width:38px; height:38px; border-radius:50%;
+  background:#0b5945; color:#f9f3dc; font-size:1rem;
+}
+.hm-editorial-site .v3-footer-socials a:hover { background:#b5833d; color:#fff; }
+.hm-editorial-site .site-footer-bottom { justify-content:center; text-align:center; }
+@media(max-width:630px) {
+  .hm-editorial-site .site-footer-inner { grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px 9px; padding-inline:0; }
+  .hm-editorial-site .site-footer-identity { margin-bottom:4px; }
+  .hm-editorial-site .site-footer-identity > p { max-width:295px; font-size:.7rem; }
+  .hm-editorial-site .footer-link-group h2 { font-size:.66rem; }
+  .hm-editorial-site .site-footer .footer-link-group a { min-height:31px; font-size:.66rem; line-height:1.35; overflow-wrap:anywhere; }
+  .hm-editorial-site .v3-footer-socials { margin-top:20px; }
+}
