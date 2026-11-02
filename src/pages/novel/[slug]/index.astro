@@ -8,10 +8,14 @@ import { chapterListUrl } from '../../../lib/pagination';
 import { novelStructuredData, placeholderCover, socialCover } from '../../../lib/seo';
 import { site } from '../../../config/site';
 import serials from '../../../data/serials';
+import '../../../styles/v3-editorial.css';
+import '../../../styles/v3-novel-editorial.css';
 export async function getStaticPaths() {
   return (await getLibrary()).map((n) => ({ params: { slug: n.slug }, props: { novel: n } }));
 }
 const { novel: n } = Astro.props;
+// Keep the original book page untouched until the coordinated Hunmeng 2.0 launch.
+const editorial = import.meta.env.HUNMENG_V2_PUBLIC === '1';
 const serial = serials.find(s => s.slug === n.slug);
 const firstChapters = n.chapters.slice(0, 10);
 const glossaryKinds = [
@@ -36,6 +40,7 @@ const extraCategories = n.categories.filter((category) =>
 ---
 
 <Layout
+  bodyClass={editorial ? 'hm-editorial-site' : undefined}
   title={`${n.title} — read online`}
   description={n.description}
   ogImage={usesPlaceholder ? undefined : socialCover(n.cover)}
@@ -45,6 +50,15 @@ const extraCategories = n.categories.filter((category) =>
   structuredData={structuredData}
 >
   {n.art && <div class="novel-art-band" data-novel-art={n.art} aria-hidden="true"></div>}
+  {editorial && (
+    <nav class="v3-primary-nav v3-novel-nav" aria-label="Reading room navigation">
+      <a href="/">Home</a>
+      <a href="/catalog/" aria-current="page">Books</a>
+      <a href="/news/">Articles</a>
+      <a href="/#v3-collections">Collections</a>
+      <a href="/about/">About</a>
+    </nav>
+  )}
   <main id="main" class:list={['page-shell', 'novel-page', n.art && 'novel-page-with-art']}>
     <article class="novel-detail" data-novel-detail={n.slug}>
       <nav class="novel-detail-breadcrumb" aria-label="Breadcrumb">
