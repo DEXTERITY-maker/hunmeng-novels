@@ -20,7 +20,7 @@ const reportChannels = channels.filter(channel => channel.label !== 'Telegram ch
       <a href="/about/">About</a>
     </nav>
   )}
-  <main id="main" class:list={["page-shell prose-page", editorial && "v3-info-page"]}>
+  <main id="main" class={editorial ? "page-shell prose-page v3-info-page" : "page-shell prose-page"}>
     <a class="back-link" href="/">
       ← Home
     </a>
