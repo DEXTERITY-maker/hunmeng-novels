@@ -39,3 +39,20 @@ test('malformed response and missing token do not leak values',async()=>{
   await assert.rejects(()=>request('getMe'),e=>safeTelegramFailure(e)==='kind=invalid_response; http=200; retry_after=none');
   await assert.rejects(()=>createTelegramRequest({token:''})('getMe'),e=>e.kind==='missing_secret');
 });
+
+
+test('HTTP 200 without a valid message_id is ambiguous and never treated as sent',async()=>{
+  let calls=0;
+  const request=createTelegramRequest({token:'fake-secret',sleep:async()=>{},fetchImpl:async()=>{calls++;return makeReply(200,{ok:true,result:{}});}});
+  const error=await request('sendMessage',{text:'test'}).then(()=>null,e=>e);
+  assert.equal(safeTelegramFailure(error),'kind=unconfirmed_message; http=200; retry_after=none');
+  assert.equal(calls,1);
+});
+
+test('HTTP 500 yields a safe error and no second attempt',async()=>{
+  let calls=0;
+  const request=createTelegramRequest({token:'fake-secret',sleep:async()=>{},fetchImpl:async()=>{calls++;return makeReply(500,{ok:false,description:'SECRET'});}});
+  const error=await request('sendMessage',{}).then(()=>null,e=>e);
+  assert.equal(safeTelegramFailure(error),'kind=api_rejection; http=500; retry_after=none');
+  assert.equal(calls,1);
+});
