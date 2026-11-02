@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
   chapterKey,chapterLink,announcement,decideChapters,applyChapterMarker,
-  parseChapterMarkdown,validateReleasedChapters,deliverChapters,
+  parseChapterMarkdown,validateReleasedChapters,deliverChapters,telegramChapterMessage,
 } from '../scripts/telegram-chapters-core.mjs';
 
 const chapter=(number,novelSlug='novel-one')=>({novelSlug,novelTitle:'Novel One',number,slug:'chapter-'+number,title:'Title '+number});
@@ -69,4 +69,35 @@ test('persistence failure prevents any Telegram send',async()=>{
   let sends=0;
   await assert.rejects(()=>deliverChapters(initialized(),[chapter(1)],{persist:async()=>{throw Error('failed');},send:async()=>{sends++;}}),/failed/);
   assert.equal(sends,0);
+});
+
+
+test('Telegram chapter card includes the chapter link and a real URL button',()=>{
+  const c=chapter(21,'alices-adventures-in-wonderland');
+  c.novelTitle="Alice's Adventures in Wonderland";
+  const m=telegramChapterMessage(c);
+  const url='https://hunmeng-novel.ru/novel/alices-adventures-in-wonderland/chapter-21/';
+  assert.equal(m.parse_mode,'HTML');
+  assert.match(m.text,/NEW CHAPTER/);
+  assert.ok(m.text.includes(url));
+  assert.ok(m.text.includes("Alice&#39;s Adventures in Wonderland"));
+  assert.ok(m.text.includes('Chapter 21: <i>Title 21</i>'));
+  assert.deepEqual(m.reply_markup,{inline_keyboard:[[{text:'📖 Read chapter',url}]]});
+  assert.deepEqual(m.link_preview_options,{is_disabled:false,prefer_large_media:true});
+});
+
+test('Telegram HTML card escapes book and chapter metadata without changing destination',()=>{
+  const ch={...chapter(3),novelTitle:'Books <A & B> "novel"',title:"It's <b>great</b> & safe"};
+  const m=telegramChapterMessage(ch);
+  assert.ok(m.text.includes('Books &lt;A &amp; B&gt; &quot;novel&quot;'));
+  assert.ok(m.text.includes('It&#39;s &lt;b&gt;great&lt;/b&gt; &amp; safe'));
+  assert.ok(!m.text.includes("It's <b>great</b>"));
+  assert.equal(m.reply_markup.inline_keyboard[0][0].url,'https://hunmeng-novel.ru/novel/novel-one/chapter-3/');
+  assert.equal(ch.title,"It's <b>great</b> & safe"); // no mutations
+});
+
+test('Telegram chapter card rejects empty title or malformed chapter slug',()=>{
+  assert.throws(()=>telegramChapterMessage({...chapter(1),novelTitle:''}),/Missing chapter title/);
+  assert.throws(()=>telegramChapterMessage({...chapter(1),title:'  '}),/Missing chapter title/);
+  assert.throws(()=>telegramChapterMessage({...chapter(1),slug:'../admin'}),/Invalid chapter slug/);
 });
