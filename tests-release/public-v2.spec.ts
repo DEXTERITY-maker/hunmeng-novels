@@ -227,3 +227,47 @@ test('public V2 article keeps real content, reactions, metadata and SEO', async 
       fullPage: true, animations: 'disabled'});
   }
 });
+
+test('public V2 informational pages retain their original legal content and usable mobile layout', async ({ page }, testInfo) => {
+  const errors: string[] = [];
+  page.on('pageerror', error => errors.push(error.message));
+  const routes = [
+    { url: '/about/', label: 'About', name: 'about' },
+    { url: '/contacts/', label: 'Contact', name: 'contact' },
+    { url: '/rules/', label: 'Terms and privacy', name: 'privacy' },
+    { url: '/rights/', label: 'Rights holders', name: 'rights' },
+  ];
+  for (const width of [320, 390, 768, 1280]) {
+    await page.setViewportSize({ width, height: 900 });
+    for (const route of routes) {
+      await page.goto(route.url);
+      await expect(page.locator('body')).toHaveClass(/hm-editorial-site/);
+      await expect(page.locator('main.v3-info-page')).toBeVisible();
+      await expect(page.locator('.v3-info-nav a')).toHaveCount(6);
+      await expect(page.locator('main h1')).toHaveText(route.label);
+      await expect(page.locator('main .back-link')).toHaveAttribute('href', '/');
+      await expect(page.locator('meta[name="robots"]')).toHaveCount(0);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1),
+        route.url + ' overflow @ ' + width).toBe(true);
+      const headingBackground = await page.locator(route.name === 'rights' ? '.rights-hero' : 'main h1')
+        .evaluate(el => getComputedStyle(el).backgroundImage);
+      expect(headingBackground, route.name + ' editorial artwork @ ' + width).toContain('hero-mountains');
+      if (width === 390 || width === 1280) {
+        await page.screenshot({
+          path: testInfo.outputPath('hunmeng-v2-public-info-' + route.name + '-' + width + '.png'),
+          fullPage: true, animations: 'disabled',
+        });
+      }
+    }
+  }
+  await page.goto('/about/');
+  await expect(page.getByRole('link', { name: 'terms and privacy' })).toHaveAttribute('href', '/rules/');
+  await page.goto('/contacts/');
+  await expect(page.getByRole('link', { name: 'information for rights holders' })).toHaveAttribute('href', '/rights/');
+  await page.goto('/rules/');
+  await expect(page.getByRole('heading', { name: 'Library and reading data' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Reader account' })).toBeVisible();
+  await page.goto('/rights/');
+  await expect(page.locator('.rights-steps li')).toHaveCount(4);
+  expect(errors).toEqual([]);
+});
