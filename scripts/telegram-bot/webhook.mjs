@@ -16,6 +16,15 @@ async function readBody(request) {
   const all=new Uint8Array(size);let offset=0;for(const c of chunks){all.set(c,offset);offset+=c.length;}
   return JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(all));
 }
+// A constrained PostgREST role, never a service_role credential. Supabase verifies the signature.
+function isGuardJwt(token) {
+  try {
+    if(typeof token !== 'string' || token.length>4096 || !/^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/.test(token))return false;
+    const payload=token.split('.')[1].replace(/-/g,'+').replace(/_/g,'/');
+    const claims=JSON.parse(atob(payload));
+    return claims.role === 'telegram_bot_guard' && Number.isSafeInteger(claims.exp) && claims.exp > Math.floor(Date.now()/1000);
+  } catch {return false;}
+}
 async function actorHash(secret,id) {
   const key=await crypto.subtle.importKey('raw',new TextEncoder().encode(secret),{name:'HMAC',hash:'SHA-256'},false,['sign']);
   const bytes=new Uint8Array(await crypto.subtle.sign('HMAC',key,new TextEncoder().encode(String(id))));
@@ -38,16 +47,16 @@ function identify(update) {
 }
 export async function handleWebhook(request, env, fetcher=fetch) {
   if(request.method!=='POST')return empty(405);
-  if(!env.TELEGRAM_WEBHOOK_SECRET || !secureEqual(request.headers.get('X-Telegram-Bot-Api-Secret-Token'),env.TELEGRAM_WEBHOOK_SECRET))return empty(403);
+  if(!/^[A-Za-z0-9_-]{32,256}$/.test(env.TELEGRAM_WEBHOOK_SECRET ?? '') || !secureEqual(request.headers.get('X-Telegram-Bot-Api-Secret-Token'),env.TELEGRAM_WEBHOOK_SECRET))return empty(403);
   const base=env.SUPABASE_URL?.replace(/\/+$/,'');
-  if(!tokenPattern.test(env.TELEGRAM_BOT_TOKEN ?? '') || !/^https:\/\/[a-z0-9-]+\.supabase\.co$/.test(base ?? '') || !env.SUPABASE_SERVICE_ROLE_KEY || (env.TELEGRAM_HASH_SECRET?.length ?? 0)<32)return empty(503);
+  if(!tokenPattern.test(env.TELEGRAM_BOT_TOKEN ?? '') || !/^https:\/\/[a-z0-9-]+\.supabase\.co$/.test(base ?? '') || !/^sb_publishable_[A-Za-z0-9_-]+$/.test(env.PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? '') || !isGuardJwt(env.TELEGRAM_GUARD_JWT) || (env.TELEGRAM_HASH_SECRET?.length ?? 0)<32)return empty(503);
   let update;try{update=await readBody(request);}catch{return empty(400);}
   if(!Number.isSafeInteger(update?.update_id) || update.update_id<0)return empty(400);
   const person=identify(update);if(!person)return empty();
   let decision;
   try {
     const hash=await actorHash(env.TELEGRAM_HASH_SECRET,person.id);
-    const r=await fetcher(base+'/rest/v1/rpc/telegram_bot_admit',{method:'POST',headers:{apikey:env.SUPABASE_SERVICE_ROLE_KEY,Authorization:'Bearer '+env.SUPABASE_SERVICE_ROLE_KEY,'content-type':'application/json'},body:JSON.stringify({p_update_id:update.update_id,p_actor_hash:hash}),signal:AbortSignal.timeout(10000)});
+    const r=await fetcher(base+'/rest/v1/rpc/telegram_bot_admit',{method:'POST',headers:{apikey:env.PUBLIC_SUPABASE_PUBLISHABLE_KEY,Authorization:'Bearer '+env.TELEGRAM_GUARD_JWT,'content-type':'application/json'},body:JSON.stringify({p_update_id:update.update_id,p_actor_hash:hash}),signal:AbortSignal.timeout(10000)});
     if(!r.ok)throw new Error('Admission unavailable');decision=await r.json();
     if(!['accepted','limited','duplicate'].includes(decision))throw new Error('Invalid admission');
   } catch {return empty(503);}

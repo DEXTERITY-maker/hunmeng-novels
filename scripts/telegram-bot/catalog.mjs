@@ -2,7 +2,7 @@ const SITE = 'https://hunmeng-novel.ru';
 const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
 const validDate = value => typeof value === 'string' && DATE.test(value) && !Number.isNaN(Date.parse(value)) && new Date(value).toISOString().slice(0, 10) === value;
-const validTitle = x => typeof x === 'string' && x.trim().length > 0 && x.length <= 1000;
+const validTitle = x => typeof x === 'string' && x.trim().length > 0 && Array.from(x).length <= 1000;
 const fetchJson = async (fetcher, url, options = {}) => {
   const response = await fetcher(url, {...options, signal: AbortSignal.timeout(10000)});
   if (!response.ok) throw new Error('Source unavailable');
@@ -44,7 +44,7 @@ export async function loadLatest(env, novels, fetcher = fetch) {
       if (Number.isNaN(+launch)) throw new Error('Invalid release date');
       // Ask RLS for only the newest public rows. A shell page alone is not proof of publication.
       const rows = await fetchJson(fetcher, base + '/rest/v1/serial_chapters?select=number,title&novel_slug=eq.' + novel.slug + '&order=number.desc&limit=10', {headers});
-      if (!Array.isArray(rows)) throw new Error('Invalid release data');
+      if (!Array.isArray(rows) || (+launch <= Date.now() && rows.length < Math.min(edition.initial_chapters, 10))) throw new Error('Incomplete release data');
       const launchMoscowDate = new Date(+launch + 3*3600000).toISOString().slice(0,10);
       for (const row of rows) {
         if (!Number.isSafeInteger(row.number) || row.number < 1 || !validTitle(row.title)) throw new Error('Invalid release data');
