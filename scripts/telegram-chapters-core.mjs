@@ -25,9 +25,13 @@ export function announcement(chapter, origin) {
 export function telegramChapterMessage(chapter, origin = 'https://hunmeng-novel.ru') {
   const url = chapterLink(chapter, origin);
   const clean = value => String(value ?? '').replace(/[\r\n\t]+/g, ' ').replace(/\s+/g, ' ').trim();
-  const novel = clean(chapter.novelTitle);
-  const title = clean(chapter.title);
-  if (!novel || !title) throw new Error('Missing chapter title');
+  const shorten = (value, limit) => {
+    const chars = Array.from(clean(value).replace(/[\u0000-\u001f\u007f]/g, ' '));
+    return chars.length > limit ? chars.slice(0, limit - 1).join('') + '…' : chars.join('');
+  };
+  const novel = shorten(chapter.novelTitle, 140);
+  const title = shorten(chapter.title, 180);
+  if (!novel.trim() || !title.trim()) throw new Error('Missing chapter title');
   const escapeHtml = value => value
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')

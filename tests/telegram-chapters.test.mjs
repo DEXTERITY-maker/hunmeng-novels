@@ -101,3 +101,15 @@ test('Telegram chapter card rejects empty title or malformed chapter slug',()=>{
   assert.throws(()=>telegramChapterMessage({...chapter(1),title:'  '}),/Missing chapter title/);
   assert.throws(()=>telegramChapterMessage({...chapter(1),slug:'../admin'}),/Invalid chapter slug/);
 });
+
+
+test('Telegram card truncates long Unicode titles before escaping HTML',()=>{
+  const ch={...chapter(1),novelTitle:'📚<&'.repeat(1000),title:'📖&>'.repeat(1000)};
+  const m=telegramChapterMessage(ch);
+  assert.ok(m.text.length < 4096);
+  assert.match(m.text,/&lt;&amp;/);
+  assert.match(m.text,/…<\/b>/);
+  assert.match(m.text,/…<\/i>/);
+  assert.equal(m.reply_markup.inline_keyboard[0][0].url,chapterLink(ch));
+  assert.doesNotMatch(m.text,/[\uD800-\uDBFF](?![\uDC00-\uDFFF])/);
+});
