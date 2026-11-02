@@ -1,4 +1,5 @@
-import { test, expect, type Page } from './fixtures';
+import { test, expect } from './fixtures';
+import type { Page } from '@playwright/test';
 
 // Synthetic staff session only. No live editorial account or write is used.
 const id = '00000000-0000-4000-8000-000000000130';
