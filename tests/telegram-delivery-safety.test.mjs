@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {TelegramRequestError, safeTelegramFailure, reservedChapterKeys, createTelegramRequest} from '../scripts/telegram-delivery-safety.mjs';
+import {TelegramRequestError, safeTelegramFailure, reservedChapterKeys, createTelegramRequest, selectManualRecovery} from '../scripts/telegram-delivery-safety.mjs';
 
 const makeReply=(status,payload)=>({ok:status>=200&&status<300,status,async json(){return payload;}});
 
@@ -55,4 +55,22 @@ test('HTTP 500 yields a safe error and no second attempt',async()=>{
   const error=await request('sendMessage',{}).then(()=>null,e=>e);
   assert.equal(safeTelegramFailure(error),'kind=api_rejection; http=500; retry_after=none');
   assert.equal(calls,1);
+});
+
+test('manual recovery selects exactly the approved reserved Dracula notice',()=>{
+  const state={chapters:{'alices-adventures-in-wonderland:20':{status:'sent'},
+    'dracula:1':{status:'reserved',slug:'chapter-1',title:'Part 1',novelTitle:'Dracula'}}};
+  assert.deepEqual(selectManualRecovery(state,'dracula:1'),{novelSlug:'dracula',number:1,slug:'chapter-1',title:'Part 1',novelTitle:'Dracula'});
+  assert.throws(()=>selectManualRecovery(state,'alices-adventures-in-wonderland:20'),/not allowed/);
+});
+
+test('manual recovery cannot resend once Dracula was marked sent',()=>{
+  const state={chapters:{'dracula:1':{status:'sent',slug:'chapter-1',title:'Part 1',novelTitle:'Dracula',messageId:31}}};
+  assert.throws(()=>selectManualRecovery(state,'dracula:1'),/Exactly one/);
+});
+
+test('manual recovery rejects additional reservations and changed metadata',()=>{
+  const chapter={status:'reserved',slug:'chapter-1',title:'Part 1',novelTitle:'Dracula'};
+  assert.throws(()=>selectManualRecovery({chapters:{'dracula:1':chapter,'other:2':{status:'reserved'}}},'dracula:1'),/Exactly one/);
+  assert.throws(()=>selectManualRecovery({chapters:{'dracula:1':{...chapter,title:'Modified'}}},'dracula:1'),/metadata differs/);
 });
