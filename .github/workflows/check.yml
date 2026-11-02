@@ -116,7 +116,7 @@ jobs:
           npm run build:demo
           npx playwright test --config playwright.v2-release.config.ts
       - name: Save V2 public-route screenshots for final approval
-        if: always() && github.event_name == 'pull_request'
+        if: always() && (github.event_name == 'pull_request' || startsWith(github.ref, 'refs/heads/release/hunmeng-2-'))
         uses: actions/upload-artifact@v4
         with:
           name: hunmeng-v2-public-release-preview-${{ github.run_id }}
