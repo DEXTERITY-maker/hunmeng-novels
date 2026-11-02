@@ -144,7 +144,10 @@ test('V2 workspace closes immediately when the staff role is revoked', async ({p
   state.role = null;
   await page.evaluate(() => window.dispatchEvent(new Event('focus')));
   await expect(page.locator('#admin-workspace')).toBeHidden();
-  await expect(page.locator('#admin-status')).toContainText('changed');
+  // Both messages represent safe access revocation: the role changed or the
+  // existing session-ended handler completed first. The workspace must close.
+  await expect(page.locator('#admin-status')).toContainText(/(?:access has changed|session has ended)/i);
+  expect(await page.evaluate(key => sessionStorage.getItem(key), sessionKey)).toBeNull();
   await expect(page.locator('#admin-source-list')).toBeEmpty();
   await expect(page.locator('[data-v2-admin-stat="sources"]')).toHaveText('—');
 });
