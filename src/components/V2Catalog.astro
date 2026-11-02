@@ -24,6 +24,13 @@ const homePath = launched ? '/' : '/v2/';
 ---
 <main id="main" class="page-shell catalog-page v2-catalog-page">
     {!launched && <div class="v2-catalog-preview"><span>Hunmeng 2.0 · Discovery preview</span><a href={homePath}>← Reading room</a></div>}
+    <nav class="v3-primary-nav" aria-label="Reading room navigation">
+      <a href={homePath}>Home</a>
+      <a href={catalogPath} aria-current="page">Books</a>
+      <a href="/news/">Articles</a>
+      <a href={homePath + '#v3-collections'}>Collections</a>
+      <a href="/about/">About</a>
+    </nav>
     <header class="v2-catalog-hero" aria-labelledby="v2-catalog-title">
       <div class="v2-catalog-intro">
         <p class="v2-catalog-kicker">THE READING ROOM · DISCOVERY</p>
