@@ -122,7 +122,11 @@ test('editorial header matches mobile reference with functional navigation, with
   await menu.getByRole('button', { name: 'Open site menu' }).click();
   await expect(menu).toHaveAttribute('open', '');
   await expect(menu.getByRole('navigation', { name: 'Mobile Hunmeng menu' }).getByRole('link', { name: 'Books' })).toHaveAttribute('href', '/catalog/');
+  await page.keyboard.press('Escape');
+  await expect(menu).not.toHaveAttribute('open', '');
   await menu.getByRole('button', { name: 'Open site menu' }).click();
+  await expect(menu).toHaveAttribute('open', '');
+  await page.locator('.v3-primary-nav a').first().click();
   await expect(menu).not.toHaveAttribute('open', '');
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
   await page.setViewportSize({ width: 1280, height: 900 });
