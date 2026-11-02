@@ -27,6 +27,10 @@ test('V2 chapter navigation stays in preview while original route stays canonica
   await expect(page).toHaveURL('/v2/read/khranitel-mayaka/glava-2/');
   await expect(page.locator('.chapter-end-nav .chapter-previous')).toHaveAttribute('href', preview);
   await expect(page.locator('main#main')).toHaveAttribute('data-number', '2');
+  // Even after scrolling the chapter, fixed reading controls must not cover the
+  // preview bar's original-reader action.
+  await page.locator('#chapter-text').evaluate(el => el.scrollIntoView({ block: 'end' }));
+  await expect(page.getByRole('link', { name: 'Original reader' })).toBeVisible();
   await page.getByRole('link', { name: 'Original reader' }).click();
   await expect(page).toHaveURL('/novel/khranitel-mayaka/glava-2/');
   await expect(page.locator('body')).not.toHaveClass(/v2-reader/);

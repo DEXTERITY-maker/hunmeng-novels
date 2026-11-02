@@ -11,21 +11,28 @@ body.v2-reader {
   outline-offset: 3px;
 }
 .v2-reader .v2-reader-preview-bar {
-  /* The existing reader header is fixed at y=0 with z-index:20.
-     Keep preview links below it and clickable, including after chapter navigation. */
-  position: relative;
-  z-index: 1;
-  margin-top: 65px;
+  /* Keep the preview navigation immediately beneath the fixed reader header,
+     including after restoration of the reading position or chapter scrolling.
+     This stays below the header's z-index:20 and above chapter text. */
+  position: sticky;
+  top: 65px;
+  z-index: 19;
+  scroll-margin-top: 76px;
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   justify-content: space-between;
   gap: 8px 25px;
-  margin: 0 auto;
+  margin: 65px auto 0;
   padding: 11px max(22px, calc((100% - 1160px) / 2));
   border-bottom: 1px solid var(--line);
   background: color-mix(in srgb, var(--surface) 92%, var(--accent));
   font: 650 .7rem/1.5 'Manrope Variable', sans-serif;
+}
+.v2-reader.controls-hidden .v2-reader-preview-bar,
+.v2-reader.reader-focus-mode .v2-reader-preview-bar {
+  visibility: hidden;
+  pointer-events: none;
 }
 .v2-reader .v2-reader-preview-brand { display: flex; align-items: center; gap: 9px; color: var(--accent); letter-spacing: .04em; }
 .v2-reader .v2-reader-preview-brand > span { color: var(--v2-reader-gold); }
