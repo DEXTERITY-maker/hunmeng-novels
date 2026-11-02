@@ -81,6 +81,10 @@ test('editorial art direction keeps all major sections inside mobile and desktop
       expect(box!.x + box!.width, selector + ' right @ ' + width).toBeLessThanOrEqual(width + 1);
     }
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'horizontal overflow @ ' + width).toBe(true);
+    if (width === 390) {
+      const heroArt = await page.locator('.v2-hero').evaluate(el => getComputedStyle(el).backgroundImage);
+      expect(heroArt).toContain('hero-mountains-mobile.svg');
+    }
     if (width === 390 || width === 1280) {
       await page.screenshot({path:testInfo.outputPath('hunmeng-editorial-home-' + width + '.png'), fullPage:true, animations:'disabled'});
     }

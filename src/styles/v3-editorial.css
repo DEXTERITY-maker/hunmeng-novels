@@ -515,3 +515,31 @@ html[data-theme="dark"] .v3-art-direction .v3-depth-card {background:#2d493d;col
 html[data-theme="dark"] .v3-art-direction .v3-depth-card strong {color:#fff7e9;}
 html[data-theme="dark"] .v3-art-direction .v3-depth-card small {color:#d7e1d7;}
 html[data-theme="dark"] body.hm-editorial-site {background:#172923;}
+
+/* Final screenshot QA: editorial metadata must have an actual text gap, and the
+   moon/sun artwork must remain visible on portrait phones (not cropped off
+   by a desktop-wide background). */
+.v3-art-direction .v2-news-item .v3-article-copy > p:first-child {
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content:flex-start;
+  gap:4px 9px;
+  line-height:1.35;
+}
+.hm-editorial-site .site-footer {
+  background:linear-gradient(180deg,#fffaf0f7,#fff9eff0),url('/images/editorial/hero-mountains.svg') center bottom / cover no-repeat;
+  border-color:#e6d9c0;
+  box-shadow:0 7px 24px #4b412615;
+}
+@media(max-width:630px) {
+  .v3-art-direction .v2-hero {
+    background-image:url('/images/editorial/hero-mountains-mobile.svg');
+    background-position:center top;
+    background-size:cover;
+  }
+  .v3-art-direction .v2-news-item .v3-article-copy > p:first-child {
+    font-size:.57rem;
+    gap:3px 7px;
+  }
+}
