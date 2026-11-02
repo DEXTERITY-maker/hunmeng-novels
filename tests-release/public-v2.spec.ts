@@ -131,6 +131,9 @@ test('public V2 library keeps real shelves and local reading progress inside res
     }));
     expect(visual.background, 'original artwork is actually visible @ ' + width).toContain('hero-mountains.svg');
     expect(visual.title, 'hero title remains legible @ ' + width).toMatch(/^rgb\(255,/);
+    const descriptionColor = await page.locator('.library-hero-copy > p:last-child').evaluate(
+      el => getComputedStyle(el).color);
+    expect(descriptionColor, 'hero supporting text contrast @ ' + width).toBe('rgb(234, 240, 229)');
     const readActionColor = await page.locator('.library-row-action').first().evaluate(el => getComputedStyle(el).color);
     expect(readActionColor, 'read action text contrast @ ' + width).toMatch(/^rgb\(255,/);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1),
