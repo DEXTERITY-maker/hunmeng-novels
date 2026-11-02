@@ -606,3 +606,47 @@ html[data-theme="dark"] body.hm-editorial-site {background:#172923;}
  .v3-art-direction .v2-hero-copy { padding-top:27px; }
  .v3-art-direction .v2-hero-visual { padding-top:12px; }
 }
+
+/* Approved artwork uses a compact hamburger in the top-left corner.
+   Only the editorial homepage receives it; account/search/theme stay intact. */
+.hm-editorial-site .v3-mobile-menu { display:none; }
+@media(max-width:630px) {
+  .hm-editorial-site .header-inner {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:6px;
+    padding-inline:10px;
+  }
+  .hm-editorial-site .v3-mobile-menu { display:block; position:relative; z-index:100; flex:0 0 auto; }
+  .hm-editorial-site .v3-mobile-menu > summary {
+    display:grid; place-items:center;
+    list-style:none; width:35px; height:39px;
+    color:#174c3d; border-radius:8px; cursor:pointer;
+  }
+  .hm-editorial-site .v3-mobile-menu > summary::-webkit-details-marker { display:none; }
+  .hm-editorial-site .v3-mobile-menu > summary:hover,
+  .hm-editorial-site .v3-mobile-menu[open] > summary { background:#e8e0cc; }
+  .hm-editorial-site .v3-mobile-menu > nav {
+    position:absolute; top:calc(100% + 8px); left:0; width:min(265px,calc(100vw - 20px));
+    display:grid; gap:2px; padding:9px;
+    border:1px solid #e3d9c7; border-radius:13px; background:#fffdf6;
+    box-shadow:0 18px 34px #03261d38;
+  }
+  .hm-editorial-site .v3-mobile-menu > nav a {
+    display:block; padding:11px 13px; border-radius:8px;
+    font-size:.79rem; font-weight:700; color:#204a3a;
+  }
+  .hm-editorial-site .v3-mobile-menu > nav a:hover { background:#eee6d3; }
+  .hm-editorial-site .brand { margin-right:auto; font-size:1.12rem; }
+  .hm-editorial-site .header-actions { flex:none; padding-left:0; border:0; gap:0; }
+  .hm-editorial-site .header-icon-button { min-width:35px; width:35px; height:39px; }
+  .hm-editorial-site .brand-emblem { width:31px; height:31px; }
+  .hm-editorial-site .brand-emblem img { width:29px; height:29px; }
+  .hm-editorial-site .v3-mobile-menu:not([open]) > nav { display:none; }
+}
+@media(max-width:350px) {
+  .hm-editorial-site .brand { font-size:1.02rem; gap:5px; }
+  .hm-editorial-site .header-actions .header-icon-button { width:32px; min-width:32px; }
+  .hm-editorial-site .v3-mobile-menu > summary { width:32px; }
+}

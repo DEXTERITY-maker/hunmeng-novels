@@ -111,3 +111,23 @@ test('editorial art direction keeps all major sections inside mobile and desktop
     }
   }
 });
+
+test('editorial header matches mobile reference with functional navigation, without replacing core controls', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/v2/');
+  const menu = page.locator('.v3-mobile-menu');
+  await expect(menu).toBeVisible();
+  await expect(page.locator('.header-actions .header-search')).toBeVisible();
+  await expect(page.locator('.header-actions .header-account')).toBeVisible();
+  await menu.getByRole('button', { name: 'Open site menu' }).click();
+  await expect(menu).toHaveAttribute('open', '');
+  await expect(menu.getByRole('navigation', { name: 'Mobile Hunmeng menu' }).getByRole('link', { name: 'Books' })).toHaveAttribute('href', '/catalog/');
+  await menu.getByRole('button', { name: 'Open site menu' }).click();
+  await expect(menu).not.toHaveAttribute('open', '');
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.reload();
+  await expect(menu).toBeHidden();
+  await page.goto('/catalog/');
+  await expect(page.locator('.v3-mobile-menu')).toHaveCount(0);
+});
