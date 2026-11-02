@@ -48,6 +48,10 @@ export function createTelegramRequest({token, fetchImpl = fetch, sleep = ms => n
     if (!response.ok || payload?.ok !== true) {
       throw new TelegramRequestError('api_rejection', response.status, payload?.parameters?.retry_after);
     }
+    // HTTP success without a confirmed message ID must stay reserved.
+    if (method === 'sendMessage' && (!Number.isSafeInteger(payload?.result?.message_id) || payload.result.message_id <= 0)) {
+      throw new TelegramRequestError('unconfirmed_message', response.status);
+    }
     return payload.result;
   };
 }
