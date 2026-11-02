@@ -189,7 +189,7 @@ test('public V2 news uses editorial layout with working category filters and res
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1),
       'news overflow @ ' + width).toBe(true);
     if (width === 390 || width === 1280) {
-      await page.screenshot({path: testInfo.outputPath('hunmeng-v2-news-' + width + '.png'),
+      await page.screenshot({path: testInfo.outputPath('hunmeng-v2-public-news-' + width + '.png'),
         fullPage: true, animations: 'disabled'});
     }
   }
@@ -223,7 +223,7 @@ test('public V2 article keeps real content, reactions, metadata and SEO', async 
     await expect(page.locator('.news-article-body')).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1),
       'article overflow @ ' + width).toBe(true);
-    await page.screenshot({path:testInfo.outputPath('hunmeng-v2-article-' + width + '.png'),
+    await page.screenshot({path:testInfo.outputPath('hunmeng-v2-public-article-' + width + '.png'),
       fullPage: true, animations: 'disabled'});
   }
 });
