@@ -1,3 +1,4 @@
+import {createTelegramRequest,safeTelegramFailure,reservedChapterKeys,selectManualRecovery} from './telegram-delivery-safety.mjs';
 import {execFileSync} from 'node:child_process';
 import {readFileSync} from 'node:fs';
 import {chapterKey,chapterLink,announcement,decideChapters,applyChapterMarker,parseChapterMarkdown,validateReleasedChapters,deliverChapters} from './telegram-chapters-core.mjs';
@@ -13,6 +14,8 @@ const dry=process.env.DRY_RUN==='true';
 const eventName=process.env.GITHUB_EVENT_NAME||'';
 const event=process.env.GITHUB_EVENT_PATH?JSON.parse(readFileSync(process.env.GITHUB_EVENT_PATH,'utf8')):{};
 const mode=process.env.NOTIFICATION_MODE||'all';
+const recoveryKey=process.env.RECOVERY_KEY||'';
+const recoveryConfirmed=process.env.RECOVERY_CONFIRMED==='true';
 const request=async(url,headers={})=>{
   let r;
   try{r=await fetch(url,{headers,signal:AbortSignal.timeout(15000),redirect:'error'});}
@@ -109,30 +112,58 @@ async function publishedCommit(){
   }
   fail('No successful published Cloudflare revision found');
 }
-async function telegram(method,body){
-  const token=process.env.TELEGRAM_BOT_TOKEN;
-  if(!token)fail('Missing Telegram bot secret');
-  // Never print HTTP URLs containing the token or raw request errors.
-  let res;
-  try{
-    res=await fetch('https://api.telegram.org/bot'+token+'/'+method,{
-      method:body?'POST':'GET',
-      headers:body?{'content-type':'application/json'}:undefined,
-      body:body?JSON.stringify(body):undefined,
-      signal:AbortSignal.timeout(15000),
+const telegram=createTelegramRequest({token:process.env.TELEGRAM_BOT_TOKEN});
+
+/** This one-off path never calls deliverChapters and never processes the backlog. */
+async function recoverOneReservedChapter(ledger) {
+  if(eventName!=='workflow_dispatch')fail('Recovery is manual-only');
+  const chapter=selectManualRecovery(ledger.data,recoveryKey);
+  const sha=await publishedCommit();
+  if(!sha)fail('No successful deployment for recovery');
+  const published=localChapters(sha).chapters;
+  if(!published.some(ch=>chapterKey(ch)===recoveryKey&&ch.slug===chapter.slug&&ch.title===chapter.title))
+    fail('Recovery chapter does not match deployed content');
+  if(!await reachable(chapterLink(chapter,ORIGIN)))
+    fail('Recovery chapter unavailable on the live site');
+  if(dry) {
+    info('RECOVERY DRY RUN: one reserved chapter '+recoveryKey+'; no Telegram requests or ledger changes');
+    return;
+  }
+  if(!recoveryConfirmed)fail('Recovery requires explicit confirmation that the channel was checked');
+  // No automatic retry; even an ambiguous success remains reserved.
+  let stage='telegram_preflight';
+  try {
+    await telegram('getMe');
+    stage='telegram_send';
+    const sent=await telegram('sendMessage',{
+      chat_id:CHANNEL,text:announcement(chapter,ORIGIN),
+      link_preview_options:{is_disabled:false,prefer_large_media:true},
     });
-  }catch{fail('Telegram unavailable; inspect reserved notice if present');}
-  if(!res.ok)fail('Telegram request failed; inspect reserved notice if present');
-  let json;try{json=await res.json();}catch{fail('Invalid Telegram reply');}
-  if(!json.ok)fail('Telegram did not confirm delivery');
-  return json.result;
+    stage='confirm_ledger';
+    const next=applyChapterMarker(ledger.data,chapter,'sent');
+    next.chapters[recoveryKey].messageId=sent.message_id;
+    writeLedger(ledger,next);
+    info('Manual recovery confirmed '+recoveryKey+'; messageId='+sent.message_id);
+  } catch(error) {
+    info('Manual recovery stopped: stage='+stage+'; chapter='+recoveryKey+'; '+safeTelegramFailure(error)+'; no automatic resend');
+    process.exitCode=1;
+  }
 }
+
 async function main(){
   if(!['all','scheduled','deployed'].includes(mode))fail('Invalid workflow mode');
   if(eventName==='workflow_run'&&(event.workflow_run?.conclusion!=='success'||event.workflow_run?.head_branch!=='main')){
     info('No successful main branch deployment; no changes');return;
   }
   const ledger=readLedger(),previous=ledger.data;
+  if(recoveryKey){
+    await recoverOneReservedChapter(ledger);return;
+  }
+  const reserved=reservedChapterKeys(previous);
+  if(reserved.length){
+    info('Manual reconciliation required: '+reserved.length+' reserved notices; no automatic send');
+    if(!dry){process.exitCode=1;return;}
+  }
   const sha=await publishedCommit();
   if(!sha){info('Deployment did not publish; no changes');return;}
   if(previous?.deployedSha&&sha!==previous.deployedSha){
@@ -174,6 +205,12 @@ async function main(){
   const launchKeys=new Set(launchBaseline.map(chapterKey));
   const newCandidates=plan.pending.filter(ch=>!launchKeys.has(chapterKey(ch))&&(scheduledKeys.has(chapterKey(ch))||!beforeKeys.has(chapterKey(ch))));
   const candidates=plan.baseline?[]:newCandidates;
+  // A new book import must not flood the announcement channel.
+  // Large batches require editorial review; never silently mark them sent.
+  if(!dry&&newCandidates.length>10){
+    info('Bulk safety stop: '+newCandidates.length+' pending notices exceed the per-run limit of 10; manual review required');
+    process.exitCode=1;return;
+  }
   // A chapter must exist on the live site; do not announce a commit that has not propagated.
   for(const ch of candidates){
     if(!await reachable(chapterLink(ch,ORIGIN))){
@@ -204,20 +241,32 @@ async function main(){
   if(active!==previous)writeLedger(ledger,active);
   if(newCandidates.length){
     try{await telegram('getMe');}
-    catch{info('Telegram unavailable at preflight; no changes');return;}
+    catch(error){
+      info('Telegram preflight failed: '+safeTelegramFailure(error)+'; no changes');
+      process.exitCode=1;return;
+    }
   }
   let current=active;
+  let deliveryStage='start', deliveryKey='none';
   try{
     current=await deliverChapters(active,newCandidates,{
-      persist:async next=>{writeLedger(ledger,next);current=next;},
+      persist:async next=>{
+        const changed=Object.entries(next.chapters).find(([key,entry])=>entry.status!==current.chapters?.[key]?.status);
+        deliveryKey=changed?.[0]??'none';
+        deliveryStage=changed?.[1]?.status==='reserved'?'reserve_ledger':
+          changed?.[1]?.status==='sent'?'confirm_ledger':'ledger_write';
+        writeLedger(ledger,next);current=next;
+      },
       send:async chapter=>{
+        deliveryKey=chapterKey(chapter);
+        deliveryStage='telegram_send';
         const result=await telegram('sendMessage',{chat_id:CHANNEL,text:announcement(chapter,ORIGIN),link_preview_options:{is_disabled:false,prefer_large_media:true}});
         info('Telegram confirmed '+chapterKey(chapter));
         return result;
       },
     });
-  }catch{
-    info('Delivery stopped: reserved chapter requires manual checking; no automatic resend');
+  }catch(error){
+    info('Delivery stopped: stage='+deliveryStage+'; chapter='+deliveryKey+'; '+safeTelegramFailure(error)+'; reserved notice requires manual checking; no automatic resend');
     process.exitCode=1;return;
   }
   if(current.deployedSha!==sha)writeLedger(ledger,{...current,deployedSha:sha});
