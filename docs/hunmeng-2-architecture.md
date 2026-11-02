@@ -59,6 +59,16 @@ Status: **exploratory design prototype**, not a production release. The current 
 - All dangerous operations (publish, bulk import, Telegram send, migrations) stay behind explicit reviewed actions.
 - Verify with staff role tests and denied-access tests; never use a Supabase service credential in a public browser.
 
+## Stage 4 pilot: existing-role editorial command center
+
+- New independent `/v2/admin/` interface presents sources and rights, terminology, chapter drafts, licensed batch import, the review and publication queue, and administrator-only review moderation as one clearly navigated workflow.
+- The route **reuses unchanged `initAdmin()` and `initAdminReviews()`** and existing forms, field names, DOM element IDs, permissions checks, session storage and Supabase RLS. It introduces no new endpoint, credential, role, SQL operation or bypass.
+- All workspace navigation and editorial forms stay inside `#admin-workspace[hidden]` until `getStaffRole()` confirms authorized editor or administrator access. Role changes and sign-outs use existing lock logic.
+- The V2 admin path gets the same no-referrer policy, URL credential sanitization and account-navigation suppression as the original `/admin/`. The route is `noindex` and excluded from the sitemap.
+- Editorial tasks stay readable in the absence of additional JavaScript beyond the existing editor modules. No novel publishing, rights approval, import or review is silently triggered by navigation.
+- Mobile layout and access-denial tests cover unauthenticated, editor, administrator, and revoked-role cases with synthetic responses only.
+- Reader-facing private writing studio `/studio/` is **not** the editorial dashboard; only link to its separate interface, do not share admin credentials or policy.
+
 ## Rollout rules
 
 - Work in `feat/hunmeng-2-foundation` and follow-up PRs; do not merge design exploration into production before CI and design acceptance.

@@ -29,7 +29,7 @@ const {
   ogImage, ogImageWidth, ogImageHeight, ogImageAlt, structuredData,
 } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site || site.url);
-const administrative = Astro.url.pathname.startsWith('/admin/');
+const administrative = Astro.url.pathname.startsWith('/admin/') || Astro.url.pathname.startsWith('/v2/admin/');
 const socialImage = new URL(ogImage ?? '/images/og-default.png', Astro.site || site.url);
 const socialWidth = ogImage ? ogImageWidth : 1200;
 const socialHeight = ogImage ? ogImageHeight : 630;
