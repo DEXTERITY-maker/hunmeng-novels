@@ -93,6 +93,9 @@ export async function initCatalog() {
     const render = (syncUrl: boolean, requestedPage?: number, animate = false) => {
       const f = new FormData(form);
       const q = fold(String(f.get('search') ?? ''));
+      // Only the isolated V2 preview adds description/genre/category to text search.
+      // Preserve V1 query semantics and the existing published vs external data boundary.
+      const isV2Discovery = form.closest('.v2-catalog-page') !== null;
       updateTagPicker();
       const selected = [...f.entries()].filter(([key,value]) => value && !['search','sort','size','tagMode'].includes(key)).length;
       const summary = document.getElementById('active-filter-count');
@@ -102,7 +105,7 @@ export async function initCatalog() {
       const minChapters = Math.max(0, Number(f.get('minChapters') || 0));
       const minRating = Number(f.get('minRating') || 0);
       const filtered = novels.filter((n) =>
-        (!q || fold([n.title,n.originalTitle,n.author,...n.tags].join(' ')).includes(q)) &&
+        (!q || fold([n.title,n.originalTitle,n.author,...n.tags,...(isV2Discovery ? [n.description,...n.genres,...n.categories] : [])].join(' ')).includes(q)) &&
         (!f.get('category') || n.categories.includes(String(f.get('category')))) &&
         (!f.get('genre') || n.genres.some(genre => fold(genre) === fold(String(f.get('genre'))))) &&
         (!f.get('status') || n.translationStatus === f.get('status')) &&

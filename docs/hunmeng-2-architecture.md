@@ -19,6 +19,14 @@ Status: **exploratory design prototype**, not a production release. The current 
 - Pilot is `noindex` and omitted from the sitemap; nothing on the live homepage links to it. It must not be used as a marketing announcement.
 - Tests cover published fixtures, search, keyboard reachability, viewport overflow, reduced-motion and V1 compatibility.
 
+## Stage 2 pilot: independent discovery route (in progress)
+
+- The prototype catalog is at `/v2/catalog/`, with a V2-specific visual layer and **the same existing filter form, tags, sorting, pagination, HTML escaping and source labeling** as `/catalog/`.
+- V2 text search additionally matches local descriptions, genres and categories. It still searches the already permitted metadata index only; this is not external full-text ingestion or semantic ranking.
+- The V2 homepage now links to the V2 discovery route; published novel/chapter URLs and protected reader data remain canonical.
+- Legacy catalog behavior remains unchanged. Both prototype routes are noindexed and excluded from the sitemap.
+- Test the V2 metadata search and URL query restoration on desktop/mobile before promoting any V2 changes to public navigation.
+
 ## Stage 2: catalog and search
 
 - Replace presentation incrementally, keeping the `/catalog/` URL/query parameter contract.

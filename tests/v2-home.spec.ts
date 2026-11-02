@@ -17,7 +17,7 @@ test('Hunmeng 2.0 search uses the existing catalog and filters, not mock data', 
   await page.goto('/v2/');
   await page.getByRole('searchbox', { name: 'Search by title or author' }).fill('lighthouse');
   await page.getByRole('button', { name: /Find a story/ }).click();
-  await expect(page).toHaveURL(/\/catalog\/\?search=lighthouse/);
+  await expect(page).toHaveURL(/\/v2\/catalog\/\?search=lighthouse/);
   await expect(page.locator('#result-count')).toHaveText('Novels found: 1');
 });
 
