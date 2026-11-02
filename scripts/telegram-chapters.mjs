@@ -1,7 +1,7 @@
 import {createTelegramRequest,safeTelegramFailure,reservedChapterKeys,selectManualRecovery} from './telegram-delivery-safety.mjs';
 import {execFileSync} from 'node:child_process';
 import {readFileSync} from 'node:fs';
-import {chapterKey,chapterLink,announcement,decideChapters,applyChapterMarker,parseChapterMarkdown,validateReleasedChapters,deliverChapters} from './telegram-chapters-core.mjs';
+import {chapterKey,chapterLink,decideChapters,applyChapterMarker,parseChapterMarkdown,validateReleasedChapters,deliverChapters,telegramChapterMessage} from './telegram-chapters-core.mjs';
 
 // Ledger exists only on its own service branch. No database writes, no chapter bodies in logs.
 const REF='refs/heads/telegram-notification-state';
@@ -135,10 +135,7 @@ async function recoverOneReservedChapter(ledger) {
   try {
     await telegram('getMe');
     stage='telegram_send';
-    const sent=await telegram('sendMessage',{
-      chat_id:CHANNEL,text:announcement(chapter,ORIGIN),
-      link_preview_options:{is_disabled:false,prefer_large_media:true},
-    });
+    const sent=await telegram('sendMessage',{chat_id:CHANNEL,...telegramChapterMessage(chapter,ORIGIN)});
     stage='confirm_ledger';
     const next=applyChapterMarker(ledger.data,chapter,'sent');
     next.chapters[recoveryKey].messageId=sent.message_id;
@@ -219,7 +216,11 @@ async function main(){
   }
   if(dry){
     info('DRY RUN: no messages or state changes. Initial baseline: '+plan.baseline+'. Chapters: '+(plan.baseline?plan.mark.length:newCandidates.length));
-    for(const ch of plan.baseline?plan.mark:newCandidates)info((plan.baseline?'Would baseline: ':'Would send: ')+announcement(ch,ORIGIN).replaceAll('\n',' | '));
+    for(const ch of plan.baseline?plan.mark:newCandidates){
+      const preview=telegramChapterMessage(ch,ORIGIN);
+      info((plan.baseline?'Would baseline: ':'Would send: ')+preview.text.replaceAll('\n',' | '));
+      info('Would show button: '+preview.reply_markup.inline_keyboard[0][0].text);
+    }
     const unknownLaunch=launchBaseline.filter(ch=>!Object.hasOwn(previous?.chapters??{},chapterKey(ch)));
     if(unknownLaunch.length)info('Would also baseline '+unknownLaunch.length+' already-open launch chapters from public Supabase.');
     return;
@@ -260,7 +261,7 @@ async function main(){
       send:async chapter=>{
         deliveryKey=chapterKey(chapter);
         deliveryStage='telegram_send';
-        const result=await telegram('sendMessage',{chat_id:CHANNEL,text:announcement(chapter,ORIGIN),link_preview_options:{is_disabled:false,prefer_large_media:true}});
+        const result=await telegram('sendMessage',{chat_id:CHANNEL,...telegramChapterMessage(chapter,ORIGIN)});
         info('Telegram confirmed '+chapterKey(chapter));
         return result;
       },

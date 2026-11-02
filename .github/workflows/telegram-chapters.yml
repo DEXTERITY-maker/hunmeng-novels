@@ -46,14 +46,15 @@ jobs:
     timeout-minutes: 20
     steps:
       - name: Checkout code and production commit history
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: main
           fetch-depth: 0
           persist-credentials: true
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: '24'
+          package-manager-cache: false
       - name: Publish only new chapters, or preview with dry run
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

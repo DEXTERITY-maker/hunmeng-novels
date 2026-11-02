@@ -21,6 +21,40 @@ export function announcement(chapter, origin) {
   if (!novel || !title) throw new Error('Missing chapter title');
   return `${novel}\nChapter ${chapter.number}: ${title}\nNew chapter is out on Hunmeng\n${chapterLink(chapter, origin)}`;
 }
+/** Presentation only; does not affect chapter selection or the delivery ledger. */
+export function telegramChapterMessage(chapter, origin = 'https://hunmeng-novel.ru') {
+  const url = chapterLink(chapter, origin);
+  const clean = value => String(value ?? '').replace(/[\r\n\t]+/g, ' ').replace(/\s+/g, ' ').trim();
+  const shorten = (value, limit) => {
+    const chars = Array.from(clean(value).replace(/[\u0000-\u001f\u007f]/g, ' '));
+    return chars.length > limit ? chars.slice(0, limit - 1).join('') + '…' : chars.join('');
+  };
+  const novel = shorten(chapter.novelTitle, 140);
+  const title = shorten(chapter.title, 180);
+  if (!novel.trim() || !title.trim()) throw new Error('Missing chapter title');
+  const escapeHtml = value => value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+  const text = [
+    '📚 <b>NEW CHAPTER</b>',
+    '',
+    '<b>' + escapeHtml(novel) + '</b>',
+    'Chapter ' + chapter.number + ': <i>' + escapeHtml(title) + '</i>',
+    '',
+    'Read the new chapter on Hunmeng:',
+    url,
+  ].join('\n');
+  return {
+    text,
+    parse_mode: 'HTML',
+    link_preview_options: {is_disabled: false, prefer_large_media: true},
+    reply_markup: {inline_keyboard: [[{text: '📖 Read chapter', url}]]},
+  };
+}
+
 export function decideChapters(state, published) {
   if (!Array.isArray(published)) throw new Error('Published chapter source unavailable');
   const seen = new Map();
