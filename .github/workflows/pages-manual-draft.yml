@@ -41,7 +41,8 @@ jobs:
          startsWith(github.event.head_commit.message, 'fix(catalog): publish searchable external novels 2026-11-01 [deploy cloudflare]') ||
          startsWith(github.event.head_commit.message, 'feat(editorial): publish authorized chapter import workflow 2026-11-01 [deploy cloudflare]') ||
          startsWith(github.event.head_commit.message, 'fix(release): publish rights-gated chapter import 2026-11-01 [deploy cloudflare]') ||
-         startsWith(github.event.head_commit.message, 'feat(research): publish DaoSearch editorial lookup 2026-11-01 [deploy cloudflare]'))))
+         startsWith(github.event.head_commit.message, 'feat(research): publish DaoSearch editorial lookup 2026-11-01 [deploy cloudflare]') ||
+         startsWith(github.event.head_commit.message, 'chore(release): publish Hunmeng 2.0 2026-11-02 [deploy cloudflare]'))))
     runs-on: ubuntu-latest
     environment: pages-production
     timeout-minutes: 30
@@ -71,12 +72,26 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - run: npm run build:demo
       - run: npm test
+      - name: Validate public V2 routes before publishing
+        env:
+          HUNMENG_V2_PUBLIC: '1'
+        run: |
+          rm -rf .astro dist node_modules/.astro
+          npm run build:demo
+          npx playwright test --config playwright.v2-release.config.ts
       - name: Remove demo build output and cached content before production build
         run: rm -rf .astro dist node_modules/.astro
       - name: Build production assets
         env:
           SITE_URL: https://hunmeng-novel.ru
+          HUNMENG_V2_PUBLIC: '1'
         run: npm run build
+      - name: Verify public V2 canonical pages and private preview indexing
+        run: |
+          grep -q 'v2-home' dist/index.html
+          grep -q 'v2-catalog-page' dist/catalog/index.html
+          grep -q 'noindex' dist/v2/index.html
+          ! grep -q '/v2/' dist/sitemap-0.xml
       - name: Ensure demo stories are absent from production
         run: |
           test ! -e dist/novel/khranitel-mayaka
