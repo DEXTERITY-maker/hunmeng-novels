@@ -20,6 +20,16 @@ on:
         default: all
         required: true
         options: [all, scheduled, deployed]
+      recover_reserved:
+        description: 'Manual single-chapter recovery: type dracula:1 or leave blank'
+        type: string
+        default: ''
+        required: false
+      channel_checked:
+        description: 'I confirmed Dracula chapter 1 is absent from @hunmengnovels'
+        type: boolean
+        default: false
+        required: true
 
 permissions:
   contents: write
@@ -50,4 +60,6 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || false }}
           NOTIFICATION_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.mode || 'all' }}
+          RECOVERY_KEY: ${{ github.event_name == 'workflow_dispatch' && inputs.recover_reserved || '' }}
+          RECOVERY_CONFIRMED: ${{ github.event_name == 'workflow_dispatch' && inputs.channel_checked || false }}
         run: node scripts/telegram-chapters.mjs
