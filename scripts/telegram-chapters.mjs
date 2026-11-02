@@ -1,7 +1,7 @@
 import {createTelegramRequest,safeTelegramFailure,reservedChapterKeys,selectManualRecovery} from './telegram-delivery-safety.mjs';
 import {execFileSync} from 'node:child_process';
 import {readFileSync} from 'node:fs';
-import {chapterKey,chapterLink,announcement,decideChapters,applyChapterMarker,parseChapterMarkdown,validateReleasedChapters,deliverChapters,telegramChapterMessage} from './telegram-chapters-core.mjs';
+import {chapterKey,chapterLink,decideChapters,applyChapterMarker,parseChapterMarkdown,validateReleasedChapters,deliverChapters,telegramChapterMessage} from './telegram-chapters-core.mjs';
 
 // Ledger exists only on its own service branch. No database writes, no chapter bodies in logs.
 const REF='refs/heads/telegram-notification-state';
