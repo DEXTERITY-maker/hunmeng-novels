@@ -27,12 +27,12 @@ test('V2 chapter navigation stays in preview while original route stays canonica
   await expect(page).toHaveURL('/v2/read/khranitel-mayaka/glava-2/');
   await expect(page.locator('.chapter-end-nav .chapter-previous')).toHaveAttribute('href', preview);
   await expect(page.locator('main#main')).toHaveAttribute('data-number', '2');
-  // Long chapters auto-hide reading chrome on downward scrolling. A reader
-  // must be able to bring the controls back before using preview navigation.
+  // Long chapters hide the toolbar when scrolling down. Scrolling back to
+  // the top should always recover the controls and the V2 navigation.
+  // Avoid racing the deferred scroll event with a one-off class snapshot.
   await page.locator('#chapter-text').evaluate(el => el.scrollIntoView({ block: 'end' }));
-  if (await page.locator('body.controls-hidden').count()) {
-    await page.getByRole('button', { name: 'Show reading controls' }).click();
-  }
+  await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
   await expect(page.locator('body')).not.toHaveClass(/controls-hidden/);
   await expect(page.getByRole('link', { name: 'Original reader' })).toBeVisible();
   await page.getByRole('link', { name: 'Original reader' }).click();
