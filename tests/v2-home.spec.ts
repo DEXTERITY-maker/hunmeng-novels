@@ -52,3 +52,37 @@ test('Hunmeng 2.0 supports reduced motion and preserves the original homepage', 
   await expect(page).toHaveURL(/\/$/);
   await expect(page.locator('.home-hero h1')).toContainText('Stories worth');
 });
+
+
+test('editorial-inspired homepage uses real genres, working collections and no dummy inventory', async ({ page }) => {
+  await page.goto('/v2/');
+  await expect(page.locator('.v3-primary-nav a')).toHaveCount(5);
+  await expect(page.locator('.v3-welcome')).toBeVisible();
+  await expect(page.locator('.v3-category-row')).toHaveCount(6);
+  await expect(page.locator('.v3-collection-card')).toHaveCount(3);
+  await expect(page.locator('.v3-collection-card').first()).toHaveAttribute('href', '/v2/catalog/?genre=Fantasy');
+  await expect(page.locator('.v2-search')).toHaveAttribute('action', '/v2/catalog/');
+  await expect(page.locator('.v2-spotlight h2 a')).toHaveAttribute('href', /^\/novel\//);
+  await expect(page.locator('.v3-article-image').first()).toHaveAttribute('href', /^\/news\//);
+  await expect(page.locator('.v2-reading-actions a').first()).toHaveAttribute('href', /^https:\/\/t\.me\//);
+  await expect(page.locator('body')).not.toContainText('1,280+ books');
+  await expect(page.locator('body')).not.toContainText('The Endurance of Change');
+});
+
+test('editorial art direction keeps all major sections inside mobile and desktop viewports', async ({ page }, testInfo) => {
+  for (const width of [320, 375, 390, 768, 1280]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/v2/');
+    await expect(page.locator('.v2-hero h1')).toBeVisible();
+    for (const selector of ['.v3-primary-nav', '.v2-hero', '.v2-search', '.v2-spotlight', '.v3-welcome', '.v3-categories', '.v3-collections', '.v3-depth', '.v2-reading-cta']) {
+      const box = await page.locator(selector).boundingBox();
+      expect(box, selector + ' @ ' + width).not.toBeNull();
+      expect(box!.x, selector + ' left @ ' + width).toBeGreaterThanOrEqual(-1);
+      expect(box!.x + box!.width, selector + ' right @ ' + width).toBeLessThanOrEqual(width + 1);
+    }
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'horizontal overflow @ ' + width).toBe(true);
+    if (width === 390 || width === 1280) {
+      await page.screenshot({path:testInfo.outputPath('hunmeng-editorial-home-' + width + '.png'), fullPage:true, animations:'disabled'});
+    }
+  }
+});
