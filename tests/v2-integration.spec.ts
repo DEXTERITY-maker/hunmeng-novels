@@ -49,3 +49,25 @@ test('V2 keeps reader and staff credentials in their original independent stores
   await expect(page.locator('#chapter-text')).not.toBeEmpty();
   expect(await page.evaluate(() => sessionStorage.getItem('hunmeng-novels:admin-session:v1'))).toBeNull();
 });
+
+test('V2 screenshots document the responsive release candidate without exposing staff data', async ({page}, testInfo) => {
+  const pages = [
+    {path: '/v2/', name: 'home', ready: 'main.v2-home'},
+    {path: '/v2/catalog/', name: 'catalog', ready: 'main.v2-catalog-page'},
+    {path: '/v2/read/khranitel-mayaka/glava-1/', name: 'reader', ready: 'body.v2-reader #chapter-text'},
+    {path: '/v2/admin/', name: 'admin-guest', ready: '.v2-admin-page'},
+  ];
+  for (const view of pages) {
+    await page.goto(view.path);
+    await expect(page.locator(view.ready)).toBeVisible();
+    if (view.name === 'admin-guest') {
+      // Never capture a signed-in staff session or production editorial records.
+      await expect(page.locator('#admin-workspace')).toBeHidden();
+    }
+    await page.screenshot({
+      path: testInfo.outputPath('hunmeng-v2-' + view.name + '.png'),
+      fullPage: false,
+      animations: 'disabled',
+    });
+  }
+});
