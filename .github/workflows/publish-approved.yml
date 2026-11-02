@@ -5,11 +5,12 @@ on:
     - cron: "25 */6 * * *"
 permissions:
   contents: write
-concurrency:
-  group: hunmeng-publish
-  cancel-in-progress: false
 jobs:
   publish:
+    concurrency:
+      group: hunmeng-pages-production
+      queue: max
+      cancel-in-progress: false
     if: ${{ vars.HUNMENG_PUBLISH_ENABLED == 'true' }}
     runs-on: ubuntu-latest
     steps:

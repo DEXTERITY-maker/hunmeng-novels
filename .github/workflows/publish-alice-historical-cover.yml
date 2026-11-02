@@ -5,12 +5,12 @@ on:
 
 permissions:
   contents: write
-concurrency:
-  group: hunmeng-alice-cover-release
-  cancel-in-progress: false
-
 jobs:
   publish-cover:
+    concurrency:
+      group: hunmeng-pages-production
+      queue: max
+      cancel-in-progress: false
     if: >-
       github.ref == 'refs/heads/main' &&
       github.event_name == 'push' &&
@@ -25,7 +25,7 @@ jobs:
       - name: Checkout reviewed source
         uses: actions/checkout@v4
         with:
-          ref: main
+          ref: ${{ github.sha }}
           persist-credentials: true
       - name: Node 24
         uses: actions/setup-node@v4
@@ -59,9 +59,20 @@ jobs:
           git diff --cached --exit-code && exit 1 || true
           git commit -m "content(cover): historic 1865 Alice first-edition cover"
           git push origin HEAD:main
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+      - name: Verify the published revision is still current on main
+        env:
+          EXPECTED_DEPLOY_SHA: ${{ steps.commit.outputs.sha }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node scripts/verify-main-revision.mjs
       - name: Deploy approved cover and reading catalog to Cloudflare
-        uses: cloudflare/wrangler-action@v4
+        uses: cloudflare/wrangler-action@953926a2e2182532811c01a25e53647d93bf07c0 # v4
+        env:
+          EXPECTED_DEPLOY_SHA: ${{ steps.commit.outputs.sha }}
+          GITHUB_TOKEN: ${{ github.token }}
+          npm_config_save: 'false'
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy dist --project-name=hunmeng-novels --branch=main
+          preCommands: node scripts/verify-main-revision.mjs
+          command: pages deploy dist --project-name=hunmeng-novels --branch=main --commit-hash=${{ steps.commit.outputs.sha }}

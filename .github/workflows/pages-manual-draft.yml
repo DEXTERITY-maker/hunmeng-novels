@@ -13,12 +13,12 @@ on:
 permissions:
   contents: read
 
-concurrency:
-  group: hunmeng-pages-production
-  cancel-in-progress: false
-
 jobs:
   deploy:
+    concurrency:
+      group: hunmeng-pages-production
+      queue: max
+      cancel-in-progress: false
     # Production is an owner-approved dispatch or an explicitly allowlisted release subject.
     # GitHub squash-merge subjects may have a commit body; match the approved subject
     # prefix, not the full multiline commit message. Never deploy untagged pushes.
@@ -82,9 +82,19 @@ jobs:
           test ! -e dist/novel/khranitel-mayaka
           test ! -e dist/novel/sad-zimy
           node -e "const fs=require('node:fs');const rows=JSON.parse(fs.readFileSync('dist/catalog.json','utf8'));if(rows.some(n=>n.demo===true||['khranitel-mayaka','sad-zimy'].includes(n.slug)))process.exit(1)"
+      - name: Verify the built revision is still current on main
+        env:
+          EXPECTED_DEPLOY_SHA: ${{ github.sha }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node scripts/verify-main-revision.mjs
       - name: Publish to existing Cloudflare Pages project
-        uses: cloudflare/wrangler-action@v4
+        uses: cloudflare/wrangler-action@953926a2e2182532811c01a25e53647d93bf07c0 # v4
+        env:
+          EXPECTED_DEPLOY_SHA: ${{ github.sha }}
+          GITHUB_TOKEN: ${{ github.token }}
+          npm_config_save: 'false'
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy dist --project-name=hunmeng-novels --branch=main
+          preCommands: node scripts/verify-main-revision.mjs
+          command: pages deploy dist --project-name=hunmeng-novels --branch=main --commit-hash=${{ github.sha }}
