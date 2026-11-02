@@ -205,7 +205,19 @@ const taxonomy = getTaxonomy(await getLibrary());
         <section class="admin-card admin-wide" id="v2-admin-queue">
           <h2>5. Review and publication queue</h2>
           <p>Approval requires documented permissions, the source text, a translation, a description, a glossary, and notes from a human reviewer.</p>
-          <button id="admin-refresh" class="button secondary" type="button">Refresh queue</button>
+          <div class="v2-admin-queue-controls">
+            <label for="v2-admin-queue-filter">Show jobs
+              <select id="v2-admin-queue-filter">
+                <option value="">All recent jobs</option>
+                <option value="draft">Drafts</option>
+                <option value="review">Awaiting review</option>
+                <option value="approved">Approved</option>
+                <option value="published">Published</option>
+              </select>
+            </label>
+            <button id="admin-refresh" class="button secondary" type="button">Refresh queue</button>
+          </div>
+          <p id="v2-admin-queue-visible" role="status" aria-live="polite" class="fine">Load your editorial queue to see jobs.</p>
           <div id="admin-job-list"></div>
         </section>
         <section id="admin-reader-reviews" class="admin-card admin-wide" hidden>

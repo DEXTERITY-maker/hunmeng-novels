@@ -33,6 +33,8 @@ export async function initAdmin() {
       document.getElementById(id)?.replaceChildren();
     // Never retain editorial counts on screen after staff authorization is lost.
     for (const counter of document.querySelectorAll<HTMLElement>('[data-v2-admin-stat]')) counter.textContent = '—';
+    if (queueVisibility) queueVisibility.textContent = 'Editorial access required.';
+    if (queueFilter) queueFilter.value = '';
     loginLink.hidden = false;
     message.textContent = text;
   };
@@ -76,6 +78,19 @@ export async function initAdmin() {
   const sourcesDiv = document.getElementById('admin-source-list')!;
   const termsDiv = document.getElementById('admin-term-list')!;
   const jobsDiv = document.getElementById('admin-job-list')!;
+  const queueFilter = document.querySelector<HTMLSelectElement>('#v2-admin-queue-filter');
+  const queueVisibility = document.getElementById('v2-admin-queue-visible');
+  const filterJobs = () => {
+    if (!queueFilter) return;
+    const status = queueFilter.value;
+    let visible = 0;
+    jobsDiv.querySelectorAll<HTMLElement>('.admin-job-row').forEach(row => {
+      row.hidden = Boolean(status && row.dataset.jobStatus !== status);
+      if (!row.hidden) visible++;
+    });
+    if (queueVisibility) queueVisibility.textContent = visible + ' of ' + jobs.length + ' recent jobs shown.';
+  };
+  queueFilter?.addEventListener('change',filterJobs);
   if (role !== 'admin') {
     rightsForm.hidden = true;
     sourceForm.hidden = true;
@@ -166,6 +181,7 @@ export async function initAdmin() {
     for (const job of jobs) {
       const wrapper = el('div');
       wrapper.className = 'admin-job-row';
+      wrapper.dataset.jobStatus = job.status;
       wrapper.append(el('strong',
         (sources.find(s => s.id === job.source_id)?.slug ?? 'Source') +
         ' / ' + job.chapter_number + '. ' + job.chapter_title + ' · ' + (jobStatusLabels[job.status] ?? 'Unknown status')));
@@ -238,6 +254,7 @@ export async function initAdmin() {
       }
       wrapper.append(actions); jobsDiv.append(wrapper);
     }
+    filterJobs();
   }
   function onSubmit(form: HTMLFormElement, fn: (f: HTMLFormElement, submitter: HTMLElement | null) => Promise<void | string>) {
     form.addEventListener('submit', async (e) => {

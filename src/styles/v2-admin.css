@@ -69,3 +69,10 @@
 .v2-admin-counters dd{margin:0;font:650 clamp(1.5rem,2.3vw,2rem)/1.1 'Manrope Variable',sans-serif;color:var(--accent);font-variant-numeric:tabular-nums}
 @media(max-width:980px){.v2-admin-counters{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:530px){.v2-admin-counters{grid-template-columns:repeat(2,minmax(0,1fr))}.v2-admin-counters>div{padding:12px 10px}.v2-admin-live{padding:15px}.v2-admin-live-note{font-size:.69rem}}
+
+.v2-admin-queue-controls{display:flex;flex-wrap:wrap;align-items:end;gap:12px 20px;margin:17px 0 9px}
+.v2-admin-queue-controls>label{display:grid;gap:6px;font-size:.75rem;font-weight:730;min-width:min(100%,210px);color:var(--muted)}
+.v2-admin-queue-controls select{min-height:43px;max-width:100%;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:9px}
+.v2-admin-queue-controls button{min-height:43px}
+.v2-admin-page #v2-admin-queue-visible{margin:0 0 16px;font-size:.76rem}
+@media(max-width:390px){.v2-admin-queue-controls{display:grid;grid-template-columns:1fr}.v2-admin-queue-controls>label{min-width:0}}

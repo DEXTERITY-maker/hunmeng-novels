@@ -100,6 +100,12 @@ test('V2 queue metrics show only fetched staff records and refresh without write
   await expect(page.locator('[data-v2-admin-stat="draft"]')).toHaveText('1');
   await expect(page.locator('[data-v2-admin-stat="review"]')).toHaveText('1');
   await expect(page.locator('[data-v2-admin-stat="approved"]')).toHaveText('1');
+  await expect(page.locator('#v2-admin-queue-visible')).toHaveText('3 of 3 recent jobs shown.');
+  await page.locator('#v2-admin-queue-filter').selectOption('review');
+  await expect(page.locator('#v2-admin-queue-visible')).toHaveText('1 of 3 recent jobs shown.');
+  await expect(page.locator('.admin-job-row:visible')).toHaveCount(1);
+  await page.locator('#v2-admin-queue-filter').selectOption('');
+  await expect(page.locator('.admin-job-row:visible')).toHaveCount(3);
   sourceCount = 1;
   await page.getByRole('button', {name:'Refresh queue'}).click();
   await expect(page.locator('[data-v2-admin-stat="sources"]')).toHaveText('1');
