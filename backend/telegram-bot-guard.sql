@@ -1,21 +1,21 @@
 -- Apply separately to the existing Supabase database before enabling the webhook.
 -- All state is private, short lived, and accessible only to the dedicated guard role.
 begin;
--- Fail closed if this role already exists: never inherit unknown pre-existing grants.
+-- Fail closed if any role, table or function already exists: never inherit unknown state.
 create role telegram_bot_guard nologin noinherit nobypassrls;
 grant telegram_bot_guard to authenticator;
 grant usage on schema public to telegram_bot_guard;
-create table if not exists public.telegram_bot_updates (
+create table public.telegram_bot_updates (
   update_id bigint primary key,
   seen_at timestamptz not null default clock_timestamp()
 );
-create index if not exists telegram_bot_updates_seen_idx on public.telegram_bot_updates (seen_at);
-create table if not exists public.telegram_bot_limits (
+create index telegram_bot_updates_seen_idx on public.telegram_bot_updates (seen_at);
+create table public.telegram_bot_limits (
   actor_hash text primary key check (actor_hash ~ '^[0-9a-f]{64}$'),
   window_start timestamptz not null,
   hits integer not null
 );
-create index if not exists telegram_bot_limits_window_idx on public.telegram_bot_limits (window_start);
+create index telegram_bot_limits_window_idx on public.telegram_bot_limits (window_start);
 alter table public.telegram_bot_updates enable row level security;
 alter table public.telegram_bot_limits enable row level security;
 revoke all on public.telegram_bot_updates, public.telegram_bot_limits from public, anon, authenticated, service_role;
@@ -26,7 +26,7 @@ create policy telegram_bot_limits_guard on public.telegram_bot_limits
   for all to telegram_bot_guard using (true) with check (true);
 
 -- One transaction serializes duplicate updates and per-actor rate counters.
-create or replace function public.telegram_bot_admit(p_update_id bigint, p_actor_hash text)
+create function public.telegram_bot_admit(p_update_id bigint, p_actor_hash text)
 returns text language plpgsql security invoker set search_path = '' as $$
 declare inserted bigint; n integer; t timestamptz := clock_timestamp();
 begin

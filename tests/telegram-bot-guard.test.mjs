@@ -20,7 +20,8 @@ test('Postgres guard: RLS, restricted role, atomic deduplication and rate limits
     run(tool('pg_ctl'),['-D',data,'-o',`-k ${dir} -p ${port} -c listen_addresses=''`,'-l',join(dir,'log'),'start']);running=true;
     sql('create role anon; create role authenticated; create role service_role bypassrls; create role authenticator login noinherit; create table public.private_sample(id int);');
     run('psql',['-h',dir,'-p',port,'-d','postgres','-v','ON_ERROR_STOP=1','-f','backend/telegram-bot-guard.sql']);
-    assert.equal(sql("select has_function_privilege('anon','public.telegram_bot_admit(bigint,text)','execute'),has_function_privilege('authenticated','public.telegram_bot_admit(bigint,text)','execute'),has_table_privilege('telegram_bot_guard','public.private_sample','select'),(select rolbypassrls from pg_roles where rolname='telegram_bot_guard')").trim(),'f|f|f|f');
+    assert.throws(()=>run('psql',['-h',dir,'-p',port,'-d','postgres','-v','ON_ERROR_STOP=1','-f','backend/telegram-bot-guard.sql']));
+    assert.equal(sql("select has_function_privilege('anon','public.telegram_bot_admit(bigint,text)','execute'),has_function_privilege('authenticated','public.telegram_bot_admit(bigint,text)','execute'),has_table_privilege('telegram_bot_guard','public.private_sample','select'),(select rolsuper or rolbypassrls or rolcreaterole or rolcreatedb or rolcanlogin or rolreplication from pg_roles where rolname='telegram_bot_guard')").trim(),'f|f|f|f');
     assert.match(sql("set role authenticator; set role telegram_bot_guard; select public.telegram_bot_admit(1,repeat('a',64));"),/accepted/);
     assert.match(sql("set role telegram_bot_guard; select public.telegram_bot_admit(1,repeat('a',64));"),/duplicate/);
     const limits=sql("set role telegram_bot_guard; select public.telegram_bot_admit(n,repeat('b',64)) from generate_series(10,22) n;");
