@@ -1,0 +1,110 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { getLibrary } from '../lib/content';
+import { getNews, newsUrl } from '../lib/news';
+import '../styles/editorial-mockup.css';
+
+const novels = await getLibrary();
+const news = (await getNews()).slice(0, 3);
+const featured = novels[0];
+const picks = novels.slice(1, 4);
+const categories = [
+  { title: 'Classics & Literature', detail: 'Timeless stories and beloved books', symbol: '✦', color: 'rust', href: '/catalog/' },
+  { title: 'History', detail: 'People, places and remarkable eras', symbol: '❦', color: 'clay', href: '/catalog/?genre=History' },
+  { title: 'Philosophy', detail: 'Questions worth returning to', symbol: '✺', color: 'gold', href: '/catalog/?genre=Philosophy' },
+  { title: 'Fantasy & Adventure', detail: 'New worlds waiting to be explored', symbol: '✧', color: 'sage', href: '/catalog/?genre=Fantasy' },
+  { title: 'Arts & Culture', detail: 'Creative lives and ideas', symbol: '⌁', color: 'mint', href: '/genres/' },
+  { title: 'Science & Nature', detail: 'Curiosity without limits', symbol: '◈', color: 'teal', href: '/genres/' },
+];
+const collections = [
+  { title: 'Stories to Get Lost In', detail: 'Discover new worlds', art: 'stories', href: '/catalog/' },
+  { title: 'Thoughtful Reading', detail: 'A quieter kind of journey', art: 'wisdom', href: '/genres/' },
+  { title: 'Fresh Chapters', detail: 'Continue the adventure', art: 'nature', href: '/updates/' },
+];
+---
+<Layout title="Hunmeng — Editorial design preview" description="A visual preview of the next Hunmeng reading room." noindex bodyClass="editorial-mockup-page">
+  <main id="main" class="editorial-mockup">
+    <div class="em-frame">
+      <div class="em-preview-notice"><span>✦ Design preview · inspired by the approved mobile mockup</span><a href="/">Current website ↗</a></div>
+      <section class="em-hero" aria-labelledby="em-hero-title">
+        <div class="em-hero-landscape" aria-hidden="true"></div>
+        <div class="em-hero-copy">
+          <p class="em-eyebrow">HUNMENG READING ROOM</p>
+          <h1 id="em-hero-title">A Thousand Worlds.<br/><em>One Quiet Place.</em></h1>
+          <p class="em-hero-subtitle">Thoughtful books, timeless ideas, a calmer you.</p>
+          <form action="/catalog/" method="get" role="search" class="em-search">
+            <label class="em-sr-only" for="em-search-field">Search books and authors</label>
+            <svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="10" cy="10" r="7"/><path d="m15 15 6 6"/></svg>
+            <input id="em-search-field" name="search" type="search" placeholder="Search books, authors, or topics" required/>
+            <button type="submit">Search</button>
+          </form>
+          <nav class="em-hero-pills" aria-label="Popular reading destinations">
+            <a href="/catalog/">✦ Bestsellers</a><a href="/updates/">★ New arrivals</a><a href="/library/">♡ Your library</a>
+          </nav>
+        </div>
+        <div class="em-feature">
+          <div class="em-feature-label">★ Featured Book</div>
+          {featured ? (
+            <div class="em-feature-body">
+              <a href={featured.url} class="em-feature-cover"><img src={featured.cover} alt={'Cover of ' + featured.title} width="170" height="245" loading="eager"/></a>
+              <div class="em-feature-info">
+                <p class="em-feature-eyebrow">EDITOR'S SPOTLIGHT</p>
+                <h2><a href={featured.url}>{featured.title}</a></h2>
+                <p class="em-byline">by {featured.author}</p>
+                <p class="em-feature-desc">{featured.description}</p>
+                <div class="em-feature-actions"><a class="em-button" href={featured.url}>Read more →</a><a class="em-button-quiet" href="/library/">My library ♡</a></div>
+              </div>
+            </div>
+          ) : (
+            <div class="em-feature-empty"><h2>A good book is on its way.</h2><a class="em-button" href="/catalog/">Browse books →</a></div>
+          )}
+        </div>
+      </section>
+      <div class="em-content">
+        <a class="em-welcome" href="/about/"><span class="em-welcome-flower" aria-hidden="true">❀</span><span><strong>Welcome to Hunmeng</strong><small>A digital reading home for curious minds — where good books meet a slower, richer life.</small></span><span class="em-welcome-arrow" aria-hidden="true">›</span></a>
+        <section class="em-section" aria-labelledby="em-categories-title">
+          <div class="em-heading"><h2 id="em-categories-title">Explore by Category</h2><a href="/genres/">View all categories →</a></div>
+          <div class="em-categories">
+            {categories.map(category => (
+              <a class="em-category" href={category.href}>
+                <span class:list={['em-category-icon', 'em-icon-' + category.color]} aria-hidden="true">{category.symbol}</span>
+                <span class="em-category-copy"><strong>{category.title}</strong><small>{category.detail}</small></span><span class="em-chevron" aria-hidden="true">›</span>
+              </a>
+            ))}
+          </div>
+        </section>
+        <section class="em-section" aria-labelledby="em-collections-title">
+          <div class="em-heading"><div><h2 id="em-collections-title">Curated Collections</h2><p>Handpicked reads around timeless themes.</p></div><a href="/catalog/">Explore all →</a></div>
+          <div class="em-collections">
+            {collections.map(collection => (
+              <a class="em-collection" href={collection.href}>
+                <span class:list={['em-collection-art', 'em-art-' + collection.art]} aria-hidden="true"><span></span></span>
+                <span class="em-collection-title">{collection.title}</span><small>{collection.detail} ›</small>
+              </a>
+            ))}
+          </div>
+        </section>
+        <section class="em-section" aria-labelledby="em-editors-title">
+          <div class="em-heading"><h2 id="em-editors-title">Editors’ Picks</h2><a href="/catalog/">View all →</a></div>
+          {picks.length ? (
+            <div class="em-editor-list">{picks.map(book => (
+              <a href={book.url} class="em-editor-row"><img src={book.cover} alt="" width="56" height="75" loading="lazy"/><span><strong>{book.title}</strong><small>by {book.author}</small></span><span aria-hidden="true">›</span></a>
+            ))}</div>
+          ) : <p class="em-empty">Our next selections will appear here soon.</p>}
+        </section>
+        <section class="em-section" aria-labelledby="em-news-title">
+          <div class="em-heading"><h2 id="em-news-title">Latest Articles & News</h2><a href="/news/">View all →</a></div>
+          {news.length ? <div class="em-article-list">{news.map((item, index) => (
+            <a href={newsUrl(item.id)} class="em-article-row"><span class:list={['em-article-art','em-article-art-' + index]} aria-hidden="true"></span><span><strong>{item.data.title}</strong><small>{item.data.excerpt}</small></span><span aria-hidden="true">›</span></a>
+          ))}</div> : <p class="em-empty">New stories from Hunmeng are coming soon.</p>}
+        </section>
+        <section class="em-section" aria-labelledby="em-guide-title">
+          <div class="em-heading"><h2 id="em-guide-title">In-Depth Reading</h2><a href="/genres/">Explore more →</a></div>
+          <a class="em-guide" href="/genres/"><span class="em-guide-icon" aria-hidden="true">▣</span><span><strong>Find Your Next Great Read</strong><small>Explore genres, discover authors, and find your own reading path.</small><span class="em-guide-tags"><b>Discover</b><b>Genres</b><b>Reading guide</b></span></span></a>
+        </section>
+        <section class="em-newsletter" aria-labelledby="em-newsletter-title"><div><p class="em-eyebrow">STAY INSPIRED</p><h2 id="em-newsletter-title">Your next story<br/>is waiting.</h2><p>Find new releases, timeless reads and quiet moments in your personal library.</p><a href="/account/" class="em-newsletter-button">Join Hunmeng →</a></div><span class="em-bamboo" aria-hidden="true">❧</span></section>
+      </div>
+      <footer class="em-footer"><a href="/" class="em-footer-logo">✦ Hunmeng</a><p>A thoughtful digital reading home, connecting timeless stories, ideas, and people.</p><div class="em-footer-columns"><nav aria-label="Browse"><strong>Browse</strong><a href="/catalog/">Books</a><a href="/updates/">Latest chapters</a><a href="/genres/">Categories</a></nav><nav aria-label="Resources"><strong>Resources</strong><a href="/library/">My library</a><a href="/authors/">Authors</a><a href="/news/">News</a></nav><nav aria-label="About"><strong>About</strong><a href="/about/">Our story</a><a href="/contacts/">Contact</a><a href="/rules/">Terms & privacy</a></nav></div><p class="em-copyright">© 2026 Hunmeng. All rights reserved.</p></footer>
+    </div>
+  </main>
+</Layout>
