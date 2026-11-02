@@ -125,6 +125,14 @@ test('public V2 library keeps real shelves and local reading progress inside res
     await expect(page.locator('[data-shelf-tab="reading"]')).toHaveAttribute('aria-pressed', 'true');
     await expect(page.locator('.library-novel-row')).toHaveCount(1);
     await expect(page.locator('.library-chapter-progress')).toBeVisible();
+    const visual = await page.locator('.library-hero').evaluate(el => ({
+      background: getComputedStyle(el).backgroundImage,
+      title: getComputedStyle(el.querySelector('h1')!).color,
+    }));
+    expect(visual.background, 'original artwork is actually visible @ ' + width).toContain('hero-mountains.svg');
+    expect(visual.title, 'hero title remains legible @ ' + width).toMatch(/^rgb\(255,/);
+    const readActionColor = await page.locator('.library-row-action').first().evaluate(el => getComputedStyle(el).color);
+    expect(readActionColor, 'read action text contrast @ ' + width).toMatch(/^rgb\(255,/);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1),
       'library overflow @ ' + width).toBe(true);
     if (width === 390 || width === 1280) {
