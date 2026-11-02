@@ -37,6 +37,22 @@ const taxonomy = getTaxonomy(await getLibrary());
         <div><span>03</span><strong>Review work</strong><small>Human editorial checks</small></div>
         <div><span>04</span><strong>Approve release</strong><small>Administrator decision</small></div>
       </div>
+      <section class="v2-admin-live" aria-labelledby="v2-admin-live-title">
+        <div class="v2-admin-live-heading">
+          <div>
+            <p class="v2-admin-overline">LIVE EDITORIAL SNAPSHOT</p>
+            <h2 id="v2-admin-live-title">Your current queue</h2>
+          </div>
+          <p class="v2-admin-live-note">Loaded from your authorized editorial workspace. Draft and review counts cover the 100 most recent jobs, not the entire history.</p>
+        </div>
+        <dl class="v2-admin-counters" aria-live="polite" aria-atomic="true">
+          <div><dt>Sources visible</dt><dd data-v2-admin-stat="sources">—</dd></div>
+          <div><dt>Rights verified</dt><dd data-v2-admin-stat="verified">—</dd></div>
+          <div><dt>Draft chapters</dt><dd data-v2-admin-stat="draft">—</dd></div>
+          <div><dt>Awaiting review</dt><dd data-v2-admin-stat="review">—</dd></div>
+          <div><dt>Approved chapters</dt><dd data-v2-admin-stat="approved">—</dd></div>
+        </dl>
+      </section>
       <div class="v2-admin-layout">
         <nav class="v2-admin-nav" aria-label="Editorial workspace sections">
           <div class="v2-admin-nav-heading">

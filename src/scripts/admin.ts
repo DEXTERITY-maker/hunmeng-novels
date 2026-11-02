@@ -31,6 +31,8 @@ export async function initAdmin() {
     workspace.querySelectorAll('form').forEach(form => form.reset());
     for (const id of ['admin-source-list', 'admin-term-list', 'admin-job-list'])
       document.getElementById(id)?.replaceChildren();
+    // Never retain editorial counts on screen after staff authorization is lost.
+    for (const counter of document.querySelectorAll<HTMLElement>('[data-v2-admin-stat]')) counter.textContent = '—';
     loginLink.hidden = false;
     message.textContent = text;
   };
@@ -124,6 +126,19 @@ export async function initAdmin() {
     jobs = await rest<Job[]>('novel_translation_jobs','GET',
       'select=id,source_id,chapter_number,chapter_title,chapter_slug,status,updated_at,qa_notes,original_text,translated_text,chapter_description&order=updated_at.desc&limit=100');
     if (workspace.hidden) return;
+    // Read-only V2 overview. No extra API calls, credentials, or new permissions.
+    // The jobs query intentionally fetches at most the 100 latest records.
+    const currentStats: Record<string, number> = {
+      sources: sources.length,
+      verified: sources.filter(source => rightsVerified(source)).length,
+      draft: jobs.filter(job => job.status === 'draft').length,
+      review: jobs.filter(job => job.status === 'review').length,
+      approved: jobs.filter(job => job.status === 'approved').length,
+    };
+    for (const [name, count] of Object.entries(currentStats)) {
+      const stat = workspace.querySelector<HTMLElement>('[data-v2-admin-stat="' + name + '"]');
+      if (stat) stat.textContent = new Intl.NumberFormat('en-US').format(count);
+    }
     sourceOptions();
     sourcesDiv.replaceChildren();
     const ul = el('ul');

@@ -45,6 +45,7 @@ test('V2 editorial page hides all work tools without a verified staff session', 
   await expect(page.locator('meta[name="referrer"]')).toHaveAttribute('content','no-referrer');
   await expect(page.locator('#admin-workspace')).toBeHidden();
   await expect(page.locator('.v2-admin-nav')).toBeHidden();
+  await expect(page.locator('.v2-admin-live')).toBeHidden();
   await expect(page.locator('#admin-login-link')).toBeVisible();
   await expect(page.getByRole('link',{name:'Editorial sign-in',exact:true})).toHaveAttribute('href','/admin/login/');
   expect(mock.requests.some(r=>/novel_(sources|terms|translation_jobs)/.test(r.path))).toBe(false);
@@ -55,6 +56,9 @@ test('V2 administrator sees the same authorized forms and navigates without writ
   await enter(page);
   await expect(page.locator('#admin-workspace')).toBeVisible();
   await expect(page.locator('#admin-status')).toContainText('Administrator');
+  await expect(page.locator('[data-v2-admin-stat="sources"]')).toHaveText('0');
+  await expect(page.locator('[data-v2-admin-stat="draft"]')).toHaveText('0');
+  await expect(page.locator('[data-v2-admin-stat="review"]')).toHaveText('0');
   await expect(page.locator('#source-form')).toBeVisible();
   await expect(page.locator('#rights-form')).toBeVisible();
   await expect(page.locator('#job-form')).toBeVisible();
@@ -93,6 +97,7 @@ test('V2 workspace closes immediately when the staff role is revoked', async ({p
   await expect(page.locator('#admin-workspace')).toBeHidden();
   await expect(page.locator('#admin-status')).toContainText('changed');
   await expect(page.locator('#admin-source-list')).toBeEmpty();
+  await expect(page.locator('[data-v2-admin-stat="sources"]')).toHaveText('—');
 });
 
 test('V2 editorial page has no horizontal overflow on mobile and desktop', async ({page}) => {
