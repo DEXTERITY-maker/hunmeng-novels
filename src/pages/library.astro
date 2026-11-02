@@ -2,9 +2,22 @@
 import Layout from '../layouts/Layout.astro';
 import Icon from '../components/Icon.astro';
 import { shelves, site } from '../config/site';
+import '../styles/v3-editorial.css';
+import '../styles/v3-library-editorial.css';
+const editorial = import.meta.env.HUNMENG_V2_PUBLIC === '1';
 ---
 
-<Layout title="My library" noindex>
+<Layout title="My library" noindex bodyClass={editorial ? 'hm-editorial-site' : undefined}>
+  {editorial && (
+    <nav class="v3-primary-nav v3-library-nav" aria-label="Reading room navigation">
+      <a href="/">Home</a>
+      <a href="/catalog/">Books</a>
+      <a href="/news/">Articles</a>
+      <a href="/#v3-collections">Collections</a>
+      <a href="/library/" aria-current="page">My library</a>
+      <a href="/about/">About</a>
+    </nav>
+  )}
   <main id="main" class="page-shell library-page">
     <header class="page-heading landscape-banner library-hero">
       <div class="library-hero-copy"><p class="eyebrow">Your own reading corner</p><h1>Library</h1>
