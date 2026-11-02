@@ -18,7 +18,7 @@
   padding: 15px 0 80px;
   color: var(--ink);
 }
-.hm-editorial-site .library-page .library-hero {
+.hm-editorial-site .library-page .library-hero.landscape-banner {
   position: relative;
   min-height: 230px;
   display: flex;
@@ -27,8 +27,12 @@
   padding: clamp(28px,5vw,55px);
   border: 1px solid #d1c1a2;
   border-radius: 19px 19px 26px 26px;
-  background: linear-gradient(115deg,#052e29eb 0%,#0a4739c5 52%,#0a342e88 100%),
-    url('/images/editorial/hero-mountains.svg') center 43% / cover no-repeat;
+  background-color: #073b31;
+  background-image: linear-gradient(115deg,#052e29f5 0%,#083a33e6 57%,#0a342ed9 100%),
+    url('/images/editorial/hero-mountains.svg');
+  background-position: center 43%;
+  background-size: cover;
+  background-repeat: no-repeat;
   box-shadow: 0 14px 38px #1c422927;
 }
 .hm-editorial-site .library-page .library-hero::before { opacity: .24; }
@@ -127,9 +131,14 @@
 .hm-editorial-site .library-page .library-row-author,
 .hm-editorial-site .library-page .library-row-date { color: #687768; }
 .hm-editorial-site .library-page .library-row-action {
-  color: #086449;
+  color: #fff9e9;
+  background: #0c5946;
   font-weight: 780;
   text-underline-offset: 4px;
+}
+.hm-editorial-site .library-page .library-row-action:hover {
+  color: #fff;
+  background: #0a4839;
 }
 .hm-editorial-site .library-page .library-chapter-progress {
   accent-color: #116b52;
