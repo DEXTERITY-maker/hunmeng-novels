@@ -3,10 +3,23 @@ import Layout from '../layouts/Layout.astro';
 import { originalStatusLabels, translationStatusLabels, termTypeLabels } from '../lib/labels';
 import { getLibrary } from '../lib/content';
 import { getTaxonomy } from '../lib/taxonomy';
+import '../styles/v3-editorial.css';
+import '../styles/v3-admin-editorial.css';
+const editorial = import.meta.env.HUNMENG_V2_PUBLIC === '1';
 const taxonomy = getTaxonomy(await getLibrary());
 ---
-<Layout title="Editorial dashboard" noindex description="Manage sources, terminology, translations, and permissions.">
-  <main id="main" class="page-shell admin-page">
+<Layout title="Editorial dashboard" noindex description="Manage sources, terminology, translations, and permissions." bodyClass={editorial ? "hm-editorial-site" : undefined}>
+  {editorial && (
+    <nav class="v3-primary-nav v3-admin-nav" aria-label="Reading room navigation">
+      <a href="/">Home</a>
+      <a href="/catalog/">Books</a>
+      <a href="/news/">Articles</a>
+      <a href="/#v3-collections">Collections</a>
+      <a href="/library/">My library</a>
+      <a href="/about/">About</a>
+    </nav>
+  )}
+  <main id="main" class="page-shell admin-page v3-admin-page">
     <header class="page-heading">
       <h1>Translation management</h1>
       <p>Sources, permissions, glossaries, quality checks, and the publication queue.</p>
@@ -18,6 +31,15 @@ const taxonomy = getTaxonomy(await getLibrary());
     </div>
     <noscript><p class="notice">Enable JavaScript to sign in and use editorial tools.</p></noscript>
     <div id="admin-workspace" hidden>
+      {editorial && (
+        <nav class="v3-admin-jumps" aria-label="Editorial tasks">
+          <a href="#admin-sources-section">Sources and rights</a>
+          <a href="#term-form">Glossary</a>
+          <a href="#job-form">Draft chapters</a>
+          <a href="#chapter-batch-form">Licensed import</a>
+          <a href="#admin-job-list">Review queue</a>
+        </nav>
+      )}
       <div class="admin-grid">
         <section class="admin-card" id="admin-sources-section">
           <h2>1. Sources and permissions</h2>
