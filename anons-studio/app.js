@@ -40,6 +40,7 @@
   if (!sizes[state.ratio]) state.ratio = "portrait";
   for (const key of ["project", "title", "description", "points"]) state[key] = state[key].slice(0, {project:45,title:85,description:210,points:240}[key]);
   let photo = null;
+  const paidAccess = { premium: false, plan: "free" };
   let toastTimer = null;
   let pendingRender = false;
 
@@ -158,6 +159,22 @@
     drawPhoto(W,H);
     drawDecoration(W,H,t);
   }
+  function drawWatermark(W,H,t) {
+    if(paidAccess.premium)return;
+    // The same pixels are rendered in the live preview AND the downloaded PNG.
+    // Production billing will need server-side entitlement enforcement.
+    ctx.save();
+    ctx.translate(W*.5,H*.51);
+    ctx.rotate(-Math.PI/6.4);
+    ctx.textAlign="center";
+    ctx.textBaseline="middle";
+    ctx.font="800 79px Manrope, sans-serif";
+    ctx.fillStyle=rgba(t.text,t.dark?.21:.25);
+    for(const dy of [-260,80,410]) {
+      ctx.fillText("ANONS STUDIO",0,dy);
+    }
+    ctx.restore();
+  }
   function draw() {
     const sz = sizes[state.ratio];const W=sz.w,H=sz.h; const t=themes[state.theme];
     if(canvas.width!==W||canvas.height!==H){canvas.width=W;canvas.height=H;}
@@ -211,6 +228,7 @@
     ctx.strokeStyle=rgba(t.text,.22);ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(margin,footerY-39);ctx.lineTo(W-margin,footerY-39);ctx.stroke();
     ctx.fillStyle=t.sub;ctx.font="800 20px Manrope,sans-serif";ctx.fillText("СОЗДАНО ДЛЯ ВДОХНОВЕНИЯ",margin,footerY);
     ctx.textAlign="right";ctx.fillStyle=t.accent;ctx.fillText("✦",W-margin,footerY);ctx.textAlign="left";
+    drawWatermark(W,H,t);
   }
   function render() { try { draw(); } catch(err) { console.error(err); showToast("Ошибка предпросмотра. Попробуйте другой текст или фото."); } }
   async function loadPhoto(data) {
@@ -280,6 +298,16 @@
     }catch(_){showToast("Не удалось скопировать текст — выделите его в полях редактора.");}
   });
 
+  window.addEventListener("anons:access", event => {
+    const access=event.detail || {};
+    paidAccess.plan=["basic","pro","studio"].includes(access.plan)?access.plan:"free";
+    paidAccess.premium=access.premium===true && paidAccess.plan!=="free";
+    const caption=document.querySelector(".preview-caption");
+    if(caption) caption.textContent=paidAccess.premium
+      ? "Активный тариф "+paidAccess.plan.toUpperCase()+" · Экспорт без водяного знака"
+      : "Free · Водяной знак в предпросмотре и PNG · Снять по подписке";
+    scheduleRender();
+  });
   syncFields();render();if(state.imageData)loadPhoto(state.imageData);
   if(document.fonts?.ready)document.fonts.ready.then(scheduleRender).catch(()=>{});
 })();
