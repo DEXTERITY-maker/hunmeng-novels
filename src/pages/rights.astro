@@ -1,8 +1,11 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import '../styles/v3-editorial.css';
+import '../styles/v3-information-editorial.css';
 import Icon from '../components/Icon.astro';
 import { site } from '../config/site';
 import { contactChannels } from '../lib/contacts';
+const editorial = import.meta.env.HUNMENG_V2_PUBLIC === '1';
 const channels = contactChannels(site.contacts, true);
 const requiredDetails = [
   { title: "The work's title and page addresses", description: 'Provide the title of the work and the addresses of the pages in question.' },
@@ -12,8 +15,18 @@ const requiredDetails = [
 ];
 ---
 
-<Layout title="Rights holders" description="Translation publishing requirements and information for authors and rights holders.">
-  <main id="main" class="page-shell rights-page">
+<Layout title="Rights holders" description="Translation publishing requirements and information for authors and rights holders." bodyClass={editorial ? "hm-editorial-site" : undefined}>
+  {editorial && (
+    <nav class="v3-primary-nav v3-info-nav" aria-label="Reading room navigation">
+      <a href="/">Home</a>
+      <a href="/catalog/">Books</a>
+      <a href="/news/">Articles</a>
+      <a href="/#v3-collections">Collections</a>
+      <a href="/library/">My library</a>
+      <a href="/about/">About</a>
+    </nav>
+  )}
+  <main id="main" class="page-shell rights-page v3-info-page">
     <header class="rights-hero landscape-banner">
       <a class="back-link" href="/">← Home</a>
       <p class="eyebrow">Permission &amp; attribution</p>

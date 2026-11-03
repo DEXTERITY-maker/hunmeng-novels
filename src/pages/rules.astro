@@ -1,9 +1,22 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import '../styles/v3-editorial.css';
+import '../styles/v3-information-editorial.css';
+const editorial = import.meta.env.HUNMENG_V2_PUBLIC === '1';
 ---
 
-<Layout title="Terms and privacy">
-  <main id="main" class="page-shell prose-page">
+<Layout title="Terms and privacy" bodyClass={editorial ? "hm-editorial-site" : undefined}>
+  {editorial && (
+    <nav class="v3-primary-nav v3-info-nav" aria-label="Reading room navigation">
+      <a href="/">Home</a>
+      <a href="/catalog/">Books</a>
+      <a href="/news/">Articles</a>
+      <a href="/#v3-collections">Collections</a>
+      <a href="/library/">My library</a>
+      <a href="/about/">About</a>
+    </nav>
+  )}
+  <main id="main" class="page-shell prose-page v3-info-page">
     <a class="back-link" href="/">
       ← Home
     </a>
