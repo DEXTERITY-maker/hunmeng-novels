@@ -97,6 +97,11 @@
   box-shadow: 0 9px 22px #143d2a30;
 }
 .hm-editorial-site .library-page .shelf-tab[aria-pressed="true"] :is(strong,[data-shelf-count],svg) { color: #fff7e7; }
+/* The selected shelf's count retains its pale badge surface. */
+.hm-editorial-site .library-page .shelf-tab[aria-pressed="true"] [data-shelf-count] {
+  background: #e1ece3;
+  color: #174433;
+}
 .hm-editorial-site .library-page .shelf-tab:hover { border-color: #bc975f; }
 .hm-editorial-site .library-page #library-count {
   margin: 0 0 17px;
