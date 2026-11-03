@@ -18,7 +18,11 @@ changing production data.
 - Genres, tags, authors: #142.
 - Paginated chapter contents and external source references: #143.
 - Reader ranks and private writing studio: #144.
-- Cross-route navigation and SEO checks: this stacked PR.
+- Cross-route navigation and SEO checks: #145.
+- Optional protected staff dashboard and editorial login styling: #146.
+- Static-fixture-compatible footer navigation release test: #147.
+- External reference author/status contrast repair: #148.
+- Cross-route light/dark/system-theme contrast regression repair: #149.
 
 Each PR is based on the preceding feature branch, **not directly on `main`**.
 Review the dependencies and merge bottom-up only after the owner approves the
@@ -33,7 +37,11 @@ rollout. A standalone child PR is not independently deployable.
    **not** include fabricated demonstration books.
 3. Inspect real screenshots from the release workflow for 390px and 1280px
    widths; verify no horizontal overflow at 320/390/768/1280 where specified,
-   keyboard focus, legible text and functional navigation.
+   keyboard focus, legible text and functional navigation. Check the actual
+   light, dark and system-dark computed foreground/background contrast on the
+   homepage, catalog tags, library counts, profile (synthetic account), news,
+   external source metadata and legal/contact pages. Target at least 4.5:1
+   for normal text on its actual painted surface.
 4. Confirm public routes have canonical metadata. `/library/`, `/account/`,
    `/studio/`, preview/admin routes and HTTP 404 must stay `noindex`.
 5. The original V1 routes, local reader preferences, bookmarks, shelf data,
@@ -44,6 +52,14 @@ rollout. A standalone child PR is not independently deployable.
    represented as Hunmeng-hosted translations before rights approval.
 7. Reader account and writing studio must keep private data and auth flows
    unchanged; synthetic users are for test environments only.
+8. Verify footer navigation release checks in both the browser-backed preview
+   and the documented `STATIC_TEST=1` fixture mode. Use browser navigation
+   rather than API requests for fixture-routed pages; the static mode does not
+   start a TCP preview server.
+9. A successful ordinary build with a **skipped** opt-in V2 release job is not
+   evidence that the dedicated `HUNMENG_V2_PUBLIC=1` checks passed. Require
+   fresh release-flag execution and human screenshot review at the exact final
+   branch head before any readiness or rollout recommendation.
 
 ## Suggested manual acceptance path
 
