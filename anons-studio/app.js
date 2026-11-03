@@ -250,6 +250,7 @@
   function syncCardAndSave() {
     snapshotCard();
     renderCardTabs();
+    updateDragHandles();
     persist();
     scheduleRender();
   }
@@ -446,71 +447,95 @@
     ctx.restore();
   }
   function draw() {
-    const sz = sizes[state.ratio];const W=sz.w,H=sz.h; const t={...themes[state.theme],accent:state.accentColor||themes[state.theme].accent};
+    const sz=sizes[state.ratio],W=sz.w,H=sz.h;
+    const t={...themes[state.theme],accent:state.accentColor||themes[state.theme].accent};
     if(canvas.width!==W||canvas.height!==H){canvas.width=W;canvas.height=H;}
     ctx.textBaseline="alphabetic";ctx.textAlign="left";
     drawBackground(W,H,t);
-    const margin=76; const contentWidth=W-2*margin;
-    // Topline
-    ctx.font="800 27px Manrope, sans-serif"; ctx.fillStyle=t.text;
-    if(state.layers.brand!==false) {
-      const project=(state.project||"МОЙ ПРОЕКТ").trim().slice(0,45);
-      const projectWidth=Math.min(ctx.measureText(project).width,contentWidth*.52);
-      ctx.save();roundedRect(margin,72,projectWidth+48,56,28);ctx.fillStyle=rgba(t.text,.10);ctx.fill();ctx.restore();
-      ctx.fillStyle=t.text;ctx.save();ctx.beginPath();ctx.rect(margin+24,72,projectWidth,56);ctx.clip();ctx.fillText(project,margin+24,109);ctx.restore();
-      ctx.textAlign="right";ctx.font="700 24px Manrope, sans-serif";ctx.fillStyle=rgba(t.text,.75);
-      ctx.fillText("✳ ANONS / STUDIO",W-margin,105);ctx.textAlign="left";
-    }
-
-    const layout=state.template;
-    const titleY=Math.round(H*(layout==="editorial"?.31:layout==="minimal"?.35:layout==="bulletin"?.27:H>=1700?.258:H<=1100?.265:.285))+Math.round(H*state.titleShift/100);
+    const margin=76,contentWidth=W-2*margin,layout=state.template;
+    const titleY=Math.round(H*(layout==="editorial"?.31:layout==="minimal"?.35:layout==="bulletin"?.27:H>=1700?.258:H<=1100?.265:.285))
+      +Math.round(H*state.titleShift/100);
     const detailsY=Math.round(H*(layout==="editorial"?.75:layout==="minimal"?.77:layout==="bulletin"?.72:H>=1700?.735:H<=1100?.716:.733));
-    ctx.fillStyle=t.accent;ctx.font="800 24px Manrope, sans-serif";
-    if(state.layers.title!==false)ctx.fillText((presets[state.preset]?.label||"АНОНС")+"  /  2026",margin,titleY-52);
+    const center=state.alignment==="center",tx=center?W/2:margin;
+    const titleFamily=state.titleFont==="auto"
+      ?((layout==="editorial"||layout==="minimal")?"Georgia, serif":"Manrope, sans-serif")
+      :({manrope:"Manrope, sans-serif",georgia:"Georgia, serif",arial:"Arial, sans-serif"}[state.titleFont]||"Manrope, sans-serif");
+    const titleWeight=state.titleFont==="auto"&&(layout==="editorial"||layout==="minimal")&&state.titleWeight===800?700:state.titleWeight;
     const rawTitle=state.title.trim()||"Заголовок публикации";
     const maxTitleHeight=Math.max(195,detailsY-titleY-225);
-    const titleFont=(layout==="editorial"||layout==="minimal")?"Georgia, serif":"Manrope, sans-serif";
     const baseSize=Math.round((H<=1100?83:105)*state.headingScale/100);
-    const f=chooseFont(rawTitle,contentWidth,baseSize,maxTitleHeight,H<=1100?3:4);
-    ctx.font=(layout==="editorial"||layout==="minimal"?"700 ":"800 ")+f.size+"px "+titleFont;ctx.fillStyle=t.text;
-    const center=state.alignment==="center";
-    ctx.textAlign=center?"center":"left";
-    const tx=center?W/2:margin;
-    let y=titleY+f.size*.8;
-    for(const line of f.lines){if(state.layers.title!==false)ctx.fillText(line,tx,y);y+=f.size*1.14;}
+    ctx.letterSpacing=state.titleTracking+"px";
+    const f=chooseFont(rawTitle,contentWidth,baseSize,maxTitleHeight,H<=1100?3:4,titleFamily,titleWeight);
+    ctx.letterSpacing="0px";
+    const titleBottom=titleY+f.size*.8+f.lines.length*f.size*1.14;
     const descText=state.description.trim()||"Расскажите коротко, что произошло и почему это важно.";
-    const descY=Math.min(detailsY-130,y+28)+Math.round(H*state.descriptionShift/100);
-    let dsize=H<=1100?29:32;
-    ctx.font="500 "+dsize+"px Manrope, sans-serif";ctx.fillStyle=t.sub;
-    let dlines=fitLines(descText,contentWidth-(H<=1100?10:80),dsize,3);
-    if(state.layers.description!==false)for(let i=0;i<dlines.length;i++){ctx.fillText(dlines[i],tx,descY+i*(dsize*1.5));}
-    ctx.textAlign="left";
-
-    // Structured, legible highlights
+    const descY=Math.min(detailsY-130,titleBottom+28)+Math.round(H*state.descriptionShift/100);
+    const dsize=Math.round((H<=1100?29:32)*state.descriptionScale/100);
     const points=state.points.split(/\r?\n/).map(x=>x.trim()).filter(Boolean).slice(0,3);
     const list=points.length?points:["Важная информация","Следите за новостями"];
     const rowHeight=H<=1100?61:H>=1700?91:76;
-    const top=detailsY;
-    if(state.layers.highlights!==false){
-    ctx.save();roundedRect(margin,top-27,contentWidth,28+list.length*rowHeight+21,23);
-    ctx.fillStyle=rgba(t.text,t.dark?.08:.085);
-    if(layout==="minimal"||layout==="editorial"){ctx.strokeStyle=rgba(t.text,.3);ctx.lineWidth=2;ctx.stroke();}
-    else ctx.fill();
-    ctx.restore();
-    list.forEach((p,i)=>{
-      const cy=top+i*rowHeight+16;
-      ctx.fillStyle=t.accent;ctx.beginPath();ctx.arc(margin+31,cy+9,11,0,2*Math.PI);ctx.fill();
-      ctx.fillStyle=t.dark?t.bg1:"#fff";ctx.font="900 15px Manrope,sans-serif";ctx.textAlign="center";ctx.fillText("✓",margin+31,cy+15);ctx.textAlign="left";
-      ctx.fillStyle=t.text;ctx.font="700 "+(H<=1100?27:30)+"px Manrope,sans-serif";
-      let short=p;
-      while(ctx.measureText(short).width>contentWidth-112&&short.length>0)short=short.slice(0,-2).trim();
-      if(short!==p)short+="…";
-      ctx.fillText(short,margin+63,cy+18);
-    });
+    const renderers={
+      decoration:()=>drawArt(W,H,t),
+      photo:()=>drawPhoto(W,H),
+      brand:()=>{
+        ctx.font="800 27px Manrope, sans-serif";ctx.fillStyle=t.text;
+        const project=(state.project||"МОЙ ПРОЕКТ").trim().slice(0,45);
+        const projectWidth=Math.min(ctx.measureText(project).width,contentWidth*.52);
+        ctx.save();roundedRect(margin,72,projectWidth+48,56,28);ctx.fillStyle=rgba(t.text,.10);ctx.fill();ctx.restore();
+        ctx.fillStyle=t.text;ctx.save();ctx.beginPath();ctx.rect(margin+24,72,projectWidth,56);ctx.clip();ctx.fillText(project,margin+24,109);ctx.restore();
+        ctx.textAlign="right";ctx.font="700 24px Manrope, sans-serif";ctx.fillStyle=rgba(t.text,.75);
+        ctx.fillText("✳ ANONS / STUDIO",W-margin,105);ctx.textAlign="left";
+      },
+      title:()=>{
+        ctx.fillStyle=t.accent;ctx.font="800 24px Manrope, sans-serif";
+        ctx.fillText((presets[state.preset]?.label||"АНОНС")+"  /  2026",margin,titleY-52);
+        ctx.letterSpacing=state.titleTracking+"px";
+        ctx.font=titleWeight+" "+f.size+"px "+titleFamily;ctx.fillStyle=t.text;
+        ctx.textAlign=center?"center":"left";
+        let y=titleY+f.size*.8;
+        for(const line of f.lines){ctx.fillText(line,tx,y);y+=f.size*1.14;}
+        ctx.letterSpacing="0px";ctx.textAlign="left";
+      },
+      description:()=>{
+        ctx.textAlign=center?"center":"left";
+        ctx.font="500 "+dsize+"px Manrope, sans-serif";ctx.fillStyle=t.sub;
+        const dlines=fitLines(descText,contentWidth-(H<=1100?10:80),dsize,3);
+        for(let i=0;i<dlines.length;i++)ctx.fillText(dlines[i],tx,descY+i*(dsize*1.5));
+        ctx.textAlign="left";
+      },
+      highlights:()=>{
+        const top=detailsY;
+        ctx.save();roundedRect(margin,top-27,contentWidth,28+list.length*rowHeight+21,23);
+        ctx.fillStyle=rgba(t.text,t.dark?.08:.085);
+        if(layout==="minimal"||layout==="editorial"){ctx.strokeStyle=rgba(t.text,.3);ctx.lineWidth=2;ctx.stroke();}
+        else ctx.fill();
+        ctx.restore();
+        list.forEach((p,i)=>{
+          const cy=top+i*rowHeight+16;
+          ctx.fillStyle=t.accent;ctx.beginPath();ctx.arc(margin+31,cy+9,11,0,Math.PI*2);ctx.fill();
+          ctx.fillStyle=t.dark?t.bg1:"#fff";ctx.font="900 15px Manrope,sans-serif";ctx.textAlign="center";ctx.fillText("✓",margin+31,cy+15);ctx.textAlign="left";
+          ctx.fillStyle=t.text;ctx.font="700 "+(H<=1100?27:30)+"px Manrope,sans-serif";
+          let short=p;
+          while(ctx.measureText(short).width>contentWidth-112&&short.length>0)short=short.slice(0,-2).trim();
+          if(short!==p)short+="…";
+          ctx.fillText(short,margin+63,cy+18);
+        });
+      }
+    };
+    // Elements are painted back-to-front; the user can change the order independently per card.
+    for(const name of state.layerOrder){
+      if(state.layers[name]===false)continue;
+      const off=state.layerOffsets[name];
+      ctx.save();ctx.translate(W*off.x/100,H*off.y/100);
+      renderers[name]();
+      ctx.restore();
     }
+    // Site footer and Free watermark always remain outside editable layers.
     const footerY=H-74;
-    ctx.strokeStyle=rgba(t.text,.22);ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(margin,footerY-39);ctx.lineTo(W-margin,footerY-39);ctx.stroke();
-    ctx.fillStyle=t.sub;ctx.font="800 20px Manrope,sans-serif";ctx.fillText("СОЗДАНО ДЛЯ ВДОХНОВЕНИЯ",margin,footerY);
+    ctx.strokeStyle=rgba(t.text,.22);ctx.lineWidth=2;ctx.beginPath();
+    ctx.moveTo(margin,footerY-39);ctx.lineTo(W-margin,footerY-39);ctx.stroke();
+    ctx.fillStyle=t.sub;ctx.font="800 20px Manrope,sans-serif";
+    ctx.fillText("СОЗДАНО ДЛЯ ВДОХНОВЕНИЯ",margin,footerY);
     ctx.textAlign="right";ctx.fillStyle=t.accent;ctx.fillText("✦",W-margin,footerY);ctx.textAlign="left";
     drawWatermark(W,H,t);
   }
