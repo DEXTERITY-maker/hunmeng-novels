@@ -87,6 +87,46 @@
               <div class="panel-head"><div><span class="section-index">01 / РЕДАКТОР</span><h3>Настрой свой анонс</h3></div><span class="live-tag"><i></i> В реальном времени</span></div>
               <section class="card-manager" aria-label="Карточки анонса"><div class="card-manager-title"><strong>Карточки публикации</strong><span id="card-count">1 из 8</span></div><div id="card-list" class="card-list" role="tablist" aria-label="Выбор карточки"></div><div class="card-manager-actions"><button type="button" id="add-card">＋ Добавить</button><button type="button" id="duplicate-card">⧉ Дублировать</button><button type="button" id="remove-card">Удалить</button></div><p class="field-note">У каждой карточки свой заголовок и шаблон. Экспортируй одну картинку или весь набор ZIP-архивом.</p></section>
 
+              <section class="pro-editor" aria-label="Профессиональный редактор">
+                <div class="pro-editor-heading">
+                  <div><span class="section-index">НОВОЕ · V0.7</span><h4>Профессиональные инструменты</h4></div>
+                  <span class="pro-edition">STUDIO TOOLS</span>
+                </div>
+                <div class="editor-history" role="group" aria-label="История действий редактора">
+                  <button id="editor-undo" type="button" disabled aria-label="Отменить изменение" title="Отменить (Ctrl+Z)">↶ Отменить</button>
+                  <button id="editor-redo" type="button" disabled aria-label="Вернуть изменение" title="Повторить (Ctrl+Shift+Z)">↷ Повторить</button>
+                  <span class="editor-history-hint">До 20 действий в текущем сеансе</span>
+                </div>
+                <details class="editor-layer-panel" id="editor-layers" open>
+                  <summary>◫ Слои карточки <span>Показать или скрыть</span></summary>
+                  <div class="editor-layer-grid" role="group" aria-label="Видимость слоёв">
+                    <label><input type="checkbox" data-layer="brand" checked> Название бренда</label>
+                    <label><input type="checkbox" data-layer="title" checked> Заголовок</label>
+                    <label><input type="checkbox" data-layer="description" checked> Описание</label>
+                    <label><input type="checkbox" data-layer="highlights" checked> Главные детали</label>
+                    <label><input type="checkbox" data-layer="photo" checked> Фотография</label>
+                    <label><input type="checkbox" data-layer="decoration" checked> Украшения</label>
+                  </div>
+                  <div class="editor-position">
+                    <label for="title-shift">Сдвиг заголовка по вертикали <output id="title-shift-value" for="title-shift">0%</output></label>
+                    <input id="title-shift" type="range" min="-12" max="12" step="1" value="0">
+                    <label for="description-shift">Сдвиг описания по вертикали <output id="description-shift-value" for="description-shift">0%</output></label>
+                    <input id="description-shift" type="range" min="-12" max="12" step="1" value="0">
+                    <button id="layer-reset" type="button">↺ Вернуть расположение</button>
+                  </div>
+                  <p class="field-note">Настройки действуют только для выбранной карточки. Перекрывающиеся элементы можно вернуть в исходное положение.</p>
+                </details>
+                <div class="brand-kit">
+                  <strong>Фирменный набор</strong>
+                  <p>Сохрани название бренда, цвет и тему, чтобы быстро применять оформление к другим карточкам. Набор хранится в этом браузере.</p>
+                  <div class="brand-kit-actions">
+                    <button id="brand-kit-save" type="button">✦ Запомнить стиль</button>
+                    <button id="brand-kit-apply" type="button">↗ Применить стиль</button>
+                  </div>
+                  <span id="brand-kit-status" role="status">Набор ещё не сохранён</span>
+                </div>
+              </section>
+
               <div class="field-group"><label for="template-select">Композиция текущей карточки</label><select id="template-select"><option value="aurora">Aurora — атмосферный</option><option value="editorial">Editorial — редакционный</option><option value="spotlight">Spotlight — выразительный</option><option value="pulse">Pulse — динамичный</option><option value="minimal">Minimal — минималистичный</option><option value="bulletin">Bulletin — новостной</option></select></div>
               <fieldset class="field-group">
                 <legend>Что анонсируем?</legend>
@@ -315,7 +355,7 @@
 
       <section class="cta wrap"><div><div class="kicker">НАЧНИ СЕЙЧАС</div><h2>Всё готово.<br><em>Осталось рассказать.</em></h2><p>Попробуй бесплатный редактор с водяным знаком.</p></div><a href="#editor" class="btn btn-light">Открыть редактор ↗</a></section>
     </main>
-    <footer class="footer wrap"><img class="footer-logo" src="./assets/anons-logo-approved.webp" width="220" height="68" alt="Anons Studio" loading="lazy" decoding="async"><span>Создано для тех, кому есть что рассказать.</span><span>Бета v0.6 · 2026</span></footer>
+    <footer class="footer wrap"><img class="footer-logo" src="./assets/anons-logo-approved.webp" width="220" height="68" alt="Anons Studio" loading="lazy" decoding="async"><span>Создано для тех, кому есть что рассказать.</span><span>Бета v0.7 · 2026</span></footer>
     <div id="toast" role="status" aria-live="polite" class="toast" hidden></div>
   </div>
 </body>
