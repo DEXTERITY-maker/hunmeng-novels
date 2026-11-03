@@ -76,6 +76,7 @@ try {
     await page.locator("[data-template=editorial]").click();
     assert.equal(await page.locator("#template-select").inputValue(),"editorial");
     assert.equal(await page.locator("#theme-label").textContent(),"Светлый — мягкий и редакционный");
+    await page.locator("#advanced-panel summary").click();
     await page.locator("#text-align").selectOption("center");
     await page.locator("#ornaments").uncheck();
     await page.locator("#heading-scale").evaluate(el=>{el.value="120";el.dispatchEvent(new Event("input",{bubbles:true}));});
