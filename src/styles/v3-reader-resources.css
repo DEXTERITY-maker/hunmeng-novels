@@ -1,0 +1,204 @@
+/* Hunmeng 2.0 reading progression and private writing studio.
+   Styling is opt-in under hm-editorial-site. Ranks retain their special
+   fantasy gallery; the studio's drafts/auth controls are never altered. */
+.hm-editorial-site .v3-reader-resources-nav {
+  width: min(1120px,calc(100% - 38px));
+  margin-inline: auto;
+}
+.hm-editorial-site .v3-ranks-page {
+  width: min(1180px,calc(100% - 38px));
+  max-width: 1180px;
+  margin: 15px auto 76px;
+  border: 1px solid #d3c09f;
+  border-radius: 18px 18px 26px 26px;
+  box-shadow: 0 15px 42px #163a2924;
+}
+.hm-editorial-site .v3-ranks-page .rank-world-breadcrumbs a {
+  color: #f8e5bd;
+  text-underline-offset: 4px;
+}
+.hm-editorial-site .v3-ranks-page .rank-world-card {
+  border-radius: 13px;
+}
+.hm-editorial-site .v3-ranks-page .rank-world-actions a:focus-visible,
+.hm-editorial-site .v3-ranks-page .rank-world-breadcrumbs a:focus-visible {
+  outline: 3px solid #f1ce84;
+  outline-offset: 4px;
+}
+.hm-editorial-site .v3-studio-page {
+  --v3-studio-ink: #254737;
+  --v3-studio-muted: #627668;
+  width: min(1120px,calc(100% - 38px));
+  max-width: 1120px;
+  margin-inline: auto;
+  padding: 13px 0 84px;
+  color: var(--v3-studio-ink);
+}
+.hm-editorial-site .v3-studio-page .studio-hero {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 11px;
+  min-height: 230px;
+  padding: clamp(30px,5vw,57px);
+  margin: 0 0 23px;
+  border: 1px solid #c5b68e;
+  border-radius: 18px 18px 26px 26px;
+  background-color: #083b32;
+  background-image: linear-gradient(110deg,#052e2af0,#0a4a3dda 60%,#0b4336c9),
+    url('/images/editorial/hero-mountains.svg');
+  background-position: center;
+  background-size: cover;
+  box-shadow: 0 16px 38px #173b2827;
+}
+.hm-editorial-site .v3-studio-page .studio-hero .studio-hero-kicker {
+  color: #efd08d;
+  font: 770 .7rem/1.5 'Manrope Variable',sans-serif;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+.hm-editorial-site .v3-studio-page .studio-hero h1 {
+  margin: 0;
+  color: #fff8e9;
+  font: 560 clamp(2.2rem,4.7vw,3.8rem)/1.14 'Noto Serif Variable',Georgia,serif;
+  letter-spacing: -.045em;
+}
+.hm-editorial-site .v3-studio-page .studio-hero p {
+  margin: 0;
+  max-width: 620px;
+  color: #e7f0e3;
+  line-height: 1.75;
+  font-size: .88rem;
+}
+.hm-editorial-site .v3-studio-page #studio-status {
+  padding: 15px 18px;
+  margin: 16px 0;
+  border: 1px solid #dfd1b6;
+  border-radius: 12px;
+  background: #f8f0e1;
+  color: #405e4c;
+  font-size: .85rem;
+}
+.hm-editorial-site .v3-studio-page .studio-login-card {
+  width: min(100%,650px);
+  margin: 22px auto 35px;
+  padding: clamp(25px,4vw,42px);
+  border: 1px solid #e1d4bd;
+  border-radius: 19px;
+  background: #fffdf6;
+  box-shadow: 0 13px 36px #4a371a18;
+  color: #2f4d3c;
+  text-align: center;
+}
+.hm-editorial-site .v3-studio-page .studio-login-notice {
+  color: #24513b;
+  font: 580 clamp(1.04rem,2vw,1.4rem)/1.4 'Noto Serif Variable',Georgia,serif;
+}
+.hm-editorial-site .v3-studio-page .studio-login-card .button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 45px;
+  margin-top: 13px;
+  padding: 11px 22px;
+  border-radius: 999px;
+  background: #0b5945;
+  color: #fff9eb;
+  border-color: #0b5945;
+}
+.hm-editorial-site .v3-studio-page .studio-layout { gap: 19px; }
+.hm-editorial-site .v3-studio-page .studio-panel {
+  border: 1px solid #e2d4bb;
+  border-radius: 17px;
+  padding: clamp(19px,3vw,31px);
+  background: #fffdf6;
+  box-shadow: 0 10px 29px #46371e15;
+  color: #2a4b39;
+}
+.hm-editorial-site .v3-studio-page .studio-panel :is(h2,h3) {
+  color: #204835;
+  font-family: 'Noto Serif Variable',Georgia,serif;
+  font-weight: 570;
+  letter-spacing: -.025em;
+}
+.hm-editorial-site .v3-studio-page .studio-panel .studio-overline {
+  color: #9c6e2d;
+  font-size: .69rem;
+  font-weight: 780;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+}
+.hm-editorial-site .v3-studio-page .studio-panel label {
+  color: #355540;
+  line-height: 1.5;
+}
+.hm-editorial-site .v3-studio-page .studio-panel :is(input,select,textarea) {
+  min-height: 44px;
+  max-width: 100%;
+  border: 1px solid #d9ccb2;
+  border-radius: 10px;
+  background: #fffaf1;
+  color: #264a38;
+}
+.hm-editorial-site .v3-studio-page .studio-panel textarea {
+  padding: 13px;
+}
+.hm-editorial-site .v3-studio-page .studio-panel textarea[name='body'] {
+  background: #fffdf8;
+  font-size: clamp(1rem,1.6vw,1.13rem);
+  line-height: 1.82;
+}
+.hm-editorial-site .v3-studio-page .studio-panel :is(.button,button[type='submit']) {
+  min-height: 44px;
+  border-radius: 999px;
+  border: 1px solid #0a5b45;
+  background: #0a5b45;
+  color: #fff9e8;
+  font-weight: 740;
+}
+.hm-editorial-site .v3-studio-page .studio-panel .button.secondary,
+.hm-editorial-site .v3-studio-page .studio-panel button.secondary {
+  border-color: #cbb998;
+  background: #f7efdf;
+  color: #0a5944;
+}
+.hm-editorial-site .v3-studio-page :is(#studio-save-state,#studio-count) {
+  color: #526b59;
+  font-variant-numeric: tabular-nums;
+}
+.hm-editorial-site .v3-studio-page #studio-revisions-panel {
+  border-color: #e4d9c4;
+}
+.hm-editorial-site .v3-studio-page .studio-panel .fine {
+  color: #657567;
+  line-height: 1.7;
+}
+.hm-editorial-site .v3-studio-page :is(a,button,input,textarea,select):focus-visible,
+.hm-editorial-site .v3-reader-resources-nav a:focus-visible {
+  outline: 3px solid #c49b53;
+  outline-offset: 3px;
+}
+@media(max-width:760px) {
+  .hm-editorial-site .v3-reader-resources-nav,
+  .hm-editorial-site :is(.v3-ranks-page,.v3-studio-page) {
+    width: min(100% - 30px,1180px);
+  }
+  .hm-editorial-site .v3-studio-page .studio-hero {
+    min-height: 205px;
+    padding: 28px 23px;
+  }
+  .hm-editorial-site .v3-studio-page .studio-login-card { padding: 24px; }
+}
+@media(max-width:390px) {
+  .hm-editorial-site .v3-reader-resources-nav,
+  .hm-editorial-site :is(.v3-ranks-page,.v3-studio-page) {
+    width: calc(100% - 24px);
+  }
+  .hm-editorial-site .v3-studio-page .studio-hero { padding: 25px 19px; }
+  .hm-editorial-site .v3-studio-page .studio-panel { padding: 16px; }
+  .hm-editorial-site .v3-studio-page .studio-login-card { padding: 19px; }
+}
+@media(prefers-reduced-motion:reduce) {
+  .hm-editorial-site .v3-studio-page :is(a,button) { transition: none; }
+}
