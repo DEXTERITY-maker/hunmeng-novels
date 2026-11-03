@@ -5,6 +5,7 @@
   --surface: #fffdf6;
   --ink: #243a31;
   --muted: #617269;
+  --soft: #f5eedf; /* Match light editorial tag backgrounds in dark/system modes. */
   --line: #e7ddc9;
   --accent: #08604a;
   --v2-catalog-green: #075241;
