@@ -67,14 +67,15 @@ async function fonts(requested='auto'){
     return{name:'Manrope',data,weight:700,style:'normal'};
   })).catch(e=>{fontsPromise=null;throw e;});
   const base=await fontsPromise;
-  const option={georgia:['Noto Serif','noto-serif'],arial:['Arimo','arimo']}[requested];
+  const optional:Record<string,[string,string]>={georgia:['Noto Serif','noto-serif'],arial:['Arimo','arimo']};
+  const option=optional[requested];
   if(!option)return base;
   if(!extras.has(requested))extras.set(requested,loadFont(option[0],option[1]).catch(()=>{
     extras.delete(requested);return [];
   }));
   return [...base,...(await extras.get(requested)!)];
 }
-function renderPoster(snapshot:any,card:any,width:number,height:number){
+function renderPoster(snapshot:any,card:any,width:number,height:number,availableFonts:string[]){
   const colors=THEMES[card.theme]||THEMES[snapshot.theme]||THEMES.ultraviolet;
   const template=TEMPLATES.has(card.template)?card.template:'aurora';
   const layers=card.layers && typeof card.layers==='object'&&!Array.isArray(card.layers)?card.layers:{};
@@ -103,6 +104,7 @@ function renderPoster(snapshot:any,card:any,width:number,height:number){
   const descScale=Number.isFinite(card.descriptionScale)?Math.max(80,Math.min(130,Number(card.descriptionScale))):100;
   const titleFamily=['georgia','arial','manrope'].includes(card.titleFont)
     ?({georgia:'Noto Serif',arial:'Arimo',manrope:'Manrope'} as Record<string,string>)[card.titleFont]:'Manrope';
+  const safeTitleFont=availableFonts.includes(titleFamily)?titleFamily:'Manrope';
   const align=card.alignment==='center'?'center':'left';
   const background='linear-gradient(145deg, '+primary+', '+secondary+')';
   const photograph=visible('photo')&&typeof snapshot.imageData==='string'&&snapshot.imageData.length<600000
@@ -133,7 +135,7 @@ function renderPoster(snapshot:any,card:any,width:number,height:number){
       el('div',{display:'flex',fontSize:24,fontWeight:700,color:accent,letterSpacing:4,marginBottom:21},
         LABELS[card.preset]||'АНОНС'),
       el('div',{display:'flex',fontSize:fontsize,fontWeight:700,lineHeight:1.12,
-        color:ink,letterSpacing:tracking,fontFamily:titleFamily,fontWeight:weight,
+        color:ink,letterSpacing:tracking,fontFamily:safeTitleFont,fontWeight:weight,
         width:'100%',wordBreak:'break-word'},title)):null,
     visible('description')?el('div',{display:'flex',fontSize:29,fontWeight:700,lineHeight:1.5,marginTop:24,
       position:'relative',top:Math.round(height*(move(card.descriptionShift)+offset('description').y)/100),
@@ -188,7 +190,7 @@ Deno.serve(async(req:Request)=>{
   try{
     const [width,height]=SIZES[snapshot.ratio];
     const typefaces=await fonts(snapshot.cards[idx].titleFont);
-    const element=renderPoster(snapshot,snapshot.cards[idx],width,height);
+    const element=renderPoster(snapshot,snapshot.cards[idx],width,height,typefaces.map((f:any)=>f.name));
     const image=new ImageResponse(element,{width,height,fonts:typefaces});
     return new Response(image.body,{status:200,headers:{...HEADERS,'Content-Type':'image/png',
       'Content-Disposition':'attachment; filename="anons-premium.png"'}});
