@@ -74,6 +74,7 @@
   const paidAccess = { premium: false, plan: "free" };
   let toastTimer = null;
   let pendingRender = false;
+  let localExport = false;
   let suppressEditorSignal = false;
 
   function snapshotCard() {
@@ -262,9 +263,8 @@
     drawPhoto(W,H);
   }
   function drawWatermark(W,H,t) {
-    if(paidAccess.premium)return;
-    // The same pixels are rendered in the live preview AND the downloaded PNG.
-    // Production billing will need server-side entitlement enforcement.
+    if(paidAccess.premium && !localExport)return;
+    // Local PNGs must always retain the watermark. Clean PNGs are server-rendered.
     ctx.save();
     ctx.translate(W*.5,H*.51);
     ctx.rotate(-Math.PI/6.4);
@@ -448,18 +448,31 @@
   $("clear-image").addEventListener("click",()=>{
     state.imageData="";photo=null;$("upload").value="";syncFields();persist();scheduleRender();showToast("Фото удалено.");
   });
-  $("export").addEventListener("click",()=>{
-    render();
-    if(!canvas.toBlob){showToast("Этот браузер не поддерживает экспорт PNG.");return;}
-    canvas.toBlob((blob)=>{
-      if(!blob){showToast("Не удалось создать файл PNG.");return;}
-      const url=URL.createObjectURL(blob);
-      const a=document.createElement("a");a.href=url;
-      a.download="anons-studio-"+(state.activeCard+1)+"-"+state.preset+"-"+state.ratio+".png";
-      document.body.appendChild(a);a.click();a.remove();
-      setTimeout(()=>URL.revokeObjectURL(url),30000);
-      showToast("Изображение PNG готово. Проверьте загрузки браузера.");
-    },"image/png");
+  async function localWatermarkedPng(){
+    if(!canvas.toBlob)throw new Error("NO_CANVAS_EXPORT");
+    localExport=true;
+    try{
+      render();
+      return await new Promise((resolve,reject)=>{
+        canvas.toBlob(b=>b?resolve(b):reject(new Error("PNG_EXPORT_FAILED")),"image/png");
+      });
+    }finally{localExport=false;render();}
+  }
+  $("export").addEventListener("click",async()=>{
+    const button=$("export");
+    if(button.disabled)return;
+    button.disabled=true;
+    try {
+      const blob=paidAccess.premium
+        ? await window.AnonsBilling?.exportPremium(getSnapshot(),state.activeCard)
+        : await localWatermarkedPng();
+      if(!blob)throw new Error("PREMIUM_EXPORT_UNAVAILABLE");
+      triggerDownload(blob,"anons-studio-"+(state.activeCard+1)+"-"+state.preset+"-"+state.ratio+".png");
+      showToast(paidAccess.premium?"Премиальный PNG получен с сервера.":"Бесплатный PNG скачан с водяным знаком.");
+    }catch(e){
+      console.warn("Export denied or failed",e?.message);
+      showToast("Не удалось скачать PNG. Проверь подписку и подключение или попробуй ещё раз.");
+    }finally{button.disabled=false;}
   });
   function crc32(bytes) {
     let crc=0xffffffff;
@@ -533,10 +546,10 @@
       for(let i=0;i<state.cards.length;i++){
         state.activeCard=i;
         Object.assign(state,state.cards[i]);
-        render();
-        const blob=await new Promise((resolve,reject)=>{
-          canvas.toBlob(b=>b?resolve(b):reject(new Error("PNG export failed")),"image/png");
-        });
+        const blob=paidAccess.premium
+          ? await window.AnonsBilling?.exportPremium(getSnapshot(),i)
+          : await localWatermarkedPng();
+        if(!blob)throw new Error("PREMIUM_EXPORT_UNAVAILABLE");
         output.push({name:"anons-card-"+String(i+1).padStart(2,"0")+".png",blob});
       }
       const zip=await packZip(output);
