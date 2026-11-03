@@ -68,7 +68,7 @@ const server=createServer(async(req,res)=>{
       const last=js.indexOf("  const graphicPathCache",first);
       assert.ok(first>=0&&last>first,"Fixture watermark function anchor");
       buffer=Buffer.from(js.slice(0,first)+
-        "  function drawWatermark() { /* TEST FIXTURE ONLY */ }\\n"+
+        "  function drawWatermark() { /* TEST FIXTURE ONLY */ }; "+
         js.slice(last));
     }
     res.writeHead(200,{"content-type":types[path.slice(path.lastIndexOf("."))]});
