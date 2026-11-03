@@ -62,3 +62,39 @@ test('V2 discovery and book cards remain inside narrow viewports without new pag
   }
   expect(errors).toEqual([]);
 });
+
+test('editorial discovery shares the homepage shell without changing the legacy catalog', async ({ page }, testInfo) => {
+  for (const width of [320, 390, 768, 1280]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/v2/catalog/?genre=Fantasy');
+    await expect(page.locator('body')).toHaveClass(/hm-editorial-site/);
+    await expect(page.locator('.v3-primary-nav a')).toHaveCount(5);
+    await expect(page.locator('.v3-primary-nav a[aria-current="page"]')).toHaveAttribute('href', '/v2/catalog/');
+    await expect(page.locator('.site-footer .footer-link-group')).toHaveCount(3);
+    await expect(page.getByRole('navigation', { name: 'Official Hunmeng contact channels' })).toBeVisible();
+    await expect(page.locator('#result-count')).toHaveText('Novels found: 2');
+    await expect(page.locator('select[name="genre"]')).toHaveValue('Fantasy');
+    const art = await page.locator('.v2-catalog-hero').evaluate(el => getComputedStyle(el).backgroundImage);
+    expect(art, 'editorial landscape @ ' + width).toContain('hero-mountains');
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1),
+      'no horizontal overflow @ ' + width).toBe(true);
+
+    if (width === 390) {
+      const menu = page.locator('.v3-mobile-menu');
+      await expect(menu).toBeVisible();
+      await menu.getByRole('button', { name: 'Open site menu' }).click();
+      await expect(menu).toHaveAttribute('open', '');
+      await page.keyboard.press('Escape');
+      await expect(menu).not.toHaveAttribute('open', '');
+      await page.screenshot({ path: testInfo.outputPath('hunmeng-editorial-catalog-390.png'), fullPage: true, animations: 'disabled' });
+    }
+    if (width === 1280) {
+      await expect(page.locator('.v3-mobile-menu')).toBeHidden();
+      await page.screenshot({ path: testInfo.outputPath('hunmeng-editorial-catalog-1280.png'), fullPage: true, animations: 'disabled' });
+    }
+  }
+  await page.goto('/catalog/');
+  await expect(page.locator('body')).not.toHaveClass(/hm-editorial-site/);
+  await expect(page.locator('.v3-mobile-menu')).toHaveCount(0);
+  await expect(page.locator('.catalog-page')).toBeVisible();
+});
