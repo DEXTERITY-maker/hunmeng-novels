@@ -30,10 +30,13 @@
   };
   const templates = new Set(["aurora","editorial","spotlight","pulse","minimal","bulletin"]);
   const MAX_CARDS=8;
-  const cardKeys=["title","description","points","preset","template","theme","accentColor","alignment","headingScale","decorations","photoOpacity"];
+  const layerNames=["brand","title","description","highlights","photo","decoration"];
+  const defaultLayers=Object.freeze(Object.fromEntries(layerNames.map(name=>[name,true])));
+  const cardKeys=["title","description","points","preset","template","theme","accentColor","alignment","headingScale","decorations","photoOpacity","layers","titleShift","descriptionShift"];
   const limits={project:45,title:85,description:210,points:240};
   const defaults = { preset: "update", theme: "ultraviolet", ratio: "portrait", ...presets.update, imageData: "",
-    template:"aurora", headingScale:100, accentColor:"", alignment:"left", decorations:true, photoOpacity:35, activeCard:0, cards:[] };
+    template:"aurora", headingScale:100, accentColor:"", alignment:"left", decorations:true, photoOpacity:35,
+    layers:{...defaultLayers},titleShift:0,descriptionShift:0,activeCard:0,cards:[] };
   let saved = {};
   try { saved = JSON.parse(localStorage.getItem(storageKey) || "{}") || {}; } catch (_) {}
   const state = { ...defaults };
@@ -63,6 +66,10 @@
     out.headingScale=Number.isFinite(original.headingScale)?Math.max(80,Math.min(120,original.headingScale)):state.headingScale;
     out.decorations=typeof original.decorations==="boolean"?original.decorations:state.decorations;
     out.photoOpacity=Number.isFinite(original.photoOpacity)?Math.max(15,Math.min(85,original.photoOpacity)):state.photoOpacity;
+    const oldLayers=original.layers && typeof original.layers==="object" && !Array.isArray(original.layers)?original.layers:defaultLayers;
+    out.layers=Object.fromEntries(layerNames.map(name=>[name,oldLayers[name]!==false]));
+    out.titleShift=Number.isFinite(original.titleShift)?Math.round(Math.max(-12,Math.min(12,original.titleShift))):0;
+    out.descriptionShift=Number.isFinite(original.descriptionShift)?Math.round(Math.max(-12,Math.min(12,original.descriptionShift))):0;
     return out;
   };
   // Migration: keep a previously saved single-card project when upgrading v0.2.
@@ -140,6 +147,11 @@
     $("photo-opacity").value=state.photoOpacity;
     $("photo-opacity-value").textContent=state.photoOpacity+"%";
     $("ornaments").checked=state.decorations;
+    document.querySelectorAll("[data-layer]").forEach(input=>{input.checked=state.layers[input.dataset.layer]!==false;});
+    $("title-shift").value=state.titleShift;
+    $("title-shift-value").textContent=(state.titleShift>0?"+":"")+state.titleShift+"%";
+    $("description-shift").value=state.descriptionShift;
+    $("description-shift-value").textContent=(state.descriptionShift>0?"+":"")+state.descriptionShift+"%";
     renderCardTabs();
     $("clear-image").hidden = !state.imageData;
     $("image-name").textContent = state.imageData ? "Фото добавлено" : "PNG, JPG или WebP";
@@ -392,7 +404,7 @@
   $("duplicate-card").addEventListener("click",()=>{
     if(state.cards.length>=MAX_CARDS)return;
     snapshotCard();
-    state.cards.splice(state.activeCard+1,0,{...state.cards[state.activeCard]});
+    state.cards.splice(state.activeCard+1,0,{...state.cards[state.activeCard],layers:{...state.cards[state.activeCard].layers}});
     activateCard(state.activeCard+1);
     showToast("Карточка продублирована.");
   });
@@ -587,10 +599,10 @@
   function getSnapshot() {
     snapshotCard();
     const copy={
-      schemaVersion:4,project:state.project,ratio:state.ratio,
+      schemaVersion:5,project:state.project,ratio:state.ratio,
       theme:state.theme,template:state.template,
       activeCard:state.activeCard,
-      cards:state.cards.map(card=>({...card})),
+      cards:state.cards.map(card=>({...card,layers:{...card.layers}})),
       imageData:state.imageData,
       accentColor:state.accentColor,alignment:state.alignment,
       headingScale:state.headingScale,photoOpacity:state.photoOpacity,
