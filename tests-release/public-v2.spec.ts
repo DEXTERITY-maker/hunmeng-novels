@@ -15,6 +15,38 @@ test('public V2 homepage is canonical and retains the old reader library', async
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', /https:\/\/hunmeng-novel\.ru\/$/);
 });
 
+
+test('curated collection cards use their own original optimized cover art and preserve catalog links', async ({ page }) => {
+  await page.goto('/');
+  const cards=page.locator('#v3-collections .v3-collection-card');
+  await expect(cards).toHaveCount(3);
+  const expected=[
+    {name:'Fantasy & Wonder',src:'/images/editorial/collection-fantasy.webp',href:'/catalog/?genre=Fantasy'},
+    {name:'Mystery & Intrigue',src:'/images/editorial/collection-mystery.webp',href:'/catalog/?genre=Mystery'},
+    {name:'Worlds of Tomorrow',src:'/images/editorial/collection-future.webp',href:'/catalog/?genre=Science%20fiction'},
+  ];
+  for(const [index,item] of expected.entries()){
+    const card=cards.nth(index);
+    await expect(card.locator('strong')).toHaveText(item.name);
+    await expect(card).toHaveAttribute('href',item.href);
+    const image=card.locator('img');
+    await expect(image).toHaveAttribute('src',item.src);
+    await image.scrollIntoViewIfNeeded();
+    await expect.poll(async()=>image.evaluate(node=>(node as HTMLImageElement).naturalWidth),{
+      message:'Collection image must decode: '+item.src,
+      timeout:10000,
+    }).toBe(960);
+  }
+  await page.setViewportSize({width:390,height:844});
+  await page.goto('/');
+  const bounds=await page.locator('#v3-collections .v3-collection-card').evaluateAll(nodes=>
+    nodes.map(node=>{const r=node.getBoundingClientRect();return {top:r.top,bottom:r.bottom,width:r.width};}));
+  expect(bounds[1].top).toBeGreaterThan(bounds[0].bottom);
+  expect(bounds[2].top).toBeGreaterThan(bounds[1].bottom);
+  for(const b of bounds) expect(b.width).toBeGreaterThan(280);
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
+});
+
 test('public V2 catalog uses canonical search, tags and external reference labels', async ({ page }) => {
   await page.goto('/catalog/');
   await expect(page.locator('main.v2-catalog-page')).toBeVisible();

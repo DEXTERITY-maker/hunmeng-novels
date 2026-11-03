@@ -33,9 +33,9 @@ const categoryChoices = [
   { title: 'Martial Arts', genre: 'Martial arts', symbol: '△', tone: 'teal' },
 ].map(item => ({ ...item, count: taxonomy.genres.find(term => term.label === item.genre)?.count ?? 0 }));
 const themedCollections = [
-  { title: 'Fantasy & Wonder', description: 'Other worlds to wander', genre: 'Fantasy', art: '/images/editorial/collection-wonder.svg' },
-  { title: 'Mystery & Intrigue', description: 'Stories with secrets', genre: 'Mystery', art: '/images/editorial/collection-wisdom.svg' },
-  { title: 'Worlds of Tomorrow', description: 'Beyond the horizon', genre: 'Science fiction', art: '/images/editorial/collection-nature.svg' },
+  { title: 'Fantasy & Wonder', description: 'Other worlds to wander', genre: 'Fantasy', art: '/images/editorial/collection-fantasy.webp' },
+  { title: 'Mystery & Intrigue', description: 'Stories with secrets', genre: 'Mystery', art: '/images/editorial/collection-mystery.webp' },
+  { title: 'Worlds of Tomorrow', description: 'Beyond the horizon', genre: 'Science fiction', art: '/images/editorial/collection-future.webp' },
 ];
 
 interface Props { launched?: boolean }
@@ -136,7 +136,7 @@ const catalogPath = launched ? '/catalog/' : '/v2/catalog/';
         <div class="v3-collection-grid">
           {themedCollections.map(item => (
             <a class="v3-collection-card" href={catalogPath + '?genre=' + encodeURIComponent(item.genre)}>
-              <img src={item.art} width="350" height="450" loading="lazy" alt="" />
+              <img src={item.art} width="960" height="720" loading="lazy" decoding="async" alt="" />
               <span><strong>{item.title}</strong><small>{item.description} <span aria-hidden="true">→</span></small></span>
             </a>
           ))}

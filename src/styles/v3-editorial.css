@@ -701,3 +701,26 @@ html[data-theme="dark"] body.hm-editorial-site {background:#172923;}
     display:none;
   }
 }
+
+/* Collection cover illustrations are 4:3 artwork with corner emblems.
+   On narrow screens show full-width editorial cards instead of cropping
+   the icon off three tiny tiles, and keep the original title/link intact. */
+@media (max-width: 630px) {
+  .v3-art-direction .v3-collection-grid {
+    grid-template-columns: minmax(0,1fr);
+    gap: 13px;
+  }
+  .v3-art-direction .v3-collection-card > img {
+    height: clamp(190px,56vw,260px);
+    object-position: center 44%;
+  }
+  .v3-art-direction .v3-collection-card > span {
+    padding: 13px 15px 16px;
+  }
+  .v3-art-direction .v3-collection-card strong {
+    font-size: 1rem;
+  }
+  .v3-art-direction .v3-collection-card small {
+    font-size: .76rem;
+  }
+}
