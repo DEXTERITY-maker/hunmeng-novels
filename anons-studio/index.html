@@ -21,6 +21,7 @@
       <nav class="navigation" aria-label="Основная навигация">
         <a href="#how">Как работает</a>
         <a href="#editor">Редактор</a>
+        <a href="#templates">Шаблоны</a>
         <a href="#features">Возможности</a>
         <a href="#pricing">Тарифы</a>
       </nav>
@@ -64,13 +65,27 @@
         </div>
       </section>
 
+
+      <section id="templates" class="gallery-section wrap" aria-labelledby="templates-title">
+        <div class="section-heading"><div><div class="kicker">ШЕСТЬ АВТОРСКИХ КОМПОЗИЦИЙ</div><h2 id="templates-title">Шаблон, который<br><em>расскажет твою историю.</em></h2></div><p>Это не просто смена цвета: каждый шаблон по-своему располагает акценты и текст. Нажми на карточку, чтобы открыть её в редакторе.</p></div>
+        <div class="template-gallery" role="group" aria-label="Галерея шаблонов">
+          <button class="template-card active" type="button" data-template="aurora" aria-pressed="true"><span class="template-art preview-aurora"><span class="preview-decoration">✧</span><span class="preview-heading">БОЛЬШИЕ<br>ПЕРЕМЕНЫ</span><span class="preview-bars"></span></span><span class="template-info"><strong>Aurora</strong><small>Атмосферные обновления</small></span></button>
+          <button class="template-card" type="button" data-template="editorial" aria-pressed="false"><span class="template-art preview-editorial"><span class="preview-top">THE UPDATE / 2026</span><span class="preview-heading">Новая<br>глава.</span><span class="preview-bars"></span></span><span class="template-info"><strong>Editorial</strong><small>Премиальная типографика</small></span></button>
+          <button class="template-card" type="button" data-template="spotlight" aria-pressed="false"><span class="template-art preview-spotlight"><span class="preview-decoration">◉</span><span class="preview-heading">ВАШ<br>АНОНС</span><span class="preview-bars"></span></span><span class="template-info"><strong>Spotlight</strong><small>Яркие запуски</small></span></button>
+          <button class="template-card" type="button" data-template="pulse" aria-pressed="false"><span class="template-art preview-pulse"><span class="preview-decoration">↗</span><span class="preview-heading">ВРЕМЯ<br>ДЕЙСТВОВАТЬ</span><span class="preview-bars"></span></span><span class="template-info"><strong>Pulse</strong><small>События и энергия</small></span></button>
+          <button class="template-card" type="button" data-template="minimal" aria-pressed="false"><span class="template-art preview-minimal"><span class="preview-top">01 / ANNOUNCEMENT</span><span class="preview-heading">Просто.<br>По делу.</span><span class="preview-bars"></span></span><span class="template-info"><strong>Minimal</strong><small>Чистота и пространство</small></span></button>
+          <button class="template-card" type="button" data-template="bulletin" aria-pressed="false"><span class="template-art preview-bulletin"><span class="preview-top">● NEWSROOM</span><span class="preview-heading">ВАЖНОЕ<br>СЕГОДНЯ</span><span class="preview-bars"></span></span><span class="template-info"><strong>Bulletin</strong><small>Информационные карточки</small></span></button>
+        </div>
+      </section>
+
       <section id="editor" class="workspace-section">
         <div class="wrap">
           <div class="section-heading editor-intro"><div><div class="kicker">ТВОЯ СТУДИЯ</div><h2>Давай создадим<br><em>что-то классное.</em></h2></div><p>Все изменения сразу видны справа. Проект сохраняется в этом браузере.</p></div>
           <div class="workspace">
             <div class="controls">
-              <div class="panel-head"><div><span class="section-index">01 / РЕДАКТОР</span><h3>Настрой свой анонс</h3></div><span class="live-tag"><i></i> В реальном времени</span></div>
+              <div class="panel-head"><div><span class="section-index">01 / РЕДАКТОР</span><h3>Настрой свой анонс</h3></div><section class="card-manager" aria-label="Карточки анонса"><div class="card-manager-title"><strong>Карточки публикации</strong><span id="card-count">1 из 8</span></div><div id="card-list" class="card-list" role="tablist" aria-label="Выбор карточки"></div><div class="card-manager-actions"><button type="button" id="add-card">＋ Добавить</button><button type="button" id="duplicate-card">⧉ Дублировать</button><button type="button" id="remove-card">Удалить</button></div><p class="field-note">У каждой карточки свой заголовок и шаблон. Экспортируй одну картинку или весь набор ZIP-архивом.</p></section><span class="live-tag"><i></i> В реальном времени</span></div>
 
+              <div class="field-group"><label for="template-select">Композиция текущей карточки</label><select id="template-select"><option value="aurora">Aurora — атмосферный</option><option value="editorial">Editorial — редакционный</option><option value="spotlight">Spotlight — выразительный</option><option value="pulse">Pulse — динамичный</option><option value="minimal">Minimal — минималистичный</option><option value="bulletin">Bulletin — новостной</option></select></div>
               <fieldset class="field-group">
                 <legend>Что анонсируем?</legend>
                 <div class="preset-grid" role="group" aria-label="Тип публикации">
@@ -127,13 +142,28 @@
                 <p class="field-note">Изображение обрабатывается в браузере и не отправляется на сервер.</p>
               </div>
 
-              <div class="panel-bottom"><button type="button" id="reset" class="text-button">↺ Начать заново</button><span>Сохраняется автоматически</span></div>
+
+              <details class="advanced-panel" id="advanced-panel">
+                <summary>⚙ Тонкие настройки оформления <span>↓</span></summary>
+                <div class="advanced-content">
+                  <label for="heading-scale">Размер заголовка <output for="heading-scale" id="heading-scale-value">100%</output></label>
+                  <input type="range" id="heading-scale" min="80" max="120" step="5" value="100">
+                  <label for="accent-color">Акцентный цвет</label>
+                  <input type="color" id="accent-color" value="#c2a1ff" aria-label="Акцентный цвет">
+                  <label for="text-align">Расположение текста</label>
+                  <select id="text-align"><option value="left">По левому краю</option><option value="center">По центру</option></select>
+                  <label for="photo-opacity">Выраженность фотографии <output for="photo-opacity" id="photo-opacity-value">35%</output></label>
+                  <input type="range" id="photo-opacity" min="15" max="85" step="5" value="35">
+                  <label class="advanced-toggle"><input type="checkbox" id="ornaments" checked> Декоративные элементы</label>
+                </div>
+              </details>
+              <div class="panel-bottom"><button type="button" id="reset" class="text-button">↺ Начать заново</button><span>Сохраняется автоматически в этом браузере</span></div>
             </div>
 
             <div class="preview-panel">
-              <div class="panel-head preview-head"><div><span class="section-index">02 / ПРЕДПРОСМОТР</span><h3>Твой будущий пост</h3></div><span class="preview-badge">● LIVE</span></div>
+              <div class="panel-head preview-head"><div><span class="section-index">02 / ПРЕДПРОСМОТР</span><h3>Твой будущий пост</h3></div><span class="preview-badge" id="current-card-label">Карточка 1 / 1</span></div>
               <div class="preview-stage"><div class="canvas-holder"><canvas id="poster" width="1080" height="1350" role="img" aria-label="Предпросмотр оформленного анонса">Предпросмотр изображения недоступен в этом браузере.</canvas></div></div>
-              <div class="preview-actions"><button type="button" class="btn btn-primary export-btn" id="export">⇩ Скачать PNG</button><button type="button" class="btn btn-secondary" id="copy">Скопировать текст ↗</button></div>
+              <div class="preview-actions"><button type="button" class="btn btn-primary export-btn" id="export">⇩ Скачать PNG</button><button type="button" class="btn btn-secondary" id="export-all">⇩ Все карточки ZIP</button><button type="button" class="btn btn-secondary" id="copy">Скопировать текст ↗</button></div>
               <p class="preview-caption">На Free водяной знак сохраняется в предпросмотре и PNG</p>
             </div>
           </div>
@@ -146,7 +176,7 @@
           <article class="feature-main"><div class="feature-illustration">✦ <span>create / share / inspire</span></div><h3>Сначала смысл. Потом красота.</h3><p>Помогаем выделять главную мысль, чтобы подписчики сразу понимали, о чём речь.</p></article>
           <article><div class="feature-icon">▧</div><h3>Три формата</h3><p>Вертикальный пост, квадрат и история. Для разных площадок и задач.</p></article>
           <article><div class="feature-icon">◈</div><h3>Твой стиль</h3><p>Пять цветовых тем и возможность добавить собственную фотографию.</p></article>
-          <article><div class="feature-icon">⌘</div><h3>Без сложностей</h3><p>Прямо в браузере, без аккаунта, установки программ и загрузки данных на сервер.</p></article>
+          <article><div class="feature-icon">⌘</div><h3>Без сложностей</h3><p>Создавай оформление в браузере и регистрируй аккаунт, чтобы видеть свой тариф.</p></article>
         </div>
       </section>
 
@@ -192,7 +222,7 @@
 
       <section class="cta wrap"><div><div class="kicker">НАЧНИ СЕЙЧАС</div><h2>Всё готово.<br><em>Осталось рассказать.</em></h2><p>Попробуй бесплатный редактор с водяным знаком.</p></div><a href="#editor" class="btn btn-light">Открыть редактор ↗</a></section>
     </main>
-    <footer class="footer wrap"><img class="footer-logo" src="./assets/anons-logo-approved.webp" width="220" height="68" alt="Anons Studio" loading="lazy" decoding="async"><span>Создано для тех, кому есть что рассказать.</span><span>Бета v0.2 · 2026</span></footer>
+    <footer class="footer wrap"><img class="footer-logo" src="./assets/anons-logo-approved.webp" width="220" height="68" alt="Anons Studio" loading="lazy" decoding="async"><span>Создано для тех, кому есть что рассказать.</span><span>Бета v0.3 · 2026</span></footer>
     <div id="toast" role="status" aria-live="polite" class="toast" hidden></div>
   </div>
 </body>
