@@ -1,0 +1,229 @@
+/* Hunmeng 2.0 chapter updates and not-found routes.
+   Presentation only, scoped to the coordinated public release flag.
+   Chapter lists, URLs, real publish timestamps and SEO behavior are unchanged. */
+.hm-editorial-site .v3-utility-nav {
+  width: min(1120px,calc(100% - 38px));
+  margin: 0 auto;
+}
+.hm-editorial-site .v3-updates-page {
+  --hm-updates-ink: #264536;
+  --hm-updates-muted: #657668;
+  width: min(1080px,calc(100% - 38px));
+  max-width: 1080px;
+  padding: 13px 0 84px;
+  color: var(--hm-updates-ink);
+}
+.hm-editorial-site .v3-updates-page > .back-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: #0a5c44;
+  font-weight: 740;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  margin-bottom: 12px;
+}
+.hm-editorial-site .v3-updates-page .page-heading {
+  position: relative;
+  display: grid;
+  place-content: center;
+  min-height: 245px;
+  padding: clamp(31px,5vw,56px);
+  margin-bottom: 25px;
+  overflow: hidden;
+  border: 1px solid #cdbb9b;
+  border-radius: 18px 18px 24px 24px;
+  background-color: #07392e;
+  background-image: linear-gradient(108deg,#042f29f0 0%,#064239df 55%,#0c4437c7 100%),
+    url('/images/editorial/hero-mountains.svg');
+  background-position: center;
+  background-size: cover;
+  box-shadow: 0 15px 37px #15392a23;
+  text-align: center;
+}
+.hm-editorial-site .v3-updates-page .page-heading h1 {
+  margin: 0 0 13px;
+  color: #fff8ea;
+  font: 570 clamp(2.2rem,4.8vw,3.9rem)/1.15 'Noto Serif Variable',Georgia,serif;
+  letter-spacing: -.045em;
+  text-wrap: balance;
+}
+.hm-editorial-site .v3-updates-page .page-heading p {
+  margin: 0;
+  color: #ecf0e5;
+  font-size: clamp(.83rem,1.3vw,1rem);
+  line-height: 1.72;
+}
+.hm-editorial-site .v3-updates-page .home-chapter-grid {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 15px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  list-style: none;
+}
+.hm-editorial-site .v3-updates-page .home-chapter-grid > li {
+  min-width: 0;
+  margin: 0;
+  border: 0;
+}
+.hm-editorial-site .v3-updates-page .home-chapter-grid .home-chapter-link {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  min-height: 126px;
+  height: 100%;
+  padding: 18px;
+  border: 1px solid #e5d8c2;
+  border-radius: 15px;
+  background: #fffdf7;
+  box-shadow: 0 8px 26px #3f35181a;
+  color: #274638;
+  text-decoration: none;
+}
+.hm-editorial-site .v3-updates-page .home-chapter-grid .home-chapter-link:hover {
+  border-color: #c59d60;
+  box-shadow: 0 13px 32px #3f35182a;
+}
+.hm-editorial-site .v3-updates-page .home-chapter-grid .home-chapter-link img {
+  display: block;
+  width: 61px;
+  height: 89px;
+  flex: 0 0 61px;
+  border-radius: 5px 9px 9px 5px;
+  object-fit: cover;
+  box-shadow: 4px 7px 16px #38271829;
+}
+.hm-editorial-site .v3-updates-page .home-chapter-info {
+  min-width: 0;
+  flex: 1;
+  gap: 6px;
+}
+.hm-editorial-site .v3-updates-page .home-chapter-novel {
+  color: #0b634c;
+  font-size: .75rem;
+  font-weight: 790;
+  overflow-wrap: anywhere;
+}
+.hm-editorial-site .v3-updates-page .home-chapter-info strong {
+  display: block;
+  color: #264736;
+  font: 570 clamp(.99rem,1.5vw,1.21rem)/1.37 'Noto Serif Variable',Georgia,serif;
+  letter-spacing: -.018em;
+  overflow-wrap: anywhere;
+}
+.hm-editorial-site .v3-updates-page .home-chapter-info time {
+  color: #6a7567;
+  font-variant-numeric: tabular-nums;
+  font-size: .73rem;
+}
+.hm-editorial-site .v3-updates-page .home-chapter-arrow {
+  flex: none;
+  color: #976d37;
+  font-size: 1.1rem;
+}
+.hm-editorial-site .v3-updates-page .home-section-empty {
+  margin: 0;
+  padding: clamp(25px,5vw,47px);
+  border: 1px dashed #cfb58c;
+  border-radius: 18px;
+  background: #fffaf1;
+  color: #496351;
+  text-align: center;
+}
+.hm-editorial-site .v3-error-page {
+  width: min(950px,calc(100% - 38px));
+  max-width: 950px;
+  padding: clamp(28px,5vw,60px) 0 90px;
+  min-height: 0;
+  text-align: center;
+}
+.hm-editorial-site .v3-error-page {
+  position: relative;
+  overflow: hidden;
+  min-height: 415px;
+  padding: clamp(44px,7vw,85px) clamp(24px,5vw,70px);
+  border: 1px solid #cbbb9e;
+  border-radius: 20px 20px 28px 28px;
+  background-color: #083d32;
+  background-image: linear-gradient(120deg,#052f29f1,#0a4b3dd3 58%,#0a4235dd),
+    url('/images/editorial/hero-mountains.svg');
+  background-position: center;
+  background-size: cover;
+  box-shadow: 0 16px 43px #28412d26;
+}
+.hm-editorial-site .v3-error-page .error-number {
+  margin: 0 0 16px;
+  color: #efd194;
+  font: 510 clamp(4.5rem,12vw,8.5rem)/1 'Noto Serif Variable',Georgia,serif;
+  letter-spacing: -.085em;
+}
+.hm-editorial-site .v3-error-page h1 {
+  margin: 0 0 16px;
+  color: #fff9e8;
+  font: 570 clamp(1.9rem,4.8vw,3.3rem)/1.2 'Noto Serif Variable',Georgia,serif;
+  letter-spacing: -.039em;
+}
+.hm-editorial-site .v3-error-page > p:not(.error-number) {
+  max-width: 480px;
+  margin: 0 auto 27px;
+  color: #e9f1e6;
+  line-height: 1.75;
+}
+.hm-editorial-site .v3-error-page .button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 47px;
+  border: 1px solid #ffe9bd;
+  border-radius: 999px;
+  padding: 12px 26px;
+  background: #fff9ec;
+  color: #084532;
+  font-weight: 820;
+  text-decoration: none;
+}
+.hm-editorial-site .v3-error-page .button:hover {
+  background: #f2dcad;
+  color: #063d2f;
+}
+.hm-editorial-site :is(.v3-updates-page,.v3-error-page) a:focus-visible,
+.hm-editorial-site .v3-utility-nav a:focus-visible {
+  outline: 3px solid #c39751;
+  outline-offset: 3px;
+}
+@media (max-width:760px) {
+  .hm-editorial-site .v3-utility-nav,
+  .hm-editorial-site .v3-updates-page,
+  .hm-editorial-site .v3-error-page { width: min(100% - 30px,1080px); }
+  .hm-editorial-site .v3-updates-page .page-heading {
+    min-height: 207px;
+    padding: 28px 22px;
+    margin-bottom: 16px;
+  }
+  .hm-editorial-site .v3-updates-page .home-chapter-grid {
+    grid-template-columns: 1fr;
+    gap: 11px;
+  }
+  .hm-editorial-site .v3-updates-page .home-chapter-grid .home-chapter-link {
+    min-height: 111px;
+    padding: 14px;
+  }
+  .hm-editorial-site .v3-error-page { min-height: 380px; }
+}
+@media (max-width:390px) {
+  .hm-editorial-site .v3-utility-nav,
+  .hm-editorial-site .v3-updates-page,
+  .hm-editorial-site .v3-error-page { width: calc(100% - 24px); }
+  .hm-editorial-site .v3-updates-page .page-heading { padding: 24px 18px; }
+  .hm-editorial-site .v3-updates-page .home-chapter-grid .home-chapter-link { padding: 12px; gap: 10px; }
+  .hm-editorial-site .v3-updates-page .home-chapter-grid .home-chapter-link img {
+    width: 52px; height: 77px; flex-basis: 52px;
+  }
+  .hm-editorial-site .v3-error-page { padding: 49px 19px; }
+}
+@media (prefers-reduced-motion:reduce) {
+  .hm-editorial-site .v3-updates-page .home-chapter-link,
+  .hm-editorial-site .v3-error-page .button { transition: none; }
+}
