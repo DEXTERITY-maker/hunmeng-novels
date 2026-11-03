@@ -47,7 +47,7 @@ const fonts=fontData.map(data=>({name:"Manrope",data,weight:700,style:"normal"})
 const fontCSS=fontData.map((data,i)=>{
   const base64=Buffer.from(data).toString("base64");
   const unicode=i===0?"U+0400-052F":"U+0000-03FF";
-  return '@font-face{font-family:"Manrope QA";src:url(data:font/woff;base64,'+base64+
+  return '@font-face{font-family:"Manrope";src:url(data:font/woff;base64,'+base64+
     ') format("woff");font-style:normal;font-weight:700;unicode-range:'+unicode+';}';
 }).join("\n");
 
@@ -112,7 +112,7 @@ try{
   }));
   await page.goto(url,{waitUntil:"domcontentloaded"});
   await page.addStyleTag({content:fontCSS});
-  await page.evaluate(async()=>{await document.fonts.load("700 32px 'Manrope QA'");});
+  await page.evaluate(async()=>{await document.fonts.load("700 32px 'Manrope'");});
   const original=await page.evaluate(()=>window.AnonsEditor.getSnapshot());
   const testPhoto=await sharp({create:{width:600,height:400,channels:4,background:"#207cbb"}})
     .png().toBuffer();
