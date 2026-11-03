@@ -2,6 +2,9 @@
 import Layout from '../../../../layouts/Layout.astro';
 import { getLibrary, chapterUrl, chapterCount, dateLabel } from '../../../../lib/content';
 import { CHAPTERS_PER_PAGE, chapterPageCount, chapterListUrl } from '../../../../lib/pagination';
+import '../../../../styles/v3-editorial.css';
+import '../../../../styles/v3-book-followup.css';
+const editorial = import.meta.env.HUNMENG_V2_PUBLIC === '1';
 
 export async function getStaticPaths() {
   const novels = await getLibrary();
@@ -17,8 +20,18 @@ const { novel: n, page, pages } = Astro.props;
 const chapters = n.chapters.slice((page - 1) * CHAPTERS_PER_PAGE, page * CHAPTERS_PER_PAGE);
 ---
 
-<Layout title={`${n.title} contents — page ${page}`} description={`Chapters of ${n.title}, page ${page} of ${pages}.`}>
-  <main id="main" class="page-shell chapter-pages">
+<Layout title={`${n.title} contents — page ${page}`} description={`Chapters of ${n.title}, page ${page} of ${pages}.`} bodyClass={editorial ? "hm-editorial-site" : undefined}>
+  {editorial && (
+    <nav class="v3-primary-nav v3-book-extra-nav" aria-label="Reading room navigation">
+      <a href="/">Home</a>
+      <a href="/catalog/" aria-current="page">Books</a>
+      <a href="/news/">Articles</a>
+      <a href="/#v3-collections">Collections</a>
+      <a href="/library/">My library</a>
+      <a href="/about/">About</a>
+    </nav>
+  )}
+  <main id="main" class="page-shell chapter-pages v3-chapter-index">
     <a class="back-link" href={n.url}>← Back to novel</a>
     <div class="page-heading">
       <h1>{n.title}</h1>
