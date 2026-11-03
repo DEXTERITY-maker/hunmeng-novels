@@ -1,0 +1,43 @@
+name: Anons Studio isolated preview
+on:
+  push:
+    branches:
+      - feat/anons-studio-mvp-20261103
+    paths:
+      - 'anons-studio/**'
+      - '.github/workflows/anons-studio-preview.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: anons-studio-preview
+  cancel-in-progress: true
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Check self-contained frontend
+        run: |
+          node --check anons-studio/app.js
+          test -s anons-studio/index.html
+          test -s anons-studio/styles.css
+          grep -q 'id="poster"' anons-studio/index.html
+          grep -q 'id="export"' anons-studio/index.html
+          grep -q 'toBlob' anons-studio/app.js
+          grep -q 'localStorage' anons-studio/app.js
+      - name: Publish standalone preview (never existing production)
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy anons-studio --project-name=anons-studio-preview --branch=preview
