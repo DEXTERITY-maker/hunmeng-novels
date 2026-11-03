@@ -183,6 +183,7 @@ try {
     await page.mouse.move(start.x+50,start.y+33,{steps:5});
     await page.mouse.up();
     const moved=await page.evaluate(()=>window.AnonsEditor.getSnapshot().cards[1].layerOffsets.title);
+    console.log("Drag result:",JSON.stringify(moved));
     assert.ok(moved.x!==0||moved.y!==0,"Pointer drag moves a saved layer offset");
     assert.equal(moved.x%2,0,"Snap-to-grid rounds offset to 2% steps");
     await page.locator("#card-list [role=tab]").first().click();
