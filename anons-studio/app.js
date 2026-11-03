@@ -477,6 +477,71 @@
     $("photo-opacity-value").textContent=state.photoOpacity+"%";syncCardAndSave();
   });
   $("ornaments").addEventListener("change",e=>{state.decorations=e.target.checked;syncCardAndSave();});
+  document.querySelectorAll("[data-layer]").forEach(input=>{
+    input.addEventListener("change",()=>{
+      const name=input.dataset.layer;
+      if(!layerNames.includes(name))return;
+      state.layers={...state.layers,[name]:input.checked};
+      syncCardAndSave();
+    });
+  });
+  for(const [id,key] of [["title-shift","titleShift"],["description-shift","descriptionShift"]]){
+    $(id).addEventListener("input",event=>{
+      state[key]=Math.max(-12,Math.min(12,Math.round(Number(event.target.value)||0)));
+      $(id+"-value").textContent=(state[key]>0?"+":"")+state[key]+"%";
+      syncCardAndSave();
+    });
+  }
+  $("layer-reset").addEventListener("click",()=>{
+    state.titleShift=0;state.descriptionShift=0;
+    syncFields();syncCardAndSave();showToast("Положение текста восстановлено.");
+  });
+  $("editor-undo").addEventListener("click",()=>replayHistory("undo"));
+  $("editor-redo").addEventListener("click",()=>replayHistory("redo"));
+  document.addEventListener("keydown",event=>{
+    if(!(event.ctrlKey||event.metaKey)||event.altKey)return;
+    const active=event.target;
+    if(active instanceof HTMLElement && (active.closest("input,textarea,[contenteditable=true]")))return;
+    const key=event.key.toLowerCase();
+    if(key==="z" && event.shiftKey){event.preventDefault();replayHistory("redo");}
+    else if(key==="z"){event.preventDefault();replayHistory("undo");}
+    else if(key==="y"){event.preventDefault();replayHistory("redo");}
+  });
+  function readBrandKit(){
+    try{
+      const kit=JSON.parse(localStorage.getItem(brandKitKey)||"null");
+      if(!kit||typeof kit!=="object"||!themes[kit.theme])return null;
+      return {
+        theme:kit.theme,
+        project:typeof kit.project==="string"?kit.project.slice(0,45):"МОЙ ПРОЕКТ",
+        accentColor:/^#[0-9a-fA-F]{6}$/.test(kit.accentColor)?kit.accentColor:themes[kit.theme].accent
+      };
+    }catch{return null;}
+  }
+  function refreshBrandKit(){
+    const kit=readBrandKit();
+    $("brand-kit-status").textContent=kit
+      ?"Сохранено: "+kit.project+" · "+themes[kit.theme].name.split(" — ")[0]
+      :"Набор ещё не сохранён";
+    $("brand-kit-apply").disabled=!kit;
+  }
+  $("brand-kit-save").addEventListener("click",()=>{
+    const kit={project:state.project.slice(0,45),theme:state.theme,accentColor:state.accentColor||themes[state.theme].accent};
+    try{
+      localStorage.setItem(brandKitKey,JSON.stringify(kit));
+      refreshBrandKit();
+      showToast("Фирменный стиль сохранён в этом браузере.");
+    }catch{showToast("Не удалось сохранить фирменный стиль.");}
+  });
+  $("brand-kit-apply").addEventListener("click",()=>{
+    const kit=readBrandKit();
+    if(!kit){showToast("Сначала сохрани фирменный стиль.");refreshBrandKit();return;}
+    state.project=kit.project;state.theme=kit.theme;state.accentColor=kit.accentColor;
+    syncFields();syncCardAndSave();
+    showToast("Фирменный стиль применён к текущей карточке.");
+  });
+  refreshBrandKit();
+  updateHistoryButtons();
   $("reset").addEventListener("click",()=>{
     const keep=window.confirm("Начать заново? Текущий текст, оформление и загруженное фото будут удалены из этого браузера.");
     if(!keep)return;
