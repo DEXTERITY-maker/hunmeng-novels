@@ -139,7 +139,7 @@
   min-height: 0;
   text-align: center;
 }
-.hm-editorial-site .v3-error-panel {
+.hm-editorial-site .v3-error-page {
   position: relative;
   overflow: hidden;
   min-height: 415px;
@@ -153,25 +153,25 @@
   background-size: cover;
   box-shadow: 0 16px 43px #28412d26;
 }
-.hm-editorial-site .v3-error-panel .error-number {
+.hm-editorial-site .v3-error-page .error-number {
   margin: 0 0 16px;
   color: #efd194;
   font: 510 clamp(4.5rem,12vw,8.5rem)/1 'Noto Serif Variable',Georgia,serif;
   letter-spacing: -.085em;
 }
-.hm-editorial-site .v3-error-panel h1 {
+.hm-editorial-site .v3-error-page h1 {
   margin: 0 0 16px;
   color: #fff9e8;
   font: 570 clamp(1.9rem,4.8vw,3.3rem)/1.2 'Noto Serif Variable',Georgia,serif;
   letter-spacing: -.039em;
 }
-.hm-editorial-site .v3-error-panel > p:not(.error-number) {
+.hm-editorial-site .v3-error-page > p:not(.error-number) {
   max-width: 480px;
   margin: 0 auto 27px;
   color: #e9f1e6;
   line-height: 1.75;
 }
-.hm-editorial-site .v3-error-panel .button {
+.hm-editorial-site .v3-error-page .button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -184,7 +184,7 @@
   font-weight: 820;
   text-decoration: none;
 }
-.hm-editorial-site .v3-error-panel .button:hover {
+.hm-editorial-site .v3-error-page .button:hover {
   background: #f2dcad;
   color: #063d2f;
 }
@@ -210,7 +210,7 @@
     min-height: 111px;
     padding: 14px;
   }
-  .hm-editorial-site .v3-error-panel { min-height: 380px; }
+  .hm-editorial-site .v3-error-page { min-height: 380px; }
 }
 @media (max-width:390px) {
   .hm-editorial-site .v3-utility-nav,
@@ -221,9 +221,9 @@
   .hm-editorial-site .v3-updates-page .home-chapter-grid .home-chapter-link img {
     width: 52px; height: 77px; flex-basis: 52px;
   }
-  .hm-editorial-site .v3-error-panel { padding: 49px 19px; }
+  .hm-editorial-site .v3-error-page { padding: 49px 19px; }
 }
 @media (prefers-reduced-motion:reduce) {
   .hm-editorial-site .v3-updates-page .home-chapter-link,
-  .hm-editorial-site .v3-error-panel .button { transition: none; }
+  .hm-editorial-site .v3-error-page .button { transition: none; }
 }
