@@ -374,15 +374,15 @@
     }
     return lines;
   }
-  function chooseFont(text, width, startSize, maxHeight, maxLines) {
-    let size = startSize; let lines = [];
-    while (size >= 42) {
-      ctx.font = "800 " + size + "px Manrope, sans-serif";
-      lines = fitLines(text, width, size, maxLines);
-      if (lines.length * size * 1.17 <= maxHeight) break;
-      size -= 3;
+  function chooseFont(text,width,startSize,maxHeight,maxLines,family="Manrope, sans-serif",weight=800) {
+    let size=startSize,lines=[];
+    while(size>=42){
+      ctx.font=weight+" "+size+"px "+family;
+      lines=fitLines(text,width,size,maxLines);
+      if(lines.length*size*1.17<=maxHeight)break;
+      size-=3;
     }
-    return {size, lines};
+    return {size,lines};
   }
   function drawPhoto(W, H) {
     if (!photo || state.layers.photo===false) return;
@@ -409,6 +409,8 @@
     glow.addColorStop(0,rgba(t.glow,.34));glow.addColorStop(1,rgba(t.glow,0));ctx.fillStyle=glow;ctx.fillRect(0,0,W,H);
     ctx.lineWidth=1.5;ctx.strokeStyle=rgba(t.text,.055);
     for(let i=-H;i<W+H;i+=73){ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i+H,H);ctx.stroke();}
+  }
+  function drawArt(W,H,t) {
     if(state.decorations && state.layers.decoration!==false && state.template!=="minimal") {
       if(state.template==="editorial") {
         ctx.strokeStyle=rgba(t.text,.3);ctx.lineWidth=3;ctx.strokeRect(38,38,W-76,H-76);
@@ -427,7 +429,6 @@
         for(let x=75;x<W-75;x+=80){ctx.fillStyle=rgba(t.accent,.3);ctx.fillRect(x,H*.19,48,8);}
       } else drawDecoration(W,H,t);
     }
-    drawPhoto(W,H);
   }
   function drawWatermark(W,H,t) {
     // Preview and local PNGs always carry a watermark; only the server may
