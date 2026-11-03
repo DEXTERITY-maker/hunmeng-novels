@@ -2,7 +2,9 @@ import { createClient } from 'npm:@supabase/supabase-js@2.118.0';
 import { ImageResponse } from 'npm:@vercel/og@0.8.6';
 import React from 'npm:react@19.3.1';
 import './graphic-elements.js';
+import './scene-layout.js';
 const Graphics=(globalThis as any).AnonsGraphics;
+const Scene=(globalThis as any).AnonsScene;
 // Server-rendered PNGs are the only paid downloads; browser state cannot grant access.
 const ORIGIN='https://anons-studio-preview.pages.dev';
 const DBURL=Deno.env.get('SUPABASE_URL')||'https://kvgnjsntumofwqhywiea.supabase.co';
@@ -78,99 +80,144 @@ async function fonts(requested='auto'){
   return [...base,...(await extras.get(requested)!)];
 }
 function renderPoster(snapshot:any,card:any,width:number,height:number,availableFonts:string[]){
-  const colors=THEMES[card.theme]||THEMES[snapshot.theme]||THEMES.ultraviolet;
-  const template=TEMPLATES.has(card.template)?card.template:'aurora';
-  const layers=card.layers && typeof card.layers==='object'&&!Array.isArray(card.layers)?card.layers:{};
-  const defaults=['decoration','photo','brand','title','description','highlights'];
-  const requested=Array.isArray(card.layerOrder)?card.layerOrder.filter((v:unknown)=>defaults.includes(v as string)):[];
-  const order=[...new Set([...requested,...defaults])];
-  const z=(name:string)=>order.indexOf(name)+1;
-  const offset=(name:string)=>{
-    const p=card.layerOffsets?.[name];
-    return {x:Number.isFinite(p?.x)?Math.max(-30,Math.min(30,Math.round(p.x))):0,
-      y:Number.isFinite(p?.y)?Math.max(-30,Math.min(30,Math.round(p.y))):0};
-  };
-  const visible=(name:string)=>layers[name]!==false;
-  const move=(value:unknown)=>Math.max(-12,Math.min(12,Number.isFinite(value)?Math.round(Number(value)):0));
-  const pale=template==='minimal'||template==='editorial';
-  const primary=pale?'#f7efe2':colors[0],secondary=pale?'#e6d7c7':colors[1];
-  const ink=pale?'#302737':colors[3],muted=pale?'#5b5058':colors[4];
-  const accent=validColor(card.accentColor,colors[2]);
-  const title=text(card.title,85,'Новая публикация')||'Новая публикация';
-  const details=text(card.description,210,'');
-  const points=(typeof card.points==='string'?card.points:'').split('\n').map((s:string)=>s.trim().slice(0,100)).filter(Boolean).slice(0,3);
-  const scale=Math.max(80,Math.min(120,Number(card.headingScale)||100));
-  const fontsize=Math.round((height>1500?102:height<1200?76:94)*scale/100);
-  const weight=[700,800,900].includes(card.titleWeight)?card.titleWeight:700;
-  const tracking=Number.isFinite(card.titleTracking)?Math.max(-2,Math.min(6,Math.round(card.titleTracking))):0;
-  const descScale=Number.isFinite(card.descriptionScale)?Math.max(80,Math.min(130,Number(card.descriptionScale))):100;
-  const titleFamily=['georgia','arial','manrope'].includes(card.titleFont)
-    ?({georgia:'Noto Serif',arial:'Arimo',manrope:'Manrope'} as Record<string,string>)[card.titleFont]:'Manrope';
-  const safeTitleFont=availableFonts.includes(titleFamily)?titleFamily:'Manrope';
-  const align=card.alignment==='center'?'center':'left';
-  const background='linear-gradient(145deg, '+primary+', '+secondary+')';
-  const photograph=visible('photo')&&typeof snapshot.imageData==='string'&&snapshot.imageData.length<600000
-      &&/^data:image\/(png|jpeg|webp);base64,[a-z0-9+/=]+$/i.test(snapshot.imageData)
-    ? React.createElement('img',{src:snapshot.imageData,style:{
-        position:'absolute',right:30-width*offset('photo').x/100,
-        top:height*(.18+offset('photo').y/100),zIndex:z('photo'),width:width*.43,height:height*.31,
-        borderRadius:32,objectFit:'cover',opacity:Math.max(.15,Math.min(.85,Number(card.photoOpacity||35)/100))
-      }})
-    : null;
-  const decoration=visible('decoration')&&card.decorations!==false&&template!=='minimal'
-    ?el('div',{position:'absolute',width:470,height:470,border:'55px solid '+accent,borderRadius:300,
-      right:-95-width*offset('decoration').x/100,
-      top:height*(.16+offset('decoration').y/100),zIndex:z('decoration'),
-      opacity:.18,transform:'rotate(19deg)'})
-    :null;
-  const row=visible('brand')?el('div',{display:'flex',width:'100%',justifyContent:'space-between',alignItems:'center',
-    position:'relative',left:width*offset('brand').x/100,top:height*offset('brand').y/100,
-    zIndex:z('brand')},
-    el('div',{display:'flex',fontSize:24,fontWeight:700,color:ink,padding:'14px 22px',
-      borderRadius:27,background:pale?'#ffffffaa':'#ffffff1e'},text(snapshot.project,45,'ANONS STUDIO')),
-    el('div',{display:'flex',fontSize:19,fontWeight:700,color:muted,letterSpacing:2},'✦ ANONS STUDIO')):null;
-  const titleBlock=el('div',{display:'flex',flexDirection:'column',alignItems:align==='center'?'center':'flex-start',
-      width:'100%',marginTop:height>1700?300:height<1200?145:215,textAlign:align},
-    visible('title')?el('div',{display:'flex',flexDirection:'column',width:'100%',position:'relative',
-        top:Math.round(height*(move(card.titleShift)+offset('title').y)/100),
-        left:Math.round(width*offset('title').x/100),zIndex:z('title')},
-      el('div',{display:'flex',fontSize:24,fontWeight:700,color:accent,letterSpacing:4,marginBottom:21},
-        LABELS[card.preset]||'АНОНС'),
-      el('div',{display:'flex',fontSize:fontsize,fontWeight:700,lineHeight:1.12,
-        color:ink,letterSpacing:tracking,fontFamily:safeTitleFont,fontWeight:weight,
-        width:'100%',wordBreak:'break-word'},title)):null,
-    visible('description')?el('div',{display:'flex',fontWeight:700,lineHeight:1.5,marginTop:24,
-      position:'relative',top:Math.round(height*(move(card.descriptionShift)+offset('description').y)/100),
-      left:Math.round(width*offset('description').x/100),zIndex:z('description'),
-      fontSize:29*descScale/100,maxWidth:850,color:muted,wordBreak:'break-word'},details):null);
-  const cardPoints=points.length?points:['Новые возможности','Подробности внутри'];
-  const lines=visible('highlights')?el('div',{display:'flex',flexDirection:'column',
-      position:'relative',left:width*offset('highlights').x/100,top:height*offset('highlights').y/100,
-      zIndex:z('highlights'),width:'100%',gap:14,padding:27,
-      borderRadius:25,background:pale?'#ffffff66':'#ffffff13',border:'1px solid '+accent},
-    ...cardPoints.map((p:string)=>el('div',{display:'flex',alignItems:'center',gap:18},
-      el('div',{width:18,height:18,borderRadius:100,background:accent,flexShrink:0}),
-      el('div',{display:'flex',fontSize:height<1200?25:29,lineHeight:1.4,color:ink,fontWeight:700,flex:1},p)))):null;
-  // The vector path and pixel frame come from the same immutable module as Canvas.
-  const graphics=Graphics.normalizeElements(card.graphicElements).map((item:any,i:number)=>{
-    const frame=Graphics.frame(item,width,height);
-    return React.createElement('svg',{
-      key:item.id,viewBox:'0 0 100 100',width:frame.size,height:frame.size,
-      style:{
-        position:'absolute',left:frame.x-frame.size/2,top:frame.y-frame.size/2,
-        width:frame.size,height:frame.size,transform:'rotate('+frame.rotation+'deg)',
-        transformOrigin:'center center',opacity:frame.opacity,zIndex:100+i
-      }
-    },React.createElement('path',{d:frame.path,fill:frame.color}));
+  const plan=Scene.layout(snapshot,card);
+  if(plan.width!==width||plan.height!==height)throw Error('INVALID_SCENE');
+  const p=plan.palette,margin=plan.margin,order=plan.order;
+  const offset=(name:string)=>({
+    x:plan.offsets[name].x*width/100,
+    y:plan.offsets[name].y*height/100
   });
-  const foot=el('div',{display:'flex',justifyContent:'space-between',paddingTop:25,
-      borderTop:'2px solid '+accent,color:muted,fontSize:19,letterSpacing:1},
-    'СОЗДАНО ДЛЯ ВДОХНОВЕНИЯ','✦');
-  return el('div',{display:'flex',flexDirection:'column',width:'100%',height:'100%',position:'relative',
-      background,overflow:'hidden',padding:74,fontFamily:'Manrope'},decoration,photograph,
-    el('div',{display:'flex',flexDirection:'column',position:'relative',width:'100%',height:'100%'},
-      row,titleBlock,el('div',{display:'flex',flexDirection:'column',gap:36,marginTop:'auto'},lines,foot)),
-    ...graphics);
+  const z=(name:string)=>order.indexOf(name)+1;
+  const box=(style:any,...children:any[])=>el('div',{position:'absolute',display:'flex',...style},...children);
+  const title=text(card.title,85,'Заголовок публикации')||'Заголовок публикации';
+  const description=text(card.description,210,'Расскажите коротко, что произошло и почему это важно.');
+  const titleSpec=Scene.titleLines(title,plan);
+  const titleBottom=plan.titleY+titleSpec.size*.8+titleSpec.lines.length*titleSpec.size*1.14;
+  const descriptionTop=Math.min(plan.detailsY-130,titleBottom+28)+plan.descriptionShift;
+  const descLines=Scene.breakLines(description,plan.contentWidth-(height<=1100?10:80),plan.descriptionSize,3);
+  const list=(typeof card.points==='string'?card.points:'').split(/\r?\n/).map((s:string)=>s.trim().slice(0,120)).filter(Boolean).slice(0,3);
+  if(!list.length)list.push('Важная информация','Следите за новостями');
+  const align=plan.center?'center':'left';
+  const fontMap:Record<string,string>={manrope:'Manrope',georgia:'Noto Serif',arial:'Arimo'};
+  const desiredFont=fontMap[plan.titleFamily]||'Manrope';
+  const titleFamily=availableFonts.includes(desiredFont)?desiredFont:'Manrope';
+  const fontTitleSize=titleSpec.size;
+  const layerShift=(name:string,baseX:number,baseY:number)=>({
+    left:baseX+offset(name).x,top:baseY+offset(name).y,zIndex:z(name)
+  });
+  const blocks:any[]=[];
+  // Theme background uses the same calibrated colors and line direction.
+  const background=box({inset:0,width,height,
+    background:'linear-gradient(135deg, '+p.bg1+', '+p.bg2+')'});
+  blocks.push(background);
+  blocks.push(box({right:-width*.12,top:-height*.11,width:width*.58,height:height*.52,
+    borderRadius:999,background:Scene.rgb(p.glow,.10)}));
+  if(plan.enabled.decoration && plan.decorations){
+    const pos=offset('decoration'),style={zIndex:z('decoration')};
+    if(plan.template==='editorial'){
+      blocks.push(box({left:38+pos.x,top:38+pos.y,width:width-76,height:height-76,
+        border:'3px solid '+Scene.rgb(p.text,.3),...style}));
+      blocks.push(box({left:width-170+pos.x,top:95+pos.y,width:76,height:76,
+        background:Scene.rgb(p.accent,.28),...style}));
+    }else if(plan.template==='spotlight'){
+      for(const size of [540,370])blocks.push(box({left:width*.84-size/2+pos.x,
+        top:height*.24-size/2+pos.y,width:size,height:size,borderRadius:999,
+        background:Scene.rgb(p.accent,.22),...style}));
+    }else if(plan.template==='pulse'){
+      blocks.push(box({left:width*.77+pos.x,top:height*.15-190+pos.y,
+        width:118,height:height*.72,background:Scene.rgb(p.accent,.48),
+        transform:'rotate(-20deg)',...style}));
+    }else if(plan.template==='bulletin'){
+      blocks.push(box({left:pos.x,top:pos.y,width,height:20,background:p.accent,...style}));
+      blocks.push(box({left:pos.x,top:136+pos.y,width,height:8,
+        background:Scene.rgb(p.text,.12),...style}));
+    }else{
+      const cx=width*.84+pos.x,cy=height*.31+pos.y;
+      for(const size of [380,454,528])blocks.push(box({
+        left:cx-size/2,top:cy-size/2,width:size,height:size,
+        border:'3px solid '+Scene.rgb(p.accent,.27),borderRadius:999,...style
+      }));
+      blocks.push(box({left:cx-72,top:cy-72,width:144,height:144,borderRadius:999,
+        background:Scene.rgb(p.accent,.15),...style}));
+    }
+  }
+  if(plan.enabled.photo && typeof snapshot.imageData==='string' && snapshot.imageData.length<600000
+    && /^data:image\/(png|jpeg|webp);base64,[a-z0-9+/=]+$/i.test(snapshot.imageData)){
+    const r=plan.photo,off=offset('photo');
+    blocks.push(React.createElement('img',{key:'photo',src:snapshot.imageData,style:{
+      position:'absolute',left:r.x+off.x,top:r.y+off.y,width:r.width,height:r.height,
+      borderRadius:r.radius,objectFit:'cover',opacity:plan.imageOpacity,zIndex:z('photo')
+    }}));
+  }
+  if(plan.enabled.brand){
+    const p0=layerShift('brand',margin,72);
+    blocks.push(box({...p0,padding:'13px 24px',borderRadius:28,
+      background:Scene.rgb(p.text,.10),color:p.text,fontSize:27,fontWeight:700,
+      fontFamily:'Manrope',maxWidth:width*.52+48},text(snapshot.project,45,'МОЙ ПРОЕКТ')));
+    blocks.push(box({right:margin-offset('brand').x,top:82+offset('brand').y,
+      color:Scene.rgb(p.text,.75),fontSize:24,fontWeight:700,zIndex:z('brand')},'✳ ANONS / STUDIO'));
+  }
+  if(plan.enabled.title){
+    const x=margin+offset('title').x,y=plan.titleY+offset('title').y;
+    blocks.push(box({left:x,top:y-76,width:plan.contentWidth,
+      fontSize:24,fontWeight:700,color:p.accent,zIndex:z('title')},plan.label+'  /  2026'));
+    blocks.push(box({left:plan.center?margin+offset('title').x:x,top:y,width:plan.contentWidth,
+      height:Math.max(145,fontTitleSize*titleSpec.lines.length*1.2),color:p.text,
+      fontFamily:titleFamily,fontSize:fontTitleSize,fontWeight:700,
+      letterSpacing:plan.titleTracking,zIndex:z('title'),
+      flexDirection:'column',alignItems:plan.center?'center':'flex-start',overflow:'hidden'},
+      ...titleSpec.lines.map((line:string,i:number)=>el('div',{
+        display:'flex',width:'100%',height:Math.round(fontTitleSize*1.14),
+        whiteSpace:'pre',alignItems:'flex-start',justifyContent:plan.center?'center':'flex-start'
+      },line))));
+  }
+  if(plan.enabled.description){
+    const x=margin+offset('description').x,y=descriptionTop+offset('description').y;
+    blocks.push(box({left:x,top:y,width:plan.contentWidth,height:plan.descriptionSize*1.5*3,
+      flexDirection:'column',alignItems:plan.center?'center':'flex-start',zIndex:z('description'),
+      color:p.sub,fontFamily:'Manrope',fontSize:plan.descriptionSize,fontWeight:700},
+      ...descLines.map((line:string,i:number)=>el('div',{
+        display:'flex',width:'100%',height:Math.round(plan.descriptionSize*1.5),
+        whiteSpace:'pre',justifyContent:plan.center?'center':'flex-start'
+      },line))));
+  }
+  if(plan.enabled.highlights){
+    const x=margin+offset('highlights').x,y=plan.detailsY+offset('highlights').y;
+    const heightCard=28+list.length*plan.highlightRowHeight+21;
+    blocks.push(box({left:x,top:y-27,width:plan.contentWidth,height:heightCard,borderRadius:23,
+      background:plan.template==='minimal'||plan.template==='editorial'?'transparent':Scene.rgb(p.text,.085),
+      border:plan.template==='minimal'||plan.template==='editorial'?'2px solid '+Scene.rgb(p.text,.3):'none',
+      zIndex:z('highlights')}));
+    list.forEach((line:string,i:number)=>{
+      const cy=y+i*plan.highlightRowHeight+16;
+      blocks.push(box({left:x+20,top:cy-1,width:22,height:22,borderRadius:999,
+        background:p.accent,zIndex:z('highlights')}));
+      let short=line;
+      while(Scene.textWidth(short,height<=1100?27:30,0)>plan.contentWidth-112 && short.length>1)short=short.slice(0,-1);
+      if(short!==line)short=short.slice(0,-1)+'…';
+      blocks.push(box({left:x+63,top:cy-10,width:plan.contentWidth-94,
+        fontSize:height<=1100?27:30,fontWeight:700,fontFamily:'Manrope',
+        color:p.text,zIndex:z('highlights')},short));
+    });
+  }
+  // Same immutable SVG paths and pixel frames as browser Canvas.
+  for(const [i,item] of Graphics.normalizeElements(card.graphicElements).entries()){
+    const fr=Graphics.frame(item,width,height);
+    blocks.push(React.createElement('svg',{
+      key:item.id,viewBox:'0 0 100 100',width:fr.size,height:fr.size,
+      style:{position:'absolute',left:fr.x-fr.size/2,top:fr.y-fr.size/2,width:fr.size,
+        height:fr.size,transform:'rotate('+fr.rotation+'deg)',
+        transformOrigin:'center center',opacity:fr.opacity,zIndex:100+i}
+    },React.createElement('path',{d:fr.path,fill:fr.color})));
+  }
+  blocks.push(box({left:margin,right:margin,top:plan.footerY-39,
+    height:2,background:Scene.rgb(p.text,.22),zIndex:200}));
+  blocks.push(box({left:margin,top:plan.footerY-19,color:p.sub,
+    fontFamily:'Manrope',fontWeight:700,fontSize:20,zIndex:200},'СОЗДАНО ДЛЯ ВДОХНОВЕНИЯ'));
+  blocks.push(box({right:margin,top:plan.footerY-19,color:p.accent,
+    fontFamily:'Manrope',fontWeight:700,fontSize:20,zIndex:200},'✦'));
+  return el('div',{display:'flex',width,height,position:'relative',overflow:'hidden',
+    background:p.bg1,fontFamily:'Manrope'},...blocks);
 }
 Deno.serve(async(req:Request)=>{
   if(req.method==='OPTIONS')return new Response(null,{status:204,headers:HEADERS});
