@@ -7,7 +7,7 @@ const dir = dirname(fileURLToPath(import.meta.url));
 const out = join(dir,"dist");
 await rm(out,{recursive:true,force:true});
 await mkdir(out,{recursive:true});
-for(const f of ["index.html","styles.css","app.js"]){
+for(const f of ["index.html","styles.css","app.js","_headers"]){
   await copyFile(join(dir,f),join(out,f));
 }
 await mkdir(join(out,"assets"),{recursive:true});
