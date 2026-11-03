@@ -339,6 +339,40 @@ try {
     assert.equal(legacy.validV08,true,"Old cloud drafts get safe v0.8 layout and typography defaults");
     assert.equal(legacy.count,2,"Migration keeps all pages");
 
+    if(width===1440){
+      const compositions=await page.evaluate(async()=>{
+        const initial=window.AnonsEditor.getSnapshot();
+        const cases=[];
+        const frame=()=>new Promise(done=>requestAnimationFrame(()=>requestAnimationFrame(done)));
+        try{
+          for(const ratio of ["portrait","square","story"]){
+            for(const template of ["aurora","editorial","spotlight","pulse","minimal","bulletin"]){
+              const next=JSON.parse(JSON.stringify(initial));
+              next.ratio=ratio;
+              next.cards[next.activeCard].template=template;
+              next.cards[next.activeCard].title="Большое обновление нового проекта и его возможностей";
+              next.cards[next.activeCard].description="Тестируем русские заголовки, оформление и экспорт в разных форматах.";
+              window.AnonsEditor.loadSnapshot(next);
+              await frame();
+              const canvas=document.getElementById("poster");
+              const scene=window.AnonsScene.layout(next,next.cards[next.activeCard]);
+              const png=canvas.toDataURL("image/png");
+              const pixel=canvas.getContext("2d").getImageData(0,0,1,1).data;
+              cases.push({ratio,template,width:canvas.width,height:canvas.height,
+                sceneW:scene.width,sceneH:scene.height,png:png.startsWith("data:image/png;base64,"),
+                opaque:pixel[3]===255,validTitle:window.AnonsScene.titleLines(next.cards[next.activeCard].title,scene).lines.length>0});
+            }
+          }
+        }finally{window.AnonsEditor.loadSnapshot(initial);await frame();}
+        return cases;
+      });
+      assert.equal(compositions.length,18,"Six templates at three canvas resolutions");
+      assert.ok(compositions.every(c=>c.png&&c.opaque&&c.validTitle&&c.width===c.sceneW&&c.height===c.sceneH),
+        "All 18 long-Cyrillic compositions render correctly with shared dimensions");
+      console.log("PASS Shared scene preview across 18 template/format combinations");
+    }
+
+
     await context.close();
     console.log("PASS Anons Studio browser preview, editor, storage, PNG and responsive width="+width);
   }
