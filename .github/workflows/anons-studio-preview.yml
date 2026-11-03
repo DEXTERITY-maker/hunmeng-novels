@@ -4,6 +4,7 @@ on:
     branches:
       - feat/anons-studio-mvp-20261103
       - feat/anons-studio-editor-v07-20261103
+      - feat/anons-studio-editor-v08-20261103
       - fix/anons-v06-audit-20261103
     paths:
       - 'anons-studio/**'
@@ -50,7 +51,7 @@ jobs:
       - name: Test actual editor, responsive layout and PNG export
         run: node anons-studio/smoke.mjs
       - name: Publish standalone preview (never existing production)
-        if: github.ref == 'refs/heads/feat/anons-studio-editor-v07-20261103'
+        if: github.ref == 'refs/heads/feat/anons-studio-editor-v08-20261103'
         uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
