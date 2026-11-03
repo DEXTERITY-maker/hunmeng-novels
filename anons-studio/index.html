@@ -11,17 +11,19 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./styles.css">
   <script src="./app.js" defer></script>
+  <script src="./auth.bundle.js" defer></script>
 </head>
 <body>
   <div class="site-shell">
     <header class="topbar">
-      <a href="#home" class="brand" aria-label="Anons Studio — главная"><span class="brand-mark" aria-hidden="true">a<span class="brand-dot">.</span></span><span>anons<span class="brand-light">studio</span></span></a>
+      <a href="#home" class="brand brand-word" aria-label="Anons Studio — главная"><span>ANONS<span class="brand-light">STUDIO</span></span><span class="brand-beta">BETA</span></a>
       <nav class="navigation" aria-label="Основная навигация">
         <a href="#how">Как работает</a>
         <a href="#editor">Редактор</a>
         <a href="#features">Возможности</a>
+        <a href="#pricing">Тарифы</a>
       </nav>
-      <a class="header-action" href="#editor">Создать анонс <span aria-hidden="true">↗</span></a>
+      <a id="nav-account" class="header-action" href="#account">Войти</a>
     </header>
 
     <main id="home">
@@ -31,7 +33,7 @@
           <h1 id="hero-title">Твои новости.<br><em>В красивой</em><br>упаковке.</h1>
           <p>Преврати обновление, анонс мероприятия или запуск проекта в профессиональную публикацию. Просто напиши текст, выбери стиль и скачай готовое изображение.</p>
           <div class="hero-actions"><a href="#editor" class="btn btn-primary">Создать бесплатно <span aria-hidden="true">↗</span></a><a class="btn btn-outline" href="#how">Как это работает <span aria-hidden="true">↓</span></a></div>
-          <div class="hero-foot"><span class="avatar-dot">✦</span><span>Без регистрации · Без водяных знаков · PNG-экспорт</span></div>
+          <div class="hero-foot"><span class="avatar-dot">✦</span><span>Регистрация · Бесплатный тариф с водяным знаком · PNG-экспорт</span></div>
         </div>
         <div class="hero-art" aria-label="Пример оформления анонса">
           <div class="ambient ambient-one"></div><div class="ambient ambient-two"></div>
@@ -131,7 +133,7 @@
               <div class="panel-head preview-head"><div><span class="section-index">02 / ПРЕДПРОСМОТР</span><h3>Твой будущий пост</h3></div><span class="preview-badge">● LIVE</span></div>
               <div class="preview-stage"><div class="canvas-holder"><canvas id="poster" width="1080" height="1350" role="img" aria-label="Предпросмотр оформленного анонса">Предпросмотр изображения недоступен в этом браузере.</canvas></div></div>
               <div class="preview-actions"><button type="button" class="btn btn-primary export-btn" id="export">⇩ Скачать PNG</button><button type="button" class="btn btn-secondary" id="copy">Скопировать текст ↗</button></div>
-              <p class="preview-caption">Бесплатно · Без водяного знака · Готово к публикации</p>
+              <p class="preview-caption">На Free водяной знак сохраняется в предпросмотре и PNG</p>
             </div>
           </div>
         </div>
@@ -147,9 +149,49 @@
         </div>
       </section>
 
-      <section class="cta wrap"><div><div class="kicker">НАЧНИ СЕЙЧАС</div><h2>Всё готово.<br><em>Осталось рассказать.</em></h2><p>Попробуй первый анонс прямо сейчас — это бесплатно.</p></div><a href="#editor" class="btn btn-light">Открыть редактор ↗</a></section>
+
+      <section id="pricing" class="pricing wrap" aria-labelledby="pricing-title">
+        <div class="section-heading"><div><div class="kicker">ПРОСТЫЕ УСЛОВИЯ</div><h2 id="pricing-title">Выбери свой<br>формат творчества.</h2></div><p>На Free добавляется водяной знак Anons Studio. Во всех платных тарифах его не будет после подтверждения оплаты. Пока тестируем сервис, покупки недоступны.</p></div>
+        <div class="pricing-grid">
+          <article class="plan plan-free"><span class="plan-eyebrow">ДЛЯ НАЧАЛА</span><h3>Free</h3><div class="plan-price">0 ₽ <small>/ месяц</small></div><p>Попробовать редактор и создать первые публикации.</p><ul><li>Базовые шаблоны</li><li>Экспорт PNG в трёх форматах</li><li>Водяной знак Anons Studio</li></ul><a href="#editor" class="plan-action">Попробовать бесплатно</a></article>
+          <article class="plan"><span class="plan-eyebrow">ДЛЯ АВТОРОВ</span><h3>Basic</h3><div class="plan-price">299 ₽ <small>/ месяц</small></div><p>Для тех, кому нужен чистый профессиональный экспорт.</p><ul><li>Всё из Free</li><li><strong>Без водяного знака</strong></li><li>Дополнительные шаблоны — в разработке</li></ul><button disabled class="plan-action" type="button">Покупка скоро</button></article>
+          <article class="plan plan-featured"><span class="plan-eyebrow">ПОПУЛЯРНЫЙ ВАРИАНТ</span><h3>Pro</h3><div class="plan-price">499 ₽ <small>/ месяц</small></div><p>Для регулярного создания контента.</p><ul><li>Всё из Basic</li><li><strong>Без водяного знака</strong></li><li>Пакетные публикации — в разработке</li></ul><button disabled class="plan-action" type="button">Покупка скоро</button></article>
+          <article class="plan"><span class="plan-eyebrow">ДЛЯ КОМАНД</span><h3>Studio</h3><div class="plan-price">999 ₽ <small>/ месяц</small></div><p>Для нескольких проектов и единого фирменного стиля.</p><ul><li>Всё из Pro</li><li><strong>Без водяного знака</strong></li><li>Командные функции — в разработке</li></ul><button disabled class="plan-action" type="button">Покупка скоро</button></article>
+        </div>
+        <p class="pricing-disclaimer">Цены предварительные. Оплата не подключена: активные подписки будут определяться только по проверенным данным сервера, а не по нажатию кнопки в браузере.</p>
+      </section>
+
+      <section id="account" class="account-section" aria-labelledby="account-title"><div class="wrap account-layout">
+        <div class="account-intro"><div class="kicker">ЛИЧНОЕ ПРОСТРАНСТВО</div><h2 id="account-title">Творчество начинается<br>с твоего аккаунта.</h2><p>Зарегистрируйся по электронной почте, чтобы получить учётную запись и видеть свой тариф. Черновики в бета-версии пока сохраняются только в этом браузере.</p><div class="account-pill" id="account-status">Гость · Free</div></div>
+        <div class="account-box">
+          <div id="account-guest">
+            <div class="account-tabs" role="group" aria-label="Регистрация или вход">
+              <button type="button" data-account-mode="signup" aria-pressed="true" class="active">Регистрация</button>
+              <button type="button" data-account-mode="login" aria-pressed="false">Вход</button>
+            </div>
+            <form id="account-form">
+              <label for="account-email">Электронная почта</label>
+              <input id="account-email" name="email" type="email" autocomplete="email" inputmode="email" required placeholder="name@example.com">
+              <label for="account-password">Пароль (минимум 8 символов)</label>
+              <input id="account-password" name="password" type="password" minlength="8" autocomplete="new-password" required placeholder="Введите пароль">
+              <button class="btn btn-primary account-submit" id="account-submit" type="submit">Зарегистрироваться</button>
+            </form>
+            <p class="account-helper">При регистрации может потребоваться подтверждение почты. Не передавай пароль другим пользователям.</p>
+          </div>
+          <div id="account-signed" hidden>
+            <div class="account-success">✓ Аккаунт подключён</div>
+            <div class="account-profile-email" id="account-email-signed"></div>
+            <p>Текущий тариф: <strong id="account-plan-signed">Free</strong></p>
+            <a class="account-upgrade" href="#pricing">Посмотреть тарифы ↗</a>
+            <button type="button" class="account-logout" id="account-logout">Выйти из аккаунта</button>
+          </div>
+          <p id="account-message" role="status" aria-live="polite" class="account-message"></p>
+        </div>
+      </div></section>
+
+      <section class="cta wrap"><div><div class="kicker">НАЧНИ СЕЙЧАС</div><h2>Всё готово.<br><em>Осталось рассказать.</em></h2><p>Попробуй бесплатный редактор с водяным знаком.</p></div><a href="#editor" class="btn btn-light">Открыть редактор ↗</a></section>
     </main>
-    <footer class="footer wrap"><span class="footer-brand">anons<span>studio</span><i>.</i></span><span>Создано для тех, кому есть что рассказать.</span><span>Бета v0.1 · 2026</span></footer>
+    <footer class="footer wrap"><span class="footer-brand">anons<span>studio</span><i>.</i></span><span>Создано для тех, кому есть что рассказать.</span><span>Бета v0.2 · 2026</span></footer>
     <div id="toast" role="status" aria-live="polite" class="toast" hidden></div>
   </div>
 </body>
