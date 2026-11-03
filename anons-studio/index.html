@@ -203,7 +203,7 @@
                 <button id="library-save" type="button" class="btn btn-primary">☁ Сохранить в облако</button>
                 <button id="library-checkpoint" type="button" class="btn btn-outline">✧ Сохранить версию</button>
               </div>
-              <p class="library-helper">После первого сохранения изменения синхронизируются автоматически. История версий создаётся по кнопке «Сохранить версию». Одна учётная запись — до 30 проектов.</p>
+              <p class="library-helper">После первого сохранения изменения синхронизируются автоматически. История версий создаётся по кнопке «Сохранить версию». До 30 проектов на аккаунт. Очень большие фотографии могут превышать лимит облачного черновика.</p>
               <div class="library-management">
                 <button id="library-duplicate" type="button" class="library-quiet">⧉ Сохранить копию</button>
                 <button id="library-archive" type="button" class="library-quiet" disabled>В архив</button>
@@ -242,7 +242,7 @@
       </section>
 
       <section id="account" class="account-section" aria-labelledby="account-title"><div class="wrap account-layout">
-        <div class="account-intro"><div class="kicker">ЛИЧНОЕ ПРОСТРАНСТВО</div><h2 id="account-title">Творчество начинается<br>с твоего аккаунта.</h2><p>Зарегистрируйся по электронной почте, чтобы получить учётную запись и видеть свой тариф. Черновики в бета-версии пока сохраняются только в этом браузере.</p><div class="account-pill" id="account-status">Гость · Free</div></div>
+        <div class="account-intro"><div class="kicker">ЛИЧНОЕ ПРОСТРАНСТВО</div><h2 id="account-title">Творчество начинается<br>с твоего аккаунта.</h2><p>Зарегистрируйся по электронной почте, чтобы получить учётную запись и видеть свой тариф. Черновик сохраняется в браузере, а после сохранения проекта в облаке его можно продолжить с другого устройства.</p><div class="account-pill" id="account-status">Гость · Free</div></div>
         <div class="account-box">
           <div id="account-guest">
             <div class="account-tabs" role="group" aria-label="Регистрация или вход">
@@ -262,7 +262,7 @@
             <div class="account-success">✓ Аккаунт подключён</div>
             <div class="account-profile-email" id="account-email-signed"></div>
             <p>Текущий тариф: <strong id="account-plan-signed">Free</strong></p>
-            <a class="account-upgrade" href="#pricing">Посмотреть тарифы ↗</a>
+            <div class="account-destinations"><a class="account-upgrade" href="#library">Моя библиотека ↗</a><a class="account-upgrade" href="#pricing">Посмотреть тарифы ↗</a></div>
             <button type="button" class="account-logout" id="account-logout">Выйти из аккаунта</button>
           </div>
           <p id="account-message" role="status" aria-live="polite" class="account-message"></p>
