@@ -323,7 +323,7 @@ export function initLibrary(client) {
   }
   function setUser(next){
     const id=next?.id||null;
-    if(id===user?.id)return;
+    if(id===(user?.id||null))return;
     const remembered=readActive();
     const former=user?.id||null;
     ++sessionEpoch;historyEpoch++;
