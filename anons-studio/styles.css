@@ -347,3 +347,9 @@ button.plan-action[disabled]{cursor:not-allowed;color:#92869f;background:#f6f4f7
 .drag-handle.graphic-drag-handle{background:#f8f3ff;color:#593888;border-color:#8f63d9;max-width:110px}
 .drag-handle.graphic-drag-handle.is-dragging{background:#7142d1;color:#fff}
 @media(max-width:540px){.graphics-catalog{grid-template-columns:repeat(4,minmax(0,1fr))}.graphics-catalog button{min-height:56px}.graphics-library{padding:12px}}
+
+/* v1.0 prelaunch: secure personal backup, suitable on narrow mobile devices. */
+.backup-note{font-size:10px;line-height:1.75;color:#8b7c9b;margin:10px 0 2px;max-width:660px}
+#backup-download,#backup-import{font-size:11px;letter-spacing:0}
+#backup-file[hidden]{display:none!important}
+@media(max-width:480px){#backup-download,#backup-import{flex:1 1 140px;white-space:normal;min-height:44px}.backup-note{font-size:10px}}
