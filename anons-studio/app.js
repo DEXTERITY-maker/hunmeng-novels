@@ -164,6 +164,7 @@
   const layerLabels={brand:"Название бренда",title:"Заголовок",description:"Описание",
     highlights:"Главные детали",photo:"Фото",decoration:"Декор"};
   let directEdit=false, snapToGrid=true, activeDrag=null;
+  let selectedGraphicId=null;
   function renderLayerOrder(){
     const holder=$("layer-order-list");
     holder.replaceChildren();
@@ -250,10 +251,102 @@
       overlay.append(btn);
     }
   }
+
+  function iconNode(element){
+    const svg=document.createElementNS("http://www.w3.org/2000/svg","svg");
+    svg.setAttribute("viewBox","0 0 100 100");
+    svg.setAttribute("aria-hidden","true");
+    const p=document.createElementNS("http://www.w3.org/2000/svg","path");
+    p.setAttribute("d",Graphics.paths[element.kind]);
+    p.setAttribute("fill",element.color);
+    svg.append(p);return svg;
+  }
+  function selectedGraphic(){
+    return state.graphicElements.find(item=>item.id===selectedGraphicId)||null;
+  }
+  function syncGraphicInspector(){
+    const selected=selectedGraphic();
+    $("graphic-editor").hidden=!selected;
+    if(!selected)return;
+    for(const [id,value] of [
+      ["graphic-color",selected.color],["graphic-size",selected.size],
+      ["graphic-rotate",selected.rotation],["graphic-opacity",selected.opacity],
+      ["graphic-x",selected.x],["graphic-y",selected.y]
+    ])$(id).value=value;
+    $("graphic-size-label").textContent=selected.size+"%";
+    $("graphic-rotate-label").textContent=selected.rotation+"°";
+    $("graphic-opacity-label").textContent=selected.opacity+"%";
+    const index=state.graphicElements.indexOf(selected);
+    $("graphic-backward").disabled=index===0;
+    $("graphic-forward").disabled=index===state.graphicElements.length-1;
+    $("graphic-duplicate").disabled=state.graphicElements.length>=Graphics.MAX;
+  }
+  function renderGraphicsPanel(){
+    if(selectedGraphicId&&!selectedGraphic())selectedGraphicId=null;
+    $("graphics-count").textContent=state.graphicElements.length+" / "+Graphics.MAX;
+    const catalog=$("graphics-catalog");
+    if(!catalog.children.length){
+      for(const [kind,label] of Object.entries(Graphics.labels)){
+        const btn=document.createElement("button");
+        btn.type="button";btn.title="Добавить: "+label;
+        btn.dataset.addGraphic=kind;
+        btn.append(iconNode({kind,color:"#8856dd"}),document.createTextNode(label));
+        btn.addEventListener("click",()=>{
+          if(state.graphicElements.length>=Graphics.MAX){showToast("На одной карточке не больше 12 элементов.");return;}
+          const last=state.graphicElements.length;
+          const item=Graphics.normalizeOne({id:"g"+crypto.randomUUID().replace(/-/g,""),kind,
+            x:50+(last%4-1)*8,y:48+(Math.floor(last/4)-1)*8,
+            color:state.accentColor||themes[state.theme].accent,
+            size:12,rotation:0,opacity:100},last);
+          state.graphicElements=[...state.graphicElements,item];
+          selectedGraphicId=item.id;
+          syncCardAndSave();
+          showToast("Добавлен элемент: "+label);
+        });
+        catalog.append(btn);
+      }
+    }
+    catalog.querySelectorAll("[data-add-graphic]").forEach(b=>{b.disabled=state.graphicElements.length>=Graphics.MAX;});
+    const list=$("graphics-items");list.replaceChildren();
+    if(!state.graphicElements.length){
+      const p=document.createElement("p");p.className="graphics-empty";
+      p.textContent="Элементов пока нет. Выбери значок выше, чтобы добавить его на карточку.";
+      list.append(p);
+    }
+    state.graphicElements.forEach((item,index)=>{
+      const btn=document.createElement("button");btn.type="button";
+      btn.className="graphics-item"+(item.id===selectedGraphicId?" selected":"");
+      btn.setAttribute("aria-pressed",String(item.id===selectedGraphicId));
+      const label=document.createElement("span");
+      label.textContent=(index+1)+". "+Graphics.labels[item.kind]+" · "+Math.round(item.x)+"% / "+Math.round(item.y)+"%";
+      btn.append(iconNode(item),label);
+      btn.addEventListener("click",()=>{
+        selectedGraphicId=item.id;
+        renderGraphicsPanel();updateDragHandles();
+      });
+      list.append(btn);
+    });
+    syncGraphicInspector();
+  }
+  function updateGraphicField(field,value){
+    const selected=selectedGraphic();if(!selected)return;
+    const raw={...selected,[field]:value};
+    const updated=Graphics.normalizeOne(raw,0);
+    state.graphicElements=state.graphicElements.map(x=>x.id===selected.id?updated:x);
+    syncCardAndSave();
+  }
+  function moveGraphic(direction){
+    const i=state.graphicElements.findIndex(x=>x.id===selectedGraphicId);
+    const j=i+direction;if(i<0||j<0||j>=state.graphicElements.length)return;
+    const copy=[...state.graphicElements];
+    [copy[i],copy[j]]=[copy[j],copy[i]];
+    state.graphicElements=copy;syncCardAndSave();
+  }
   function syncCardAndSave() {
     snapshotCard();
     renderCardTabs();
     renderLayerOrder();
+    renderGraphicsPanel();
     updateDragHandles();
     persist();
     scheduleRender();
@@ -296,6 +389,7 @@
     $("description-scale").value=state.descriptionScale;
     $("description-scale-value").textContent=state.descriptionScale+"%";
     renderLayerOrder();
+    renderGraphicsPanel();
     updateDragHandles();
     renderCardTabs();
     $("clear-image").hidden = !state.imageData;
