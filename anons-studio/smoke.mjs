@@ -178,9 +178,11 @@ try {
     const bounds=await dragHandle.boundingBox();
     assert.ok(bounds,"Title draggable label available in preview");
     const start={x:bounds.x+bounds.width/2,y:bounds.y+bounds.height/2};
+    console.log("Drag hit:",await page.evaluate(({x,y})=>document.elementFromPoint(x,y)?.getAttribute("data-drag-layer"),start));
     await page.mouse.move(start.x,start.y);
     await page.mouse.down();
     await page.mouse.move(start.x+50,start.y+33,{steps:5});
+    console.log("Drag interim:",await page.evaluate(()=>window.AnonsEditor.getSnapshot().cards[1].layerOffsets.title));
     await page.mouse.up();
     const moved=await page.evaluate(()=>window.AnonsEditor.getSnapshot().cards[1].layerOffsets.title);
     console.log("Drag result:",JSON.stringify(moved));
