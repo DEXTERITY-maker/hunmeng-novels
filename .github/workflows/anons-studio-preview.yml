@@ -26,6 +26,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 24
+      - name: Install test dependencies
+        run: npm ci
       - name: Check self-contained frontend
         run: |
           node --check anons-studio/app.js
