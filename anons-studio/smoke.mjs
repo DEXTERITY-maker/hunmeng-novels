@@ -6,8 +6,8 @@ import { fileURLToPath } from "node:url";
 import { chromium } from "@playwright/test";
 
 const root = join(dirname(fileURLToPath(import.meta.url)),"dist");
-const types = { ".html": "text/html; charset=utf-8", ".css": "text/css; charset=utf-8", ".js": "application/javascript; charset=utf-8" };
-const allow = new Set(["/","/index.html","/styles.css","/app.js","/auth.bundle.js"]);
+const types = { ".html": "text/html; charset=utf-8", ".css": "text/css; charset=utf-8", ".js": "application/javascript; charset=utf-8", ".webp": "image/webp" };
+const allow = new Set(["/","/index.html","/styles.css","/app.js","/auth.bundle.js","/assets/anons-logo-approved.webp","/assets/anons-icon-approved.webp"]);
 const server = createServer(async (req,res)=>{
   const url = new URL(req.url, "http://localhost");
   const path = url.pathname === "/" ? "/index.html" : url.pathname;
@@ -45,6 +45,13 @@ try {
     page.on("pageerror",error=>errors.push(error.message));
     await page.goto("http://127.0.0.1:"+port,{waitUntil:"domcontentloaded"});
     await page.locator("#poster").waitFor();
+    const brandImage=page.locator(".topbar .brand-image img");
+    await brandImage.waitFor();
+    await page.waitForFunction(()=>document.querySelector(".topbar .brand-image img")?.complete);
+    assert.ok(await brandImage.evaluate(img=>img.naturalWidth>0),"Approved wordmark must load");
+    assert.match(await brandImage.getAttribute("src"),/anons-logo-approved\\.webp/);
+    assert.equal(await page.locator(".footer-logo").count(),1);
+    assert.ok((await page.evaluate(async()=> (await fetch("/assets/anons-icon-approved.webp")).status))===200,"Approved favicon must load");
     assert.equal(await page.evaluate(async()=> (await fetch("/auth.bundle.js")).status),200);
     await page.waitForFunction(()=>document.querySelector(".preview-caption")?.textContent?.includes("Free"));
     assert.equal(await page.locator("#pricing .plan").count(),4);
