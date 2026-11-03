@@ -68,7 +68,7 @@ try {
     assert.equal(await page.evaluate(async()=> (await fetch("/auth.bundle.js")).status),200);
     await page.waitForFunction(()=>document.querySelector(".preview-caption")?.textContent?.includes("Free"));
     assert.equal(await page.locator("#pricing .plan").count(),4);
-    await page.waitForFunction(()=>document.querySelector("#billing-availability")?.textContent?.includes("покупки"));
+    await page.waitForFunction(()=>document.querySelector("#billing-availability")?.textContent?.toLowerCase().includes("покупки"));
     assert.ok(await page.locator("#buy-basic").isDisabled(),"Cannot charge without merchant configuration");
     assert.equal(await page.locator("#account-billing").count(),1,"Private billing history panel exists");
     assert.ok(await page.locator("#account-form").isVisible());
