@@ -198,7 +198,7 @@ try {
     await page.locator("#library-save").click();
     await page.waitForFunction(()=>window.__mockLibraryDb.projects.length===1);
     assert.equal(await page.locator("#library-list .library-entry").count(),1);
-    assert.equal(await page.locator("#library-history-list .library-revision").count(),1);
+    await page.waitForFunction(()=>document.querySelectorAll("#library-history-list .library-revision").length===1);
     await page.locator("#title").fill("Текст второй редакции");
     await page.locator("#library-save").click();
     await page.waitForFunction(()=>window.__mockLibraryDb.projects[0].version===2);
