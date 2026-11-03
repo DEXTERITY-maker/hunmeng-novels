@@ -271,3 +271,71 @@ test('public V2 informational pages retain their original legal content and usab
   await expect(page.locator('.rights-steps li')).toHaveCount(4);
   expect(errors).toEqual([]);
 });
+
+test('public V2 chapter updates show real published chapters in a responsive editorial index', async ({ page }, testInfo) => {
+  const errors: string[] = [];
+  page.on('pageerror', error => errors.push(error.message));
+  for (const width of [320, 390, 768, 1280]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/updates/');
+    await expect(page.locator('body')).toHaveClass(/hm-editorial-site/);
+    await expect(page.locator('.v3-utility-nav a')).toHaveCount(6);
+    await expect(page.locator('main.v3-updates-page')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'All updates' })).toBeVisible();
+    await expect(page.locator('meta[name="robots"]')).toHaveCount(0);
+    await expect(page.locator('.updates-page .home-chapter-grid li').first()).toBeVisible();
+    await expect(page.locator('.updates-page .home-chapter-link').first())
+      .toHaveAttribute('href', /^\/novel\/[^/]+\/[^/]+\/$/);
+    await expect(page.locator('.updates-page .home-chapter-link img').first()).toBeVisible();
+    const allDates = await page.locator('.updates-page time[datetime]').evaluateAll(
+      elements => elements.map(el => el.getAttribute('datetime') || ''),
+    );
+    expect(allDates, 'newest-first release order @ ' + width)
+      .toEqual([...allDates].sort((a, b) => b.localeCompare(a)));
+    const artwork = await page.locator('.updates-page .page-heading')
+      .evaluate(el => getComputedStyle(el).backgroundImage);
+    expect(artwork).toContain('hero-mountains.svg');
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1),
+      'updates overflow @ ' + width).toBe(true);
+    if (width === 390 || width === 1280) {
+      await page.screenshot({
+        path: testInfo.outputPath('hunmeng-v2-public-chapter-updates-' + width + '.png'),
+        fullPage: true, animations: 'disabled',
+      });
+    }
+  }
+  const first = await page.locator('.updates-page .home-chapter-link').first().getAttribute('href');
+  await page.goto(first!);
+  await expect(page.locator('#chapter-text p').first()).toBeVisible();
+  expect(errors).toEqual([]);
+});
+
+test('public V2 unknown URL returns the editorial 404 and keeps crawler protections', async ({ page }, testInfo) => {
+  for (const width of [320, 390, 768, 1280]) {
+    await page.setViewportSize({width, height:900});
+    const response = await page.goto('/missing-page-for-hunmeng-v2-404/');
+    expect(response?.status()).toBe(404);
+    await expect(page.locator('body')).toHaveClass(/hm-editorial-site/);
+    await expect(page.locator('main.v3-error-page')).toBeVisible();
+    await expect(page.locator('meta[name="robots"]'))
+      .toHaveAttribute('content', 'noindex,follow');
+    await expect(page.locator('.v3-utility-nav a')).toHaveCount(6);
+    await expect(page.getByRole('heading', { name: 'This page is lost' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Browse catalog' }))
+      .toHaveAttribute('href', '/catalog/');
+    const artwork = await page.locator('main.v3-error-page')
+      .evaluate(el => getComputedStyle(el).backgroundImage);
+    expect(artwork).toContain('hero-mountains.svg');
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1),
+      '404 overflow @ ' + width).toBe(true);
+    if (width === 390 || width === 1280) {
+      await page.screenshot({
+        path: testInfo.outputPath('hunmeng-v2-public-not-found-' + width + '.png'),
+        fullPage: true, animations: 'disabled',
+      });
+    }
+  }
+  await page.getByRole('link', { name: 'Browse catalog' }).click();
+  await expect(page).toHaveURL(/\/catalog\/$/);
+  await expect(page.locator('main.v2-catalog-page')).toBeVisible();
+});
