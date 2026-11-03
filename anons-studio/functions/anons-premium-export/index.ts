@@ -106,40 +106,71 @@ function renderPoster(snapshot:any,card:any,width:number,height:number,available
     left:baseX+offset(name).x,top:baseY+offset(name).y,zIndex:z(name)
   });
   const blocks:any[]=[];
-  // Theme background uses the same calibrated colors and line direction.
-  const background=box({inset:0,width,height,
-    background:'linear-gradient(135deg, '+p.bg1+', '+p.bg2+')'});
-  blocks.push(background);
-  blocks.push(box({right:-width*.12,top:-height*.11,width:width*.58,height:height*.52,
-    borderRadius:999,background:Scene.rgb(p.glow,.10)}));
+  // Match the Canvas background exactly: diagonal linear gradient, radial glow
+  // (inner radius 20 px), and diagonal 73 px-spaced hairlines.
+  const bgLines=[];
+  for(let i=-height;i<width+height;i+=73){
+    bgLines.push(React.createElement('line',{key:'line-'+i,x1:i,y1:0,
+      x2:i+height,y2:height,stroke:Scene.rgb(p.text,.055),strokeWidth:1.5}));
+  }
+  const svgStyle={position:'absolute',left:0,top:0,width,height,zIndex:0};
+  const linear=React.createElement('linearGradient',{
+    id:'anons-gradient',x1:0,y1:0,x2:width,y2:height,gradientUnits:'userSpaceOnUse'
+  },React.createElement('stop',{offset:'0%',stopColor:p.bg1}),
+    React.createElement('stop',{offset:'100%',stopColor:p.bg2}));
+  const inner=20/(width*.85);
+  const radial=React.createElement('radialGradient',{
+    id:'anons-glow',cx:width*.87,cy:height*.16,r:width*.85,gradientUnits:'userSpaceOnUse'
+  },React.createElement('stop',{offset:'0%',stopColor:p.glow,stopOpacity:.34}),
+    React.createElement('stop',{offset:inner,stopColor:p.glow,stopOpacity:.34}),
+    React.createElement('stop',{offset:'100%',stopColor:p.glow,stopOpacity:0}));
+  blocks.push(React.createElement('svg',{key:'background',width,height,
+    viewBox:'0 0 '+width+' '+height,style:svgStyle},
+    React.createElement('defs',null,linear,radial),
+    React.createElement('rect',{x:0,y:0,width,height,fill:'url(#anons-gradient)'}),
+    React.createElement('rect',{x:0,y:0,width,height,fill:'url(#anons-glow)'}),
+    ...bgLines));
   if(plan.enabled.decoration && plan.decorations){
-    const pos=offset('decoration'),style={zIndex:z('decoration')};
+    const pos=offset('decoration');
+    const deco:any[]=[];
     if(plan.template==='editorial'){
-      blocks.push(box({left:38+pos.x,top:38+pos.y,width:width-76,height:height-76,
-        border:'3px solid '+Scene.rgb(p.text,.3),...style}));
-      blocks.push(box({left:width-170+pos.x,top:95+pos.y,width:76,height:76,
-        background:Scene.rgb(p.accent,.28),...style}));
+      deco.push(React.createElement('rect',{key:'border',x:38,y:38,
+        width:width-76,height:height-76,fill:'none',
+        stroke:Scene.rgb(p.text,.3),strokeWidth:3}));
+      deco.push(React.createElement('rect',{key:'accent',x:width-170,y:95,
+        width:76,height:76,fill:Scene.rgb(p.accent,.28)}));
     }else if(plan.template==='spotlight'){
-      for(const size of [540,370])blocks.push(box({left:width*.84-size/2+pos.x,
-        top:height*.24-size/2+pos.y,width:size,height:size,borderRadius:999,
-        background:Scene.rgb(p.accent,.22),...style}));
-    }else if(plan.template==='pulse'){
-      blocks.push(box({left:width*.77+pos.x,top:height*.15-190+pos.y,
-        width:118,height:height*.72,background:Scene.rgb(p.accent,.48),
-        transform:'rotate(-20deg)',...style}));
-    }else if(plan.template==='bulletin'){
-      blocks.push(box({left:pos.x,top:pos.y,width,height:20,background:p.accent,...style}));
-      blocks.push(box({left:pos.x,top:136+pos.y,width,height:8,
-        background:Scene.rgb(p.text,.12),...style}));
-    }else{
-      const cx=width*.84+pos.x,cy=height*.31+pos.y;
-      for(const size of [380,454,528])blocks.push(box({
-        left:cx-size/2,top:cy-size/2,width:size,height:size,
-        border:'3px solid '+Scene.rgb(p.accent,.27),borderRadius:999,...style
+      for(const r of [270,185])deco.push(React.createElement('circle',{
+        key:'c'+r,cx:width*.84,cy:height*.24,r,fill:Scene.rgb(p.accent,.22)
       }));
-      blocks.push(box({left:cx-72,top:cy-72,width:144,height:144,borderRadius:999,
-        background:Scene.rgb(p.accent,.15),...style}));
+    }else if(plan.template==='pulse'){
+      deco.push(React.createElement('g',{key:'slants',
+        transform:'translate('+width*.77+' '+height*.15+') rotate('+(-.36*180/Math.PI)+')'},
+        React.createElement('rect',{x:0,y:-190,width:118,height:height*.72,fill:Scene.rgb(p.accent,.48)}),
+        React.createElement('rect',{x:137,y:-190,width:38,height:height*.72,fill:Scene.rgb(p.text,.16)})));
+    }else if(plan.template==='bulletin'){
+      deco.push(React.createElement('rect',{key:'top',x:0,y:0,width,height:20,fill:p.accent}));
+      deco.push(React.createElement('rect',{key:'rule',x:0,y:136,width,height:8,fill:Scene.rgb(p.text,.12)}));
+      for(let x=75;x<width-75;x+=80)deco.push(React.createElement('rect',{
+        key:'dash-'+x,x,y:height*.19,width:48,height:8,fill:Scene.rgb(p.accent,.3)
+      }));
+    }else{
+      const cx=width*.84,cy=height*.31;
+      for(let i=0;i<3;i++)deco.push(React.createElement('ellipse',{
+        key:'ellipse-'+i,cx,cy,rx:188+i*37,ry:170+i*37,
+        fill:'none',stroke:Scene.rgb(p.accent,.28),strokeWidth:3,
+        transform:'rotate('+(-.35*180/Math.PI)+' '+cx+' '+cy+')'
+      }));
+      deco.push(React.createElement('circle',{key:'center',cx,cy,r:142,
+        fill:Scene.rgb(p.accent,.15)}));
+      deco.push(React.createElement('path',{key:'spark',
+        d:'M0 -48 Q13 -13 48 0 Q13 13 0 48 Q-13 13 -48 0 Q-13 -13 0 -48 Z',
+        fill:p.accent,transform:'translate('+cx+' '+cy+') rotate(45)'}));
     }
+    blocks.push(React.createElement('svg',{key:'decorations',width,height,
+      viewBox:'0 0 '+width+' '+height,style:{
+        position:'absolute',left:pos.x,top:pos.y,width,height,zIndex:z('decoration')
+      }},...deco));
   }
   if(plan.enabled.photo && typeof snapshot.imageData==='string' && snapshot.imageData.length<600000
     && /^data:image\/(png|jpeg|webp);base64,[a-z0-9+/=]+$/i.test(snapshot.imageData)){
@@ -163,7 +194,7 @@ function renderPoster(snapshot:any,card:any,width:number,height:number,available
       fontSize:24,fontWeight:700,color:p.accent,zIndex:z('title')},plan.label+'  /  2026'));
     blocks.push(box({left:plan.center?margin+offset('title').x:x,top:y,width:plan.contentWidth,
       height:Math.max(145,fontTitleSize*titleSpec.lines.length*1.2),color:p.text,
-      fontFamily:titleFamily,fontSize:fontTitleSize,fontWeight:700,
+      fontFamily:titleFamily,fontSize:fontTitleSize,fontWeight:plan.titleWeight,
       letterSpacing:plan.titleTracking,zIndex:z('title'),
       flexDirection:'column',alignItems:plan.center?'center':'flex-start',overflow:'hidden'},
       ...titleSpec.lines.map((line:string,i:number)=>el('div',{
