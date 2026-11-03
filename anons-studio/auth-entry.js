@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import { initLibrary } from "./library-entry.js";
 
 // This is a PUBLIC publishable key, never a service_role or secret key.
 // Paid entitlements are read-only, protected by Supabase RLS.
@@ -6,6 +7,7 @@ const client = createClient("https://kvgnjsntumofwqhywiea.supabase.co", "sb_publ
   auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
 });
 const byId = id => document.getElementById(id);
+const library = initLibrary(client);
 const guest = byId("account-guest");
 const signed = byId("account-signed");
 const emailInput = byId("account-email");
@@ -48,6 +50,7 @@ function renderGuest() {
   signed.hidden = true;
   navAccount.textContent = "Войти";
   status.textContent = "Гость · Free";
+  library.setUser(null);
 }
 function renderUser(user, plan) {
   guest.hidden = true;
@@ -57,6 +60,7 @@ function renderUser(user, plan) {
   accountPlan.textContent = labels[plan] || "Free";
   status.textContent = "Аккаунт · " + (labels[plan] || "Free");
   navAccount.textContent = "Мой аккаунт";
+  library.setUser(user);
 }
 function publishEntitlements(plan, premium) {
   window.dispatchEvent(new CustomEvent("anons:access", {
