@@ -2,13 +2,16 @@ import assert from "node:assert/strict";
 import {createServer} from "node:http";
 import {readFile,mkdir,writeFile} from "node:fs/promises";
 import {dirname,join} from "node:path";
-import {fileURLToPath} from "node:url";
+import {fileURLToPath,pathToFileURL} from "node:url";
 import {runInNewContext} from "node:vm";
 import {transform} from "esbuild";
 import {chromium} from "@playwright/test";
 import React from "react";
 import sharp from "sharp";
-import {ImageResponse} from "@vercel/og";
+// Use a separate temporary package folder; never mutate the root dependency tree.
+const visualFolder=join(dirname(fileURLToPath(import.meta.url)),".visual-ci");
+await writeFile(join(visualFolder,"bridge.mjs"),"export { ImageResponse } from '@vercel/og';\n");
+const {ImageResponse}=await import(pathToFileURL(join(visualFolder,"bridge.mjs")).href);
 
 const base=dirname(fileURLToPath(import.meta.url));
 const dist=join(base,"dist");
