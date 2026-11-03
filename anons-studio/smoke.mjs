@@ -43,6 +43,7 @@ try {
     await page.locator("#title").fill("Новости моего проекта");
     await page.locator("[data-theme=emerald]").click();
     await page.locator("#ratio").selectOption("story");
+    await page.waitForFunction(() => document.querySelector('#poster').height === 1920);
     const changed = await page.locator("#poster").evaluate(c=>({width:c.width,height:c.height,prefix:c.toDataURL("image/png").slice(0,1000)}));
     assert.equal(changed.width,1080);
     assert.equal(changed.height,1920);
