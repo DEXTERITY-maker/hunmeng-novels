@@ -217,6 +217,19 @@ try {
     assert.equal(restored.restoredCount,2,"Restored draft keeps multiple cards");
     assert.equal(restored.title,restored.oldTitle,"Restored draft keeps editable text");
     assert.equal(restored.template,"editorial","Restored draft keeps template");
+    const legacy=await page.evaluate(()=>{
+      const current=window.AnonsEditor.getSnapshot();
+      const old=JSON.parse(JSON.stringify(current));
+      old.schemaVersion=4;
+      old.cards.forEach(card=>{delete card.layers;delete card.titleShift;delete card.descriptionShift;});
+      window.AnonsEditor.loadSnapshot(old);
+      const migrated=window.AnonsEditor.getSnapshot().cards;
+      const works=migrated.every(card=>card.titleShift===0&&card.descriptionShift===0&&Object.values(card.layers).every(Boolean));
+      window.AnonsEditor.loadSnapshot(current);
+      return {works,count:migrated.length};
+    });
+    assert.equal(legacy.works,true,"v0.4-v0.6 cloud projects receive default visible layers");
+    assert.equal(legacy.count,2,"Migration keeps all pages");
 
     await context.close();
     console.log("PASS Anons Studio browser preview, editor, storage, PNG and responsive width="+width);
