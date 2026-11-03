@@ -268,13 +268,13 @@ try {
       window.AnonsEditor.loadSnapshot(old);
       const migrated=window.AnonsEditor.getSnapshot().cards;
       const works=migrated.every(card=>card.titleShift===0&&card.descriptionShift===0&&Object.values(card.layers).every(Boolean));
+      const validV08=migrated.every(card=>card.layerOrder.length===6 && card.titleFont==="auto"
+        &&card.descriptionScale===100 && card.layerOffsets.title.x===0 && card.layerOffsets.title.y===0);
       window.AnonsEditor.loadSnapshot(current);
-      return {works,count:migrated.length};
+      return {works,validV08,count:migrated.length};
     });
     assert.equal(legacy.works,true,"v0.4-v0.6 cloud projects receive default visible layers");
-    assert.ok(await page.evaluate(()=>window.AnonsEditor.getSnapshot().cards.every(card=>
-      card.layerOrder.length===6&&card.titleFont==="auto"&&card.descriptionScale===100)),
-      "Old cloud drafts get safe v0.8 layout and typography defaults");
+    assert.equal(legacy.validV08,true,"Old cloud drafts get safe v0.8 layout and typography defaults");
     assert.equal(legacy.count,2,"Migration keeps all pages");
 
     await context.close();
