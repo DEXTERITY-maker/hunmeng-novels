@@ -483,7 +483,7 @@ test('V2 external source attribution stays readable in light, dark and system-da
       '.external-novel-status','.external-novel-status strong',
     ]) {
       const ratio=await page.locator(selector).evaluate(element=>{
-        const rgb=(color:string)=>(color.match(/\\d+(?:\\.\\d+)?/g)||[]).slice(0,3).map(Number);
+        const rgb=(color:string)=>(color.match(/[0-9]+(?:[.][0-9]+)?/g)||[]).slice(0,3).map(Number);
         const luminance=(channels:number[])=>channels.map(channel=>{
           const x=channel/255;
           return x<=0.04045?x/12.92:Math.pow((x+0.055)/1.055,2.4);
