@@ -59,6 +59,9 @@ function fonts(){
 function renderPoster(snapshot:any,card:any,width:number,height:number){
   const colors=THEMES[card.theme]||THEMES[snapshot.theme]||THEMES.ultraviolet;
   const template=TEMPLATES.has(card.template)?card.template:'aurora';
+  const layers=card.layers && typeof card.layers==='object'&&!Array.isArray(card.layers)?card.layers:{};
+  const visible=(name:string)=>layers[name]!==false;
+  const move=(value:unknown)=>Math.max(-12,Math.min(12,Number.isFinite(value)?Math.round(Number(value)):0));
   const pale=template==='minimal'||template==='editorial';
   const primary=pale?'#f7efe2':colors[0],secondary=pale?'#e6d7c7':colors[1];
   const ink=pale?'#302737':colors[3],muted=pale?'#5b5058':colors[4];
@@ -70,35 +73,38 @@ function renderPoster(snapshot:any,card:any,width:number,height:number){
   const fontsize=Math.round((height>1500?102:height<1200?76:94)*scale/100);
   const align=card.alignment==='center'?'center':'left';
   const background='linear-gradient(145deg, '+primary+', '+secondary+')';
-  const photograph=typeof snapshot.imageData==='string'&&snapshot.imageData.length<600000
+  const photograph=visible('photo')&&typeof snapshot.imageData==='string'&&snapshot.imageData.length<600000
       &&/^data:image\/(png|jpeg|webp);base64,[a-z0-9+/=]+$/i.test(snapshot.imageData)
     ? React.createElement('img',{src:snapshot.imageData,style:{
         position:'absolute',right:30,top:height*.18,width:width*.43,height:height*.31,
         borderRadius:32,objectFit:'cover',opacity:Math.max(.15,Math.min(.85,Number(card.photoOpacity||35)/100))
       }})
     : null;
-  const decoration=card.decorations!==false&&template!=='minimal'
+  const decoration=visible('decoration')&&card.decorations!==false&&template!=='minimal'
     ?el('div',{position:'absolute',width:470,height:470,border:'55px solid '+accent,borderRadius:300,
       right:-95,top:height*.16,opacity:.18,transform:'rotate(19deg)'})
     :null;
-  const row=el('div',{display:'flex',width:'100%',justifyContent:'space-between',alignItems:'center'},
+  const row=visible('brand')?el('div',{display:'flex',width:'100%',justifyContent:'space-between',alignItems:'center'},
     el('div',{display:'flex',fontSize:24,fontWeight:700,color:ink,padding:'14px 22px',
       borderRadius:27,background:pale?'#ffffffaa':'#ffffff1e'},text(snapshot.project,45,'ANONS STUDIO')),
-    el('div',{display:'flex',fontSize:19,fontWeight:700,color:muted,letterSpacing:2},'✦ ANONS STUDIO'));
+    el('div',{display:'flex',fontSize:19,fontWeight:700,color:muted,letterSpacing:2},'✦ ANONS STUDIO')):null;
   const titleBlock=el('div',{display:'flex',flexDirection:'column',alignItems:align==='center'?'center':'flex-start',
       width:'100%',marginTop:height>1700?300:height<1200?145:215,textAlign:align},
-    el('div',{display:'flex',fontSize:24,fontWeight:700,color:accent,letterSpacing:4,marginBottom:21},
-      LABELS[card.preset]||'АНОНС'),
-    el('div',{display:'flex',fontSize:fontsize,fontWeight:700,lineHeight:1.12,
-      color:ink,letterSpacing:-2,width:'100%',wordBreak:'break-word'},title),
-    el('div',{display:'flex',fontSize:29,fontWeight:700,lineHeight:1.5,marginTop:24,
-      maxWidth:850,color:muted,wordBreak:'break-word'},details));
+    visible('title')?el('div',{display:'flex',flexDirection:'column',width:'100%',position:'relative',
+        top:Math.round(height*move(card.titleShift)/100)},
+      el('div',{display:'flex',fontSize:24,fontWeight:700,color:accent,letterSpacing:4,marginBottom:21},
+        LABELS[card.preset]||'АНОНС'),
+      el('div',{display:'flex',fontSize:fontsize,fontWeight:700,lineHeight:1.12,
+        color:ink,letterSpacing:-2,width:'100%',wordBreak:'break-word'},title)):null,
+    visible('description')?el('div',{display:'flex',fontSize:29,fontWeight:700,lineHeight:1.5,marginTop:24,
+      position:'relative',top:Math.round(height*move(card.descriptionShift)/100),
+      maxWidth:850,color:muted,wordBreak:'break-word'},details):null);
   const cardPoints=points.length?points:['Новые возможности','Подробности внутри'];
-  const lines=el('div',{display:'flex',flexDirection:'column',width:'100%',gap:14,padding:27,
+  const lines=visible('highlights')?el('div',{display:'flex',flexDirection:'column',width:'100%',gap:14,padding:27,
       borderRadius:25,background:pale?'#ffffff66':'#ffffff13',border:'1px solid '+accent},
     ...cardPoints.map((p:string)=>el('div',{display:'flex',alignItems:'center',gap:18},
       el('div',{width:18,height:18,borderRadius:100,background:accent,flexShrink:0}),
-      el('div',{display:'flex',fontSize:height<1200?25:29,lineHeight:1.4,color:ink,fontWeight:700,flex:1},p))));
+      el('div',{display:'flex',fontSize:height<1200?25:29,lineHeight:1.4,color:ink,fontWeight:700,flex:1},p)))):null;
   const foot=el('div',{display:'flex',justifyContent:'space-between',paddingTop:25,
       borderTop:'2px solid '+accent,color:muted,fontSize:19,letterSpacing:1},
     'СОЗДАНО ДЛЯ ВДОХНОВЕНИЯ','✦');
