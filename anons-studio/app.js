@@ -250,6 +250,7 @@
   function syncCardAndSave() {
     snapshotCard();
     renderCardTabs();
+    renderLayerOrder();
     updateDragHandles();
     persist();
     scheduleRender();
@@ -553,7 +554,7 @@
       if(key==="project"){persist();scheduleRender();}else syncCardAndSave();
     });
   }
-  $("ratio").addEventListener("change",(e)=>{state.ratio=sizes[e.target.value]?e.target.value:"portrait";persist();scheduleRender();});
+  $("ratio").addEventListener("change",(e)=>{state.ratio=sizes[e.target.value]?e.target.value:"portrait";updateDragHandles();persist();scheduleRender();});
   document.querySelectorAll("[data-theme]").forEach((b)=>b.addEventListener("click",()=>{
     state.theme=b.dataset.theme;state.accentColor="";syncFields();syncCardAndSave();
   }));
@@ -688,6 +689,38 @@
   });
   refreshBrandKit();
   updateHistoryButtons();
+  $("direct-edit").addEventListener("change",event=>{
+    directEdit=event.target.checked;
+    updateDragHandles();
+    showToast(directEdit?"Перетаскивай подписи слоёв на изображении.":"Режим перетаскивания выключен.");
+  });
+  $("snap-to-grid").addEventListener("change",event=>{
+    snapToGrid=event.target.checked;
+  });
+  $("position-reset").addEventListener("click",()=>{
+    state.layerOffsets=emptyOffsets();
+    state.layerOrder=[...defaultOrder];
+    updateDragHandles();syncCardAndSave();
+    showToast("Положение и порядок слоёв сброшены.");
+  });
+  $("title-font").addEventListener("change",e=>{
+    state.titleFont=typographyFonts.includes(e.target.value)?e.target.value:"auto";
+    syncCardAndSave();
+  });
+  $("title-weight").addEventListener("change",e=>{
+    state.titleWeight=[700,800,900].includes(Number(e.target.value))?Number(e.target.value):800;
+    syncCardAndSave();
+  });
+  $("title-tracking").addEventListener("input",e=>{
+    state.titleTracking=clamp(Math.round(Number(e.target.value)||0),-2,6);
+    $("title-tracking-value").textContent=state.titleTracking+" px";
+    syncCardAndSave();
+  });
+  $("description-scale").addEventListener("input",e=>{
+    state.descriptionScale=clamp(Math.round((Number(e.target.value)||100)/5)*5,80,130);
+    $("description-scale-value").textContent=state.descriptionScale+"%";
+    syncCardAndSave();
+  });
   $("reset").addEventListener("click",()=>{
     const keep=window.confirm("Начать заново? Текущий текст, оформление и загруженное фото будут удалены из этого браузера.");
     if(!keep)return;
