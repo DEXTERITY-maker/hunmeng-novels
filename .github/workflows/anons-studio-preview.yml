@@ -49,6 +49,8 @@ jobs:
           grep -q 'localStorage' anons-studio/app.js
       - name: Test payment and export authorization boundaries
         run: node --test anons-studio/security.test.mjs anons-studio/sandbox-webhook.test.mjs anons-studio/billing-ux.test.mjs anons-studio/graphic-elements.test.mjs anons-studio/scene-layout.test.mjs
+      - name: Verify live Supabase payment and premium authorization gates
+        run: node --test anons-studio/live-release-gate.test.mjs
       - name: Install Chromium for browser checks
         run: npx playwright install --with-deps chromium
       - name: Test actual editor, responsive layout and PNG export
