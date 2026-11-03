@@ -42,7 +42,8 @@ jobs:
          startsWith(github.event.head_commit.message, 'feat(editorial): publish authorized chapter import workflow 2026-11-01 [deploy cloudflare]') ||
          startsWith(github.event.head_commit.message, 'fix(release): publish rights-gated chapter import 2026-11-01 [deploy cloudflare]') ||
          startsWith(github.event.head_commit.message, 'feat(research): publish DaoSearch editorial lookup 2026-11-01 [deploy cloudflare]') ||
-         startsWith(github.event.head_commit.message, 'chore(release): publish Hunmeng 2.0 2026-11-02 [deploy cloudflare]'))))
+         startsWith(github.event.head_commit.message, 'chore(release): publish Hunmeng 2.0 2026-11-02 [deploy cloudflare]') ||
+         startsWith(github.event.head_commit.message, 'chore(release): publish Hunmeng editorial rollout 2026-11-03 [deploy cloudflare]'))))
     runs-on: ubuntu-latest
     environment: pages-production
     timeout-minutes: 30
