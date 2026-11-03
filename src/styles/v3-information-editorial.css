@@ -43,6 +43,8 @@
   box-shadow: 0 13px 35px #203a271f;
 }
 .hm-editorial-site .v3-info-page.prose-page {
+  /* Keep legal/contact copy on ivory, not the surrounding dark OS canvas. */
+  background: #fffdf6;
   max-width: 980px;
   font: 400 1rem/1.84 'Manrope Variable',sans-serif;
 }
