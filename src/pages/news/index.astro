@@ -2,11 +2,24 @@
 import Layout from '../../layouts/Layout.astro';
 import NewsCard from '../../components/NewsCard.astro';
 import { getNews, newsCategories } from '../../lib/news';
+import '../../styles/v3-editorial.css';
+import '../../styles/v3-news-editorial.css';
+const editorial = import.meta.env.HUNMENG_V2_PUBLIC === '1';
 
 const posts = await getNews();
 ---
 
-<Layout title="News and updates" description="The latest Hunmeng news: site updates, announcements, and events.">
+<Layout title="News and updates" description="The latest Hunmeng news: site updates, announcements, and events." bodyClass={editorial ? 'hm-editorial-site' : undefined}>
+  {editorial && (
+    <nav class="v3-primary-nav v3-news-nav" aria-label="Reading room navigation">
+      <a href="/">Home</a>
+      <a href="/catalog/">Books</a>
+      <a href="/news/" aria-current="page">Articles</a>
+      <a href="/#v3-collections">Collections</a>
+      <a href="/library/">My library</a>
+      <a href="/about/">About</a>
+    </nav>
+  )}
   <main id="main" class="page-shell news-page">
     <header class="news-heading news-hero">
       <div class="news-hero-copy">

@@ -172,3 +172,58 @@ test('public V2 account keeps guest sign-in protected with responsive editorial 
   }
   expect(errors).toEqual([]);
 });
+
+test('public V2 news uses editorial layout with working category filters and responsive cards', async ({ page }, testInfo) => {
+  const errors: string[] = [];
+  page.on('pageerror', error => errors.push(error.message));
+  for (const width of [320, 390, 768, 1280]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/news/');
+    await expect(page.locator('body')).toHaveClass(/hm-editorial-site/);
+    await expect(page.locator('.v3-news-nav a')).toHaveCount(6);
+    await expect(page.locator('.v3-news-nav a[aria-current="page"]')).toHaveAttribute('href', '/news/');
+    await expect(page.locator('meta[name="robots"]')).toHaveCount(0);
+    await expect(page.locator('#news-feed [data-news-card]').first()).toBeVisible();
+    const heroImage = await page.locator('.news-heading.news-hero').evaluate(el => getComputedStyle(el).backgroundImage);
+    expect(heroImage, 'editorial hero background @ ' + width).toContain('hero-mountains');
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1),
+      'news overflow @ ' + width).toBe(true);
+    if (width === 390 || width === 1280) {
+      await page.screenshot({path: testInfo.outputPath('hunmeng-v2-public-news-' + width + '.png'),
+        fullPage: true, animations: 'disabled'});
+    }
+  }
+  await page.locator('[data-news-filter="changelog"]').click();
+  await expect(page).toHaveURL(/\/news\/\?category=changelog/);
+  await expect(page.locator('[data-news-filter="changelog"]')).toHaveAttribute('aria-current', 'page');
+  await page.locator('[data-news-filter="all"]').click();
+  await expect(page).toHaveURL(/\/news\/$/);
+  expect(errors).toEqual([]);
+});
+
+test('public V2 article keeps real content, reactions, metadata and SEO', async ({ page }, testInfo) => {
+  await page.goto('/news/');
+  const link = page.locator('#news-feed .news-card h3 a').first();
+  const target = await link.getAttribute('href');
+  expect(target).toMatch(/^\/news\/[^/]+\/$/);
+  await page.goto(target!);
+  await expect(page.locator('body')).toHaveClass(/hm-editorial-site/);
+  await expect(page.locator('.v3-news-nav a[aria-current="page"]')).toHaveAttribute('href', '/news/');
+  await expect(page.locator('main.news-article-shell')).toBeVisible();
+  await expect(page.locator('.news-article h1')).not.toBeEmpty();
+  await expect(page.locator('.news-article-body')).not.toBeEmpty();
+  await expect(page.locator('meta[name="robots"]')).toHaveCount(0);
+  await expect(page.locator('.news-reaction-options button')).toHaveCount(6);
+  await page.locator('.news-reaction-options button').first().click();
+  await expect(page.locator('#news-reaction-status')).toContainText('You selected');
+  await page.reload();
+  await expect(page.locator('.news-reaction-options button').first()).toHaveAttribute('aria-pressed', 'true');
+  for (const width of [390, 1280]) {
+    await page.setViewportSize({width,height:900});
+    await expect(page.locator('.news-article-body')).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1),
+      'article overflow @ ' + width).toBe(true);
+    await page.screenshot({path:testInfo.outputPath('hunmeng-v2-public-article-' + width + '.png'),
+      fullPage: true, animations: 'disabled'});
+  }
+});

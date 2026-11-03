@@ -5,6 +5,9 @@ import { dateLabel } from '../../lib/content';
 import { getNews, newsCategories, newsCover } from '../../lib/news';
 import { getLibrary } from '../../lib/content';
 import NewsCard from '../../components/NewsCard.astro';
+import '../../styles/v3-editorial.css';
+import '../../styles/v3-news-editorial.css';
+const editorial = import.meta.env.HUNMENG_V2_PUBLIC === '1';
 
 export async function getStaticPaths() {
   const posts = await getNews();
@@ -17,7 +20,17 @@ const cover = newsCover(post, await getLibrary());
 const others = (await getNews()).filter((item) => item.id !== post.id).slice(0, 3);
 ---
 
-<Layout title={title} description={excerpt}>
+<Layout title={title} description={excerpt} bodyClass={editorial ? 'hm-editorial-site' : undefined}>
+  {editorial && (
+    <nav class="v3-primary-nav v3-news-nav" aria-label="Reading room navigation">
+      <a href="/">Home</a>
+      <a href="/catalog/">Books</a>
+      <a href="/news/" aria-current="page">Articles</a>
+      <a href="/#v3-collections">Collections</a>
+      <a href="/library/">My library</a>
+      <a href="/about/">About</a>
+    </nav>
+  )}
   <main id="main" class="page-shell news-article-shell">
     <nav class="news-breadcrumbs" aria-label="News navigation">
       <a href="/">Home</a><span aria-hidden="true">›</span>
