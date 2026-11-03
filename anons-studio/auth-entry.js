@@ -243,6 +243,16 @@ async function signOut(scope){
 byId("account-logout").addEventListener("click",()=>signOut("local"));
 byId("account-logout-all").addEventListener("click",()=>signOut("global"));
 client.auth.onAuthStateChange((event,session)=>{
+  if(event==="INITIAL_SESSION"&&!session?.user){
+    // A stale signed-in draft must not remain visible on a shared device.
+    try {
+      const activeKey="anons-studio:cloud-active-v05";
+      if(localStorage.getItem(activeKey)){
+        localStorage.removeItem(activeKey);
+        window.AnonsEditor?.newDraft?.();
+      }
+    }catch{}
+  }
   if(event==="PASSWORD_RECOVERY"){
     recovering=true;
     showPanels(session?.user||null);
