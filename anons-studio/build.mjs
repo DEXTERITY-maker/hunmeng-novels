@@ -10,6 +10,10 @@ await mkdir(out,{recursive:true});
 for(const f of ["index.html","styles.css","app.js"]){
   await copyFile(join(dir,f),join(out,f));
 }
+await mkdir(join(out,"assets"),{recursive:true});
+for(const asset of ["anons-logo-approved.webp","anons-icon-approved.webp"]){
+  await copyFile(join(dir,"assets",asset),join(out,"assets",asset));
+}
 await build({
   entryPoints:[join(dir,"auth-entry.js")],
   outfile:join(out,"auth.bundle.js"),
