@@ -32,11 +32,24 @@
   const MAX_CARDS=8;
   const layerNames=["brand","title","description","highlights","photo","decoration"];
   const defaultLayers=Object.freeze(Object.fromEntries(layerNames.map(name=>[name,true])));
-  const cardKeys=["title","description","points","preset","template","theme","accentColor","alignment","headingScale","decorations","photoOpacity","layers","titleShift","descriptionShift"];
+  const defaultOrder=["decoration","photo","brand","title","description","highlights"];
+  const typographyFonts=["auto","manrope","georgia","arial"];
+  const clamp=(n,lo,hi)=>Math.max(lo,Math.min(hi,n));
+  const offsetFor=(record)=>({x:Number.isFinite(record?.x)?clamp(Math.round(record.x),-30,30):0,
+    y:Number.isFinite(record?.y)?clamp(Math.round(record.y),-30,30):0});
+  const emptyOffsets=()=>Object.fromEntries(layerNames.map(name=>[name,{x:0,y:0}]));
+  const normalizeOrder=(raw)=>{
+    const list=Array.isArray(raw)?raw.filter(name=>defaultOrder.includes(name)):[];
+    return [...new Set([...list,...defaultOrder])];
+  };
+  const cardKeys=["title","description","points","preset","template","theme","accentColor","alignment","headingScale","decorations","photoOpacity","layers","titleShift","descriptionShift","layerOffsets","layerOrder","titleFont","titleWeight","titleTracking","descriptionScale"];
   const limits={project:45,title:85,description:210,points:240};
   const defaults = { preset: "update", theme: "ultraviolet", ratio: "portrait", ...presets.update, imageData: "",
     template:"aurora", headingScale:100, accentColor:"", alignment:"left", decorations:true, photoOpacity:35,
-    layers:{...defaultLayers},titleShift:0,descriptionShift:0,activeCard:0,cards:[] };
+    layers:{...defaultLayers},titleShift:0,descriptionShift:0,
+    layerOffsets:emptyOffsets(),layerOrder:[...defaultOrder],
+    titleFont:"auto",titleWeight:800,titleTracking:0,descriptionScale:100,
+    activeCard:0,cards:[] };
   let saved = {};
   try { saved = JSON.parse(localStorage.getItem(storageKey) || "{}") || {}; } catch (_) {}
   const state = { ...defaults };
@@ -70,6 +83,13 @@
     out.layers=Object.fromEntries(layerNames.map(name=>[name,oldLayers[name]!==false]));
     out.titleShift=Number.isFinite(original.titleShift)?Math.round(Math.max(-12,Math.min(12,original.titleShift))):0;
     out.descriptionShift=Number.isFinite(original.descriptionShift)?Math.round(Math.max(-12,Math.min(12,original.descriptionShift))):0;
+    const offsets=original.layerOffsets && typeof original.layerOffsets==="object"?original.layerOffsets:{};
+    out.layerOffsets=Object.fromEntries(layerNames.map(name=>[name,offsetFor(offsets[name])]));
+    out.layerOrder=normalizeOrder(original.layerOrder);
+    out.titleFont=typographyFonts.includes(original.titleFont)?original.titleFont:"auto";
+    out.titleWeight=[700,800,900].includes(original.titleWeight)?original.titleWeight:800;
+    out.titleTracking=Number.isFinite(original.titleTracking)?clamp(Math.round(original.titleTracking),-2,6):0;
+    out.descriptionScale=Number.isFinite(original.descriptionScale)?clamp(Math.round(original.descriptionScale/5)*5,80,130):100;
     return out;
   };
   // Migration: keep a previously saved single-card project when upgrading v0.2.
@@ -447,7 +467,10 @@
   $("duplicate-card").addEventListener("click",()=>{
     if(state.cards.length>=MAX_CARDS)return;
     snapshotCard();
-    state.cards.splice(state.activeCard+1,0,{...state.cards[state.activeCard],layers:{...state.cards[state.activeCard].layers}});
+    state.cards.splice(state.activeCard+1,0,{...state.cards[state.activeCard],
+      layers:{...state.cards[state.activeCard].layers},
+      layerOffsets:Object.fromEntries(layerNames.map(name=>[name,{...state.cards[state.activeCard].layerOffsets[name]}])),
+      layerOrder:[...state.cards[state.activeCard].layerOrder]});
     activateCard(state.activeCard+1);
     showToast("Карточка продублирована.");
   });
@@ -707,10 +730,10 @@
   function getSnapshot() {
     snapshotCard();
     const copy={
-      schemaVersion:5,project:state.project,ratio:state.ratio,
+      schemaVersion:6,project:state.project,ratio:state.ratio,
       theme:state.theme,template:state.template,
       activeCard:state.activeCard,
-      cards:state.cards.map(card=>({...card,layers:{...card.layers}})),
+      cards:state.cards.map(card=>({...card,layers:{...card.layers},layerOffsets:Object.fromEntries(layerNames.map(name=>[name,{...card.layerOffsets[name]}])),layerOrder:[...card.layerOrder]})),
       imageData:state.imageData,
       accentColor:state.accentColor,alignment:state.alignment,
       headingScale:state.headingScale,photoOpacity:state.photoOpacity,
