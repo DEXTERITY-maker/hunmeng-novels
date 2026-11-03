@@ -3,10 +3,23 @@ import Layout from '../layouts/Layout.astro';
 import TaxonomyDirectory from '../components/TaxonomyDirectory.astro';
 import { getLibrary } from '../lib/content';
 import { getTaxonomy } from '../lib/taxonomy';
+import '../styles/v3-editorial.css';
+import '../styles/v3-discovery-editorial.css';
+const editorial = import.meta.env.HUNMENG_V2_PUBLIC === '1';
 const { genres } = getTaxonomy(await getLibrary());
 ---
-<Layout title="Browse novel genres" description="Explore Hunmeng novel genres and find books by the kind of story you enjoy.">
-  <main id="main" class="page-shell taxonomy-page">
+<Layout title="Browse novel genres" description="Explore Hunmeng novel genres and find books by the kind of story you enjoy." bodyClass={editorial ? 'hm-editorial-site' : undefined}>
+  {editorial && (
+    <nav class="v3-primary-nav v3-discovery-nav" aria-label="Reading room navigation">
+      <a href="/">Home</a>
+      <a href="/catalog/">Books</a>
+      <a href="/news/">Articles</a>
+      <a href="/#v3-collections">Collections</a>
+      <a href="/library/">My library</a>
+      <a href="/about/">About</a>
+    </nav>
+  )}
+  <main id="main" class="page-shell taxonomy-page v3-taxonomy-page">
     <header class="page-heading"><h1>Genres</h1><p>Choose a broad type of story, from science fiction to xianxia.</p></header>
     <nav class="taxonomy-nav" aria-label="Browse novels"><a href="/catalog/">Novel catalog</a><a href="/genres/" aria-current="page">Genres</a><a href="/tags/">Tags</a></nav>
     <p class="notice">Start with genres that have novels on Hunmeng. Choose All genres to explore the complete vocabulary.</p>

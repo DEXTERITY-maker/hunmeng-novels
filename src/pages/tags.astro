@@ -3,10 +3,23 @@ import Layout from '../layouts/Layout.astro';
 import TaxonomyDirectory from '../components/TaxonomyDirectory.astro';
 import { getLibrary } from '../lib/content';
 import { getTaxonomy } from '../lib/taxonomy';
+import '../styles/v3-editorial.css';
+import '../styles/v3-discovery-editorial.css';
+const editorial = import.meta.env.HUNMENG_V2_PUBLIC === '1';
 const { tags, groups } = getTaxonomy(await getLibrary());
 ---
-<Layout title="Browse novel tags" description="Find Hunmeng novels by protagonist, abilities, world, relationships, and other story details.">
-  <main id="main" class="page-shell taxonomy-page">
+<Layout title="Browse novel tags" description="Find Hunmeng novels by protagonist, abilities, world, relationships, and other story details." bodyClass={editorial ? 'hm-editorial-site' : undefined}>
+  {editorial && (
+    <nav class="v3-primary-nav v3-discovery-nav" aria-label="Reading room navigation">
+      <a href="/">Home</a>
+      <a href="/catalog/">Books</a>
+      <a href="/news/">Articles</a>
+      <a href="/#v3-collections">Collections</a>
+      <a href="/library/">My library</a>
+      <a href="/about/">About</a>
+    </nav>
+  )}
+  <main id="main" class="page-shell taxonomy-page v3-taxonomy-page">
     <header class="page-heading"><h1>Tags</h1><p>Explore the characters, worlds, abilities, and themes inside a story.</p></header>
     <nav class="taxonomy-nav" aria-label="Browse novels"><a href="/catalog/">Novel catalog</a><a href="/genres/">Genres</a><a href="/tags/" aria-current="page">Tags</a></nav>
     <p class="notice">Start with tags that have novels on Hunmeng. Choose All tags to explore the complete vocabulary. Tags can reveal plot details.</p>
