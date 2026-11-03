@@ -63,3 +63,15 @@ button.plan-action[disabled]{cursor:not-allowed;color:#92869f;background:#f6f4f7
 @media(max-width:1100px){.pricing-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.plan>p{min-height:0}.navigation{gap:15px}.navigation a{font-size:12px}}
 @media(max-width:760px){.pricing{padding-top:78px;padding-bottom:79px}.account-section{padding:75px 0}.account-layout{grid-template-columns:1fr;gap:28px}.account-box{max-width:580px}.brand-beta{display:none}}
 @media(max-width:440px){.pricing-grid{grid-template-columns:1fr}.plan{padding:22px}.account-box{padding:24px 19px}.brand-word{font-size:19px}.brand-word .brand-light{font-size:19px}}
+
+/* Approved Anons Studio brand: same artwork, responsive sizes. */
+.brand-image{display:inline-flex;align-items:center;flex:0 0 auto;line-height:1}
+.brand-image img{display:block;width:200px;height:auto;max-height:68px;object-fit:contain}
+.footer-logo{display:block;width:151px;height:auto;object-fit:contain}
+@media(max-width:760px){
+  .brand-image img{width:174px;max-height:56px}
+}
+@media(max-width:440px){
+  .brand-image img{width:153px;max-height:50px}
+  .footer-logo{width:136px}
+}
