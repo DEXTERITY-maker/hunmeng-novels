@@ -75,3 +75,88 @@ button.plan-action[disabled]{cursor:not-allowed;color:#92869f;background:#f6f4f7
   .brand-image img{width:153px;max-height:50px}
   .footer-logo{width:136px}
 }
+
+/* v0.3: professional gallery and multi-card editor */
+.gallery-section{padding-top:101px;padding-bottom:112px}
+.gallery-section .section-heading h2 em{font-style:normal;color:#8557e2}
+.template-gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:21px}
+.template-card{background:#fff;text-align:left;border:2px solid transparent;box-shadow:0 8px 27px #28223a0b;overflow:hidden;border-radius:18px;padding:10px;transition:transform .2s,border-color .2s,box-shadow .2s;min-width:0}
+.template-card:hover{transform:translateY(-4px);box-shadow:0 20px 34px #30244816}
+.template-card.active{border-color:#8050ea;box-shadow:0 0 0 4px #8050ea15}
+.template-art{height:186px;border-radius:12px;display:flex;flex-direction:column;position:relative;overflow:hidden;padding:24px;justify-content:flex-end;isolation:isolate}
+.template-art::before{content:"";position:absolute;pointer-events:none;z-index:-1}
+.preview-heading{font-size:26px;font-weight:850;letter-spacing:-.055em;line-height:1.13;position:relative}
+.preview-top{font-size:9px;letter-spacing:.15em;font-weight:800;position:absolute;top:21px;left:22px}
+.preview-decoration{position:absolute;right:19px;top:16px;font-size:80px;opacity:.5}
+.preview-bars{display:block;width:60%;height:3px;background:currentColor;opacity:.4;margin-top:18px;border-radius:2px}
+.preview-aurora{background:linear-gradient(135deg,#1e153e,#7042cb);color:#f8f1ff}
+.preview-aurora::before{width:155px;height:155px;right:-22px;top:-24px;border:20px solid #ffffff24;border-radius:100%}
+.preview-editorial{background:linear-gradient(125deg,#eee5cf,#fdf5e8);color:#40332c}
+.preview-editorial .preview-heading{font-family:Georgia,serif;font-weight:700;letter-spacing:-.06em;font-size:35px}
+.preview-editorial::before{inset:9px;border:1px solid #7862493d}
+.preview-spotlight{background:linear-gradient(140deg,#d25260,#f29c69);color:#fff}
+.preview-spotlight::before{height:190px;width:190px;top:-67px;right:-30px;border:48px solid #fff5;border-radius:50%}
+.preview-spotlight .preview-decoration{opacity:.15;font-size:130px;top:-25px;right:-8px}
+.preview-pulse{background:linear-gradient(137deg,#151a36,#2e3886);color:#f8f8ff}
+.preview-pulse::before{background:#7d6aff;width:225px;height:350px;right:-130px;top:-60px;transform:rotate(30deg)}
+.preview-pulse .preview-decoration{color:#d2c8ff;opacity:.9}
+.preview-minimal{background:#f6f5f1;color:#242837}
+.preview-minimal .preview-heading{font-size:30px;font-weight:600;letter-spacing:-.05em}
+.preview-minimal::before{width:60px;height:60px;top:25px;right:20px;background:#ecddcc;border-radius:50%}
+.preview-bulletin{background:linear-gradient(160deg,#172f39,#226071);color:#fff}
+.preview-bulletin::before{inset:0 0 auto;height:18px;background:#6ce3bc}
+.preview-bulletin .preview-heading{font-size:27px}
+.template-info{display:flex;flex-direction:column;gap:5px;padding:15px 9px 8px}
+.template-info strong{font-size:16px;color:#242032;letter-spacing:-.025em}
+.template-info small{font-size:11px;color:#817b90;font-weight:600}
+.card-manager{border:1px solid #e9e3f1;border-radius:14px;background:#faf8fe;padding:17px;margin:0 0 23px}
+.card-manager-title{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:12px}
+.card-manager-title span{color:#8b7c9e;font-size:10px}
+.card-list{display:flex;overflow-x:auto;gap:8px;padding:14px 0 12px;scrollbar-width:thin}
+.card-tab{flex:0 0 auto;min-width:48px;height:43px;padding:0 12px;border:1px solid #e3dcec;border-radius:10px;background:#fff;color:#6c617a;font-weight:800;font-size:12px}
+.card-tab.active{border-color:#8159da;background:#efe8ff;color:#6534bf}
+.card-tab:focus-visible{outline-offset:1px}
+.card-manager-actions{display:flex;gap:6px;flex-wrap:wrap}
+.card-manager-actions button{font-size:10px;font-weight:750;border:1px solid #e6def1;border-radius:8px;background:#fff;color:#685479;min-height:34px;padding:6px 9px}
+.card-manager-actions button:hover:not(:disabled){border-color:#986eec;background:#f4efff}
+.card-manager-actions button:disabled{opacity:.45;cursor:not-allowed}
+.card-manager .field-note{margin-top:10px}
+.advanced-panel{border:1px solid #e8e2ef;border-radius:13px;background:#fbf9fe;padding:14px 17px;margin:0 0 20px}
+.advanced-panel summary{cursor:pointer;display:flex;justify-content:space-between;align-items:center;color:#513c75;font-size:12px;font-weight:850;list-style:none}
+.advanced-panel summary::-webkit-details-marker{display:none}
+.advanced-panel[open] summary>span{transform:rotate(180deg)}
+.advanced-content{padding-top:17px;display:grid;gap:11px}
+.advanced-content label{color:#474052;font-size:11px;font-weight:750}
+.advanced-content output{float:right;color:#8a61df}
+.advanced-content select{width:100%;background:#fff}
+.advanced-content input[type=range]{width:100%;accent-color:#8659e8;cursor:pointer}
+.advanced-content input[type=color]{height:42px;width:80px;padding:3px;border:1px solid #ded7e9;border-radius:9px;background:white;cursor:pointer}
+.advanced-toggle{display:flex!important;align-items:center;gap:10px;font-size:11px}
+.advanced-toggle input{accent-color:#8659e8;width:16px;height:16px}
+.preview-actions{flex-wrap:wrap}
+.preview-actions .export-btn{flex:1.4}
+.preview-actions #export-all{flex:1;min-width:155px;background:#f2ecff;color:#5b35b2}
+.preview-actions #copy{flex:0 0 100%}
+@media(max-width:1100px){
+  .template-gallery{grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
+  .template-art{height:165px}
+  .template-art .preview-heading{font-size:22px}
+}
+@media(max-width:760px){
+  .gallery-section{padding-top:78px;padding-bottom:78px}
+  .template-gallery{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+  .template-art{height:175px}
+  .preview-actions #copy{flex:1 1 100%}
+}
+@media(max-width:420px){
+  .template-gallery{gap:10px}
+  .template-card{border-radius:13px;padding:6px}
+  .template-art{height:142px;padding:12px}
+  .template-art .preview-heading{font-size:20px}
+  .preview-top{font-size:7px;top:12px;left:12px}
+  .preview-decoration{font-size:47px;right:8px;top:8px}
+  .template-info{padding:11px 5px 7px}
+  .template-info strong{font-size:13px}
+  .template-info small{font-size:9px}
+  .preview-actions .export-btn,.preview-actions #export-all{flex:1 1 100%}
+}
