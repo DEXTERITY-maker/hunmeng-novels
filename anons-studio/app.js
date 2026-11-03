@@ -618,7 +618,7 @@
     const maxTitleHeight=composition.titleMaxHeight;
     const baseSize=composition.titleBaseSize;
     ctx.letterSpacing=state.titleTracking+"px";
-    const f=chooseFont(rawTitle,contentWidth,baseSize,maxTitleHeight,H<=1100?3:4,titleFamily,titleWeight);
+    const f=Scene.titleLines(rawTitle,composition);
     ctx.letterSpacing="0px";
     const titleBottom=titleY+f.size*.8+f.lines.length*f.size*1.14;
     const descText=state.description.trim()||"Расскажите коротко, что произошло и почему это важно.";
@@ -652,7 +652,7 @@
       description:()=>{
         ctx.textAlign=center?"center":"left";
         ctx.font="500 "+dsize+"px Manrope, sans-serif";ctx.fillStyle=t.sub;
-        const dlines=fitLines(descText,contentWidth-(H<=1100?10:80),dsize,3);
+        const dlines=Scene.breakLines(descText,contentWidth-(H<=1100?10:80),dsize,3);
         for(let i=0;i<dlines.length;i++)ctx.fillText(dlines[i],tx,descY+i*(dsize*1.5));
         ctx.textAlign="left";
       },
