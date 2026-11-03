@@ -196,6 +196,7 @@ export function initLibrary(client) {
   }
   async function ensureSaved() {
     if(!user)return false;
+    if(inFlight){try{await inFlight;}catch{return false;}}
     if(!projectId || dirty){
       try{await save(false);}catch{return false;}
     }
