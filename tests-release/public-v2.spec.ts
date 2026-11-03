@@ -469,6 +469,35 @@ test('V2 external reference remains attributed and cannot be mistaken for a lice
   expect(errors).toEqual([]);
 });
 
+test('V2 external source attribution stays readable in light, dark and system-dark themes', async ({page}) => {
+  await page.emulateMedia({colorScheme:'dark'});
+  await page.goto('/sources/highway-survival-lathe-gatling/');
+  await expect(page.locator('.external-novel-author strong')).toBeVisible();
+  await expect(page.locator('.external-novel-status strong')).toBeVisible();
+
+  // Check the actual theme cascade instead of relying on light-mode screenshots.
+  for (const theme of ['light','dark','system']) {
+    await page.evaluate(value=>{document.documentElement.dataset.theme=value;},theme);
+    for(const selector of [
+      '.external-novel-author','.external-novel-author strong',
+      '.external-novel-status','.external-novel-status strong',
+    ]) {
+      const ratio=await page.locator(selector).evaluate(element=>{
+        const rgb=(color:string)=>(color.match(/[0-9]+(?:[.][0-9]+)?/g)||[]).slice(0,3).map(Number);
+        const luminance=(channels:number[])=>channels.map(channel=>{
+          const x=channel/255;
+          return x<=0.04045?x/12.92:Math.pow((x+0.055)/1.055,2.4);
+        }).reduce((sum,x,i)=>sum+x*[0.2126,0.7152,0.0722][i],0);
+        const fg=luminance(rgb(getComputedStyle(element).color));
+        const paper=element.closest('.external-novel-detail')!;
+        const bg=luminance(rgb(getComputedStyle(paper).backgroundColor));
+        return (Math.max(fg,bg)+0.05)/(Math.min(fg,bg)+0.05);
+      });
+      expect(ratio,selector+' contrast in '+theme).toBeGreaterThanOrEqual(4.5);
+    }
+  }
+});
+
 test('V2 rank gallery retains all nine server-verified ranks and responsive editorial framing', async ({ page }, testInfo) => {
   for(const width of [320,390,768,1280]){
     await page.setViewportSize({width,height:900});
