@@ -9,6 +9,7 @@ const surfaces = [
   {path:'/catalog/', foreground:'.catalog-novel-card .catalog-card-tags a', paper:'.catalog-novel-card .catalog-card-tags a'},
   {path:'/library/', foreground:'.shelf-tab[aria-pressed="true"] [data-shelf-count]', paper:'.shelf-tab[aria-pressed="true"] [data-shelf-count]'},
   {path:'/news/', foreground:'.news-feed .news-card .news-card-body > p', paper:'.news-feed .news-card'},
+  {path:'/news/', foreground:'.news-filter-tabs a[aria-current="page"]', paper:'.news-filter-tabs a[aria-current="page"]'},
   {path:'/about/', foreground:'main.v3-info-page.prose-page > p', paper:'main.v3-info-page.prose-page'},
   {path:'/contacts/', foreground:'main.v3-info-page.prose-page > p', paper:'main.v3-info-page.prose-page'},
   {path:'/rules/', foreground:'main.v3-info-page.prose-page > p', paper:'main.v3-info-page.prose-page'},
@@ -18,9 +19,21 @@ test('V2 editorial text remains readable across public routes in dark and system
   await page.emulateMedia({colorScheme:'dark'});
   for(const width of [390,1280]){
     await page.setViewportSize({width,height:900});
-    for(const item of surfaces){
+    await page.goto('/news/');
+    const articlePath=await page.locator('#news-feed .news-card h3 a').first().getAttribute('href');
+    expect(articlePath).toMatch(/^\/news\/[^/]+\/$/);
+    const checks=[...surfaces,{
+      path:articlePath!,
+      foreground:'.news-more .news-card .news-card-body > p',
+      paper:'.news-more .news-card',
+    }];
+    for(const item of checks){
       await page.goto(item.path);
       await expect(page.locator('body')).toHaveClass(/hm-editorial-site/);
+      if(item.foreground.startsWith('.news-filter-tabs')){
+        await page.locator('[data-news-filter="changelog"]').click();
+        await expect(page.locator('[data-news-filter="changelog"]')).toHaveAttribute('aria-current','page');
+      }
       // The home external-story panel is conditional on available references.
       // The synthetic release dataset may omit it; do not treat absent data
       // as a contrast failure. Other route targets are required.

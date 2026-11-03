@@ -45,7 +45,8 @@ jobs:
          startsWith(github.event.head_commit.message, 'chore(release): publish Hunmeng 2.0 2026-11-02 [deploy cloudflare]') ||
          startsWith(github.event.head_commit.message, 'chore(release): publish Hunmeng editorial rollout 2026-11-03 [deploy cloudflare]') ||
          startsWith(github.event.head_commit.message, 'chore(release): publish Hunmeng curated collection artwork 2026-11-03 [deploy cloudflare]') ||
-         startsWith(github.event.head_commit.message, 'chore(release): publish discovery visual update 2026-11-03 [deploy cloudflare]'))))
+         startsWith(github.event.head_commit.message, 'chore(release): publish discovery visual update 2026-11-03 [deploy cloudflare]') ||
+         startsWith(github.event.head_commit.message, 'fix(ui): publish news and article polish 2026-11-03 [deploy cloudflare]'))))
     runs-on: ubuntu-latest
     environment: pages-production
     timeout-minutes: 30

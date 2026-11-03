@@ -1,5 +1,22 @@
 import { test, expect } from '../tests/fixtures';
 import { readFile } from 'node:fs/promises';
+import type { Page } from '@playwright/test';
+
+// Full-page captures must not freeze lazy images before they have decoded, or
+// leave the off-screen skip link painted over the article after scrolling.
+async function prepareNewsScreenshot(page: Page) {
+  const images=page.locator('main img:visible');
+  for(let i=0;i<await images.count();i++){
+    const image=images.nth(i);
+    await image.scrollIntoViewIfNeeded();
+    await expect.poll(() => image.evaluate(el => (el as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
+    await image.evaluate(async el => { await (el as HTMLImageElement).decode(); });
+  }
+  await page.evaluate(() => {
+    if(document.activeElement instanceof HTMLElement) document.activeElement.blur();
+    window.scrollTo(0,0);
+  });
+}
 
 test('public V2 homepage is canonical and retains the old reader library', async ({ page }) => {
   await page.goto('/');
@@ -240,6 +257,7 @@ test('public V2 news uses editorial layout with working category filters and res
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1),
       'news overflow @ ' + width).toBe(true);
     if (width === 390 || width === 1280) {
+      await prepareNewsScreenshot(page);
       await page.screenshot({path: testInfo.outputPath('hunmeng-v2-public-news-' + width + '.png'),
         fullPage: true, animations: 'disabled'});
     }
@@ -269,13 +287,42 @@ test('public V2 article keeps real content, reactions, metadata and SEO', async 
   await expect(page.locator('#news-reaction-status')).toContainText('You selected');
   await page.reload();
   await expect(page.locator('.news-reaction-options button').first()).toHaveAttribute('aria-pressed', 'true');
-  for (const width of [390, 1280]) {
+  for (const width of [320, 390, 768, 1280]) {
     await page.setViewportSize({width,height:900});
     await expect(page.locator('.news-article-body')).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1),
       'article overflow @ ' + width).toBe(true);
-    await page.screenshot({path:testInfo.outputPath('hunmeng-v2-public-article-' + width + '.png'),
-      fullPage: true, animations: 'disabled'});
+    if (width === 390 || width === 1280) {
+      await prepareNewsScreenshot(page);
+      await page.screenshot({path:testInfo.outputPath('hunmeng-v2-public-article-' + width + '.png'),
+        fullPage: true, animations: 'disabled'});
+    }
+  }
+});
+
+test('featured news cards keep their text and article links inside the card', async ({ page }) => {
+  for (const width of [320, 390, 768, 1280]) {
+    await page.setViewportSize({width,height:900});
+    for (const filter of ['all', 'changelog']) {
+      await page.goto(filter === 'all' ? '/news/' : '/news/?category=changelog');
+      await expect(page.locator(`[data-news-filter="${filter}"]`)).toHaveAttribute('aria-current','page');
+      const card=page.locator('#news-feed .news-card:visible').first();
+      const readMore=card.locator('.news-read-more');
+      await expect(readMore).toBeVisible();
+      const bounds=await card.evaluate(element => {
+        const cardRect=element.getBoundingClientRect();
+        const paragraph=element.querySelector('.news-card-body > p')!.getBoundingClientRect();
+        const link=element.querySelector('.news-read-more')!.getBoundingClientRect();
+        return {bottom:cardRect.bottom, paragraphBottom:paragraph.bottom, linkBottom:link.bottom};
+      });
+      expect(bounds.paragraphBottom, `excerpt inside card: ${filter} @ ${width}`).toBeLessThanOrEqual(bounds.bottom+1);
+      expect(bounds.linkBottom, `article link inside card: ${filter} @ ${width}`).toBeLessThanOrEqual(bounds.bottom+1);
+      const target=await readMore.getAttribute('href');
+      expect(target).toMatch(/^\/news\/[^/]+\/$/);
+      await readMore.click();
+      await expect(page).toHaveURL(new RegExp(target!.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '$'));
+      await expect(page.locator('.news-article h1')).toBeVisible();
+    }
   }
 });
 
