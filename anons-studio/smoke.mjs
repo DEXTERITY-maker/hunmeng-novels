@@ -132,6 +132,101 @@ try {
     await context.close();
     console.log("PASS Anons Studio browser preview, editor, storage, PNG and responsive width="+width);
   }
+  // Full cloud library interaction test with an in-memory Supabase adapter.
+  // It tests UI and concurrency without creating test users or writing production data.
+  {
+    const context=await browser.newContext({viewport:{width:1280,height:900}});
+    const page=await context.newPage();
+    await page.route("https://fonts.googleapis.com/**",r=>r.abort());
+    await page.route("https://fonts.gstatic.com/**",r=>r.abort());
+    await page.goto("http://127.0.0.1:"+port,{waitUntil:"domcontentloaded"});
+    await page.waitForFunction(()=>window.AnonsEditor?.getSnapshot);
+    const librarySource=await readFile(join(dirname(fileURLToPath(import.meta.url)),"library-entry.js"),"utf8");
+    await page.addScriptTag({content:librarySource.replace("export function initLibrary","window.__testInitLibrary = function initLibrary")});
+    await page.evaluate(()=>{
+      const memory={projects:[],revisions:[]};
+      window.__mockLibraryDb=memory;
+      const clone=o=>JSON.parse(JSON.stringify(o));
+      const adapter={
+        from(table){
+          let op="select",payload=null, filters=[],sorting=null;
+          const rows=()=>memory[table==="anons_studio_projects"?"projects":"revisions"]
+            .filter(row=>filters.every(([k,v])=>row[k]===v))
+            .sort((a,b)=>sorting?(sorting.asc?1:-1)*(a[sorting.key]<b[sorting.key]?-1:a[sorting.key]>b[sorting.key]?1:0):0);
+          const query={
+            select(){return query;},
+            eq(k,v){filters.push([k,v]);return query;},
+            order(key,{ascending=false}={}){sorting={key,asc:ascending};return query;},
+            async limit(n){return {data:clone(rows().slice(0,n)),error:null};},
+            update(value){op="update";payload=value;return query;},
+            delete(){op="delete";return query;},
+            async maybeSingle(){
+              const row=rows()[0];
+              if(!row)return {data:null,error:null};
+              if(op==="update")Object.assign(row,payload);
+              if(op==="delete"){
+                memory.projects=memory.projects.filter(p=>p.id!==row.id);
+                memory.revisions=memory.revisions.filter(p=>p.project_id!==row.id);
+              }
+              return {data:clone(row),error:null};
+            }
+          };
+          return query;
+        },
+        async rpc(name,opts){
+          if(name!=="anons_studio_save_project")return {data:null,error:{message:"UNKNOWN_RPC"}};
+          let row=memory.projects.find(x=>x.id===opts.p_id);
+          if(opts.p_expected_version===0){
+            if(row)return {data:null,error:{message:"VERSION_CONFLICT"}};
+            row={id:opts.p_id,owner_id:"user-test",title:opts.p_title,snapshot:clone(opts.p_snapshot),version:1,archived:false,updated_at:new Date().toISOString(),created_at:new Date().toISOString()};
+            memory.projects.push(row);
+          } else {
+            if(!row||row.version!==opts.p_expected_version)return {data:null,error:{message:"VERSION_CONFLICT"}};
+            Object.assign(row,{title:opts.p_title,snapshot:clone(opts.p_snapshot),version:row.version+1,updated_at:new Date().toISOString()});
+          }
+          if(opts.p_checkpoint||opts.p_expected_version===0){
+            memory.revisions.push({id:crypto.randomUUID(),project_id:row.id,owner_id:"user-test",version:row.version,title:row.title,snapshot:clone(row.snapshot),created_at:new Date().toISOString()});
+          }
+          return {data:clone(row),error:null};
+        }
+      };
+      window.__testLibrary=window.__testInitLibrary(adapter);
+      window.__testLibrary.setUser({id:"user-test",email:"tester@example.invalid"});
+    });
+    await page.waitForFunction(()=>!document.querySelector("#library-auth").hidden);
+    await page.locator("#library-name").fill("Первый анонс");
+    await page.locator("#library-save").click();
+    await page.waitForFunction(()=>window.__mockLibraryDb.projects.length===1);
+    assert.equal(await page.locator("#library-list .library-entry").count(),1);
+    assert.equal(await page.locator("#library-history-list .library-revision").count(),1);
+    await page.locator("#title").fill("Текст второй редакции");
+    await page.locator("#library-save").click();
+    await page.waitForFunction(()=>window.__mockLibraryDb.projects[0].version===2);
+    assert.equal(await page.evaluate(()=>window.__mockLibraryDb.projects[0].snapshot.cards[0].title),"Текст второй редакции");
+    await page.locator("#library-checkpoint").click();
+    await page.waitForFunction(()=>window.__mockLibraryDb.revisions.length===2);
+    await page.locator("#library-new").click();
+    await page.waitForFunction(()=>document.querySelector("#library-current").textContent==="Новый черновик");
+    await page.locator("#title").fill("Новость второго проекта");
+    await page.locator("#library-name").fill("Второй проект");
+    await page.locator("#library-save").click();
+    await page.waitForFunction(()=>window.__mockLibraryDb.projects.length===2);
+    await page.locator("#library-list .library-entry").filter({hasText:"Первый анонс"}).click();
+    await page.waitForFunction(()=>document.querySelector("#title").value==="Текст второй редакции");
+    const beforeRestore=await page.evaluate(()=>window.__mockLibraryDb.revisions.length);
+    page.on("dialog",d=>d.accept());
+    await page.locator("#library-history-list .library-revision").last().locator("button").click();
+    await page.waitForFunction(()=>document.querySelector("#title").value==="Большое обновление!");
+    assert.equal(await page.evaluate(()=>window.__mockLibraryDb.revisions.length),beforeRestore+2,"Restore checkpoints current and restored content");
+    await page.locator("#library-archive").click();
+    await page.waitForFunction(()=>window.__mockLibraryDb.projects.some(p=>p.title==="Первый анонс"&&p.archived));
+    await page.locator("#library-filter").selectOption("archived");
+    assert.equal(await page.locator("#library-list .library-entry").count(),1);
+    await page.locator("#library-delete").click();
+    await page.waitForFunction(()=>window.__mockLibraryDb.projects.length===1);
+    console.log("PASS Cloud library mock: create/edit/checkpoint/load/restore/archive/delete");
+    await context.close();
+  }
 } finally {
   if(browser) await browser.close();
   await new Promise(r=>server.close(r));
