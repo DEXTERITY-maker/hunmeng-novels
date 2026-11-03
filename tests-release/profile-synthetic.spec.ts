@@ -64,4 +64,41 @@ test('V2 signed-in profile uses responsive editorial layout without real account
       animations: 'disabled',
     });
   }
+  // A laurel image extends past the circular avatar. It must not cover the
+  // nickname on compact screens, even when the name wraps over several lines.
+  for(const width of [320,390]){
+    await page.setViewportSize({width,height:900});
+    await page.goto('/account/');
+    await expect(page.locator('#auth-logged-in')).toBeVisible();
+    const geometry=await page.evaluate(()=>{
+      const avatar=document.querySelector('.profile-member-identity .profile-avatar')!.getBoundingClientRect();
+      const title=document.querySelector('#profile-name')!.getBoundingClientRect();
+      // Mobile V2 laurel is 125% of the avatar and centred around its circle.
+      return {laurelRight:avatar.right+avatar.width*.125,titleLeft:title.left,titleRight:title.right,
+        overflow:document.documentElement.scrollWidth>innerWidth+1};
+    });
+    expect(geometry.titleLeft, 'laurel/nickname separation @ '+width)
+      .toBeGreaterThanOrEqual(geometry.laurelRight);
+    expect(geometry.titleRight,'nickname inside viewport @ '+width)
+      .toBeLessThanOrEqual(width+1);
+    expect(geometry.overflow,'no compact-profile overflow @ '+width).toBe(false);
+  }
+  // Regression: the signed-in profile retains readable ink on ivory cards even
+  // when the reader preference or the operating system requests dark mode.
+  await page.emulateMedia({colorScheme:'dark'});
+  await page.locator('.profile-sidebar [data-profile-section="profile-account"]').click();
+  await expect(page.locator('#account-email')).toBeVisible();
+  for(const theme of ['light','dark','system']){
+    await page.evaluate(value=>{document.documentElement.dataset.theme=value;},theme);
+    const colors=await page.evaluate(()=>({
+      email:getComputedStyle(document.querySelector('#account-email')!).color,
+      emailPaper:getComputedStyle(document.querySelector('#profile-account')!).backgroundColor,
+      quicklink:getComputedStyle(document.querySelector('.profile-quicklinks .profile-library-link')!).color,
+      sidebarPaper:getComputedStyle(document.querySelector('.profile-sidebar')!).backgroundColor,
+    }));
+    expect(colors.email,'email ink in '+theme).toBe('rgb(36, 57, 47)');
+    expect(colors.quicklink,'sidebar links in '+theme).toBe('rgb(36, 57, 47)');
+    expect(colors.emailPaper,'account paper in '+theme).toBe('rgb(255, 253, 246)');
+    expect(colors.sidebarPaper,'sidebar paper in '+theme).toBe('rgb(255, 253, 246)');
+  }
 });

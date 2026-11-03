@@ -333,7 +333,13 @@ body.hm-editorial-site {
 .v3-art-direction .v2-chapter-list li {border:1px solid #e5dccc;border-radius:10px;background:#fffdf7;overflow:hidden;}
 .v3-art-direction .v2-chapter-row {padding:9px 12px;gap:10px;}
 .v3-art-direction .v2-chapter-thumbnail {width:48px;height:64px;flex-basis:48px;}
-.v3-art-direction .v2-external {background:#fffdf8;border-radius:12px;margin-bottom:40px;}
+.v3-art-direction .v2-external {background:#fffdf8;color:#274536;border-radius:12px;margin-bottom:40px;}
+/* External-reference cards stay cream across themes, so their foregrounds
+   must use matching editorial ink instead of global dark-mode tokens. */
+.v3-art-direction .v2-external h2 { color:#274536; }
+.v3-art-direction .v2-external a { color:#075b43; }
+.v3-art-direction .v2-external :is(p,small) { color:#516c59; }
+.v3-art-direction .v2-external .v2-section-eyebrow { color:#86622b; }
 .v3-depth {margin:3px 0 38px;}
 .v3-depth-card {
   display:flex;align-items:center;gap:17px;
