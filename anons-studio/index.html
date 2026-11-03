@@ -252,18 +252,47 @@
             <form id="account-form">
               <label for="account-email">Электронная почта</label>
               <input id="account-email" name="email" type="email" autocomplete="email" inputmode="email" required placeholder="name@example.com">
-              <label for="account-password">Пароль (минимум 8 символов)</label>
+              <label id="account-password-label" for="account-password">Пароль (от 10 символов для регистрации)</label>
               <input id="account-password" name="password" type="password" minlength="8" autocomplete="new-password" required placeholder="Введите пароль">
               <button class="btn btn-primary account-submit" id="account-submit" type="submit">Зарегистрироваться</button>
+              <button id="account-forgot" type="button" class="account-link" hidden>Забыли пароль?</button>
+              <button id="account-back-login" type="button" class="account-link" hidden>← Вернуться ко входу</button>
             </form>
-            <p class="account-helper">При регистрации может потребоваться подтверждение почты. Не передавай пароль другим пользователям.</p>
+            <p class="account-helper">Для регистрации требуется подтверждение электронной почты. Используй уникальный пароль, не передавай его другим.</p>
+            <button id="account-resend" type="button" class="account-link" hidden>Отправить письмо подтверждения ещё раз</button>
           </div>
           <div id="account-signed" hidden>
             <div class="account-success">✓ Аккаунт подключён</div>
             <div class="account-profile-email" id="account-email-signed"></div>
             <p>Текущий тариф: <strong id="account-plan-signed">Free</strong></p>
             <div class="account-destinations"><a class="account-upgrade" href="#library">Моя библиотека ↗</a><a class="account-upgrade" href="#pricing">Посмотреть тарифы ↗</a></div>
-            <button type="button" class="account-logout" id="account-logout">Выйти из аккаунта</button>
+            <details class="account-security" id="account-security">
+              <summary>Безопасность и пароль</summary>
+              <form id="account-change-form">
+                <label for="account-new-password">Новый пароль (минимум 10 символов)</label>
+                <input type="password" id="account-new-password" autocomplete="new-password" minlength="10" maxlength="128" required placeholder="Придумайте новый пароль">
+                <label for="account-change-confirm">Повторите новый пароль</label>
+                <input type="password" id="account-change-confirm" autocomplete="new-password" minlength="10" maxlength="128" required placeholder="Повторите пароль">
+                <button class="btn btn-outline" id="account-change-button" type="submit">Изменить пароль</button>
+              </form>
+              <p class="account-helper">На других устройствах вход может сохраниться до истечения срока текущего токена.</p>
+            </details>
+            <div class="account-session-buttons">
+              <button type="button" class="account-logout" id="account-logout">Выйти</button>
+              <button type="button" class="account-logout" id="account-logout-all">Выйти на всех устройствах</button>
+            </div>
+          </div>
+          <div id="account-recovery" hidden>
+            <h3>Создать новый пароль</h3>
+            <p class="account-helper">Ссылка для восстановления проверена. Установите новый пароль для аккаунта.</p>
+            <form id="account-recovery-form">
+              <label for="account-recovery-password">Новый пароль (минимум 10 символов)</label>
+              <input type="password" id="account-recovery-password" autocomplete="new-password" minlength="10" maxlength="128" required>
+              <label for="account-recovery-confirm">Повторите пароль</label>
+              <input type="password" id="account-recovery-confirm" autocomplete="new-password" minlength="10" maxlength="128" required>
+              <button id="account-recovery-submit" class="btn btn-primary account-submit" type="submit">Сохранить новый пароль</button>
+            </form>
+            <button id="account-recovery-cancel" class="account-link" type="button">Отменить восстановление</button>
           </div>
           <p id="account-message" role="status" aria-live="polite" class="account-message"></p>
         </div>
@@ -271,7 +300,7 @@
 
       <section class="cta wrap"><div><div class="kicker">НАЧНИ СЕЙЧАС</div><h2>Всё готово.<br><em>Осталось рассказать.</em></h2><p>Попробуй бесплатный редактор с водяным знаком.</p></div><a href="#editor" class="btn btn-light">Открыть редактор ↗</a></section>
     </main>
-    <footer class="footer wrap"><img class="footer-logo" src="./assets/anons-logo-approved.webp" width="220" height="68" alt="Anons Studio" loading="lazy" decoding="async"><span>Создано для тех, кому есть что рассказать.</span><span>Бета v0.4 · 2026</span></footer>
+    <footer class="footer wrap"><img class="footer-logo" src="./assets/anons-logo-approved.webp" width="220" height="68" alt="Anons Studio" loading="lazy" decoding="async"><span>Создано для тех, кому есть что рассказать.</span><span>Бета v0.5 · 2026</span></footer>
     <div id="toast" role="status" aria-live="polite" class="toast" hidden></div>
   </div>
 </body>
