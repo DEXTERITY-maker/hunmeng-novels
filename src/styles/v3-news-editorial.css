@@ -1,6 +1,15 @@
 /* Hunmeng 2.0 news and article views. Scoped to the opted-in editorial
    release shell: article sources, dates, category filters, page navigation
    and local reactions remain controlled by the existing news scripts. */
+/* Light editorial news cards need the same local tokens in all reader themes.
+   Higher specificity than the legacy html[data-theme] news token rules. */
+html body.hm-editorial-site :is(.news-page,.news-article-shell) {
+  --news-paper: #fcf8ed;
+  --news-card: #fffdf6;
+  --news-edge: #e6dac5;
+  --news-ink: #21392e;
+  --news-forest: #095741;
+}
 .hm-editorial-site .v3-news-nav {
   width: min(1120px,calc(100% - 38px));
   margin: 0 auto;
