@@ -85,6 +85,8 @@ html body.hm-editorial-site :is(.news-page,.news-article-shell) {
   min-height: 43px;
   padding: 10px 16px;
   font-weight: 730;
+  /* Text and background must change together, without a low-contrast frame. */
+  transition-property: border-color, transform;
 }
 html body.hm-editorial-site .news-page .news-filter-tabs a[aria-current='page'] {
   color: #fffaf0;
