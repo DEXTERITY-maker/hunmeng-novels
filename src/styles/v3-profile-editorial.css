@@ -1,6 +1,18 @@
 /* Hunmeng 2.0 profile and sign-in: purely scoped visual refinements.
    Account authentication, settings, rewards, profile storage and consent are
    owned by existing scripts. This file never changes or hides their state. */
+/* The profile is a fixed-paper editorial layout even when the global reader
+   appearance is dark. Keep all original profile palette tokens coordinated. */
+html body.hm-editorial-site .reader-account-page {
+  --profile-paper: #fcf8ed;
+  --profile-card: #fffdf6;
+  --profile-inset: #f5eedf;
+  --profile-edge: #e3d7c3;
+  --profile-forest: #0b6049;
+  --profile-link: #174a37;
+  --profile-ink: #24392f;
+  --profile-secondary: #665f50;
+}
 .hm-editorial-site .v3-profile-nav {
   width: min(1120px,calc(100% - 38px));
   margin: 0 auto;
