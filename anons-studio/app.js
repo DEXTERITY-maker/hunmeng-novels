@@ -250,6 +250,48 @@
       btn.addEventListener("pointercancel",release);
       overlay.append(btn);
     }
+    for(const item of state.graphicElements){
+      const btn=document.createElement("button");
+      btn.type="button";btn.className="drag-handle graphic-drag-handle";
+      btn.dataset.dragGraphic=item.id;
+      btn.textContent=Graphics.labels[item.kind];
+      btn.style.left=clamp(item.x,0,94)+"%";
+      btn.style.top=clamp(item.y,0,94)+"%";
+      btn.addEventListener("pointerdown",event=>{
+        if(event.button!==0)return;
+        selectedGraphicId=item.id;
+        activeDrag={graphicId:item.id,id:event.pointerId,x:event.clientX,y:event.clientY,
+          start:{x:item.x,y:item.y}};
+        btn.setPointerCapture(event.pointerId);
+        btn.classList.add("is-dragging");
+        event.preventDefault();
+      });
+      btn.addEventListener("pointermove",event=>{
+        if(activeDrag?.graphicId!==item.id||activeDrag.id!==event.pointerId)return;
+        const rect=overlay.getBoundingClientRect();
+        if(!rect.width||!rect.height)return;
+        const step=snapToGrid?2:1;
+        const x=clamp(Math.round((activeDrag.start.x+(event.clientX-activeDrag.x)/rect.width*100)/step)*step,0,100);
+        const y=clamp(Math.round((activeDrag.start.y+(event.clientY-activeDrag.y)/rect.height*100)/step)*step,0,100);
+        const found=state.graphicElements.find(g=>g.id===item.id);
+        if(!found)return;
+        found.x=x;found.y=y;
+        btn.style.left=clamp(x,0,94)+"%";btn.style.top=clamp(y,0,94)+"%";
+        scheduleRender();
+      });
+      const release=event=>{
+        if(activeDrag?.graphicId!==item.id||activeDrag.id!==event.pointerId)return;
+        const found=state.graphicElements.find(g=>g.id===item.id);
+        if(event.type==="pointercancel"&&found)Object.assign(found,activeDrag.start);
+        const changed=found&&(found.x!==activeDrag.start.x||found.y!==activeDrag.start.y);
+        activeDrag=null;btn.classList.remove("is-dragging");
+        if(event.type!=="pointercancel"&&changed)syncCardAndSave();
+        else{updateDragHandles();scheduleRender();}
+      };
+      btn.addEventListener("pointerup",release);
+      btn.addEventListener("pointercancel",release);
+      overlay.append(btn);
+    }
   }
 
   function iconNode(element){
@@ -544,6 +586,23 @@
     }
     ctx.restore();
   }
+
+  const graphicPathCache=new Map();
+  function drawGraphicElements(W,H){
+    for(const graphic of state.graphicElements){
+      const spec=Graphics.frame(graphic,W,H);
+      if(!graphicPathCache.has(spec.kind))graphicPathCache.set(spec.kind,new Path2D(spec.path));
+      ctx.save();
+      ctx.translate(spec.x,spec.y);
+      ctx.rotate(spec.rotation*Math.PI/180);
+      ctx.scale(spec.size/100,spec.size/100);
+      ctx.translate(-50,-50);
+      ctx.globalAlpha=spec.opacity;
+      ctx.fillStyle=spec.color;
+      ctx.fill(graphicPathCache.get(spec.kind));
+      ctx.restore();
+    }
+  }
   function draw() {
     const sz=sizes[state.ratio],W=sz.w,H=sz.h;
     const t={...themes[state.theme],accent:state.accentColor||themes[state.theme].accent};
@@ -628,6 +687,8 @@
       renderers[name]();
       ctx.restore();
     }
+    // Shared vector paths: positions and geometry are identical in browser and server.
+    drawGraphicElements(W,H);
     // Site footer and Free watermark always remain outside editable layers.
     const footerY=H-74;
     ctx.strokeStyle=rgba(t.text,.22);ctx.lineWidth=2;ctx.beginPath();
@@ -819,6 +880,29 @@
     $("description-scale-value").textContent=state.descriptionScale+"%";
     syncCardAndSave();
   });
+
+  $("graphic-remove").addEventListener("click",()=>{
+    if(!selectedGraphic())return;
+    state.graphicElements=state.graphicElements.filter(x=>x.id!==selectedGraphicId);
+    selectedGraphicId=null;syncCardAndSave();
+  });
+  $("graphic-duplicate").addEventListener("click",()=>{
+    const original=selectedGraphic();if(!original||state.graphicElements.length>=Graphics.MAX)return;
+    const copy=Graphics.normalizeOne({...original,
+      id:"g"+crypto.randomUUID().replace(/-/g,""),x:original.x+7,y:original.y+7},0);
+    state.graphicElements=[...state.graphicElements,copy];
+    selectedGraphicId=copy.id;syncCardAndSave();
+  });
+  $("graphic-backward").addEventListener("click",()=>moveGraphic(-1));
+  $("graphic-forward").addEventListener("click",()=>moveGraphic(1));
+  for(const [control,field] of [
+    ["graphic-color","color"],["graphic-size","size"],["graphic-rotate","rotation"],
+    ["graphic-opacity","opacity"],["graphic-x","x"],["graphic-y","y"]
+  ]){
+    $(control).addEventListener(control==="graphic-color"?"change":"input",event=>{
+      updateGraphicField(field,event.target.value);
+    });
+  }
   $("reset").addEventListener("click",()=>{
     const keep=window.confirm("Начать заново? Текущий текст, оформление и загруженное фото будут удалены из этого браузера.");
     if(!keep)return;
