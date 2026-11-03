@@ -168,6 +168,17 @@ html body.hm-editorial-site .reader-account-page {
   .hm-editorial-site .reader-account-page .profile-member-hero {
     background-position: center;
   }
+  /* Keep the decorative laurel clear of the member name on phones. */
+  .hm-editorial-site .reader-account-page .profile-member-identity { gap: 22px; }
+  .hm-editorial-site .reader-account-page .profile-member-identity .profile-avatar::after {
+    width: 125%;
+    height: 125%;
+    left: -12.5%;
+    top: -10%;
+  }
+  .hm-editorial-site .reader-account-page .profile-member-copy h2 {
+    overflow-wrap: anywhere;
+  }
 }
 @media (max-width: 390px) {
   .hm-editorial-site .v3-profile-nav,
