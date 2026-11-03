@@ -137,7 +137,7 @@ function renderPoster(snapshot:any,card:any,width:number,height:number,available
       el('div',{display:'flex',fontSize:fontsize,fontWeight:700,lineHeight:1.12,
         color:ink,letterSpacing:tracking,fontFamily:safeTitleFont,fontWeight:weight,
         width:'100%',wordBreak:'break-word'},title)):null,
-    visible('description')?el('div',{display:'flex',fontSize:29,fontWeight:700,lineHeight:1.5,marginTop:24,
+    visible('description')?el('div',{display:'flex',fontWeight:700,lineHeight:1.5,marginTop:24,
       position:'relative',top:Math.round(height*(move(card.descriptionShift)+offset('description').y)/100),
       left:Math.round(width*offset('description').x/100),zIndex:z('description'),
       fontSize:29*descScale/100,maxWidth:850,color:muted,wordBreak:'break-word'},details):null);
