@@ -254,3 +254,32 @@ button.plan-action[disabled]{cursor:not-allowed;color:#92869f;background:#f6f4f7
 .billing-order strong{color:#4d4261}
 .billing-order span{color:#9890a4;text-align:right}
 @media(max-width:440px){.billing-order{flex-direction:column;align-items:flex-start}.billing-order span{text-align:left}}
+
+/* v0.7 — precise layered composition tools and reusable brand kit. */
+.pro-editor{margin:0 0 26px;padding:20px;border:1px solid #ded3f4;background:linear-gradient(155deg,#fcfaff,#f4efff);border-radius:17px;display:grid;gap:16px}
+.pro-editor-heading{display:flex;align-items:center;justify-content:space-between;gap:14px}
+.pro-editor-heading h4{font-size:15px;font-weight:850;line-height:1.4;letter-spacing:-.025em;margin:5px 0 0}
+.pro-edition{padding:6px 9px;border-radius:999px;background:#e6dbff;color:#6e3cca;font-size:9px;font-weight:900;letter-spacing:.09em;white-space:nowrap}
+.editor-history{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.editor-history button,.brand-kit-actions button,.editor-position button{border:1px solid #dcd1ec;border-radius:9px;background:#fff;color:#5f448a;padding:10px 12px;font-size:11px;font-weight:800;min-height:37px}
+.editor-history button:not(:disabled):hover,.brand-kit-actions button:hover,.editor-position button:hover{background:#ede5ff;border-color:#a783e5}
+.editor-history button:disabled{opacity:.45;cursor:not-allowed}
+.editor-history-hint{font-size:10px;color:#8b819a;line-height:1.5}
+.editor-layer-panel{border:1px solid #e8def5;background:white;border-radius:12px;padding:14px}
+.editor-layer-panel summary{cursor:pointer;font-size:12px;font-weight:850;color:#4c3b69;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.editor-layer-panel summary span{font-size:10px;color:#9a90ab;font-weight:600}
+.editor-layer-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0}
+.editor-layer-grid label{min-height:34px;padding:8px;border:1px solid #efeaf6;border-radius:9px;display:flex;gap:9px;align-items:center;font-size:10px;font-weight:750;color:#645776;cursor:pointer}
+.editor-layer-grid label:has(input:not(:checked)){color:#a39aaf;background:#faf9fc}
+.editor-layer-grid input{width:15px;height:15px;accent-color:#8054dd;flex-shrink:0}
+.editor-position{display:grid;gap:9px;padding-top:12px;border-top:1px solid #efe9f5}
+.editor-position label{font-weight:750;font-size:11px;color:#67597b}
+.editor-position output{float:right;color:#7a4fcd}
+.editor-position input[type=range]{width:100%;accent-color:#8659e8;cursor:pointer;margin:1px 0 5px}
+.editor-position button{justify-self:start;margin-top:4px}
+.brand-kit{padding:15px;border:1px solid #e8def5;border-radius:13px;background:#fff}
+.brand-kit strong{font-size:12px;color:#44365e}
+.brand-kit p{font-size:10px;line-height:1.8;color:#9085a0;margin:7px 0 12px}
+.brand-kit-actions{display:flex;flex-wrap:wrap;gap:8px}
+#brand-kit-status{display:block;color:#897c9c;font-size:10px;margin-top:10px}
+@media(max-width:420px){.pro-editor{padding:15px 12px}.editor-layer-grid{gap:6px}.editor-layer-grid label{font-size:9px;padding:7px 5px}.pro-edition{font-size:8px}.brand-kit-actions{display:grid;grid-template-columns:1fr 1fr}.brand-kit-actions button{padding:8px 5px}}
