@@ -30,6 +30,8 @@
   };
   const templates = new Set(["aurora","editorial","spotlight","pulse","minimal","bulletin"]);
   const MAX_CARDS=8;
+  const Graphics=window.AnonsGraphics;
+  if(!Graphics)throw new Error("Graphic element definitions are not loaded");
   const layerNames=["brand","title","description","highlights","photo","decoration"];
   const defaultLayers=Object.freeze(Object.fromEntries(layerNames.map(name=>[name,true])));
   const defaultOrder=["decoration","photo","brand","title","description","highlights"];
@@ -42,13 +44,13 @@
     const list=Array.isArray(raw)?raw.filter(name=>defaultOrder.includes(name)):[];
     return [...new Set([...list,...defaultOrder])];
   };
-  const cardKeys=["title","description","points","preset","template","theme","accentColor","alignment","headingScale","decorations","photoOpacity","layers","titleShift","descriptionShift","layerOffsets","layerOrder","titleFont","titleWeight","titleTracking","descriptionScale"];
+  const cardKeys=["title","description","points","preset","template","theme","accentColor","alignment","headingScale","decorations","photoOpacity","layers","titleShift","descriptionShift","layerOffsets","layerOrder","titleFont","titleWeight","titleTracking","descriptionScale","graphicElements"];
   const limits={project:45,title:85,description:210,points:240};
   const defaults = { preset: "update", theme: "ultraviolet", ratio: "portrait", ...presets.update, imageData: "",
     template:"aurora", headingScale:100, accentColor:"", alignment:"left", decorations:true, photoOpacity:35,
     layers:{...defaultLayers},titleShift:0,descriptionShift:0,
     layerOffsets:emptyOffsets(),layerOrder:[...defaultOrder],
-    titleFont:"auto",titleWeight:800,titleTracking:0,descriptionScale:100,
+    titleFont:"auto",titleWeight:800,titleTracking:0,descriptionScale:100,graphicElements:[],
     activeCard:0,cards:[] };
   let saved = {};
   try { saved = JSON.parse(localStorage.getItem(storageKey) || "{}") || {}; } catch (_) {}
@@ -90,6 +92,7 @@
     out.titleWeight=[700,800,900].includes(original.titleWeight)?original.titleWeight:800;
     out.titleTracking=Number.isFinite(original.titleTracking)?clamp(Math.round(original.titleTracking),-2,6):0;
     out.descriptionScale=Number.isFinite(original.descriptionScale)?clamp(Math.round(original.descriptionScale/5)*5,80,130):100;
+    out.graphicElements=Graphics.normalizeElements(original.graphicElements);
     return out;
   };
   // Migration: keep a previously saved single-card project when upgrading v0.2.
@@ -592,6 +595,7 @@
     if(state.cards.length>=MAX_CARDS)return;
     snapshotCard();
     state.cards.splice(state.activeCard+1,0,{...state.cards[state.activeCard],
+      graphicElements:state.cards[state.activeCard].graphicElements.map(x=>({...x})),
       layers:{...state.cards[state.activeCard].layers},
       layerOffsets:Object.fromEntries(layerNames.map(name=>[name,{...state.cards[state.activeCard].layerOffsets[name]}])),
       layerOrder:[...state.cards[state.activeCard].layerOrder]});
@@ -886,10 +890,10 @@
   function getSnapshot() {
     snapshotCard();
     const copy={
-      schemaVersion:6,project:state.project,ratio:state.ratio,
+      schemaVersion:7,project:state.project,ratio:state.ratio,
       theme:state.theme,template:state.template,
       activeCard:state.activeCard,
-      cards:state.cards.map(card=>({...card,layers:{...card.layers},layerOffsets:Object.fromEntries(layerNames.map(name=>[name,{...card.layerOffsets[name]}])),layerOrder:[...card.layerOrder]})),
+      cards:state.cards.map(card=>({...card,layers:{...card.layers},layerOffsets:Object.fromEntries(layerNames.map(name=>[name,{...card.layerOffsets[name]}])),layerOrder:[...card.layerOrder],graphicElements:card.graphicElements.map(x=>({...x}))})),
       imageData:state.imageData,
       accentColor:state.accentColor,alignment:state.alignment,
       headingScale:state.headingScale,photoOpacity:state.photoOpacity,
