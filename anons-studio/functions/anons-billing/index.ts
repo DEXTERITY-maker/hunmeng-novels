@@ -25,7 +25,7 @@ const admin=secretKey?createClient(url,secretKey,{auth:{persistSession:false}}):
 const auth=publicKey?createClient(url,publicKey,{auth:{persistSession:false}}):null;
 const cors={'Access-Control-Allow-Origin':origin,'Access-Control-Allow-Headers':'authorization, apikey, content-type','Access-Control-Allow-Methods':'GET,POST,OPTIONS','Cache-Control':'no-store','Vary':'Origin'};
 const out=(data:unknown,status=200)=>Response.json(data,{status,headers:cors});
-function conf(){return{provider:'ЮKassa',enabled,autoRenew:false,periodDays:30,prices};}
+function conf(){return{provider:'ЮKassa',enabled,autoRenew:false,periodDays:30,prices,availablePlans:['basic']};}
 const kopecks=(s:any)=>typeof s==='string'&&/^[0-9]{1,8}\.[0-9]{2}$/.test(s)?Number(s.split('.')[0])*100+Number(s.split('.')[1]):-1;
 const paymentHeaders=(id='')=>({'Authorization':'Basic '+btoa(shop+':'+merchantKey),'Content-Type':'application/json',...(id?{'Idempotence-Key':id}:{})});
 async function providerGet(id:string){
@@ -62,6 +62,7 @@ async function checkout(req:Request){
   let body:any;try{body=await req.json();}catch{return out({error:'BAD_JSON'},400);}
   const plan=body?.plan;
   if(!Object.hasOwn(prices,plan))return out({error:'INVALID_PLAN'},400);
+  if(plan!=='basic')return out({error:'PLAN_NOT_YET_AVAILABLE'},403);
   const {count,error:countError}=await admin.from('anons_studio_payment_orders').select('id',{head:true,count:'exact'})
     .eq('user_id',user.id).gte('created_at',new Date(Date.now()-3600000).toISOString());
   if(countError)return out({error:'BILLING_UNAVAILABLE'},503);
