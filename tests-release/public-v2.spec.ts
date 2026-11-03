@@ -413,3 +413,58 @@ test('V2 authors directory shows real authors and links into the existing catalo
   await expect(page.locator('main.v2-catalog-page')).toBeVisible();
   expect(errors).toEqual([]);
 });
+
+test('V2 paginated book contents links to actual chapters and does not change pagination', async ({ page }, testInfo) => {
+  const errors: string[] = [];
+  page.on('pageerror', err => errors.push(err.message));
+  for (const width of [320, 390, 768, 1280]) {
+    await page.setViewportSize({width, height: 900});
+    await page.goto('/novel/khranitel-mayaka/chapters/1/');
+    await expect(page.locator('body')).toHaveClass(/hm-editorial-site/);
+    await expect(page.locator('main.v3-chapter-index')).toBeVisible();
+    await expect(page.locator('.v3-book-extra-nav a')).toHaveCount(6);
+    await expect(page.locator('.v3-book-extra-nav [aria-current="page"]')).toHaveAttribute('href','/catalog/');
+    await expect(page.locator('main .back-link')).toHaveAttribute('href','/novel/khranitel-mayaka/');
+    await expect(page.locator('.chapter-list a').first()).toHaveAttribute('href',
+      /^\/novel\/khranitel-mayaka\/[^/]+\/$/);
+    await expect(page.locator('nav.chapter-pagination')).toHaveCount(2);
+    const hero = await page.locator('.v3-chapter-index .page-heading')
+      .evaluate(el => getComputedStyle(el).backgroundImage);
+    expect(hero).toContain('hero-mountains.svg');
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1),
+      'chapter index overflow @ '+width).toBe(true);
+    if (width === 390 || width === 1280) {
+      await page.screenshot({path:testInfo.outputPath('hunmeng-v2-public-chapter-index-'+width+'.png'),
+        fullPage:true,animations:'disabled'});
+    }
+  }
+  const chapterUrl = await page.locator('.chapter-list a').first().getAttribute('href');
+  await page.goto(chapterUrl!);
+  await expect(page.locator('#chapter-text p').first()).toBeVisible();
+  expect(errors).toEqual([]);
+});
+
+test('V2 external reference remains attributed and cannot be mistaken for a licensed chapter', async ({ page }, testInfo) => {
+  const errors: string[] = [];
+  page.on('pageerror', err => errors.push(err.message));
+  for (const width of [320, 390, 768, 1280]) {
+    await page.setViewportSize({width,height:900});
+    await page.goto('/sources/highway-survival-lathe-gatling/');
+    await expect(page.locator('body')).toHaveClass(/hm-editorial-site/);
+    await expect(page.locator('main.v3-source-page')).toBeVisible();
+    await expect(page.locator('.v3-book-extra-nav a')).toHaveCount(6);
+    await expect(page.locator('main .novel-detail-breadcrumb a')).toHaveAttribute('href','/catalog/');
+    await expect(page.locator('main h1')).toContainText('Highway Survival');
+    await expect(page.locator('.external-novel-copy')).toContainText('publication rights remain unverified');
+    await expect(page.locator('.external-novel-actions a[target="_blank"]')).toHaveCount(2);
+    await expect(page.locator('.external-novel-actions a[rel="noopener noreferrer"]')).toHaveCount(2);
+    await expect(page.locator('.chapter-list, [data-continue], .novel-primary-read')).toHaveCount(0);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1),
+      'external book ref overflow @ '+width).toBe(true);
+    if(width===390 || width===1280){
+      await page.screenshot({path:testInfo.outputPath('hunmeng-v2-public-book-source-'+width+'.png'),
+        fullPage:true,animations:'disabled'});
+    }
+  }
+  expect(errors).toEqual([]);
+});
