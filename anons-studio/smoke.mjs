@@ -160,6 +160,45 @@ try {
     assert.equal(await page.locator("#theme-label").textContent(),"Светлый — мягкий и редакционный",
       "Applying the saved brand kit restores its theme");
     assert.equal(await page.locator("#brand-kit-apply").isDisabled(),false);
+    // v0.8: actual canvas dragging, 2% snapping, z-order and typography persist per card.
+    assert.equal(await page.locator("#title-font").inputValue(),"auto");
+    await page.locator("#title-font").selectOption("arial");
+    await page.locator("#title-weight").selectOption("900");
+    await page.locator("#title-tracking").evaluate(el=>{el.value="3";el.dispatchEvent(new Event("input",{bubbles:true}));});
+    await page.locator("#description-scale").evaluate(el=>{el.value="120";el.dispatchEvent(new Event("input",{bubbles:true}));});
+    assert.equal(await page.locator("#title-tracking-value").textContent(),"3 px");
+    assert.equal(await page.locator("#description-scale-value").textContent(),"120%");
+    const zBefore=await page.evaluate(()=>window.AnonsEditor.getSnapshot().cards[1].layerOrder);
+    await page.locator('#layer-order-list button[title^="На передний план — Фото"]').click();
+    const zAfter=await page.evaluate(()=>window.AnonsEditor.getSnapshot().cards[1].layerOrder);
+    assert.notDeepEqual(zBefore,zAfter,"Layer order updates after moving an item forward");
+    await page.locator("#direct-edit").check();
+    assert.equal(await page.locator("#drag-overlay").isVisible(),true);
+    const dragHandle=page.locator('[data-drag-layer="title"]');
+    const bounds=await dragHandle.boundingBox();
+    assert.ok(bounds,"Title draggable label available in preview");
+    const start={x:bounds.x+bounds.width/2,y:bounds.y+bounds.height/2};
+    await page.mouse.move(start.x,start.y);
+    await page.mouse.down();
+    await page.mouse.move(start.x+50,start.y+33,{steps:5});
+    await page.mouse.up();
+    const moved=await page.evaluate(()=>window.AnonsEditor.getSnapshot().cards[1].layerOffsets.title);
+    assert.ok(moved.x!==0||moved.y!==0,"Pointer drag moves a saved layer offset");
+    assert.equal(moved.x%2,0,"Snap-to-grid rounds offset to 2% steps");
+    await page.locator("#card-list [role=tab]").first().click();
+    const first=await page.evaluate(()=>window.AnonsEditor.getSnapshot().cards[0]);
+    assert.equal(first.titleFont,"auto","Typography remains independent per card");
+    assert.deepEqual(first.layerOffsets.title,{x:0,y:0},"Other card placement is unchanged");
+    await page.locator("#card-list [role=tab]").last().click();
+    await page.reload({waitUntil:"domcontentloaded"});
+    const savedV08=await page.evaluate(()=>window.AnonsEditor.getSnapshot());
+    assert.equal(savedV08.schemaVersion,6,"New draft snapshot format");
+    assert.equal(savedV08.cards[1].titleFont,"arial");
+    assert.equal(savedV08.cards[1].titleWeight,900);
+    assert.equal(savedV08.cards[1].titleTracking,3);
+    assert.equal(savedV08.cards[1].descriptionScale,120);
+    assert.deepEqual(savedV08.cards[1].layerOffsets.title,moved,"Drag location survives reload");
+    assert.deepEqual(savedV08.cards[1].layerOrder,zAfter,"Z-order survives reload");
     const [zipDownload]=await Promise.all([page.waitForEvent("download"),page.locator("#export-all").click()]);
     assert.match(zipDownload.suggestedFilename(),/\.zip$/);
     const zipBytes=await readFile(await zipDownload.path());
@@ -221,7 +260,10 @@ try {
       const current=window.AnonsEditor.getSnapshot();
       const old=JSON.parse(JSON.stringify(current));
       old.schemaVersion=4;
-      old.cards.forEach(card=>{delete card.layers;delete card.titleShift;delete card.descriptionShift;});
+      old.cards.forEach(card=>{
+        for(const key of ["layers","titleShift","descriptionShift","layerOffsets","layerOrder",
+          "titleFont","titleWeight","titleTracking","descriptionScale"])delete card[key];
+      });
       window.AnonsEditor.loadSnapshot(old);
       const migrated=window.AnonsEditor.getSnapshot().cards;
       const works=migrated.every(card=>card.titleShift===0&&card.descriptionShift===0&&Object.values(card.layers).every(Boolean));
@@ -229,6 +271,9 @@ try {
       return {works,count:migrated.length};
     });
     assert.equal(legacy.works,true,"v0.4-v0.6 cloud projects receive default visible layers");
+    assert.ok(await page.evaluate(()=>window.AnonsEditor.getSnapshot().cards.every(card=>
+      card.layerOrder.length===6&&card.titleFont==="auto"&&card.descriptionScale===100)),
+      "Old cloud drafts get safe v0.8 layout and typography defaults");
     assert.equal(legacy.count,2,"Migration keeps all pages");
 
     await context.close();
