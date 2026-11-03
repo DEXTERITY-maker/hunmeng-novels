@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#111424">
+  <meta name="description" content="Anons Studio — создавайте красивые анонсы, обновления и публикации за несколько минут. Бесплатный редактор с экспортом PNG.">
+  <title>Anons Studio — красивые анонсы за несколько минут</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
+  <script src="./app.js" defer></script>
+</head>
+<body>
+  <div class="site-shell">
+    <header class="topbar">
+      <a href="#home" class="brand" aria-label="Anons Studio — главная"><span class="brand-mark" aria-hidden="true">a<span class="brand-dot">.</span></span><span>anons<span class="brand-light">studio</span></span></a>
+      <nav class="navigation" aria-label="Основная навигация">
+        <a href="#how">Как работает</a>
+        <a href="#editor">Редактор</a>
+        <a href="#features">Возможности</a>
+      </nav>
+      <a class="header-action" href="#editor">Создать анонс <span aria-hidden="true">↗</span></a>
+    </header>
+
+    <main id="home">
+      <section class="hero wrap" aria-labelledby="hero-title">
+        <div class="hero-content">
+          <div class="eyebrow"><span class="eyebrow-spark">✦</span> Новая творческая студия <span class="eyebrow-pill">Бета</span></div>
+          <h1 id="hero-title">Твои новости.<br><em>В красивой</em><br>упаковке.</h1>
+          <p>Преврати обновление, анонс мероприятия или запуск проекта в профессиональную публикацию. Просто напиши текст, выбери стиль и скачай готовое изображение.</p>
+          <div class="hero-actions"><a href="#editor" class="btn btn-primary">Создать бесплатно <span aria-hidden="true">↗</span></a><a class="btn btn-outline" href="#how">Как это работает <span aria-hidden="true">↓</span></a></div>
+          <div class="hero-foot"><span class="avatar-dot">✦</span><span>Без регистрации · Без водяных знаков · PNG-экспорт</span></div>
+        </div>
+        <div class="hero-art" aria-label="Пример оформления анонса">
+          <div class="ambient ambient-one"></div><div class="ambient ambient-two"></div>
+          <div class="mini-label label-top">✳ Сделано в Anons Studio</div>
+          <div class="hero-poster">
+            <div class="hero-poster-glow"></div>
+            <span class="poster-kicker">ОБНОВЛЕНИЕ / 01</span>
+            <div class="hero-orbit"><span>✦</span></div>
+            <strong>Большие<br>перемены.<br><i>Новые идеи.</i></strong>
+            <p>Больше возможностей. Лучше впечатления. Всё начинается сегодня.</p>
+            <div class="poster-divider"></div>
+            <div class="poster-bottom"><span>ANONS STUDIO</span><span>2026 ↗</span></div>
+          </div>
+          <div class="mini-label label-bottom">✧ Готово к публикации</div>
+          <div class="decor-star">✳</div>
+        </div>
+      </section>
+
+      <section class="proofbar" aria-label="Преимущества"><div class="wrap proofbar-inner"><span><b>01</b> Никаких сложных редакторов</span><span><b>02</b> Понятные шаблоны</span><span><b>03</b> Готовый PNG в один клик</span></div></section>
+
+      <section id="how" class="how wrap">
+        <div class="section-heading"><div><div class="kicker">ПРОСТО. БЫСТРО. КРАСИВО.</div><h2>Идея превращается<br>в публикацию.</h2></div><p>Мы убрали всё лишнее. Не нужно осваивать сложный графический редактор, чтобы рассказать о важном.</p></div>
+        <div class="steps">
+          <article><span class="step-num">01 <span>↗</span></span><div class="step-icon">✎</div><h3>Расскажи о событии</h3><p>Впиши заголовок, описание и главные изменения обычными словами.</p></article>
+          <article><span class="step-num">02 <span>↗</span></span><div class="step-icon">◈</div><h3>Выбери настроение</h3><p>Строгий, яркий, минималистичный — выбери стиль под свой проект.</p></article>
+          <article><span class="step-num">03 <span>↗</span></span><div class="step-icon">⇩</div><h3>Скачай результат</h3><p>Экспортируй картинку нужного размера и опубликуй где угодно.</p></article>
+        </div>
+      </section>
+
+      <section id="editor" class="workspace-section">
+        <div class="wrap">
+          <div class="section-heading editor-intro"><div><div class="kicker">ТВОЯ СТУДИЯ</div><h2>Давай создадим<br><em>что-то классное.</em></h2></div><p>Все изменения сразу видны справа. Проект сохраняется в этом браузере.</p></div>
+          <div class="workspace">
+            <div class="controls">
+              <div class="panel-head"><div><span class="section-index">01 / РЕДАКТОР</span><h3>Настрой свой анонс</h3></div><span class="live-tag"><i></i> В реальном времени</span></div>
+
+              <fieldset class="field-group">
+                <legend>Что анонсируем?</legend>
+                <div class="preset-grid" role="group" aria-label="Тип публикации">
+                  <button type="button" class="preset active" data-preset="update" aria-pressed="true"><span class="preset-symbol">✳</span> Обновление</button>
+                  <button type="button" class="preset" data-preset="launch" aria-pressed="false"><span class="preset-symbol">↗</span> Запуск</button>
+                  <button type="button" class="preset" data-preset="event" aria-pressed="false"><span class="preset-symbol">◉</span> Событие</button>
+                  <button type="button" class="preset" data-preset="notice" aria-pressed="false"><span class="preset-symbol">✦</span> Объявление</button>
+                </div>
+              </fieldset>
+
+              <div class="field-group">
+                <label for="project">Название проекта / бренда</label>
+                <input id="project" maxlength="45" value="ANONS STUDIO" autocomplete="off" placeholder="Например, моя студия">
+              </div>
+              <div class="field-group">
+                <label for="title">Главный заголовок <span class="hint">до 85 символов</span></label>
+                <textarea id="title" rows="2" maxlength="85" placeholder="О чём эта публикация?">Большое обновление!</textarea>
+              </div>
+              <div class="field-group">
+                <label for="description">Короткое объяснение <span class="hint">до 210 символов</span></label>
+                <textarea id="description" rows="3" maxlength="210" placeholder="Что произошло и почему это важно?">Мы добавили новые возможности, улучшили оформление и сделали работу ещё удобнее.</textarea>
+              </div>
+              <div class="field-group">
+                <label for="points">Главные детали <span class="hint">каждая с новой строки, до 3</span></label>
+                <textarea id="points" rows="4" maxlength="240" placeholder="Новый дизайн&#10;Удобные функции&#10;Исправленные ошибки">Новый современный дизайн
+Больше полезных функций
+Улучшенная скорость работы</textarea>
+              </div>
+
+              <fieldset class="field-group">
+                <legend>Визуальный стиль</legend>
+                <div class="theme-picker" role="group" aria-label="Выбор цветового оформления">
+                  <button type="button" class="theme-swatch active" data-theme="ultraviolet" title="Ультрафиолет" aria-label="Ультрафиолет" aria-pressed="true"><span class="swatch violet"></span></button>
+                  <button type="button" class="theme-swatch" data-theme="emerald" title="Изумрудный" aria-label="Изумрудный" aria-pressed="false"><span class="swatch emerald"></span></button>
+                  <button type="button" class="theme-swatch" data-theme="sunset" title="Закат" aria-label="Закат" aria-pressed="false"><span class="swatch sunset"></span></button>
+                  <button type="button" class="theme-swatch" data-theme="ink" title="Графит" aria-label="Графит" aria-pressed="false"><span class="swatch ink"></span></button>
+                  <button type="button" class="theme-swatch" data-theme="paper" title="Светлый" aria-label="Светлый" aria-pressed="false"><span class="swatch paper"></span></button>
+                </div>
+                <p class="field-note" id="theme-label">Ультрафиолет — смелый и современный</p>
+              </fieldset>
+
+              <div class="field-group">
+                <label for="ratio">Формат изображения</label>
+                <select id="ratio">
+                  <option value="portrait">Публикация 4:5 — 1080 × 1350</option>
+                  <option value="square">Квадрат 1:1 — 1080 × 1080</option>
+                  <option value="story">История 9:16 — 1080 × 1920</option>
+                </select>
+              </div>
+
+              <div class="field-group">
+                <label for="upload">Своя фотография <span class="hint">необязательно</span></label>
+                <div class="upload-line"><label class="upload-btn" for="upload">＋ Добавить фото</label><input id="upload" type="file" accept="image/png,image/jpeg,image/webp" hidden><button id="clear-image" class="text-button" type="button" hidden>Удалить фото</button><span id="image-name">PNG, JPG или WebP</span></div>
+                <p class="field-note">Изображение обрабатывается в браузере и не отправляется на сервер.</p>
+              </div>
+
+              <div class="panel-bottom"><button type="button" id="reset" class="text-button">↺ Начать заново</button><span>Сохраняется автоматически</span></div>
+            </div>
+
+            <div class="preview-panel">
+              <div class="panel-head preview-head"><div><span class="section-index">02 / ПРЕДПРОСМОТР</span><h3>Твой будущий пост</h3></div><span class="preview-badge">● LIVE</span></div>
+              <div class="preview-stage"><div class="canvas-holder"><canvas id="poster" width="1080" height="1350" role="img" aria-label="Предпросмотр оформленного анонса">Предпросмотр изображения недоступен в этом браузере.</canvas></div></div>
+              <div class="preview-actions"><button type="button" class="btn btn-primary export-btn" id="export">⇩ Скачать PNG</button><button type="button" class="btn btn-secondary" id="copy">Скопировать текст ↗</button></div>
+              <p class="preview-caption">Бесплатно · Без водяного знака · Готово к публикации</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="features" class="features wrap">
+        <div class="section-heading"><div><div class="kicker">СДЕЛАНО ДЛЯ ЛЮДЕЙ С ИДЕЯМИ</div><h2>Меньше рутины.<br>Больше творчества.</h2></div></div>
+        <div class="feature-grid">
+          <article class="feature-main"><div class="feature-illustration">✦ <span>create / share / inspire</span></div><h3>Сначала смысл. Потом красота.</h3><p>Помогаем выделять главную мысль, чтобы подписчики сразу понимали, о чём речь.</p></article>
+          <article><div class="feature-icon">▧</div><h3>Три формата</h3><p>Вертикальный пост, квадрат и история. Для разных площадок и задач.</p></article>
+          <article><div class="feature-icon">◈</div><h3>Твой стиль</h3><p>Пять цветовых тем и возможность добавить собственную фотографию.</p></article>
+          <article><div class="feature-icon">⌘</div><h3>Без сложностей</h3><p>Прямо в браузере, без аккаунта, установки программ и загрузки данных на сервер.</p></article>
+        </div>
+      </section>
+
+      <section class="cta wrap"><div><div class="kicker">НАЧНИ СЕЙЧАС</div><h2>Всё готово.<br><em>Осталось рассказать.</em></h2><p>Попробуй первый анонс прямо сейчас — это бесплатно.</p></div><a href="#editor" class="btn btn-light">Открыть редактор ↗</a></section>
+    </main>
+    <footer class="footer wrap"><span class="footer-brand">anons<span>studio</span><i>.</i></span><span>Создано для тех, кому есть что рассказать.</span><span>Бета v0.1 · 2026</span></footer>
+    <div id="toast" role="status" aria-live="polite" class="toast" hidden></div>
+  </div>
+</body>
+</html>
