@@ -217,3 +217,27 @@ button.plan-action[disabled]{cursor:not-allowed;color:#92869f;background:#f6f4f7
 /* Account shortcuts to the cloud library and subscription plans. */
 .account-destinations{display:flex;flex-wrap:wrap;gap:10px 20px;margin:14px 0 22px}
 .account-destinations .account-upgrade{margin:0;line-height:1.7}
+
+/* v0.5 account security and cross-device conflict states */
+.account-link{display:inline-block;border:0;background:transparent;color:#6d43c4;font-size:12px;font-weight:800;padding:8px 1px;cursor:pointer;text-align:left}
+.account-link:hover{color:#4c259b;text-decoration:underline}
+#account-forgot{justify-self:end}
+#account-back-login{justify-self:start}
+#account-resend{margin-top:8px}
+.account-security{border:1px solid #e7dfef;background:#faf7ff;border-radius:13px;padding:14px 17px;margin:12px 0 16px}
+.account-security summary{color:#54436b;font-size:12px;font-weight:800;cursor:pointer}
+#account-change-form,#account-recovery-form{display:grid;gap:10px;margin-top:17px}
+#account-change-form label,#account-recovery-form label{font-size:11px;font-weight:800;color:#393348}
+#account-change-form input,#account-recovery-form input{display:block;width:100%;padding:12px 13px;border-radius:10px;border:1px solid #e6e0ee;font-size:12px;color:#261d34;background:white}
+#account-change-form .btn,#account-recovery-form .btn{margin-top:8px}
+#account-recovery h3{font-size:21px;letter-spacing:-.035em;margin-bottom:8px}
+.account-session-buttons{display:flex;flex-wrap:wrap;gap:9px}
+.account-session-buttons .account-logout{font-size:11px;flex:1 1 140px}
+.library-conflict{border:1px solid #e9b7a8;background:#fff5ef;color:#694439;border-radius:13px;padding:17px 19px;margin:15px 0}
+.library-conflict strong{font-size:13px}
+.library-conflict p{font-size:11px;line-height:1.7;margin:7px 0 11px}
+.library-conflict-actions{display:flex;flex-wrap:wrap;gap:9px}
+.library-conflict-actions button{border:1px solid #cd947c;border-radius:9px;background:white;color:#753e2e;padding:10px 12px;font-size:11px;font-weight:800}
+.library-conflict-actions button:hover{background:#fdf0e7}
+.account-message{overflow-wrap:anywhere}
+@media(max-width:440px){.account-session-buttons{display:grid;grid-template-columns:1fr}.library-conflict-actions{display:grid;grid-template-columns:1fr}}
