@@ -16,6 +16,35 @@ test('public V2 homepage is canonical and retains the old reader library', async
 });
 
 
+test('first three category cards render the approved optimized badges without changing genre links', async ({ page }) => {
+  const expected=[
+    {title:'Fantasy & Adventure',genre:'Fantasy'},
+    {title:'Mystery & Suspense',genre:'Mystery'},
+    {title:'Historical Stories',genre:'Historical'},
+  ];
+  for(const width of [1280,390]){
+    await page.setViewportSize({width,height:844});
+    await page.goto('/');
+    const cards=page.locator('.v3-categories .v3-category-row');
+    await expect(cards).toHaveCount(6);
+    for(const [index,item] of expected.entries()){
+      const card=cards.nth(index);
+      await expect(card.locator('strong')).toHaveText(item.title);
+      await expect(card).toHaveAttribute('href', '/catalog/?genre='+encodeURIComponent(item.genre));
+      const badge=card.locator('.v3-category-icon-art img');
+      await expect(badge).toHaveCount(1);
+      await expect(badge).toHaveAttribute('src', /[.]webp(?:[?].*)?$/);
+      await badge.scrollIntoViewIfNeeded();
+      await expect.poll(async()=>badge.evaluate(el=>(el as HTMLImageElement).naturalWidth),
+        {message:'Optimized badge did not decode: '+item.title,timeout:10000}).toBe(64);
+    }
+    for(let index=3;index<6;index++){
+      await expect(cards.nth(index).locator('.v3-category-icon img')).toHaveCount(0);
+    }
+    expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
+  }
+});
+
 test('curated collection cards use their own original optimized cover art and preserve catalog links', async ({ page }) => {
   await page.goto('/');
   const cards=page.locator('#v3-collections .v3-collection-card');
