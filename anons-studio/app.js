@@ -31,7 +31,8 @@
   const templates = new Set(["aurora","editorial","spotlight","pulse","minimal","bulletin"]);
   const MAX_CARDS=8;
   const Graphics=window.AnonsGraphics;
-  if(!Graphics)throw new Error("Graphic element definitions are not loaded");
+  const Scene=window.AnonsScene;
+  if(!Graphics||!Scene)throw new Error("Shared scene definitions are not loaded");
   const layerNames=["brand","title","description","highlights","photo","decoration"];
   const defaultLayers=Object.freeze(Object.fromEntries(layerNames.map(name=>[name,true])));
   const defaultOrder=["decoration","photo","brand","title","description","highlights"];
@@ -527,9 +528,10 @@
   }
   function drawPhoto(W, H) {
     if (!photo || state.layers.photo===false) return;
-    const x = W * 0.52, y = H * 0.11, w = W * 0.49, h = Math.min(H * 0.36, 570);
-    ctx.save(); ctx.globalAlpha = state.photoOpacity/100;
-    roundedRect(x, y, w, h, 140); ctx.clip();
+    const composition=Scene.layout({ratio:state.ratio,theme:state.theme,project:state.project},state);
+    const {x,y,width:w,height:h,radius:r}=composition.photo;
+    ctx.save(); ctx.globalAlpha = composition.imageOpacity;
+    roundedRect(x, y, w, h, r); ctx.clip();
     const sc = Math.max(w / photo.width, h / photo.height);
     const dw = photo.width * sc, dh = photo.height * sc;
     ctx.drawImage(photo, x + (w - dw) / 2, y + (h - dh) / 2, dw, dh);
@@ -604,33 +606,27 @@
     }
   }
   function draw() {
-    const sz=sizes[state.ratio],W=sz.w,H=sz.h;
-    const t={...themes[state.theme],accent:state.accentColor||themes[state.theme].accent};
+    const composition=Scene.layout({ratio:state.ratio,theme:state.theme,project:state.project},state);
+    const {width:W,height:H,palette:t,margin,contentWidth,template:layout,
+      titleY,detailsY,titleWeight}=composition;
     if(canvas.width!==W||canvas.height!==H){canvas.width=W;canvas.height=H;}
     ctx.textBaseline="alphabetic";ctx.textAlign="left";
     drawBackground(W,H,t);
-    const margin=76,contentWidth=W-2*margin,layout=state.template;
-    const titleY=Math.round(H*(layout==="editorial"?.31:layout==="minimal"?.35:layout==="bulletin"?.27:H>=1700?.258:H<=1100?.265:.285))
-      +Math.round(H*state.titleShift/100);
-    const detailsY=Math.round(H*(layout==="editorial"?.75:layout==="minimal"?.77:layout==="bulletin"?.72:H>=1700?.735:H<=1100?.716:.733));
-    const center=state.alignment==="center",tx=center?W/2:margin;
-    const titleFamily=state.titleFont==="auto"
-      ?((layout==="editorial"||layout==="minimal")?"Georgia, serif":"Manrope, sans-serif")
-      :({manrope:"Manrope, sans-serif",georgia:"Georgia, serif",arial:"Arial, sans-serif"}[state.titleFont]||"Manrope, sans-serif");
-    const titleWeight=state.titleFont==="auto"&&(layout==="editorial"||layout==="minimal")&&state.titleWeight===800?700:state.titleWeight;
+    const center=composition.center,tx=center?W/2:margin;
+    const titleFamily={manrope:"Manrope, sans-serif",georgia:"Georgia, serif",arial:"Arial, sans-serif"}[composition.titleFamily];
     const rawTitle=state.title.trim()||"Заголовок публикации";
-    const maxTitleHeight=Math.max(195,detailsY-titleY-225);
-    const baseSize=Math.round((H<=1100?83:105)*state.headingScale/100);
+    const maxTitleHeight=composition.titleMaxHeight;
+    const baseSize=composition.titleBaseSize;
     ctx.letterSpacing=state.titleTracking+"px";
     const f=chooseFont(rawTitle,contentWidth,baseSize,maxTitleHeight,H<=1100?3:4,titleFamily,titleWeight);
     ctx.letterSpacing="0px";
     const titleBottom=titleY+f.size*.8+f.lines.length*f.size*1.14;
     const descText=state.description.trim()||"Расскажите коротко, что произошло и почему это важно.";
-    const descY=Math.min(detailsY-130,titleBottom+28)+Math.round(H*state.descriptionShift/100);
-    const dsize=Math.round((H<=1100?29:32)*state.descriptionScale/100);
+    const descY=Math.min(detailsY-130,titleBottom+28)+composition.descriptionShift;
+    const dsize=composition.descriptionSize;
     const points=state.points.split(/\r?\n/).map(x=>x.trim()).filter(Boolean).slice(0,3);
     const list=points.length?points:["Важная информация","Следите за новостями"];
-    const rowHeight=H<=1100?61:H>=1700?91:76;
+    const rowHeight=composition.highlightRowHeight;
     const renderers={
       decoration:()=>drawArt(W,H,t),
       photo:()=>drawPhoto(W,H),
@@ -680,9 +676,9 @@
       }
     };
     // Elements are painted back-to-front; the user can change the order independently per card.
-    for(const name of state.layerOrder){
-      if(state.layers[name]===false)continue;
-      const off=state.layerOffsets[name];
+    for(const name of composition.order){
+      if(!composition.enabled[name])continue;
+      const off=composition.offsets[name];
       ctx.save();ctx.translate(W*off.x/100,H*off.y/100);
       renderers[name]();
       ctx.restore();
@@ -690,7 +686,7 @@
     // Shared vector paths: positions and geometry are identical in browser and server.
     drawGraphicElements(W,H);
     // Site footer and Free watermark always remain outside editable layers.
-    const footerY=H-74;
+    const footerY=composition.footerY;
     ctx.strokeStyle=rgba(t.text,.22);ctx.lineWidth=2;ctx.beginPath();
     ctx.moveTo(margin,footerY-39);ctx.lineTo(W-margin,footerY-39);ctx.stroke();
     ctx.fillStyle=t.sub;ctx.font="800 20px Manrope,sans-serif";
