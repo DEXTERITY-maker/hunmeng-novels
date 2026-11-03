@@ -102,6 +102,7 @@
   }
   function syncCardAndSave() {
     snapshotCard();
+    renderCardTabs();
     persist();
     scheduleRender();
   }
@@ -341,23 +342,84 @@
     img.src=data;
   }
   for (const key of ["project","title","description","points"]) {
-    $(key).addEventListener("input",(e)=>{state[key]=e.target.value;persist();scheduleRender();});
+    $(key).addEventListener("input",(e)=>{
+      state[key]=e.target.value;
+      if(key==="project"){persist();scheduleRender();}else syncCardAndSave();
+    });
   }
   $("ratio").addEventListener("change",(e)=>{state.ratio=sizes[e.target.value]?e.target.value:"portrait";persist();scheduleRender();});
   document.querySelectorAll("[data-theme]").forEach((b)=>b.addEventListener("click",()=>{
-    state.theme=b.dataset.theme;syncFields();persist();scheduleRender();
+    state.theme=b.dataset.theme;state.accentColor="";syncFields();persist();scheduleRender();
   }));
   document.querySelectorAll("[data-preset]").forEach((b)=>b.addEventListener("click",()=>{
     const p=b.dataset.preset;if(!presets[p])return;
     const changed=state.preset!==p;
     state.preset=p;
     if(changed) for(const k of ["project","title","description","points"])state[k]=presets[p][k];
-    syncFields();persist();scheduleRender();
+    syncFields();syncCardAndSave();
   }));
+  const themeForTemplate={aurora:"ultraviolet",editorial:"paper",spotlight:"sunset",pulse:"ink",minimal:"paper",bulletin:"emerald"};
+  function changeTemplate(next) {
+    if(!templates.has(next))return;
+    state.template=next;
+    state.theme=themeForTemplate[next];
+    state.accentColor="";
+    syncFields();syncCardAndSave();
+  }
+  $("template-select").addEventListener("change",e=>changeTemplate(e.target.value));
+  document.querySelectorAll("[data-template]").forEach(b=>{
+    b.addEventListener("click",()=>{
+      changeTemplate(b.dataset.template);
+      document.getElementById("editor").scrollIntoView({behavior:"smooth",block:"start"});
+    });
+  });
+  $("add-card").addEventListener("click",()=>{
+    if(state.cards.length>=MAX_CARDS)return;
+    snapshotCard();
+    const fresh=sanitizeCard({title:"Новая карточка",description:"Опишите следующую важную деталь.",points:"Ключевой факт\nПочему это важно\nЧто будет дальше",preset:state.preset,template:state.template});
+    state.cards.push(fresh);
+    activateCard(state.cards.length-1);
+    showToast("Карточка добавлена. Заполни её текст.");
+  });
+  $("duplicate-card").addEventListener("click",()=>{
+    if(state.cards.length>=MAX_CARDS)return;
+    snapshotCard();
+    state.cards.splice(state.activeCard+1,0,{...state.cards[state.activeCard]});
+    activateCard(state.activeCard+1);
+    showToast("Карточка продублирована.");
+  });
+  $("remove-card").addEventListener("click",()=>{
+    if(state.cards.length<=1)return;
+    if(!confirm("Удалить текущую карточку? Это действие нельзя отменить."))return;
+    const index=state.activeCard;
+    state.cards.splice(index,1);
+    state.activeCard=Math.min(index,state.cards.length-1);
+    Object.assign(state,state.cards[state.activeCard]);
+    syncFields();persist();scheduleRender();
+    showToast("Карточка удалена.");
+  });
+  $("heading-scale").addEventListener("input",e=>{
+    state.headingScale=Math.max(80,Math.min(120,Number(e.target.value)||100));
+    $("heading-scale-value").textContent=state.headingScale+"%";persist();scheduleRender();
+  });
+  $("accent-color").addEventListener("input",e=>{
+    if(!/^#[0-9a-fA-F]{6}$/.test(e.target.value))return;
+    state.accentColor=e.target.value;persist();scheduleRender();
+  });
+  $("text-align").addEventListener("change",e=>{
+    state.alignment=e.target.value==="center"?"center":"left";persist();scheduleRender();
+  });
+  $("photo-opacity").addEventListener("input",e=>{
+    state.photoOpacity=Math.max(15,Math.min(85,Number(e.target.value)||35));
+    $("photo-opacity-value").textContent=state.photoOpacity+"%";persist();scheduleRender();
+  });
+  $("ornaments").addEventListener("change",e=>{state.decorations=e.target.checked;persist();scheduleRender();});
   $("reset").addEventListener("click",()=>{
     const keep=window.confirm("Начать заново? Текущий текст, оформление и загруженное фото будут удалены из этого браузера.");
     if(!keep)return;
-    Object.assign(state,defaults);photo=null;$("upload").value="";
+    Object.assign(state,{...defaults,cards:[],activeCard:0});
+    state.cards=[sanitizeCard({title:state.title,description:state.description,points:state.points,preset:state.preset,template:state.template})];
+    photo=null;$("upload").value="";
     syncFields();persist();scheduleRender();showToast("Создан новый чистый проект.");
   });
   $("upload").addEventListener("change",async(e)=>{
@@ -384,7 +446,7 @@
       if(!blob){showToast("Не удалось создать файл PNG.");return;}
       const url=URL.createObjectURL(blob);
       const a=document.createElement("a");a.href=url;
-      a.download="anons-studio-"+state.preset+"-"+state.ratio+".png";
+      a.download="anons-studio-"+(state.activeCard+1)+"-"+state.preset+"-"+state.ratio+".png";
       document.body.appendChild(a);a.click();a.remove();
       setTimeout(()=>URL.revokeObjectURL(url),30000);
       showToast("Изображение PNG готово. Проверьте загрузки браузера.");
