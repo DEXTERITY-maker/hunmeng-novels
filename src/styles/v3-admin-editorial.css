@@ -1,0 +1,239 @@
+/* Hunmeng 2.0: canonical editorial login and authorized dashboard.
+   Scope to the opt-in public release flag. This visual layer does not
+   control auth, staff roles, Supabase, licensing or publication behavior. */
+.hm-editorial-site .v3-admin-nav {
+  width: min(1120px,calc(100% - 38px));
+  margin: 0 auto;
+}
+.hm-editorial-site .v3-admin-page {
+  --admin-paper: #fffdf6;
+  --admin-ink: #244638;
+  --admin-muted: #5b7563;
+  --admin-line: #dfd4be;
+  width: min(1120px,calc(100% - 38px));
+  max-width: 1120px;
+  padding: 14px 0 82px;
+  color: var(--admin-ink);
+}
+.hm-editorial-site .v3-admin-page .page-heading {
+  position: relative;
+  min-height: 230px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 13px;
+  padding: clamp(28px,5vw,54px);
+  margin: 0 0 19px;
+  border: 1px solid #c9b88e;
+  border-radius: 18px 18px 25px 25px;
+  background-color: #063b32;
+  background-image: linear-gradient(109deg,#05332bed,#0a493cdb 60%,#0c4239ca),
+    url('/images/editorial/hero-mountains.svg');
+  background-position: center;
+  background-size: cover;
+  box-shadow: 0 15px 40px #143b2a23;
+}
+.hm-editorial-site .v3-admin-page .page-heading h1 {
+  margin: 0;
+  color: #fff9ec;
+  font: 560 clamp(2.15rem,4.8vw,3.8rem)/1.16 'Noto Serif Variable',Georgia,serif;
+  letter-spacing: -.045em;
+  overflow-wrap: anywhere;
+}
+.hm-editorial-site .v3-admin-page .page-heading p {
+  max-width: 700px;
+  margin: 0;
+  color: #e8f1e7;
+  line-height: 1.76;
+  font-size: clamp(.83rem,1.5vw,.98rem);
+}
+.hm-editorial-site .v3-admin-page #admin-status,
+.hm-editorial-site .v3-admin-page #admin-login-status {
+  margin: 16px 0;
+  padding: 15px 19px;
+  border: 1px solid #e0d2b9;
+  border-radius: 13px;
+  background: #f9f2e7;
+  color: #355b45;
+  line-height: 1.65;
+}
+.hm-editorial-site .v3-admin-page .admin-auth-actions {
+  gap: 11px;
+  margin: 16px 0 24px;
+}
+.hm-editorial-site .v3-admin-page .button,
+.hm-editorial-site .v3-admin-page button[type='submit'] {
+  border: 1px solid #0a5743;
+  border-radius: 999px;
+  background: #0a5743;
+  color: #fff9e9;
+  min-height: 44px;
+  font-weight: 740;
+}
+.hm-editorial-site .v3-admin-page .button.secondary,
+.hm-editorial-site .v3-admin-page button.secondary {
+  color: #0a5b45;
+  background: #f7efe0;
+  border-color: #d1bfa1;
+}
+.hm-editorial-site .v3-admin-page #admin-workspace {
+  min-width: 0;
+}
+.hm-editorial-site .v3-admin-page .v3-admin-jumps {
+  display: flex;
+  gap: 9px;
+  flex-wrap: wrap;
+  margin: 20px 0 23px;
+  padding: 16px;
+  border: 1px solid #e4d7c0;
+  border-radius: 17px;
+  background: #fffdf6;
+  box-shadow: 0 8px 25px #3b351718;
+}
+.hm-editorial-site .v3-admin-page .v3-admin-jumps a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 43px;
+  padding: 10px 15px;
+  border: 1px solid #d8c7aa;
+  border-radius: 999px;
+  color: #24543c;
+  background: #f9f3e8;
+  font-size: .78rem;
+  font-weight: 760;
+  text-decoration: none;
+}
+.hm-editorial-site .v3-admin-page .v3-admin-jumps a:hover {
+  border-color: #ad8d54;
+  color: #0b563e;
+  background: #ede4d0;
+}
+.hm-editorial-site .v3-admin-page .admin-grid {
+  gap: clamp(13px,2.1vw,22px);
+}
+.hm-editorial-site .v3-admin-page .admin-card {
+  min-width: 0;
+  padding: clamp(19px,2.9vw,33px);
+  border: 1px solid #e0d3bd;
+  border-radius: 17px;
+  background: #fffdf6;
+  box-shadow: 0 10px 30px #4d36191a;
+  color: #29483a;
+}
+.hm-editorial-site .v3-admin-page .admin-card h2 {
+  margin: 0 0 17px;
+  color: #1d4734;
+  font: 580 clamp(1.22rem,2.4vw,1.65rem)/1.37 'Noto Serif Variable',Georgia,serif;
+  letter-spacing: -.023em;
+}
+.hm-editorial-site .v3-admin-page .admin-card h3 {
+  color: #29523d;
+  font: 600 1.07rem/1.45 'Noto Serif Variable',Georgia,serif;
+}
+.hm-editorial-site .v3-admin-page .admin-card label {
+  color: #315441;
+  font-weight: 650;
+  overflow-wrap: anywhere;
+}
+.hm-editorial-site .v3-admin-page .admin-card :is(input:not([type='checkbox']),select,textarea),
+.hm-editorial-site .v3-admin-page #admin-login-fields input {
+  box-sizing: border-box;
+  max-width: 100%;
+  min-height: 45px;
+  padding: 11px 12px;
+  border: 1px solid #d7c7ad;
+  border-radius: 10px;
+  color: #254938;
+  background: #fffaf0;
+}
+.hm-editorial-site .v3-admin-page .admin-card textarea {
+  line-height: 1.6;
+}
+.hm-editorial-site .v3-admin-page .admin-card input[type='checkbox'] {
+  accent-color: #0a5944;
+}
+.hm-editorial-site .v3-admin-page .admin-card .notice {
+  padding: 14px 17px;
+  border: 1px solid #d9c9aa;
+  border-radius: 12px;
+  background: #f9f0df;
+  color: #5a5a40;
+}
+.hm-editorial-site .v3-admin-page .admin-card .fine,
+.hm-editorial-site .v3-admin-page .admin-help {
+  color: #607262;
+  line-height: 1.72;
+}
+.hm-editorial-site .v3-admin-page .admin-card a:not(.button) {
+  color: #075e47;
+  text-underline-offset: 3px;
+  overflow-wrap: anywhere;
+}
+.hm-editorial-site .v3-admin-page .admin-job-row {
+  padding: 17px 0;
+  border-color: #e7dac5;
+}
+.hm-editorial-site .v3-admin-page .admin-reader-reviews-list {
+  min-width: 0;
+}
+.hm-editorial-site .v3-admin-page .back-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin: 0 0 16px;
+  color: #0a5b45;
+  font-weight: 740;
+}
+.hm-editorial-site .v3-admin-login-page {
+  max-width: 800px;
+}
+.hm-editorial-site .v3-admin-login-page .account-card {
+  box-sizing: border-box;
+  width: min(100%,620px);
+  max-width: 620px;
+  margin: 21px auto 24px;
+  padding: clamp(24px,4vw,42px);
+  border: 1px solid #e2d4bc;
+  border-radius: 18px;
+  background: #fffdf6;
+  box-shadow: 0 14px 37px #4936191c;
+}
+.hm-editorial-site .v3-admin-login-page #admin-login-fields {
+  gap: 20px;
+}
+.hm-editorial-site .v3-admin-login-page #admin-login-fields label {
+  display: grid;
+  gap: 8px;
+  color: #304e3c;
+  font-weight: 680;
+}
+.hm-editorial-site .v3-admin-login-page #admin-login-fields button {
+  margin-top: 5px;
+}
+.hm-editorial-site .v3-admin-page :is(a,button,input,select,textarea):focus-visible,
+.hm-editorial-site .v3-admin-nav a:focus-visible {
+  outline: 3px solid #c79a52;
+  outline-offset: 3px;
+}
+@media (max-width:760px) {
+  .hm-editorial-site .v3-admin-nav,
+  .hm-editorial-site .v3-admin-page {
+    width: min(100% - 30px,1120px);
+  }
+  .hm-editorial-site .v3-admin-page .page-heading {
+    min-height: 198px;
+    padding: 28px 22px;
+  }
+  .hm-editorial-site .v3-admin-page .admin-card { padding: 19px; }
+  .hm-editorial-site .v3-admin-page .v3-admin-jumps { padding: 13px; }
+}
+@media (max-width:390px) {
+  .hm-editorial-site .v3-admin-nav,
+  .hm-editorial-site .v3-admin-page { width: calc(100% - 24px); }
+  .hm-editorial-site .v3-admin-page .page-heading { padding: 26px 19px; }
+  .hm-editorial-site .v3-admin-page .admin-card { padding: 15px; }
+  .hm-editorial-site .v3-admin-page .v3-admin-jumps a { width: 100%; justify-content: center; }
+}
+@media (prefers-reduced-motion:reduce) {
+  .hm-editorial-site .v3-admin-page :is(a,button) { transition: none; }
+}
