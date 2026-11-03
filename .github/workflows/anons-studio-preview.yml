@@ -8,6 +8,7 @@ on:
       - feat/anons-studio-editor-v09-20261103
       - feat/anons-studio-v10-rc-20261103
       - feat/anons-studio-v10-launch-qa-20261103
+      - feat/anons-studio-multidevice-qa-20261103
       - fix/anons-v06-audit-20261103
     paths:
       - 'anons-studio/**'
@@ -55,8 +56,10 @@ jobs:
         run: npx playwright install --with-deps chromium
       - name: Test actual editor, responsive layout and PNG export
         run: node anons-studio/smoke.mjs
+      - name: Test two isolated simulated devices and cross-device edit conflicts
+        run: node anons-studio/multi-device.mjs
       - name: Publish standalone preview (never existing production)
-        if: github.ref == 'refs/heads/feat/anons-studio-v10-launch-qa-20261103'
+        if: github.ref == 'refs/heads/feat/anons-studio-multidevice-qa-20261103'
         uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
