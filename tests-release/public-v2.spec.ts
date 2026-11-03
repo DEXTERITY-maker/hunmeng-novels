@@ -468,3 +468,100 @@ test('V2 external reference remains attributed and cannot be mistaken for a lice
   }
   expect(errors).toEqual([]);
 });
+
+test('V2 rank gallery retains all nine server-verified ranks and responsive editorial framing', async ({ page }, testInfo) => {
+  for(const width of [320,390,768,1280]){
+    await page.setViewportSize({width,height:900});
+    await page.goto('/ranks/');
+    await expect(page.locator('body')).toHaveClass(/hm-editorial-site/);
+    await expect(page.locator('main.v3-ranks-page')).toBeVisible();
+    await expect(page.locator('.v3-reader-resources-nav a')).toHaveCount(6);
+    await expect(page.locator('.rank-world-card')).toHaveCount(9);
+    await expect(page.locator('.rank-world-track li')).toHaveCount(9);
+    await expect(page.locator('.rank-world-disclaimer')).toContainText('server-verified');
+    await expect(page.locator('meta[name="robots"]')).toHaveCount(0);
+    await expect(page.locator('.rank-world-actions a[href="/account/"]')).toBeVisible();
+    expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),
+      'ranks overflow @ '+width).toBe(true);
+    if(width===390||width===1280){
+      await page.screenshot({path:testInfo.outputPath('hunmeng-v2-public-ranks-'+width+'.png'),
+        fullPage:true,animations:'disabled'});
+    }
+  }
+});
+
+test('V2 private writing studio keeps guest workspace hidden and protected from indexing', async ({ page }, testInfo) => {
+  const errors: string[] = [];
+  page.on('pageerror', err=>errors.push(err.message));
+  for(const width of [320,390,768,1280]){
+    await page.setViewportSize({width,height:900});
+    await page.goto('/studio/');
+    await expect(page.locator('body')).toHaveClass(/hm-editorial-site/);
+    await expect(page.locator('main.v3-studio-page')).toBeVisible();
+    await expect(page.locator('.v3-reader-resources-nav a')).toHaveCount(6);
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content','noindex,follow');
+    await expect(page.locator('#studio-workspace')).toBeHidden();
+    await expect(page.locator('#studio-create')).toBeHidden();
+    await expect(page.locator('#studio-login')).toBeVisible();
+    await expect(page.getByRole('link',{name:'Sign in',exact:true}))
+      .toHaveAttribute('href','/account/');
+    const artwork=await page.locator('.studio-hero')
+      .evaluate(el=>getComputedStyle(el).backgroundImage);
+    expect(artwork).toContain('hero-mountains.svg');
+    expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),
+      'studio guest overflow @ '+width).toBe(true);
+    if(width===390||width===1280){
+      await page.screenshot({path:testInfo.outputPath('hunmeng-v2-public-studio-guest-'+width+'.png'),
+        fullPage:true,animations:'disabled'});
+    }
+  }
+  expect(errors).toEqual([]);
+});
+
+test('V2 studio opens existing private controls with fabricated account and no actual draft data', async ({ page }, testInfo) => {
+  const user = {
+    id:'00000000-0000-4000-8000-000000000077',
+    email:'author@example.test',
+    aud:'authenticated',role:'authenticated',
+  };
+  const session={
+    access_token:[
+      Buffer.from('{"alg":"HS256","typ":"JWT"}').toString('base64url'),
+      Buffer.from(JSON.stringify({sub:user.id,role:'authenticated',
+        exp:Math.floor(Date.now()/1000)+3600})).toString('base64url'),
+      'fixture-only-signature',
+    ].join('.'),
+    refresh_token:'test-only-refresh-token',token_type:'bearer',expires_in:3600,
+    expires_at:Math.floor(Date.now()/1000)+3600,user,
+  };
+  await page.addInitScript(value=>{
+    localStorage.setItem('hunmeng-novels:reader-auth:v1',JSON.stringify(value));
+  },session);
+  const headers={
+    'access-control-allow-origin':'*','access-control-allow-headers':'*',
+    'access-control-expose-headers':'x-supabase-api-version',
+    'x-supabase-api-version':'2024-01-01','content-type':'application/json',
+  };
+  await page.route('https://*.supabase.co/**',route=>{
+    const url=new URL(route.request().url());
+    const data=url.pathname.endsWith('/auth/v1/user')?user:[];
+    return route.fulfill({status:200,headers,body:JSON.stringify(data)});
+  });
+  for(const width of [390,1280]){
+    await page.setViewportSize({width,height:900});
+    await page.goto('/studio/');
+    await expect(page.locator('body')).toHaveClass(/hm-editorial-site/);
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content','noindex,follow');
+    await expect(page.locator('#studio-workspace')).toBeVisible();
+    await expect(page.locator('#studio-login')).toBeHidden();
+    await expect(page.locator('#studio-create')).toBeVisible();
+    await expect(page.locator('#studio-new-title')).toBeVisible();
+    await expect(page.locator('#studio-chapter-panel')).toBeHidden();
+    expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),
+      'studio synthetic account overflow @ '+width).toBe(true);
+    await page.screenshot({
+      path:testInfo.outputPath('hunmeng-v2-public-studio-synthetic-'+width+'.png'),
+      fullPage:true,animations:'disabled',
+    });
+  }
+});
