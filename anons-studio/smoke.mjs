@@ -44,6 +44,11 @@ try {
     });
     await page.route("https://fonts.googleapis.com/**",r=>r.abort());
     await page.route("https://fonts.gstatic.com/**",r=>r.abort());
+    await page.route("**/functions/v1/anons-billing?action=config",r=>r.fulfill({
+      status:200,contentType:"application/json",
+      headers:{"access-control-allow-origin":"*","access-control-allow-headers":"*"},
+      body:JSON.stringify({enabled:false,autoRenew:false,periodDays:30,prices:{basic:29900,pro:49900,studio:99900}})
+    }));
     const errors=[];
     page.on("pageerror",error=>errors.push(error.message));
     await page.goto("http://127.0.0.1:"+port,{waitUntil:"domcontentloaded"});
@@ -63,6 +68,9 @@ try {
     assert.equal(await page.evaluate(async()=> (await fetch("/auth.bundle.js")).status),200);
     await page.waitForFunction(()=>document.querySelector(".preview-caption")?.textContent?.includes("Free"));
     assert.equal(await page.locator("#pricing .plan").count(),4);
+    await page.waitForFunction(()=>document.querySelector("#billing-availability")?.textContent?.includes("покупки"));
+    assert.ok(await page.locator("#buy-basic").isDisabled(),"Cannot charge without merchant configuration");
+    assert.equal(await page.locator("#account-billing").count(),1,"Private billing history panel exists");
     assert.ok(await page.locator("#account-form").isVisible());
     assert.ok(await page.locator("#nav-account").isVisible());
     assert.ok(await page.evaluate(()=>window.__watermarkDraws>0),"Free watermark must appear in canvas");
@@ -137,6 +145,16 @@ try {
     assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+2),"No horizontal overflow");
     assert.deepEqual(errors,[],"No browser JS errors");
     assert.equal(await page.locator("button.plan-action[disabled]").count(),3,"No deceptive payment actions");
+    // A forged browser premium flag must not bypass the paid server endpoint.
+    let unauthorizedDownloads=0;
+    const observer=()=>unauthorizedDownloads++;
+    page.on("download",observer);
+    await page.evaluate(()=>window.dispatchEvent(new CustomEvent("anons:access",{detail:{plan:"basic",premium:true}})));
+    await page.locator("#export").click();
+    await page.waitForFunction(()=>document.querySelector("#toast")?.textContent?.includes("Не удалось скачать PNG"));
+    assert.equal(unauthorizedDownloads,0,"Forged premium access never yields a clean PNG download");
+    page.off("download",observer);
+    await page.evaluate(()=>window.dispatchEvent(new CustomEvent("anons:access",{detail:{plan:"free",premium:false}})));
     const restored=await page.evaluate(()=>{
       const old=window.AnonsEditor.getSnapshot();
       const oldTitle=old.cards[old.activeCard].title;
