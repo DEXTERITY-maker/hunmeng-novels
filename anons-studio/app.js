@@ -30,7 +30,7 @@
   };
   const templates = new Set(["aurora","editorial","spotlight","pulse","minimal","bulletin"]);
   const MAX_CARDS=8;
-  const cardKeys=["title","description","points","preset","template"];
+  const cardKeys=["title","description","points","preset","template","theme","accentColor","alignment","headingScale","decorations","photoOpacity"];
   const limits={project:45,title:85,description:210,points:240};
   const defaults = { preset: "update", theme: "ultraviolet", ratio: "portrait", ...presets.update, imageData: "",
     template:"aurora", headingScale:100, accentColor:"", alignment:"left", decorations:true, photoOpacity:35, activeCard:0, cards:[] };
@@ -56,6 +56,13 @@
     for(const key of ["title","description","points"]) out[key]=(typeof original[key]==="string"?original[key]:(state[key]||"")).slice(0,limits[key]);
     out.preset=presets[original.preset]?original.preset:state.preset;
     out.template=templates.has(original.template)?original.template:state.template;
+    out.theme=themes[original.theme]?original.theme:state.theme;
+    const color=typeof original.accentColor==="string"?original.accentColor:state.accentColor;
+    out.accentColor=/^#[0-9a-fA-F]{6}$/.test(color)?color:"";
+    out.alignment=original.alignment==="center"?"center":state.alignment;
+    out.headingScale=Number.isFinite(original.headingScale)?Math.max(80,Math.min(120,original.headingScale)):state.headingScale;
+    out.decorations=typeof original.decorations==="boolean"?original.decorations:state.decorations;
+    out.photoOpacity=Number.isFinite(original.photoOpacity)?Math.max(15,Math.min(85,original.photoOpacity)):state.photoOpacity;
     return out;
   };
   // Migration: keep a previously saved single-card project when upgrading v0.2.
@@ -349,7 +356,7 @@
   }
   $("ratio").addEventListener("change",(e)=>{state.ratio=sizes[e.target.value]?e.target.value:"portrait";persist();scheduleRender();});
   document.querySelectorAll("[data-theme]").forEach((b)=>b.addEventListener("click",()=>{
-    state.theme=b.dataset.theme;state.accentColor="";syncFields();persist();scheduleRender();
+    state.theme=b.dataset.theme;state.accentColor="";syncFields();syncCardAndSave();
   }));
   document.querySelectorAll("[data-preset]").forEach((b)=>b.addEventListener("click",()=>{
     const p=b.dataset.preset;if(!presets[p])return;
@@ -400,20 +407,20 @@
   });
   $("heading-scale").addEventListener("input",e=>{
     state.headingScale=Math.max(80,Math.min(120,Number(e.target.value)||100));
-    $("heading-scale-value").textContent=state.headingScale+"%";persist();scheduleRender();
+    $("heading-scale-value").textContent=state.headingScale+"%";syncCardAndSave();
   });
   $("accent-color").addEventListener("input",e=>{
     if(!/^#[0-9a-fA-F]{6}$/.test(e.target.value))return;
-    state.accentColor=e.target.value;persist();scheduleRender();
+    state.accentColor=e.target.value;syncCardAndSave();
   });
   $("text-align").addEventListener("change",e=>{
-    state.alignment=e.target.value==="center"?"center":"left";persist();scheduleRender();
+    state.alignment=e.target.value==="center"?"center":"left";syncCardAndSave();
   });
   $("photo-opacity").addEventListener("input",e=>{
     state.photoOpacity=Math.max(15,Math.min(85,Number(e.target.value)||35));
-    $("photo-opacity-value").textContent=state.photoOpacity+"%";persist();scheduleRender();
+    $("photo-opacity-value").textContent=state.photoOpacity+"%";syncCardAndSave();
   });
-  $("ornaments").addEventListener("change",e=>{state.decorations=e.target.checked;persist();scheduleRender();});
+  $("ornaments").addEventListener("change",e=>{state.decorations=e.target.checked;syncCardAndSave();});
   $("reset").addEventListener("click",()=>{
     const keep=window.confirm("Начать заново? Текущий текст, оформление и загруженное фото будут удалены из этого браузера.");
     if(!keep)return;
