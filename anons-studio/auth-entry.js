@@ -247,6 +247,9 @@ async function signOut(scope){
 }
 byId("account-logout").addEventListener("click",()=>signOut("local"));
 byId("account-logout-all").addEventListener("click",()=>signOut("global"));
+window.addEventListener('anons:billing-updated',()=>{
+  client.auth.getSession().then(({data})=>refreshAccount(data.session)).catch(()=>{});
+});
 client.auth.onAuthStateChange((event,session)=>{
   if(event==="INITIAL_SESSION"&&!session?.user){
     // A stale signed-in draft must not remain visible on a shared device.
