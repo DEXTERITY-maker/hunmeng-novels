@@ -147,7 +147,7 @@ export function initLibrary(client) {
     projects=data||[];
     if(projectId) {
       const remote=projects.find(p=>p.id===projectId);
-      if(remote && remote.version!==version){
+      if(remote && remote.version>version){
         conflict=true;clearPending();showConflict(true);
         notify("Обновлено на другом устройстве","error");
         error("Серверная версия новее. Выбери «Сохранить копию» или «Открыть облачную версию».");
