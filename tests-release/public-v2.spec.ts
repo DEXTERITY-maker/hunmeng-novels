@@ -103,3 +103,49 @@ test('public V2 novel details keep actions and chapters with the new editorial s
     }
   }
 });
+
+test('public V2 library keeps real shelves and local reading progress inside responsive editorial layout', async ({ page }, testInfo) => {
+  await page.addInitScript(() => {
+    localStorage.setItem('hunmeng-novels:v1', JSON.stringify({
+      version: 1,
+      library: { 'khranitel-mayaka': 'reading' },
+      progress: {},
+    }));
+  });
+  const errors: string[] = [];
+  page.on('pageerror', error => errors.push(error.message));
+  for (const width of [320, 390, 768, 1280]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/library/');
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex,follow');
+    await expect(page.locator('body')).toHaveClass(/hm-editorial-site/);
+    await expect(page.locator('.v3-library-nav a')).toHaveCount(6);
+    await expect(page.locator('.v3-library-nav a[aria-current="page"]')).toHaveAttribute('href', '/library/');
+    await expect(page.locator('.shelf-tab')).toHaveCount(4);
+    await expect(page.locator('[data-shelf-tab="reading"]')).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.locator('.library-novel-row')).toHaveCount(1);
+    await expect(page.locator('.library-chapter-progress')).toBeVisible();
+    const visual = await page.locator('.library-hero').evaluate(el => ({
+      background: getComputedStyle(el).backgroundImage,
+      title: getComputedStyle(el.querySelector('h1')!).color,
+    }));
+    expect(visual.background, 'original artwork is actually visible @ ' + width).toContain('hero-mountains.svg');
+    expect(visual.title, 'hero title remains legible @ ' + width).toMatch(/^rgb\(255,/);
+    const descriptionColor = await page.locator('.library-hero-copy > p:last-child').evaluate(
+      el => getComputedStyle(el).color);
+    expect(descriptionColor, 'hero supporting text contrast @ ' + width).toBe('rgb(234, 240, 229)');
+    const readActionColor = await page.locator('.library-row-action').first().evaluate(el => getComputedStyle(el).color);
+    expect(readActionColor, 'read action text contrast @ ' + width).toMatch(/^rgb\(255,/);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1),
+      'library overflow @ ' + width).toBe(true);
+    if (width === 390 || width === 1280) {
+      await page.screenshot({path: testInfo.outputPath('hunmeng-v2-public-library-' + width + '.png'),
+        fullPage: true, animations: 'disabled'});
+    }
+  }
+  await page.locator('.library-novel-row select').selectOption('later');
+  await expect(page.locator('.library-novel-row')).toHaveCount(0);
+  await page.locator('[data-shelf-tab="later"]').click();
+  await expect(page.locator('.library-novel-row')).toHaveCount(1);
+  expect(errors).toEqual([]);
+});
