@@ -158,6 +158,95 @@
     $("add-card").disabled=$("duplicate-card").disabled=state.cards.length>=MAX_CARDS;
     $("remove-card").disabled=state.cards.length<=1;
   }
+  const layerLabels={brand:"Название бренда",title:"Заголовок",description:"Описание",
+    highlights:"Главные детали",photo:"Фото",decoration:"Декор"};
+  let directEdit=false, snapToGrid=true, activeDrag=null;
+  function renderLayerOrder(){
+    const holder=$("layer-order-list");
+    holder.replaceChildren();
+    for(const name of [...state.layerOrder].reverse()){
+      const row=document.createElement("div");row.className="layer-order-row";
+      const label=document.createElement("strong");label.textContent=layerLabels[name];
+      const stateLabel=document.createElement("small");
+      stateLabel.textContent=state.layers[name]===false?"Скрыт":"";
+      row.append(label,stateLabel);
+      const index=state.layerOrder.indexOf(name);
+      for(const [direction,symbol,tooltip] of [[1,"↑","На передний план"],[-1,"↓","На задний план"]]){
+        const button=document.createElement("button");
+        button.type="button";button.textContent=symbol;button.title=tooltip+" — "+layerLabels[name];
+        button.setAttribute("aria-label",button.title);
+        button.disabled=direction===1?index===state.layerOrder.length-1:index===0;
+        button.addEventListener("click",()=>{
+          const old=state.layerOrder.indexOf(name);
+          const updated=[...state.layerOrder];
+          [updated[old],updated[old+direction]]=[updated[old+direction],updated[old]];
+          state.layerOrder=updated;
+          syncCardAndSave();
+        });
+        row.append(button);
+      }
+      holder.append(row);
+    }
+  }
+  function dragAnchors(){
+    const sz=sizes[state.ratio],H=sz.h;
+    const layout=state.template;
+    const titleY=H*(layout==="editorial"?.31:layout==="minimal"?.35:layout==="bulletin"?.27:H>=1700?.258:H<=1100?.265:.285)+H*state.titleShift/100;
+    const detailsY=H*(layout==="editorial"?.75:layout==="minimal"?.77:layout==="bulletin"?.72:H>=1700?.735:H<=1100?.716:.733);
+    return {brand:{x:7,y:6},title:{x:7,y:titleY/H*100},
+      description:{x:7,y:Math.max(6,detailsY/H*100-24)+state.descriptionShift},
+      highlights:{x:7,y:detailsY/H*100},photo:{x:52,y:11},decoration:{x:79,y:22}};
+  }
+  function updateDragHandles(){
+    const overlay=$("drag-overlay");
+    if(!overlay)return;
+    overlay.hidden=!directEdit;
+    if(!directEdit){overlay.replaceChildren();return;}
+    const anchors=dragAnchors();
+    const grid=document.createElement("div");grid.className="drag-grid";overlay.replaceChildren(grid);
+    for(const name of state.layerOrder){
+      if(state.layers[name]===false || (name==="photo"&&!state.imageData) || (name==="decoration"&&!state.decorations))continue;
+      const btn=document.createElement("button");btn.type="button";btn.className="drag-handle";
+      btn.dataset.dragLayer=name;
+      btn.textContent=layerLabels[name];
+      btn.setAttribute("aria-label","Перетащить: "+layerLabels[name]);
+      const point=anchors[name],off=state.layerOffsets[name];
+      btn.style.left=clamp(point.x+off.x,0,94)+"%";
+      btn.style.top=clamp(point.y+off.y,0,94)+"%";
+      btn.addEventListener("pointerdown",e=>{
+        if(e.button!==0)return;
+        activeDrag={name,id:e.pointerId,x:e.clientX,y:e.clientY,start:{...state.layerOffsets[name]}};
+        btn.setPointerCapture(e.pointerId);btn.classList.add("is-dragging");
+        e.preventDefault();
+      });
+      btn.addEventListener("pointermove",e=>{
+        if(!activeDrag||activeDrag.id!==e.pointerId||activeDrag.name!==name)return;
+        const rect=overlay.getBoundingClientRect();
+        if(!rect.width||!rect.height)return;
+        const step=snapToGrid?2:1;
+        const dx=(e.clientX-activeDrag.x)/rect.width*100;
+        const dy=(e.clientY-activeDrag.y)/rect.height*100;
+        const x=clamp(Math.round((activeDrag.start.x+dx)/step)*step,-30,30);
+        const y=clamp(Math.round((activeDrag.start.y+dy)/step)*step,-30,30);
+        state.layerOffsets[name]={x,y};
+        btn.style.left=clamp(point.x+x,0,94)+"%";
+        btn.style.top=clamp(point.y+y,0,94)+"%";
+        scheduleRender();
+      });
+      const release=e=>{
+        if(!activeDrag||activeDrag.id!==e.pointerId||activeDrag.name!==name)return;
+        if(e.type==="pointercancel")state.layerOffsets[name]=activeDrag.start;
+        const updated=state.layerOffsets[name];
+        const changed=updated.x!==activeDrag.start.x||updated.y!==activeDrag.start.y;
+        activeDrag=null;btn.classList.remove("is-dragging");
+        if(e.type!=="pointercancel"&&changed)syncCardAndSave();
+        else{updateDragHandles();scheduleRender();}
+      };
+      btn.addEventListener("pointerup",release);
+      btn.addEventListener("pointercancel",release);
+      overlay.append(btn);
+    }
+  }
   function syncCardAndSave() {
     snapshotCard();
     renderCardTabs();
@@ -195,6 +284,14 @@
     $("title-shift-value").textContent=(state.titleShift>0?"+":"")+state.titleShift+"%";
     $("description-shift").value=state.descriptionShift;
     $("description-shift-value").textContent=(state.descriptionShift>0?"+":"")+state.descriptionShift+"%";
+    $("title-font").value=state.titleFont;
+    $("title-weight").value=String(state.titleWeight);
+    $("title-tracking").value=state.titleTracking;
+    $("title-tracking-value").textContent=state.titleTracking+" px";
+    $("description-scale").value=state.descriptionScale;
+    $("description-scale-value").textContent=state.descriptionScale+"%";
+    renderLayerOrder();
+    updateDragHandles();
     renderCardTabs();
     $("clear-image").hidden = !state.imageData;
     $("image-name").textContent = state.imageData ? "Фото добавлено" : "PNG, JPG или WebP";
