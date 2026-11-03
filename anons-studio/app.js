@@ -452,6 +452,97 @@
       showToast("Изображение PNG готово. Проверьте загрузки браузера.");
     },"image/png");
   });
+  function crc32(bytes) {
+    let crc=0xffffffff;
+    for(const value of bytes) {
+      crc^=value;
+      for(let bit=0;bit<8;bit++) crc=(crc>>>1)^((crc&1)?0xedb88320:0);
+    }
+    return (crc^0xffffffff)>>>0;
+  }
+  async function packZip(files) {
+    // Standards-compliant uncompressed ZIP; PNG images are already compressed.
+    const encoder=new TextEncoder();
+    const local=[],central=[];
+    let position=0;
+    for(const file of files) {
+      const name=encoder.encode(file.name);
+      const data=new Uint8Array(await file.blob.arrayBuffer());
+      const crc=crc32(data);
+      const lh=new Uint8Array(30+name.length);
+      let v=new DataView(lh.buffer);
+      v.setUint32(0,0x04034b50,true);
+      v.setUint16(4,20,true);
+      v.setUint16(6,0x0800,true);
+      v.setUint16(8,0,true);
+      v.setUint32(14,crc,true);
+      v.setUint32(18,data.length,true);
+      v.setUint32(22,data.length,true);
+      v.setUint16(26,name.length,true);
+      lh.set(name,30);
+      local.push(lh,data);
+      const ch=new Uint8Array(46+name.length);
+      v=new DataView(ch.buffer);
+      v.setUint32(0,0x02014b50,true);
+      v.setUint16(4,20,true);
+      v.setUint16(6,20,true);
+      v.setUint16(8,0x0800,true);
+      v.setUint16(10,0,true);
+      v.setUint32(16,crc,true);
+      v.setUint32(20,data.length,true);
+      v.setUint32(24,data.length,true);
+      v.setUint16(28,name.length,true);
+      v.setUint32(42,position,true);
+      ch.set(name,46);
+      central.push(ch);
+      position+=lh.length+data.length;
+    }
+    const centralSize=central.reduce((sum,part)=>sum+part.length,0);
+    const end=new Uint8Array(22);
+    const v=new DataView(end.buffer);
+    v.setUint32(0,0x06054b50,true);
+    v.setUint16(8,files.length,true);
+    v.setUint16(10,files.length,true);
+    v.setUint32(12,centralSize,true);
+    v.setUint32(16,position,true);
+    return new Blob([...local,...central,end],{type:"application/zip"});
+  }
+  function triggerDownload(blob,name) {
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement("a");a.href=url;a.download=name;
+    document.body.appendChild(a);a.click();a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),30000);
+  }
+  $("export-all").addEventListener("click",async()=>{
+    const btn=$("export-all");
+    if(btn.disabled)return;
+    snapshotCard();
+    const oldIndex=state.activeCard;
+    btn.disabled=true;btn.textContent="Готовим ZIP…";
+    const output=[];
+    try{
+      for(let i=0;i<state.cards.length;i++){
+        state.activeCard=i;
+        Object.assign(state,state.cards[i]);
+        render();
+        const blob=await new Promise((resolve,reject)=>{
+          canvas.toBlob(b=>b?resolve(b):reject(new Error("PNG export failed")),"image/png");
+        });
+        output.push({name:"anons-card-"+String(i+1).padStart(2,"0")+".png",blob});
+      }
+      const zip=await packZip(output);
+      triggerDownload(zip,"anons-studio-"+state.cards.length+"-cards.zip");
+      showToast("ZIP с "+output.length+" карточками подготовлен.");
+    }catch(err){
+      console.error("ZIP export failed",err);
+      showToast("Не удалось создать ZIP. Можно скачать карточки по одной.");
+    }finally{
+      state.activeCard=oldIndex;
+      Object.assign(state,state.cards[oldIndex]);
+      syncFields();render();
+      btn.disabled=false;btn.textContent="⇩ Все карточки ZIP";
+    }
+  });
   $("copy").addEventListener("click",async()=>{
     const points=state.points.split(/\r?\n/).map(s=>s.trim()).filter(Boolean).slice(0,3);
     const text=[state.title.trim(),state.description.trim(),points.length?"\n"+points.map(p=>"• "+p).join("\n"):""].filter(Boolean).join("\n\n");
