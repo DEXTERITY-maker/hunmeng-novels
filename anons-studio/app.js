@@ -1010,6 +1010,51 @@
     document.body.appendChild(a);a.click();a.remove();
     setTimeout(()=>URL.revokeObjectURL(url),30000);
   }
+  $("backup-download").addEventListener("click",()=>{
+    try{
+      const backup={
+        format:"anons-studio-backup",
+        version:1,
+        exportedAt:new Date().toISOString(),
+        snapshot:getSnapshot()
+      };
+      const data=JSON.stringify(backup,null,2);
+      if(new TextEncoder().encode(data).length>1_100_000){
+        showToast("Резервная копия слишком велика. Уменьши загруженную фотографию.");return;
+      }
+      triggerDownload(new Blob([data],{type:"application/json;charset=utf-8"}),
+        "anons-studio-backup-"+new Date().toISOString().slice(0,10)+".json");
+      showToast("Резервная копия сохранена. Файл содержит тексты и может содержать фото.");
+    }catch(err){console.warn("Backup download failed",err?.message);showToast("Не удалось сохранить резервную копию.");}
+  });
+  $("backup-import").addEventListener("click",()=>$("backup-file").click());
+  $("backup-file").addEventListener("change",async event=>{
+    const input=event.currentTarget;
+    const file=input.files?.[0];
+    input.value="";
+    if(!file)return;
+    if(file.size<20||file.size>1_100_000){
+      showToast("Неверный размер файла. Резервная копия должна быть не больше 1 МБ.");return;
+    }
+    let backup;
+    try{backup=JSON.parse(await file.text());}
+    catch{showToast("Файл не является корректной резервной копией JSON.");return;}
+    if(backup?.format!=="anons-studio-backup"||backup?.version!==1
+      ||!backup.snapshot||!Array.isArray(backup.snapshot.cards)
+      ||backup.snapshot.cards.length<1||backup.snapshot.cards.length>8){
+      showToast("Это не резервная копия Anons Studio поддерживаемого формата.");return;
+    }
+    if(!confirm("Открыть резервную копию как новый черновик? Текущие изменения будут сохранены при возможности. Не сохранённый гостевой черновик будет заменён."))return;
+    try{
+      const imported=await window.AnonsLibrary?.importBackup(backup.snapshot);
+      if(imported===false)return;
+      if(!window.AnonsLibrary)loadSnapshot(backup.snapshot);
+      showToast("Резервная копия восстановлена как отдельный черновик.");
+    }catch(err){
+      console.warn("Backup import failed",err?.message);
+      showToast("Не удалось открыть резервную копию. Проверь файл.");
+    }
+  });
   $("export-all").addEventListener("click",async()=>{
     const btn=$("export-all");
     if(btn.disabled)return;
