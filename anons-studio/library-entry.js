@@ -233,7 +233,8 @@ export function initLibrary(client) {
   async function ensureSaved() {
     if(!user)return false;
     if(inFlight){try{await inFlight;}catch{return false;}}
-    if(!projectId || dirty){
+    // A clean, never-saved draft should not become a ghost project when switching.
+    if(dirty){
       try{await save(false);}catch{return false;}
     }
     return true;
