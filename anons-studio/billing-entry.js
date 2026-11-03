@@ -37,6 +37,7 @@ export function initBilling(client) {
         row.append(label,sub);history.append(row);
       }
     }
+    window.dispatchEvent(new Event('anons:billing-updated'));
   }
   async function refresh(sync=false){
     if(!accountId)return;
