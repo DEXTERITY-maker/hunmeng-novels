@@ -79,7 +79,7 @@ export function renderCatalogCard(n: CatalogCardData): string {
       '<p class="fine catalog-card-meta">' +
         '<span>' + icon('book') + (n.external ? 'Read on external site' : escapeHtml(chapterCount(n.chapterCount))) + '</span>' +
         '<span>' + icon('status') + escapeHtml(status) + '</span>' +
-        '<span>' + icon('clock') + 'Updated <time datetime="' + escapeHtml(n.updatedAt) + '">' + escapeHtml(formatDate(n.updatedAt)) + '</time></span>' +
+        '<span>' + icon('clock') + (n.external ? 'Added ' : 'Updated ') + '<time datetime="' + escapeHtml(n.updatedAt) + '">' + escapeHtml(formatDate(n.updatedAt)) + '</time></span>' +
       '</p>' +
       (n.external ?
         '<div class="catalog-card-actions">' +

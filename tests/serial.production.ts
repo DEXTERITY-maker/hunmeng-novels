@@ -2,6 +2,46 @@ import { test, expect } from '@playwright/test';
 
 const withdrawn = ['comprehension-against-the-heavens', 'the-latency-of-tomorrow'];
 
+test('Chinese web novel references are searchable and clearly link to their sources', async ({ page, request }) => {
+  const stories = [
+    { slug: 'lord-of-mysteries', title: 'Lord of Mysteries', originalTitle: '诡秘之主', author: '爱潜水的乌贼' },
+    { slug: 'cultivation-chat-group', title: 'Cultivation Chat Group', originalTitle: '修真聊天群', author: '圣骑士的传说' },
+    { slug: 'release-that-witch', title: 'Release That Witch', originalTitle: '放开那个女巫', author: '二目' },
+    { slug: 'library-of-heavens-path', title: "Library of Heaven's Path", originalTitle: '天道图书馆', author: '横扫天涯' },
+    { slug: 'the-kings-avatar', title: "The King's Avatar", originalTitle: '全职高手', author: '蝴蝶蓝' },
+    { slug: 'guardians-of-the-dafeng', title: 'Guardians of the Dafeng', originalTitle: '大奉打更人', author: '卖报小郎君' },
+  ];
+  const index = await (await request.get('/catalog-index.json')).json() as Array<{
+    slug: string; title: string; originalTitle: string; author: string;
+    external?: boolean; chapterCount: number; sourceUrl?: string; addedAt?: string;
+  }>;
+  const published = await (await request.get('/catalog.json')).json() as Array<{slug:string}>;
+  for (const story of stories) {
+    const matches = index.filter(item => item.slug === story.slug);
+    expect(matches, story.slug).toHaveLength(1);
+    expect(matches[0]).toEqual(expect.objectContaining(story));
+    if (!published.some(item => item.slug === story.slug)) {
+      expect(matches[0]).toEqual(expect.objectContaining({
+        external: true, chapterCount: 0, addedAt: '2026-11-03',
+        sourceUrl: expect.stringMatching(/^https:\/\/www\.webnovel\.com\/book\//),
+      }));
+    }
+  }
+  await page.setViewportSize({width:390,height:844});
+  await page.goto('/catalog/');
+  await page.locator('#catalog-filters input[name="search"]').fill('诡秘之主');
+  const card = page.locator('#catalog-results [data-novel="lord-of-mysteries"]');
+  await expect(card).toBeVisible();
+  await expect(card).toContainText('External novel');
+  await expect(card).toContainText('Added');
+  await expect(card.getByRole('link', {name:'Read on Webnovel'}))
+    .toHaveAttribute('href','https://www.webnovel.com/book/11022733006234505');
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+  await card.getByRole('link', {name:'View novel'}).click();
+  await expect(page.getByRole('heading', {level:1})).toHaveText('Lord of Mysteries');
+  await expect(page.locator('.external-novel-copy')).toContainText('chapters hosted elsewhere');
+});
+
 test('withdrawn originals are absent from the production catalog and search index', async ({ page, request }) => {
   await page.goto('/catalog/');
   const catalogResponse = await request.get('/catalog.json');

@@ -25,6 +25,28 @@ test('external novel reference has author and source links but no unauthorized l
   await expect(page.locator('.novel-read-label, .chapter-list, [data-continue]')).toHaveCount(0);
 });
 
+test('Chinese web novel pages identify their authors and reading sources', async ({ page }) => {
+  const stories = [
+    {slug:'lord-of-mysteries', title:'Lord of Mysteries', author:'爱潜水的乌贼', source:'11022733006234505', original:'9069458404256003'},
+    {slug:'cultivation-chat-group', title:'Cultivation Chat Group', author:'圣骑士的传说', source:'8299599706003805', original:'22387883000479202'},
+    {slug:'release-that-witch', title:'Release That Witch', author:'二目', source:'7931338406001705', original:'3922226004512203'},
+    {slug:'library-of-heavens-path', title:"Library of Heaven's Path", author:'横扫天涯', source:'6831850602000905', original:'5598041504523203'},
+    {slug:'the-kings-avatar', title:"The King's Avatar", author:'蝴蝶蓝', source:'7176992105000305', original:'22322981000467402'},
+    {slug:'guardians-of-the-dafeng', title:'Guardians of the Dafeng', author:'卖报小郎君', source:'18909583306684705', original:'16413310204823304'},
+  ];
+  for (const story of stories) {
+    await page.goto('/sources/' + story.slug + '/');
+    await expect(page.getByRole('heading', {level:1})).toHaveText(story.title);
+    await expect(page.locator('.external-novel-author')).toContainText(story.author);
+    await expect(page.getByRole('link', {name:'Read on Webnovel'}))
+      .toHaveAttribute('href','https://www.webnovel.com/book/' + story.source);
+    await expect(page.getByRole('link', {name:'Chinese original'}))
+      .toHaveAttribute('href','https://www.webnovel.com/book/' + story.original);
+    await expect(page.locator('.external-novel-copy')).toContainText('chapters hosted elsewhere');
+    await expect(page.locator('.novel-read-label, .chapter-list, [data-continue]')).toHaveCount(0);
+  }
+});
+
 for (const width of [390, 1366]) {
   test(`external novel detail remains readable at ${width}px in all themes`, async ({ page }, info) => {
     await page.setViewportSize({ width, height: 844 });

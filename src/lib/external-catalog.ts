@@ -26,8 +26,10 @@ export const externalCatalogEntries: CatalogIndexNovel[] = visibleExternalNovels
   tags: [...source.tags],
   originalStatus: source.status.startsWith('Ongoing') ? 'Ongoing' : source.status,
   translationStatus: 'External source',
-  updatedAt: '2026-11-01',
-  addedAt: '2026-11-01',
+  // Reference dates describe when Hunmeng added the listing; they are not
+  // claims about the external source's most recent chapter.
+  updatedAt: source.addedAt ?? '2026-11-01',
+  addedAt: source.addedAt ?? '2026-11-01',
   chapterCount: 0,
   views: null,
   rating: null,
