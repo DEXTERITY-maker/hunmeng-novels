@@ -110,3 +110,39 @@ test('V2 editor never gains administrator-only controls via the visual refresh',
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content','noindex,follow');
   expect(calls.some(x=>['POST','PATCH','DELETE'].includes(x.method))).toBe(false);
 });
+
+test('source and glossary lists stay readable on ivory cards in dark/system themes',async({page})=>{
+  const calls=await mockStaff(page,'admin');
+  await page.emulateMedia({colorScheme:'dark'});
+  await page.goto('/admin/');
+  await expect(page.locator('#admin-workspace')).toBeVisible();
+
+  // Synthetic list entries exercise the same selectors as admin.ts without
+  // requesting or inserting any real source-rights or glossary records.
+  for(const selector of ['#admin-source-list','#admin-term-list']){
+    await page.locator(selector).evaluate(container=>{
+      const list=document.createElement('ul');
+      list.dataset.contrastFixture='true';
+      const item=document.createElement('li');
+      item.textContent='Synthetic permission or glossary entry';
+      list.append(item);
+      container.append(list);
+    });
+  }
+
+  for(const theme of ['dark','system','light']){
+    await page.evaluate(value=>{document.documentElement.dataset.theme=value;},theme);
+    for(const selector of ['#admin-source-list ul','#admin-term-list ul']){
+      const colors=await page.locator(selector).evaluate(list=>{
+        const card=list.closest('.admin-card');
+        return {
+          text:getComputedStyle(list).color,
+          paper:getComputedStyle(card!).backgroundColor,
+        };
+      });
+      expect(colors.text,selector+' ink in '+theme+' theme').toBe('rgb(49, 84, 65)');
+      expect(colors.paper,selector+' paper in '+theme+' theme').toBe('rgb(255, 253, 246)');
+    }
+  }
+  expect(calls.some(x=>['POST','PATCH','DELETE'].includes(x.method))).toBe(false);
+});
