@@ -5,7 +5,7 @@ import { resolve, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { chromium } from "@playwright/test";
 
-const root = dirname(fileURLToPath(import.meta.url));
+const root = join(dirname(fileURLToPath(import.meta.url)),"dist");
 const types = { ".html": "text/html; charset=utf-8", ".css": "text/css; charset=utf-8", ".js": "application/javascript; charset=utf-8" };
 const allow = new Set(["/","/index.html","/styles.css","/app.js"]);
 const server = createServer(async (req,res)=>{
@@ -31,12 +31,24 @@ try {
   for (const width of [390,1440]) {
     const context = await browser.newContext({viewport:{width,height:920},acceptDownloads:true});
     const page = await context.newPage();
+    await page.addInitScript(() => {
+      window.__watermarkDraws=0;
+      const old=CanvasRenderingContext2D.prototype.fillText;
+      CanvasRenderingContext2D.prototype.fillText=function(text,...args){
+        if(text==="ANONS STUDIO")window.__watermarkDraws++;
+        return old.call(this,text,...args);
+      };
+    });
     await page.route("https://fonts.googleapis.com/**",r=>r.abort());
     await page.route("https://fonts.gstatic.com/**",r=>r.abort());
     const errors=[];
     page.on("pageerror",error=>errors.push(error.message));
     await page.goto("http://127.0.0.1:"+port,{waitUntil:"domcontentloaded"});
     await page.locator("#poster").waitFor();
+    assert.equal(await page.locator("#pricing .plan").count(),4);
+    assert.ok(await page.locator("#account-form").isVisible());
+    assert.ok(await page.locator("#nav-account").isVisible());
+    assert.ok(await page.evaluate(()=>window.__watermarkDraws>0),"Free watermark must appear in canvas");
     const initial = await page.locator("#poster").evaluate(c=>c.toDataURL("image/png").slice(0,1000));
     assert.equal(await page.locator("#poster").evaluate(c=>c.width),1080);
     assert.equal(await page.locator("#poster").evaluate(c=>c.height),1350);
@@ -51,11 +63,14 @@ try {
     await page.reload({waitUntil:"domcontentloaded"});
     assert.equal(await page.locator("#title").inputValue(),"Новости моего проекта");
     assert.equal(await page.locator("#ratio").inputValue(),"story");
+    await page.locator("[data-account-mode=login]").click();
+    assert.match(await page.locator("#account-submit").textContent(),/Войти/);
     const [download] = await Promise.all([page.waitForEvent("download"),page.locator("#export").click()]);
     assert.match(download.suggestedFilename(),/\.png$/);
     assert.ok((await readFile(await download.path())).length>20000,"Downloaded PNG should contain image data");
     assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+2),"No horizontal overflow");
     assert.deepEqual(errors,[],"No browser JS errors");
+    assert.equal(await page.locator("button.plan-action[disabled]").count(),3,"No deceptive payment actions");
     await context.close();
     console.log("PASS Anons Studio browser preview, editor, storage, PNG and responsive width="+width);
   }
