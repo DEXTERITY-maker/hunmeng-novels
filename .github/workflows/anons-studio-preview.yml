@@ -28,11 +28,15 @@ jobs:
           node-version: 24
       - name: Install test dependencies
         run: npm ci
+      - name: Build isolated studio with bundled Supabase Auth client
+        run: node anons-studio/build.mjs
       - name: Check self-contained frontend
         run: |
           node --check anons-studio/app.js
           test -s anons-studio/index.html
           test -s anons-studio/styles.css
+          test -s anons-studio/dist/auth.bundle.js
+          test -s anons-studio/dist/index.html
           grep -q 'id="poster"' anons-studio/index.html
           grep -q 'id="export"' anons-studio/index.html
           grep -q 'toBlob' anons-studio/app.js
@@ -46,4 +50,4 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy anons-studio --project-name=anons-studio-preview --branch=preview
+          command: pages deploy anons-studio/dist --project-name=anons-studio-preview --branch=preview
