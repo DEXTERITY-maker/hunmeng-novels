@@ -74,6 +74,7 @@
   const paidAccess = { premium: false, plan: "free" };
   let toastTimer = null;
   let pendingRender = false;
+  let suppressEditorSignal = false;
 
   function snapshotCard() {
     const card=state.cards[state.activeCard];
@@ -150,6 +151,7 @@
     } catch (_) {
       showToast("Не удалось сохранить проект в браузере. Экспорт остаётся доступен.");
     }
+    if(!suppressEditorSignal)window.dispatchEvent(new Event("anons:editor-change"));
   }
   function showToast(message) {
     const toast = $("toast");
@@ -569,6 +571,61 @@
       ? "Активный тариф "+paidAccess.plan.toUpperCase()+" · Экспорт без водяного знака"
       : "Free · Водяной знак в предпросмотре и PNG · Снять по подписке";
     scheduleRender();
+  });
+
+  function getSnapshot() {
+    snapshotCard();
+    const copy={
+      schemaVersion:4,project:state.project,ratio:state.ratio,
+      theme:state.theme,template:state.template,
+      activeCard:state.activeCard,
+      cards:state.cards.map(card=>({...card})),
+      imageData:state.imageData,
+      accentColor:state.accentColor,alignment:state.alignment,
+      headingScale:state.headingScale,photoOpacity:state.photoOpacity,
+      decorations:state.decorations
+    };
+    return copy;
+  }
+  function loadSnapshot(raw) {
+    if(!raw||typeof raw!=="object"||!Array.isArray(raw.cards)||!raw.cards.length||raw.cards.length>MAX_CARDS)throw new Error("INVALID_SNAPSHOT");
+    const nextCards=raw.cards.map(sanitizeCard);
+    const data=(typeof raw.imageData==="string" && raw.imageData.length<750000 &&
+      /^data:image\/(jpeg|png|webp);base64,[a-zA-Z0-9+/=]+$/.test(raw.imageData))?raw.imageData:"";
+    suppressEditorSignal=true;
+    try{
+      state.project=typeof raw.project==="string"?raw.project.slice(0,45):"МОЙ ПРОЕКТ";
+      state.ratio=sizes[raw.ratio]?raw.ratio:"portrait";
+      state.cards=nextCards;
+      state.activeCard=Number.isInteger(raw.activeCard)?Math.max(0,Math.min(nextCards.length-1,raw.activeCard)):0;
+      Object.assign(state,nextCards[state.activeCard]);
+      state.imageData=data;
+      photo=null;
+      $("upload").value="";
+      syncFields();
+      persist();
+      scheduleRender();
+      if(data)loadPhoto(data);
+    } finally {suppressEditorSignal=false;}
+  }
+  function newDraft() {
+    suppressEditorSignal=true;
+    try{
+      Object.assign(state,{...defaults,cards:[],activeCard:0});
+      state.cards=[sanitizeCard({...presets.update,template:"aurora",theme:"ultraviolet"})];
+      Object.assign(state,state.cards[0]);
+      photo=null;$("upload").value="";
+      syncFields();persist();scheduleRender();
+    } finally {suppressEditorSignal=false;}
+  }
+  window.AnonsEditor=Object.freeze({
+    getSnapshot,
+    loadSnapshot,
+    newDraft,
+    getSuggestedName:()=> {
+      snapshotCard();
+      return (state.cards[0]?.title||"Новый анонс").trim().slice(0,100)||"Новый анонс";
+    }
   });
   syncFields();render();if(state.imageData)loadPhoto(state.imageData);
   if(document.fonts?.ready)document.fonts.ready.then(scheduleRender).catch(()=>{});
