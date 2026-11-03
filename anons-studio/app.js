@@ -229,7 +229,7 @@
     return {size, lines};
   }
   function drawPhoto(W, H) {
-    if (!photo) return;
+    if (!photo || state.layers.photo===false) return;
     const x = W * 0.52, y = H * 0.11, w = W * 0.49, h = Math.min(H * 0.36, 570);
     ctx.save(); ctx.globalAlpha = state.photoOpacity/100;
     roundedRect(x, y, w, h, 140); ctx.clip();
@@ -253,7 +253,7 @@
     glow.addColorStop(0,rgba(t.glow,.34));glow.addColorStop(1,rgba(t.glow,0));ctx.fillStyle=glow;ctx.fillRect(0,0,W,H);
     ctx.lineWidth=1.5;ctx.strokeStyle=rgba(t.text,.055);
     for(let i=-H;i<W+H;i+=73){ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i+H,H);ctx.stroke();}
-    if(state.decorations && state.template!=="minimal") {
+    if(state.decorations && state.layers.decoration!==false && state.template!=="minimal") {
       if(state.template==="editorial") {
         ctx.strokeStyle=rgba(t.text,.3);ctx.lineWidth=3;ctx.strokeRect(38,38,W-76,H-76);
         ctx.fillStyle=rgba(t.accent,.28);ctx.fillRect(W-170,95,76,76);
@@ -296,18 +296,20 @@
     const margin=76; const contentWidth=W-2*margin;
     // Topline
     ctx.font="800 27px Manrope, sans-serif"; ctx.fillStyle=t.text;
-    const project=(state.project||"МОЙ ПРОЕКТ").trim().slice(0,45);
-    const projectWidth=Math.min(ctx.measureText(project).width,contentWidth*.52);
-    ctx.save();roundedRect(margin,72,projectWidth+48,56,28);ctx.fillStyle=rgba(t.text,.10);ctx.fill();ctx.restore();
-    ctx.fillStyle=t.text;ctx.save();ctx.beginPath();ctx.rect(margin+24,72,projectWidth,56);ctx.clip();ctx.fillText(project,margin+24,109);ctx.restore();
-    ctx.textAlign="right";ctx.font="700 24px Manrope, sans-serif";ctx.fillStyle=rgba(t.text,.75);
-    ctx.fillText("✳ ANONS / STUDIO",W-margin,105);ctx.textAlign="left";
+    if(state.layers.brand!==false) {
+      const project=(state.project||"МОЙ ПРОЕКТ").trim().slice(0,45);
+      const projectWidth=Math.min(ctx.measureText(project).width,contentWidth*.52);
+      ctx.save();roundedRect(margin,72,projectWidth+48,56,28);ctx.fillStyle=rgba(t.text,.10);ctx.fill();ctx.restore();
+      ctx.fillStyle=t.text;ctx.save();ctx.beginPath();ctx.rect(margin+24,72,projectWidth,56);ctx.clip();ctx.fillText(project,margin+24,109);ctx.restore();
+      ctx.textAlign="right";ctx.font="700 24px Manrope, sans-serif";ctx.fillStyle=rgba(t.text,.75);
+      ctx.fillText("✳ ANONS / STUDIO",W-margin,105);ctx.textAlign="left";
+    }
 
     const layout=state.template;
-    const titleY=Math.round(H*(layout==="editorial"?.31:layout==="minimal"?.35:layout==="bulletin"?.27:H>=1700?.258:H<=1100?.265:.285));
+    const titleY=Math.round(H*(layout==="editorial"?.31:layout==="minimal"?.35:layout==="bulletin"?.27:H>=1700?.258:H<=1100?.265:.285))+Math.round(H*state.titleShift/100);
     const detailsY=Math.round(H*(layout==="editorial"?.75:layout==="minimal"?.77:layout==="bulletin"?.72:H>=1700?.735:H<=1100?.716:.733));
     ctx.fillStyle=t.accent;ctx.font="800 24px Manrope, sans-serif";
-    ctx.fillText((presets[state.preset]?.label||"АНОНС")+"  /  2026",margin,titleY-52);
+    if(state.layers.title!==false)ctx.fillText((presets[state.preset]?.label||"АНОНС")+"  /  2026",margin,titleY-52);
     const rawTitle=state.title.trim()||"Заголовок публикации";
     const maxTitleHeight=Math.max(195,detailsY-titleY-225);
     const titleFont=(layout==="editorial"||layout==="minimal")?"Georgia, serif":"Manrope, sans-serif";
@@ -318,13 +320,13 @@
     ctx.textAlign=center?"center":"left";
     const tx=center?W/2:margin;
     let y=titleY+f.size*.8;
-    for(const line of f.lines){ctx.fillText(line,tx,y);y+=f.size*1.14;}
+    for(const line of f.lines){if(state.layers.title!==false)ctx.fillText(line,tx,y);y+=f.size*1.14;}
     const descText=state.description.trim()||"Расскажите коротко, что произошло и почему это важно.";
-    const descY=Math.min(detailsY-130,y+28);
+    const descY=Math.min(detailsY-130,y+28)+Math.round(H*state.descriptionShift/100);
     let dsize=H<=1100?29:32;
     ctx.font="500 "+dsize+"px Manrope, sans-serif";ctx.fillStyle=t.sub;
     let dlines=fitLines(descText,contentWidth-(H<=1100?10:80),dsize,3);
-    for(let i=0;i<dlines.length;i++){ctx.fillText(dlines[i],tx,descY+i*(dsize*1.5));}
+    if(state.layers.description!==false)for(let i=0;i<dlines.length;i++){ctx.fillText(dlines[i],tx,descY+i*(dsize*1.5));}
     ctx.textAlign="left";
 
     // Structured, legible highlights
@@ -332,6 +334,7 @@
     const list=points.length?points:["Важная информация","Следите за новостями"];
     const rowHeight=H<=1100?61:H>=1700?91:76;
     const top=detailsY;
+    if(state.layers.highlights!==false){
     ctx.save();roundedRect(margin,top-27,contentWidth,28+list.length*rowHeight+21,23);
     ctx.fillStyle=rgba(t.text,t.dark?.08:.085);
     if(layout==="minimal"||layout==="editorial"){ctx.strokeStyle=rgba(t.text,.3);ctx.lineWidth=2;ctx.stroke();}
@@ -347,6 +350,7 @@
       if(short!==p)short+="…";
       ctx.fillText(short,margin+63,cy+18);
     });
+    }
     const footerY=H-74;
     ctx.strokeStyle=rgba(t.text,.22);ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(margin,footerY-39);ctx.lineTo(W-margin,footerY-39);ctx.stroke();
     ctx.fillStyle=t.sub;ctx.font="800 20px Manrope,sans-serif";ctx.fillText("СОЗДАНО ДЛЯ ВДОХНОВЕНИЯ",margin,footerY);
