@@ -74,6 +74,17 @@ try {
     assert.ok(await page.locator("#account-form").isVisible());
     assert.ok(await page.locator("#nav-account").isVisible());
     assert.ok(await page.evaluate(()=>window.__watermarkDraws>0),"Free watermark must appear in canvas");
+    const previewBeforeFakeAccess=await page.locator("#poster").evaluate(c=>c.toDataURL("image/png"));
+    await page.evaluate(async()=>{
+      window.dispatchEvent(new CustomEvent("anons:access",{detail:{plan:"basic",premium:true}}));
+      await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+    });
+    assert.equal(await page.locator("#poster").evaluate(c=>c.toDataURL("image/png")),previewBeforeFakeAccess,
+      "A forged browser access event must not remove the preview watermark");
+    await page.evaluate(async()=>{
+      window.dispatchEvent(new CustomEvent("anons:access",{detail:{plan:"free",premium:false}}));
+      await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+    });
     const initial = await page.locator("#poster").evaluate(c=>c.toDataURL("image/png").slice(0,1000));
     assert.equal(await page.locator("#poster").evaluate(c=>c.width),1080);
     assert.equal(await page.locator("#poster").evaluate(c=>c.height),1350);

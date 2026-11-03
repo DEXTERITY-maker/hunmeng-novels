@@ -6,6 +6,25 @@ const ORIGIN='https://anons-studio-preview.pages.dev';
 const DBURL=Deno.env.get('SUPABASE_URL')||'https://kvgnjsntumofwqhywiea.supabase.co';
 const HEADERS={'Access-Control-Allow-Origin':ORIGIN,'Access-Control-Allow-Methods':'POST,OPTIONS','Access-Control-Allow-Headers':'authorization,apikey,content-type','Cache-Control':'private, no-store','Vary':'Origin'};
 const respond=(value:unknown,status=200)=>Response.json(value,{status,headers:HEADERS});
+async function boundedJson(req:Request,limit:number){
+  if(Number(req.headers.get('content-length')||0)>limit)throw Error('TOO_LARGE');
+  if(!req.body)throw Error('BAD_JSON');
+  const reader=req.body.getReader(),chunks:Uint8Array[]=[];
+  let total=0;
+  try{
+    for(;;){
+      const {done,value}=await reader.read();
+      if(done)break;
+      total+=value.byteLength;
+      if(total>limit){await reader.cancel();throw Error('TOO_LARGE');}
+      chunks.push(value);
+    }
+  }finally{reader.releaseLock();}
+  const bytes=new Uint8Array(total);let offset=0;
+  for(const chunk of chunks){bytes.set(chunk,offset);offset+=chunk.byteLength;}
+  try{return JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(bytes));}
+  catch{throw Error('BAD_JSON');}
+}
 function getKey(named:string,legacy:string){
   try {const x=JSON.parse(Deno.env.get(named)||'null')?.default;if(typeof x==='string')return x;if(typeof x?.api_key==='string')return x.api_key;}catch{}
   return Deno.env.get(legacy)||'';
@@ -99,16 +118,25 @@ Deno.serve(async(req:Request)=>{
   const {data:member,error:readError}=await admin.from('anons_studio_memberships')
     .select('plan,status,current_period_end').eq('user_id',data.user.id).maybeSingle();
   if(readError)return respond({error:'CHECK_FAILED'},503);
+  const expires=member?.current_period_end?Date.parse(member.current_period_end):NaN;
   if(!member||!['basic','pro','studio'].includes(member.plan)
     ||!['active','trialing'].includes(member.status)||!member.current_period_end
-    ||Date.parse(member.current_period_end)<=Date.now())return respond({error:'SUBSCRIPTION_REQUIRED'},403);
-  if(Number(req.headers.get('content-length')||0)>900000)return respond({error:'TOO_LARGE'},413);
-  let body:any;try{body=await req.json();}catch{return respond({error:'BAD_JSON'},400);}
+    ||!Number.isFinite(expires)||expires<=Date.now())return respond({error:'SUBSCRIPTION_REQUIRED'},403);
+  let body:any;
+  try{body=await boundedJson(req,900000);}
+  catch(e){return e instanceof Error&&e.message==='TOO_LARGE'
+    ?respond({error:'TOO_LARGE'},413):respond({error:'BAD_JSON'},400);}
   const snapshot=body?.snapshot,idx=body?.cardIndex;
   if(!snapshot||!SIZES[snapshot.ratio]||!Array.isArray(snapshot.cards)
     ||snapshot.cards.length<1||snapshot.cards.length>8||!Number.isInteger(idx)
-    ||idx<0||idx>=snapshot.cards.length)return respond({error:'INVALID_POSTER'},400);
-  if(JSON.stringify(snapshot).length>900000)return respond({error:'TOO_LARGE'},413);
+    ||idx<0||idx>=snapshot.cards.length||!snapshot.cards[idx]
+    ||typeof snapshot.cards[idx]!=='object'||Array.isArray(snapshot.cards[idx]))return respond({error:'INVALID_POSTER'},400);
+  // Reject photos we cannot render, rather than silently returning a PNG without them.
+  if(snapshot.imageData){
+    if(typeof snapshot.imageData!=='string'||!/^data:image\/(png|jpeg|webp);base64,[a-z0-9+/=]+$/i.test(snapshot.imageData))
+      return respond({error:'INVALID_IMAGE'},400);
+    if(snapshot.imageData.length>=600000)return respond({error:'IMAGE_TOO_LARGE'},413);
+  }
   try{
     const [width,height]=SIZES[snapshot.ratio];
     const element=renderPoster(snapshot,snapshot.cards[idx],width,height);

@@ -74,7 +74,6 @@
   const paidAccess = { premium: false, plan: "free" };
   let toastTimer = null;
   let pendingRender = false;
-  let localExport = false;
   let suppressEditorSignal = false;
 
   function snapshotCard() {
@@ -263,8 +262,8 @@
     drawPhoto(W,H);
   }
   function drawWatermark(W,H,t) {
-    if(paidAccess.premium && !localExport)return;
-    // Local PNGs must always retain the watermark. Clean PNGs are server-rendered.
+    // Preview and local PNGs always carry a watermark; only the server may
+    // provide a clean export after independently checking the subscription.
     ctx.save();
     ctx.translate(W*.5,H*.51);
     ctx.rotate(-Math.PI/6.4);
@@ -442,7 +441,7 @@
       temp.getContext("2d").drawImage(image,0,0,temp.width,temp.height);image.close?.();
       state.imageData=temp.toDataURL("image/jpeg",.76);
       loadPhoto(state.imageData);persist();syncFields();
-      showToast("Фото добавлено. Оно сохранено только в этом браузере.");
+      showToast("Фото добавлено. При облачном сохранении оно попадёт в проект.");
     }catch(err){console.error(err);showToast("Не удалось прочитать изображение.");}
   });
   $("clear-image").addEventListener("click",()=>{
@@ -450,13 +449,10 @@
   });
   async function localWatermarkedPng(){
     if(!canvas.toBlob)throw new Error("NO_CANVAS_EXPORT");
-    localExport=true;
-    try{
-      render();
-      return await new Promise((resolve,reject)=>{
-        canvas.toBlob(b=>b?resolve(b):reject(new Error("PNG_EXPORT_FAILED")),"image/png");
-      });
-    }finally{localExport=false;render();}
+    render();
+    return await new Promise((resolve,reject)=>{
+      canvas.toBlob(b=>b?resolve(b):reject(new Error("PNG_EXPORT_FAILED")),"image/png");
+    });
   }
   $("export").addEventListener("click",async()=>{
     const button=$("export");
@@ -471,7 +467,9 @@
       showToast(paidAccess.premium?"Премиальный PNG получен с сервера.":"Бесплатный PNG скачан с водяным знаком.");
     }catch(e){
       console.warn("Export denied or failed",e?.message);
-      showToast("Не удалось скачать PNG. Проверь подписку и подключение или попробуй ещё раз.");
+      showToast(e?.message==="IMAGE_TOO_LARGE"
+        ?"Фото слишком большое для серверного экспорта. Попробуй уменьшить его размер."
+        :"Не удалось скачать PNG. Проверь подписку и подключение или попробуй ещё раз.");
     }finally{button.disabled=false;}
   });
   function crc32(bytes) {
@@ -581,7 +579,7 @@
     paidAccess.premium=access.premium===true && paidAccess.plan!=="free";
     const caption=document.querySelector(".preview-caption");
     if(caption) caption.textContent=paidAccess.premium
-      ? "Активный тариф "+paidAccess.plan.toUpperCase()+" · Экспорт без водяного знака"
+      ? "Активный тариф "+paidAccess.plan.toUpperCase()+" · Предпросмотр с водяным знаком, серверный экспорт без него"
       : "Free · Водяной знак в предпросмотре и PNG · Снять по подписке";
     scheduleRender();
   });

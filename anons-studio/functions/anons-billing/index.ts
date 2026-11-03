@@ -17,14 +17,40 @@ const shop=Deno.env.get('YOOKASSA_SHOP_ID')||'';
 const merchantKey=Deno.env.get('YOOKASSA_SECRET_KEY')||'';
 const vat=Number(Deno.env.get('YOOKASSA_VAT_CODE'));
 const tax=Deno.env.get('YOOKASSA_TAX_SYSTEM_CODE');
-const enabled=Deno.env.get('ANONS_BILLING_ENABLED')==='true'
+// Remove this release gate only after the launch checklist has passed and the
+// owner has explicitly authorized real payments. Environment flags alone must
+// not start sales while export parity and refund handling remain unverified.
+const LIVE_CHECKOUT_REVIEWED=false;
+const canVerify=!!publicKey&&!!secretKey&&!!shop&&!!merchantKey;
+const enabled=LIVE_CHECKOUT_REVIEWED&&Deno.env.get('ANONS_BILLING_ENABLED')==='true'
   &&Deno.env.get('ANONS_PREMIUM_EXPORT_READY')==='true'
-  &&!!publicKey&&!!secretKey&&!!shop&&!!merchantKey
+  &&canVerify
   &&Number.isInteger(vat)&&vat>=1&&vat<=12;
 const admin=secretKey?createClient(url,secretKey,{auth:{persistSession:false}}):null;
 const auth=publicKey?createClient(url,publicKey,{auth:{persistSession:false}}):null;
 const cors={'Access-Control-Allow-Origin':origin,'Access-Control-Allow-Headers':'authorization, apikey, content-type','Access-Control-Allow-Methods':'GET,POST,OPTIONS','Cache-Control':'no-store','Vary':'Origin'};
 const out=(data:unknown,status=200)=>Response.json(data,{status,headers:cors});
+async function boundedJson(req:Request,limit:number){
+  if(Number(req.headers.get('content-length')||0)>limit)throw Error('TOO_LARGE');
+  if(!req.body)throw Error('BAD_JSON');
+  const reader=req.body.getReader(),chunks:Uint8Array[]=[];
+  let total=0;
+  try{
+    for(;;){
+      const {done,value}=await reader.read();
+      if(done)break;
+      total+=value.byteLength;
+      if(total>limit){await reader.cancel();throw Error('TOO_LARGE');}
+      chunks.push(value);
+    }
+  }finally{reader.releaseLock();}
+  const bytes=new Uint8Array(total);let offset=0;
+  for(const chunk of chunks){bytes.set(chunk,offset);offset+=chunk.byteLength;}
+  try{return JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(bytes));}
+  catch{throw Error('BAD_JSON');}
+}
+const bodyError=(e:unknown)=>e instanceof Error&&e.message==='TOO_LARGE'
+  ?out({error:'TOO_LARGE'},413):out({error:'BAD_JSON'},400);
 function conf(){return{provider:'ЮKassa',enabled,autoRenew:false,periodDays:30,prices,availablePlans:['basic']};}
 const kopecks=(s:any)=>typeof s==='string'&&/^[0-9]{1,8}\.[0-9]{2}$/.test(s)?Number(s.split('.')[0])*100+Number(s.split('.')[1]):-1;
 const paymentHeaders=(id='')=>({'Authorization':'Basic '+btoa(shop+':'+merchantKey),'Content-Type':'application/json',...(id?{'Idempotence-Key':id}:{})});
@@ -32,7 +58,9 @@ async function providerGet(id:string){
   if(!uuid.test(id))throw Error('INVALID_PAYMENT_ID');
   const res=await fetch(api+'/'+encodeURIComponent(id),{headers:paymentHeaders()});
   if(!res.ok)throw Error('PROVIDER_HTTP_'+res.status);
-  return await res.json();
+  const payment=await res.json();
+  if(payment?.id!==id)throw Error('PROVIDER_ID_MISMATCH');
+  return payment;
 }
 async function userFrom(req:Request){
   const token=/^Bearer (.+)$/i.exec(req.headers.get('authorization')||'')?.[1];
@@ -45,7 +73,8 @@ async function settle(provider:any,order:any){
   if(provider.metadata?.order_id!==order.id||provider.metadata?.user_id!==order.user_id
     ||provider.metadata?.plan!==order.plan||provider.recipient?.account_id!==shop
     ||provider.recipient?.account_id!==order.shop_id||provider.test!==false
-    ||provider.amount?.currency!=='RUB'||kopecks(provider.amount?.value)!==order.amount_kopecks)return 'mismatch';
+    ||provider.amount?.currency!=='RUB'||kopecks(provider.amount?.value)!==order.amount_kopecks
+    ||(provider.refunded_amount&&provider.refunded_amount.currency!=='RUB'))return 'mismatch';
   const {data,error}=await admin.rpc('anons_studio_settle_verified_payment',{
     p_order_id:order.id,p_payment_id:provider.id,p_state:provider.status,
     p_amount_kopecks:kopecks(provider.amount.value),p_currency:'RUB',
@@ -58,8 +87,7 @@ async function checkout(req:Request){
   if(!enabled||!admin)return out({error:'PAYMENTS_DISABLED'},503);
   const user=await userFrom(req);
   if(!user)return out({error:'LOGIN_REQUIRED'},401);
-  if(Number(req.headers.get('content-length')||0)>2048)return out({error:'TOO_LARGE'},413);
-  let body:any;try{body=await req.json();}catch{return out({error:'BAD_JSON'},400);}
+  let body:any;try{body=await boundedJson(req,2048);}catch(e){return bodyError(e);}
   const plan=body?.plan;
   if(!Object.hasOwn(prices,plan))return out({error:'INVALID_PLAN'},400);
   if(plan!=='basic')return out({error:'PLAN_NOT_YET_AVAILABLE'},403);
@@ -113,9 +141,9 @@ async function checkout(req:Request){
   return out({orderId:id,url:paymentUrl});
 }
 async function webhook(req:Request){
-  if(!enabled||!admin)return out({error:'PAYMENTS_DISABLED'},503);
-  if(Number(req.headers.get('content-length')||0)>20000)return out({error:'TOO_LARGE'},413);
-  let notice:any;try{notice=await req.json();}catch{return out({error:'BAD_JSON'},400);}
+  // Closing checkout must not stop verification of earlier payments/refunds.
+  if(!canVerify||!admin)return out({error:'VERIFICATION_UNAVAILABLE'},503);
+  let notice:any;try{notice=await boundedJson(req,20000);}catch(e){return bodyError(e);}
   if(notice?.type!=='notification'
     ||!['payment.succeeded','payment.canceled','refund.succeeded'].includes(notice.event))
     return out({error:'INVALID_NOTICE'},400);
@@ -139,19 +167,23 @@ async function overview(req:Request,reconcile:boolean){
     .select('id,user_id,shop_id,provider_payment_id,plan,amount_kopecks,state,created_at,paid_at')
     .eq('user_id',user.id).order('created_at',{ascending:false}).limit(10);
   if(error)return out({error:'BILLING_UNAVAILABLE'},503);
-  if(reconcile&&enabled){
+  const reconciliation={available:canVerify,attempted:0,failed:0};
+  if(reconcile&&canVerify){
     for(const row of (rows||[]).filter(o=>o.provider_payment_id&&['pending','succeeded'].includes(o.state)).slice(0,3)){
-      try{await settle(await providerGet(row.provider_payment_id),row);}
-      catch(e){console.warn('sync',String(e));}
+      reconciliation.attempted++;
+      try{
+        const result=await settle(await providerGet(row.provider_payment_id),row);
+        if(result==='mismatch'||result.startsWith('rejected'))reconciliation.failed++;
+      }catch(e){reconciliation.failed++;console.warn('sync',String(e));}
     }
   }
   const {data:membership,error:memberError}=await admin.from('anons_studio_memberships')
     .select('plan,status,current_period_end').eq('user_id',user.id).maybeSingle();
   if(memberError)return out({error:'BILLING_UNAVAILABLE'},503);
   const {data:safeRows}=await admin.from('anons_studio_payment_orders')
-    .select('id,plan,amount_kopecks,state,created_at,paid_at')
+    .select('id,plan,amount_kopecks,refunded_kopecks,state,created_at,paid_at')
     .eq('user_id',user.id).order('created_at',{ascending:false}).limit(10);
-  return out({config:conf(),membership:membership||null,orders:safeRows||[]});
+  return out({config:conf(),membership:membership||null,orders:safeRows||[],...(reconcile?{reconciliation}:{})});
 }
 Deno.serve(async(req:Request)=>{
   if(req.method==='OPTIONS')return new Response(null,{status:204,headers:cors});

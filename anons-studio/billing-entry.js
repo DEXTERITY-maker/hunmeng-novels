@@ -32,8 +32,10 @@ export function initBilling(client) {
       else for(const o of list){
         const row=document.createElement('div');row.className='billing-order';
         const label=document.createElement('strong');label.textContent=o.plan.toUpperCase()+' — '+Math.round(o.amount_kopecks/100)+' ₽';
-        const sub=document.createElement('span');sub.textContent=new Date(o.created_at).toLocaleDateString('ru-RU')+' · '+
+        const partiallyRefunded=o.state==='succeeded'&&o.refunded_kopecks>0&&o.refunded_kopecks<o.amount_kopecks;
+        const orderState=partiallyRefunded?'Частичный возврат '+(o.refunded_kopecks/100).toLocaleString('ru-RU')+' ₽':
           ({created:'Создаётся',pending:'Ожидает оплаты',succeeded:'Оплачено',canceled:'Отменено',refunded:'Возврат'}[o.state]||o.state);
+        const sub=document.createElement('span');sub.textContent=new Date(o.created_at).toLocaleDateString('ru-RU')+' · '+orderState;
         row.append(label,sub);history.append(row);
       }
     }
@@ -46,7 +48,13 @@ export function initBilling(client) {
       const data=await call(sync?'sync':'history',{method:sync?'POST':'GET'});
       if(id!==accountId||serial!==fresh)return;
       renderOrders(data);
-      if(sync)msg('Статус проверен. После оплаты информация может обновиться не сразу.');
+      if(sync){
+        const r=data.reconciliation;
+        if(!r||!r.available)msg('История загружена, но сверка с платёжным сервисом сейчас недоступна.');
+        else if(r.failed)msg('Не все платежи удалось проверить. Попробуйте позднее или обратитесь в поддержку.');
+        else if(r.attempted)msg('Платежи сверены с платёжным сервисом.');
+        else msg('История загружена. Платежей для сверки пока нет.');
+      }
     }catch(e){if(id===accountId)msg('Не удалось проверить оплату. Проверь соединение.');}
   }
   async function loadConfig(){
