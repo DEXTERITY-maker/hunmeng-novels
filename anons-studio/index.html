@@ -213,6 +213,14 @@
                 <div class="library-history-heading"><strong>История изменений</strong><span>15 последних версий</span></div>
                 <div id="library-history-list" class="library-history-list"><p class="library-placeholder">Выбери сохранённый проект, чтобы увидеть историю.</p></div>
               </div>
+              <div id="library-conflict" class="library-conflict" hidden role="alert">
+                <strong>Найдена более новая версия в облаке</strong>
+                <p>Этот проект изменился в другом окне или на другом устройстве. Твой текущий черновик не перезаписан.</p>
+                <div class="library-conflict-actions">
+                  <button id="library-conflict-copy" type="button">⧉ Сохранить как новый проект</button>
+                  <button id="library-load-latest" type="button">↻ Открыть облачную версию</button>
+                </div>
+              </div>
               <p id="library-error" role="alert" class="library-error" hidden></p>
             </div>
           </div>
