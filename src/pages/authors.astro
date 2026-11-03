@@ -1,6 +1,9 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { getLibrary, chapterCount } from '../lib/content';
+import '../styles/v3-editorial.css';
+import '../styles/v3-discovery-editorial.css';
+const editorial = import.meta.env.HUNMENG_V2_PUBLIC === '1';
 
 const novels = await getLibrary();
 const byAuthor = new Map<string, typeof novels>();
@@ -13,8 +16,18 @@ const authors = [...byAuthor.entries()]
   .sort(([a], [b]) => a.localeCompare(b, 'en'))
   .map(([name, books]) => ({ name, books }));
 ---
-<Layout title="Authors" description="Discover the authors and their stories in the Hunmeng library.">
-  <main id="main" class="page-shell authors-page">
+<Layout title="Authors" description="Discover the authors and their stories in the Hunmeng library." bodyClass={editorial ? 'hm-editorial-site' : undefined}>
+  {editorial && (
+    <nav class="v3-primary-nav v3-discovery-nav" aria-label="Reading room navigation">
+      <a href="/">Home</a>
+      <a href="/catalog/">Books</a>
+      <a href="/news/">Articles</a>
+      <a href="/#v3-collections">Collections</a>
+      <a href="/library/">My library</a>
+      <a href="/about/">About</a>
+    </nav>
+  )}
+  <main id="main" class="page-shell authors-page v3-authors-page">
     <header class="page-heading">
       <p class="home-section-kicker">HUNMENG LIBRARY</p>
       <h1>Our authors</h1>
