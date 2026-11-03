@@ -132,7 +132,7 @@ test('source and glossary lists stay readable on ivory cards in dark/system them
 
   for(const theme of ['dark','system','light']){
     await page.evaluate(value=>{document.documentElement.dataset.theme=value;},theme);
-    for(const selector of ['#admin-source-list ul','#admin-term-list ul']){
+    for(const selector of ['#admin-source-list ul[data-contrast-fixture="true"]','#admin-term-list ul[data-contrast-fixture="true"]']){
       const colors=await page.locator(selector).evaluate(list=>{
         const card=list.closest('.admin-card');
         return {
