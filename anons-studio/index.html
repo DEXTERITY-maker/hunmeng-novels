@@ -239,14 +239,15 @@
 
 
       <section id="pricing" class="pricing wrap" aria-labelledby="pricing-title">
-        <div class="section-heading"><div><div class="kicker">ПРОСТЫЕ УСЛОВИЯ</div><h2 id="pricing-title">Выбери свой<br>формат творчества.</h2></div><p>На Free добавляется водяной знак Anons Studio. Во всех платных тарифах его не будет после подтверждения оплаты. Пока тестируем сервис, покупки недоступны.</p></div>
+        <div class="section-heading"><div><div class="kicker">ПРОСТЫЕ УСЛОВИЯ</div><h2 id="pricing-title">Выбери свой<br>формат творчества.</h2></div><p>На Free в PNG остаётся водяной знак. Платный Basic предусматривает чистый серверный экспорт. Подключение реальной оплаты пока не завершено.</p></div>
         <div class="pricing-grid">
           <article class="plan plan-free"><span class="plan-eyebrow">ДЛЯ НАЧАЛА</span><h3>Free</h3><div class="plan-price">0 ₽ <small>/ месяц</small></div><p>Попробовать редактор и создать первые публикации.</p><ul><li>Базовые шаблоны</li><li>Экспорт PNG в трёх форматах</li><li>Водяной знак Anons Studio</li></ul><a href="#editor" class="plan-action">Попробовать бесплатно</a></article>
-          <article class="plan"><span class="plan-eyebrow">ДЛЯ АВТОРОВ</span><h3>Basic</h3><div class="plan-price">299 ₽ <small>/ месяц</small></div><p>Для тех, кому нужен чистый профессиональный экспорт.</p><ul><li>Всё из Free</li><li><strong>Без водяного знака</strong></li><li>Дополнительные шаблоны — в разработке</li></ul><button disabled class="plan-action" type="button">Покупка скоро</button></article>
-          <article class="plan plan-featured"><span class="plan-eyebrow">ПОПУЛЯРНЫЙ ВАРИАНТ</span><h3>Pro</h3><div class="plan-price">499 ₽ <small>/ месяц</small></div><p>Для регулярного создания контента.</p><ul><li>Всё из Basic</li><li><strong>Без водяного знака</strong></li><li>Пакетные публикации — в разработке</li></ul><button disabled class="plan-action" type="button">Покупка скоро</button></article>
-          <article class="plan"><span class="plan-eyebrow">ДЛЯ КОМАНД</span><h3>Studio</h3><div class="plan-price">999 ₽ <small>/ месяц</small></div><p>Для нескольких проектов и единого фирменного стиля.</p><ul><li>Всё из Pro</li><li><strong>Без водяного знака</strong></li><li>Командные функции — в разработке</li></ul><button disabled class="plan-action" type="button">Покупка скоро</button></article>
+          <article class="plan"><span class="plan-eyebrow">ДЛЯ АВТОРОВ</span><h3>Basic</h3><div class="plan-price">299 ₽ <small>/ 30 дней</small></div><p>Для тех, кому нужен чистый профессиональный экспорт.</p><ul><li>Всё из Free</li><li><strong>Без водяного знака</strong></li><li>Дополнительные шаблоны — в разработке</li></ul><button disabled id="buy-basic" class="plan-action" type="button">Проверяем оплату…</button></article>
+          <article class="plan plan-featured"><span class="plan-eyebrow">ПОПУЛЯРНЫЙ ВАРИАНТ</span><h3>Pro</h3><div class="plan-price">499 ₽ <small>/ 30 дней</small></div><p>Для регулярного создания контента.</p><ul><li>Всё из Basic</li><li><strong>Без водяного знака</strong></li><li>Пакетные публикации — в разработке</li></ul><button disabled class="plan-action" type="button">Покупка скоро</button></article>
+          <article class="plan"><span class="plan-eyebrow">ДЛЯ КОМАНД</span><h3>Studio</h3><div class="plan-price">999 ₽ <small>/ 30 дней</small></div><p>Для нескольких проектов и единого фирменного стиля.</p><ul><li>Всё из Pro</li><li><strong>Без водяного знака</strong></li><li>Командные функции — в разработке</li></ul><button disabled class="plan-action" type="button">Покупка скоро</button></article>
         </div>
-        <p class="pricing-disclaimer">Цены предварительные. Оплата не подключена: активные подписки будут определяться только по проверенным данным сервера, а не по нажатию кнопки в браузере.</p>
+        <div class="billing-availability" role="status" aria-live="polite" id="billing-availability">Проверяем возможность оплаты…</div>
+        <p class="pricing-disclaimer">Basic — доступ на 30 дней с ручным продлением, без автоматических списаний. Pro и Studio пока в разработке. Кнопки оплаты заработают только после проверки платёжного магазина, чеков и серверного экспорта.</p>
       </section>
 
       <section id="account" class="account-section" aria-labelledby="account-title"><div class="wrap account-layout">
@@ -274,6 +275,12 @@
             <div class="account-profile-email" id="account-email-signed"></div>
             <p>Текущий тариф: <strong id="account-plan-signed">Free</strong></p>
             <div class="account-destinations"><a class="account-upgrade" href="#library">Моя библиотека ↗</a><a class="account-upgrade" href="#pricing">Посмотреть тарифы ↗</a></div>
+            <details class="billing-history-panel" id="account-billing">
+              <summary>Подписка и история покупок</summary>
+              <div id="billing-member-status" role="status">Проверяем подписку…</div>
+              <button id="billing-check" type="button" class="account-link">↻ Проверить статус оплаты</button>
+              <div id="billing-history" class="billing-order-list"></div>
+            </details>
             <details class="account-security" id="account-security">
               <summary>Безопасность и пароль</summary>
               <form id="account-change-form">
@@ -308,7 +315,7 @@
 
       <section class="cta wrap"><div><div class="kicker">НАЧНИ СЕЙЧАС</div><h2>Всё готово.<br><em>Осталось рассказать.</em></h2><p>Попробуй бесплатный редактор с водяным знаком.</p></div><a href="#editor" class="btn btn-light">Открыть редактор ↗</a></section>
     </main>
-    <footer class="footer wrap"><img class="footer-logo" src="./assets/anons-logo-approved.webp" width="220" height="68" alt="Anons Studio" loading="lazy" decoding="async"><span>Создано для тех, кому есть что рассказать.</span><span>Бета v0.5 · 2026</span></footer>
+    <footer class="footer wrap"><img class="footer-logo" src="./assets/anons-logo-approved.webp" width="220" height="68" alt="Anons Studio" loading="lazy" decoding="async"><span>Создано для тех, кому есть что рассказать.</span><span>Бета v0.6 · 2026</span></footer>
     <div id="toast" role="status" aria-live="polite" class="toast" hidden></div>
   </div>
 </body>
