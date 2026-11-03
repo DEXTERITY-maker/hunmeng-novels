@@ -7,7 +7,7 @@ import { chromium } from "@playwright/test";
 
 const root = join(dirname(fileURLToPath(import.meta.url)),"dist");
 const types = { ".html": "text/html; charset=utf-8", ".css": "text/css; charset=utf-8", ".js": "application/javascript; charset=utf-8" };
-const allow = new Set(["/","/index.html","/styles.css","/app.js"]);
+const allow = new Set(["/","/index.html","/styles.css","/app.js","/auth.bundle.js"]);
 const server = createServer(async (req,res)=>{
   const url = new URL(req.url, "http://localhost");
   const path = url.pathname === "/" ? "/index.html" : url.pathname;
@@ -45,6 +45,8 @@ try {
     page.on("pageerror",error=>errors.push(error.message));
     await page.goto("http://127.0.0.1:"+port,{waitUntil:"domcontentloaded"});
     await page.locator("#poster").waitFor();
+    assert.equal(await page.evaluate(async()=> (await fetch("/auth.bundle.js")).status),200);
+    await page.waitForFunction(()=>document.querySelector(".preview-caption")?.textContent?.includes("Free"));
     assert.equal(await page.locator("#pricing .plan").count(),4);
     assert.ok(await page.locator("#account-form").isVisible());
     assert.ok(await page.locator("#nav-account").isVisible());
