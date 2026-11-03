@@ -28,17 +28,41 @@
     square: { w: 1080, h: 1080 },
     story: { w: 1080, h: 1920 }
   };
-  const defaults = { preset: "update", theme: "ultraviolet", ratio: "portrait", ...presets.update, imageData: "" };
+  const templates = new Set(["aurora","editorial","spotlight","pulse","minimal","bulletin"]);
+  const MAX_CARDS=8;
+  const cardKeys=["title","description","points","preset","template"];
+  const limits={project:45,title:85,description:210,points:240};
+  const defaults = { preset: "update", theme: "ultraviolet", ratio: "portrait", ...presets.update, imageData: "",
+    template:"aurora", headingScale:100, accentColor:"", alignment:"left", decorations:true, photoOpacity:35, activeCard:0, cards:[] };
   let saved = {};
   try { saved = JSON.parse(localStorage.getItem(storageKey) || "{}") || {}; } catch (_) {}
   const state = { ...defaults };
-  for (const key of ["preset", "theme", "ratio", "project", "title", "description", "points", "imageData"]) {
+  for (const key of ["preset", "theme", "ratio", "project", "title", "description", "points", "imageData","template","accentColor","alignment"]) {
     if (typeof saved[key] === "string") state[key] = saved[key];
   }
   if (!presets[state.preset]) state.preset = "update";
   if (!themes[state.theme]) state.theme = "ultraviolet";
   if (!sizes[state.ratio]) state.ratio = "portrait";
-  for (const key of ["project", "title", "description", "points"]) state[key] = state[key].slice(0, {project:45,title:85,description:210,points:240}[key]);
+  if (!templates.has(state.template)) state.template = "aurora";
+  state.alignment = state.alignment==="center"?"center":"left";
+  state.accentColor = /^#[0-9a-fA-F]{6}$/.test(state.accentColor)?state.accentColor:"";
+  state.headingScale = Number.isFinite(saved.headingScale)?Math.max(80,Math.min(120,saved.headingScale)):100;
+  state.photoOpacity = Number.isFinite(saved.photoOpacity)?Math.max(15,Math.min(85,saved.photoOpacity)):35;
+  state.decorations = typeof saved.decorations === "boolean" ? saved.decorations : true;
+  for (const key of ["project","title","description","points"]) state[key]=state[key].slice(0,limits[key]);
+  const sanitizeCard = (v) => {
+    const original=(v && typeof v==="object")?v:{};
+    const out={};
+    for(const key of ["title","description","points"]) out[key]=(typeof original[key]==="string"?original[key]:(state[key]||"")).slice(0,limits[key]);
+    out.preset=presets[original.preset]?original.preset:state.preset;
+    out.template=templates.has(original.template)?original.template:state.template;
+    return out;
+  };
+  // Migration: keep a previously saved single-card project when upgrading v0.2.
+  const firstCard=sanitizeCard({title:state.title,description:state.description,points:state.points,preset:state.preset,template:state.template});
+  state.cards=Array.isArray(saved.cards)&&saved.cards.length ? saved.cards.slice(0,MAX_CARDS).map(sanitizeCard):[firstCard];
+  state.activeCard=Number.isInteger(saved.activeCard)?Math.min(Math.max(0,saved.activeCard),state.cards.length-1):0;
+  Object.assign(state,state.cards[state.activeCard]);
   let photo = null;
   const paidAccess = { premium: false, plan: "free" };
   let toastTimer = null;
