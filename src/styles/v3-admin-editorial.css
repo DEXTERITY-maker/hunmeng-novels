@@ -120,6 +120,11 @@
   box-shadow: 0 10px 30px #4d36191a;
   color: #29483a;
 }
+/* Generated source-permission and glossary lists must keep readable ink on
+   fixed ivory cards even when the global/system theme is dark. */
+.hm-editorial-site .v3-admin-page .admin-card ul {
+  color: #315441;
+}
 .hm-editorial-site .v3-admin-page .admin-card h2 {
   margin: 0 0 17px;
   color: #1d4734;
