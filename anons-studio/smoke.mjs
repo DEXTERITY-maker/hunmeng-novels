@@ -289,7 +289,12 @@ try {
     assert.deepEqual(await page.evaluate(()=>window.AnonsEditor.getSnapshot()),beforeBackup,
       "Restore returns the complete saved project");
     await page.locator("#backup-file").setInputFiles({
-      name:"bad.json",mimeType:"application/json",buffer:Buffer.from("{invalid","utf8")
+      name:"too-small.json",mimeType:"application/json",buffer:Buffer.from("{invalid","utf8")
+    });
+    await page.waitForFunction(()=>document.querySelector("#toast")?.textContent?.includes("Неверный размер"));
+    await page.locator("#backup-file").setInputFiles({
+      name:"bad.json",mimeType:"application/json",
+      buffer:Buffer.from('{"broken":'.padEnd(40,"x"),"utf8")
     });
     await page.waitForFunction(()=>document.querySelector("#toast")?.textContent?.includes("не является корректной"));
     assert.deepEqual(await page.evaluate(()=>window.AnonsEditor.getSnapshot()),beforeBackup,
