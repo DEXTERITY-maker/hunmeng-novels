@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import { initLibrary } from "./library-entry.js";
+import { initBilling } from "./billing-entry.js";
 
 // Public publishable key only. Never bundle a service_role or Supabase secret.
 const client=createClient("https://kvgnjsntumofwqhywiea.supabase.co","sb_publishable_8nleVqBbbyDEbgyMWPkS6A_oEHkisoN",{
@@ -7,6 +8,8 @@ const client=createClient("https://kvgnjsntumofwqhywiea.supabase.co","sb_publish
 });
 const byId=id=>document.getElementById(id);
 const library=initLibrary(client);
+const billing=initBilling(client);
+window.AnonsBilling=billing;
 const guest=byId("account-guest");
 const signed=byId("account-signed");
 const recovery=byId("account-recovery");
@@ -76,6 +79,7 @@ function renderGuest(){
   navAccount.textContent="Войти";
   status.textContent="Гость · Free";
   library.setUser(null);
+  billing.setUser(null);
 }
 function renderUser(user,plan){
   accountEmail.textContent=user.email||"Аккаунт";
@@ -89,6 +93,7 @@ function renderUser(user,plan){
   if(currentAccountId&&currentAccountId!==user.id)window.AnonsEditor?.newDraft?.();
   currentAccountId=user.id;
   library.setUser(user);
+  billing.setUser(user);
 }
 function publishEntitlements(plan,premium){
   window.dispatchEvent(new CustomEvent("anons:access",{detail:{plan,premium}}));
