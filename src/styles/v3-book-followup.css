@@ -1,0 +1,241 @@
+/* Hunmeng 2.0 secondary book routes.
+   This CSS applies only with the release-flagged editorial shell. It never
+   changes chapter publication/rights state, URLs, or external attribution. */
+.hm-editorial-site .v3-book-extra-nav {
+  width: min(1120px,calc(100% - 38px));
+  margin-inline: auto;
+}
+.hm-editorial-site .v3-chapter-index {
+  width: min(1010px,calc(100% - 38px));
+  max-width: 1010px;
+  padding: 16px 0 76px;
+  color: #274737;
+}
+.hm-editorial-site .v3-chapter-index .back-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin: 0 0 14px;
+  color: #095940;
+  text-underline-offset: 4px;
+  font-weight: 760;
+}
+.hm-editorial-site .v3-chapter-index .page-heading {
+  min-height: 220px;
+  padding: clamp(28px,5vw,53px);
+  margin: 0 0 21px;
+  border: 1px solid #cfbb99;
+  border-radius: 18px 18px 25px 25px;
+  background-color: #073f33;
+  background-image: linear-gradient(111deg,#07342ef2,#0b4a3bdc 62%,#0a473ac6),
+    url('/images/editorial/hero-mountains.svg');
+  background-position: center;
+  background-size: cover;
+  box-shadow: 0 14px 34px #183c2924;
+}
+.hm-editorial-site .v3-chapter-index .page-heading h1 {
+  margin: 0 0 13px;
+  color: #fff8e9;
+  font: 550 clamp(2rem,4.6vw,3.45rem)/1.17 'Noto Serif Variable',Georgia,serif;
+  letter-spacing: -.044em;
+  overflow-wrap: anywhere;
+}
+.hm-editorial-site .v3-chapter-index .page-heading p {
+  margin: 0;
+  color: #e7f1e4;
+  font-size: .88rem;
+}
+.hm-editorial-site .v3-chapter-index .chapter-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 19px 0;
+  padding: 15px 17px;
+  border: 1px solid #e1d5c0;
+  border-radius: 14px;
+  background: #f8f1e4;
+  color: #526957;
+  font-size: .83rem;
+  font-variant-numeric: tabular-nums;
+}
+.hm-editorial-site .v3-chapter-index .chapter-pagination a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 43px;
+  padding: 9px 15px;
+  border: 1px solid #cfc1a6;
+  border-radius: 999px;
+  color: #0b6047;
+  background: #fffdf6;
+  font-weight: 770;
+}
+.hm-editorial-site .v3-chapter-index .chapter-pagination a:hover {
+  border-color: #0b6047;
+  background: #e7efe3;
+}
+.hm-editorial-site .v3-chapter-index .chapter-list {
+  margin: 0;
+  padding: 6px 23px;
+  border: 1px solid #e1d6c3;
+  border-radius: 17px;
+  background: #fffdf6;
+  box-shadow: 0 10px 30px #3d331a17;
+}
+.hm-editorial-site .v3-chapter-index .chapter-list li {
+  min-width: 0;
+  border-bottom-color: #e8ddcb;
+}
+.hm-editorial-site .v3-chapter-index .chapter-list a {
+  min-height: 61px;
+  gap: 14px;
+  color: #2a4b38;
+  font-weight: 620;
+  overflow-wrap: anywhere;
+}
+.hm-editorial-site .v3-chapter-index .chapter-list a:hover {
+  color: #086047;
+}
+.hm-editorial-site .v3-chapter-index .chapter-number {
+  color: #0a6047;
+  font-variant-numeric: tabular-nums;
+}
+.hm-editorial-site .v3-chapter-index .chapter-list time {
+  color: #68796a;
+  font-size: .74rem;
+  font-variant-numeric: tabular-nums;
+}
+.hm-editorial-site .v3-source-page {
+  width: min(1050px,calc(100% - 38px));
+  max-width: 1050px;
+  padding: 16px 0 76px;
+  color: #2c4938;
+}
+.hm-editorial-site .v3-source-page .novel-detail-breadcrumb {
+  margin: 0 0 20px;
+  color: #637767;
+}
+.hm-editorial-site .v3-source-page .novel-detail-breadcrumb a {
+  color: #0a5b43;
+  font-weight: 740;
+}
+.hm-editorial-site .v3-source-page .external-novel-detail {
+  display: grid;
+  grid-template-columns: minmax(160px,235px) minmax(0,1fr);
+  gap: clamp(22px,4vw,48px);
+  border: 1px solid #e0d2b9;
+  border-radius: 18px;
+  padding: clamp(20px,4vw,44px);
+  background: #fffdf6;
+  box-shadow: 0 14px 37px #4b341b1c;
+}
+.hm-editorial-site .v3-source-page .external-novel-cover {
+  align-self: start;
+  overflow: hidden;
+  border-radius: 6px 12px 12px 6px;
+  background: #f4ead8;
+  box-shadow: 6px 10px 22px #342c2230;
+}
+.hm-editorial-site .v3-source-page .external-novel-cover span {
+  background: #0a4939e8;
+  color: #fff9e9;
+  font-size: .78rem;
+}
+.hm-editorial-site .v3-source-page .external-novel-eyebrow {
+  color: #956726;
+  letter-spacing: .08em;
+  font-weight: 810;
+}
+.hm-editorial-site .v3-source-page .external-novel-copy h1 {
+  color: #214634;
+  font: 560 clamp(1.9rem,3.4vw,2.9rem)/1.18 'Noto Serif Variable',Georgia,serif;
+  letter-spacing: -.042em;
+  overflow-wrap: anywhere;
+}
+.hm-editorial-site .v3-source-page .external-novel-original {
+  color: #576d5d;
+}
+.hm-editorial-site .v3-source-page .external-novel-tags span {
+  border: 1px solid #e1d2b7;
+  border-radius: 999px;
+  padding: 7px 12px;
+  background: #f5edde;
+  color: #2b6048;
+}
+.hm-editorial-site .v3-source-page .external-novel-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.hm-editorial-site .v3-source-page .external-novel-actions a {
+  min-height: 46px;
+  padding: 11px 18px;
+  border: 1px solid #0b5945;
+  border-radius: 999px;
+  background: #0b5945;
+  color: #fffaf0;
+  font-weight: 760;
+  overflow-wrap: anywhere;
+}
+.hm-editorial-site .v3-source-page .external-novel-actions a.secondary {
+  border-color: #d3c2a3;
+  background: #f8f1e5;
+  color: #095c43;
+}
+.hm-editorial-site .v3-source-page .external-novel-copy > .fine {
+  margin-top: 14px;
+  color: #627365;
+  line-height: 1.7;
+}
+.hm-editorial-site .v3-source-page .external-novel-summary {
+  margin-top: 19px;
+  padding: clamp(22px,3.3vw,35px);
+  border: 1px solid #e1d5c2;
+  border-radius: 17px;
+  background: #fffdf6;
+  box-shadow: 0 9px 27px #40331a14;
+}
+.hm-editorial-site .v3-source-page .external-novel-summary h2 {
+  color: #1d4b37;
+  font: 550 clamp(1.35rem,2.3vw,1.75rem)/1.3 'Noto Serif Variable',Georgia,serif;
+}
+.hm-editorial-site .v3-source-page .external-novel-summary p {
+  color: #506a57;
+  line-height: 1.8;
+}
+.hm-editorial-site :is(.v3-chapter-index,.v3-source-page) a:focus-visible,
+.hm-editorial-site .v3-book-extra-nav a:focus-visible {
+  outline: 3px solid #c3934e;
+  outline-offset: 3px;
+}
+@media (max-width:760px) {
+  .hm-editorial-site .v3-book-extra-nav,
+  .hm-editorial-site .v3-chapter-index,
+  .hm-editorial-site .v3-source-page { width: min(100% - 30px,1050px); }
+  .hm-editorial-site .v3-chapter-index .page-heading {
+    min-height: 195px;
+    padding: 28px 23px;
+  }
+  .hm-editorial-site .v3-chapter-index .chapter-list { padding: 6px 15px; }
+  .hm-editorial-site .v3-chapter-index .chapter-list a { gap: 9px; }
+  .hm-editorial-site .v3-source-page .external-novel-detail {
+    grid-template-columns: minmax(0,1fr);
+    gap: 20px;
+  }
+  .hm-editorial-site .v3-source-page .external-novel-cover {
+    width: min(170px,50%);
+  }
+}
+@media (max-width:390px) {
+  .hm-editorial-site .v3-book-extra-nav,
+  .hm-editorial-site .v3-chapter-index,
+  .hm-editorial-site .v3-source-page { width: calc(100% - 24px); }
+  .hm-editorial-site .v3-chapter-index .page-heading { padding: 26px 20px; }
+  .hm-editorial-site .v3-chapter-index .chapter-pagination { padding: 12px; }
+  .hm-editorial-site .v3-chapter-index .chapter-list { padding-inline: 10px; }
+  .hm-editorial-site .v3-source-page .external-novel-detail { padding: 17px; }
+}
+@media (prefers-reduced-motion:reduce) {
+  .hm-editorial-site :is(.v3-chapter-index,.v3-source-page) a { transition: none; }
+}
