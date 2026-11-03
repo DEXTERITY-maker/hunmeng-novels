@@ -29,11 +29,21 @@ async function readNotice(req:Request){
 
 async function providerGet(resource:'payments'|'refunds',id:string){
   if(!uuid.test(id))throw Error('INVALID_ID');
-  const response=await fetch(`${api}/${resource}/${encodeURIComponent(id)}`,{
-    headers:{Authorization:'Basic '+btoa(`${shop}:${secret}`)},
-    signal:AbortSignal.timeout(8000)
-  });
-  if(!response.ok)throw Error('PROVIDER_UNAVAILABLE');
+  let response:Response;
+  try{
+    response=await fetch(`${api}/${resource}/${encodeURIComponent(id)}`,{
+      headers:{Authorization:'Basic '+btoa(`${shop}:${secret}`)},
+      signal:AbortSignal.timeout(8000)
+    });
+  }catch{
+    // Never log request headers, URLs, credentials, or provider response bodies.
+    console.warn('Test provider connection failed');
+    throw Error('PROVIDER_UNAVAILABLE');
+  }
+  if(!response.ok){
+    console.warn('Test provider HTTP status:',response.status);
+    throw Error('PROVIDER_UNAVAILABLE');
+  }
   const object=await response.json();
   if(object?.id!==id)throw Error('PROVIDER_MISMATCH');
   return object;

@@ -11,18 +11,18 @@ const refundId='22222222-2222-4222-8222-222222222222';
 const storeId='test-shop';
 const payment=()=>({id:paymentId,test:true,status:'succeeded',recipient:{account_id:storeId},amount:{value:'299.00',currency:'RUB'}});
 const refund=()=>({id:refundId,status:'succeeded',payment_id:paymentId});
-function harness({p=payment(),r=refund(),credentials=true,fail=false}={}){
-  let handler;const requests=[];
+function harness({p=payment(),r=refund(),credentials=true,fail=false,providerStatus=200}={}){
+  let handler;const requests=[],warnings=[];
   const env=credentials?{ANONS_YOOKASSA_TEST_SHOP_ID:storeId,ANONS_YOOKASSA_TEST_SECRET_KEY:'dummy-secret'}:{};
   const globals={Deno:{env:{get:name=>env[name]},serve:fn=>{handler=fn;}},
-    console:{log(){}},Response,Request,TextDecoder,Uint8Array,AbortSignal,btoa,
+    console:{log(){},warn(...args){warnings.push(args);}},Response,Request,TextDecoder,Uint8Array,AbortSignal,btoa,
     fetch:async url=>{
       requests.push(String(url));
       if(fail)throw Error('provider offline');
-      return Response.json(String(url).includes('/refunds/')?r:p);
+      return Response.json(String(url).includes('/refunds/')?r:p,{status:providerStatus});
     }};
   vm.runInNewContext(stripTypeScriptTypes(source,{mode:'strip'}),globals);
-  return {handler,requests};
+  return {handler,requests,warnings};
 }
 const message=(event,id)=>({type:'notification',event,object:{id}});
 const request=body=>new Request('https://example.test',{method:'POST',body:typeof body==='string'?body:JSON.stringify(body)});
@@ -69,6 +69,12 @@ test('invalid provider identifier cannot be substituted',async()=>{
 test('provider failure produces a retryable error',async()=>{
   const h=harness({fail:true});
   assert.equal((await h.handler(request(message('payment.succeeded',paymentId)))).status,503);
+  assert.deepEqual(h.warnings,[['Test provider connection failed']]);
+});
+test('provider HTTP errors log only a safe status, not credentials or response bodies',async()=>{
+  const h=harness({providerStatus:401});
+  assert.equal((await h.handler(request(message('payment.succeeded',paymentId)))).status,503);
+  assert.deepEqual(h.warnings,[['Test provider HTTP status:',401]]);
 });
 test('invalid and oversized payloads do not call the provider',async()=>{
   const h=harness();
