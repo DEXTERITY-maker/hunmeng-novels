@@ -3,7 +3,8 @@ export function initBilling(client) {
   const endpoint=base+'/anons-billing',byId=id=>document.getElementById(id);
   const buy=byId('buy-basic'),state=byId('billing-availability'),history=byId('billing-history');
   const status=byId('billing-member-status'),check=byId('billing-check');
-  let enabled=false,accountId=null,fresh=0;
+  let enabled=false,accountId=null,fresh=0,accountGeneration=0,inflightCheckout=null;
+  const uncertainAccounts=new Set();
   const msg=text=>{if(state)state.textContent=text;};
   async function session(){const {data,error}=await client.auth.getSession();return error?null:data.session;}
   async function call(action,{method='GET',body,requiresUser=true}={}){
@@ -72,17 +73,36 @@ export function initBilling(client) {
     }catch{enabled=false;msg('Платёжная система временно недоступна.');}
   }
   async function buyBasic(){
-    if(!enabled||!accountId)return;
+    if(!enabled||!accountId||inflightCheckout||uncertainAccounts.has(accountId))return;
+    const generation=accountGeneration,attempt={};inflightCheckout=attempt;
     buy.disabled=true;buy.textContent='Создаём оплату…';
     try{
       const result=await call('checkout',{method:'POST',body:{plan:'basic'}});
-      if(!/^https:\/\//.test(result.url))throw Error('BAD_REDIRECT');
-      window.location.assign(result.url);
+      if(generation!==accountGeneration)return;
+      const confirmation=new URL(result.url);
+      if(confirmation.protocol!=='https:'||confirmation.username||confirmation.password
+        ||!['yookassa.ru','yoomoney.ru'].some(d=>confirmation.hostname===d||confirmation.hostname.endsWith('.'+d)))
+        throw Error('BAD_REDIRECT');
+      window.location.assign(confirmation.href);
     }catch(e){
+      if(generation!==accountGeneration)return;
+      if(e.message==='PAYMENTS_DISABLED'){
+        enabled=false;msg('Приём платежей отключён.');
+        buy.disabled=true;buy.textContent='Оплата пока недоступна';return;
+      }
       const issues={LOGIN_REQUIRED:'войдите в аккаунт',RATE_LIMITED:'слишком много попыток',
-        PAYMENTS_DISABLED:'приём платежей отключён',PROVIDER_UNAVAILABLE:'сервис оплаты недоступен'};
-      msg('Оплата не началась: '+(issues[e.message]||'попробуйте позднее'));
-      buy.disabled=false;buy.textContent='Оплатить Basic';
+        INVALID_PLAN:'тариф недоступен',PLAN_NOT_YET_AVAILABLE:'тариф пока недоступен',
+        BAD_JSON:'ошибка запроса',TOO_LARGE:'ошибка запроса',
+        ORDER_CREATE_FAILED:'не удалось создать заказ',BILLING_UNAVAILABLE:'сервис временно недоступен'};
+      if(Object.hasOwn(issues,e.message)){
+        msg('Оплата не началась: '+issues[e.message]);
+        buy.disabled=false;buy.textContent='Оплатить Basic';return;
+      }
+      // The provider may have created a payment even when its response was lost.
+      uncertainAccounts.add(accountId);buy.disabled=true;buy.textContent='Проверьте статус оплаты';
+      msg('Не удалось определить, создан ли платёж. Проверьте историю и обратитесь в поддержку перед повторной попыткой.');
+    }finally{
+      if(inflightCheckout===attempt)inflightCheckout=null;
     }
   }
   buy.addEventListener('click',buyBasic);
@@ -105,11 +125,11 @@ export function initBilling(client) {
   }
   function setUser(user){
     const id=user?.id||null;if(id===accountId)return;
-    accountId=id;++fresh;
+    accountId=id;++fresh;++accountGeneration;inflightCheckout=null;
     if(status)status.textContent=id?'Проверяем подписку…':'Войдите, чтобы увидеть подписку и покупки';
     if(history)history.replaceChildren();
-    buy.disabled=!id||!enabled;
-    if(enabled)buy.textContent=id?'Оплатить Basic':'Войти для покупки';
+    buy.disabled=!id||!enabled||uncertainAccounts.has(id);
+    if(enabled)buy.textContent=uncertainAccounts.has(id)?'Проверьте статус оплаты':id?'Оплатить Basic':'Войти для покупки';
     if(id)refresh();
   }
   loadConfig();setUser(null);
