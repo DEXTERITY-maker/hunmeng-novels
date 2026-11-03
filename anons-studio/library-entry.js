@@ -288,7 +288,11 @@ export function initLibrary(client) {
     const local=editor()?.getSnapshot();
     const oldName=elements.name.value;
     const epoch=sessionEpoch;
-    if(!await ensureSaved())return;
+    // On a remote conflict, never attempt to overwrite the stale project.
+    if(conflict){
+      clearPending();
+      if(inFlight){try{await inFlight;}catch{}}
+    }else if(!await ensureSaved())return;
     if(epoch!==sessionEpoch)return;
     editor().loadSnapshot(local);
     clearCurrent((oldName+" (копия)").slice(0,100));
@@ -320,15 +324,31 @@ export function initLibrary(client) {
   function setUser(next){
     const id=next?.id||null;
     if(id===user?.id)return;
+    const remembered=readActive();
+    const former=user?.id||null;
     ++sessionEpoch;historyEpoch++;
     clearPending();user=next?.id?{id:next.id,email:next.email}:null;
     projects=[];projectId=null;version=0;archived=false;dirty=false;conflict=false;
     elements.guest.hidden=Boolean(user);
     elements.auth.hidden=!user;
     elements.search.value="";elements.filter.value="active";
+    if(remembered?.userId && id && remembered.userId!==id)editor()?.newDraft?.();
+    if(former && former!==id)editor()?.newDraft?.();
     clearCurrent(editor()?.getSuggestedName?.());
     error("");
-    if(user){notify("Библиотека подключена");refresh().catch(()=>error("Не удалось загрузить список проектов."));}
+    if(user){
+      if(remembered?.userId===id
+        &&typeof remembered.id==="string"&&/^[0-9a-f-]{36}$/.test(remembered.id)
+        &&Number.isInteger(remembered.version)&&remembered.version>=1){
+        projectId=remembered.id;version=remembered.version;
+        archived=Boolean(remembered.archived);
+        elements.name.value=String(remembered.title||"Новый анонс").slice(0,100);
+        dirty=Boolean(remembered.dirty);
+        persistActive();updateControls();
+        notify(dirty?"Несохранённые изменения в браузере":"Черновик из прошлого сеанса");
+      }else notify("Библиотека подключена");
+      refresh().catch(()=>error("Не удалось загрузить список проектов."));
+    }
   }
   elements.search.addEventListener("input",renderList);
   elements.filter.addEventListener("change",renderList);
@@ -338,10 +358,36 @@ export function initLibrary(client) {
   elements.checkpoint.addEventListener("click",()=>save(true).catch(()=>{}));
   $("library-new").addEventListener("click",()=>newDraft());
   elements.duplicate.addEventListener("click",()=>duplicate());
+  elements.conflictCopy.addEventListener("click",()=>duplicate());
+  elements.loadLatest.addEventListener("click",async()=>{
+    if(!projectId)return;
+    if(!confirm("Открыть облачную версию? Несинхронизированные изменения в этом браузере будут заменены. Чтобы сохранить их, сначала создай копию."))return;
+    await openProject(projectId,true);
+  });
   elements.archive.addEventListener("click",()=>toggleArchive());
   elements.remove.addEventListener("click",()=>removeProject());
   window.addEventListener("anons:editor-reset",()=>{if(user)clearCurrent(editor()?.getSuggestedName?.());});
   window.addEventListener("anons:editor-change",markDirty);
+  window.addEventListener("online",()=>{
+    if(user&&projectId&&dirty&&!conflict)scheduleAutosave();
+    if(user)refresh().catch(()=>{});
+  });
+  document.addEventListener("visibilitychange",()=>{
+    if(document.visibilityState==="visible"&&user)refresh().catch(()=>{});
+  });
+  window.addEventListener("beforeunload",event=>{
+    if(!dirty||!user)return;
+    event.preventDefault();event.returnValue="";
+  });
+  async function flushPending(){
+    if(!user)return true;
+    if(conflict)return false;
+    try{
+      if(inFlight)await inFlight;
+      if(dirty)await save(false);
+      return !dirty&&!conflict;
+    }catch{return false;}
+  }
   setUser(null);
-  return {setUser};
+  return {setUser,flushPending};
 }
