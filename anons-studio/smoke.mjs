@@ -122,6 +122,44 @@ try {
     assert.equal(await page.locator("#template-select").inputValue(),"editorial");
     assert.equal(await page.locator("#heading-scale").inputValue(),"120");
     assert.equal(await page.locator("#text-align").inputValue(),"center");
+    // v0.7: layers, per-card offsets, undo/redo and reusable local brand kit.
+    assert.equal(await page.locator("[data-layer]").count(),6);
+    const previousPng=await page.locator("#poster").evaluate(c=>c.toDataURL("image/png"));
+    await page.locator('[data-layer="description"]').uncheck();
+    await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+    assert.notEqual(await page.locator("#poster").evaluate(c=>c.toDataURL("image/png")),previousPng,
+      "Hiding a layer changes rendered poster pixels");
+    assert.equal(await page.evaluate(()=>window.AnonsEditor.getSnapshot().cards[1].layers.description),false);
+    await page.locator("#title-shift").evaluate(el=>{el.value="6";el.dispatchEvent(new Event("input",{bubbles:true}));});
+    assert.equal(await page.locator("#title-shift-value").textContent(),"+6%");
+    await page.locator("#card-list [role=tab]").first().click();
+    assert.equal(await page.locator('[data-layer="description"]').isChecked(),true,
+      "Layer visibility is independent across cards");
+    assert.equal(await page.locator("#title-shift").inputValue(),"0");
+    await page.locator("#card-list [role=tab]").last().click();
+    assert.equal(await page.locator('[data-layer="description"]').isChecked(),false);
+    await page.reload({waitUntil:"domcontentloaded"});
+    assert.equal(await page.locator("#title-shift").inputValue(),"6","Layer position persists after reload");
+    assert.equal(await page.locator('[data-layer="description"]').isChecked(),false,
+      "Layer visibility persists after reload");
+    await page.locator("#title").fill("Новое действие для отмены");
+    assert.equal(await page.locator("#editor-undo").isEnabled(),true);
+    await page.locator("#editor-undo").click();
+    assert.equal(await page.locator("#title").inputValue(),"Вторая карточка",
+      "Undo restores the prior title");
+    await page.locator("#editor-redo").click();
+    assert.equal(await page.locator("#title").inputValue(),"Новое действие для отмены",
+      "Redo repeats the change");
+    await page.locator("#editor-undo").click();
+    assert.equal(await page.locator("#title").inputValue(),"Вторая карточка");
+    await page.locator("#brand-kit-save").click();
+    assert.ok((await page.locator("#brand-kit-status").textContent()).includes("Сохранено"));
+    await page.locator("[data-theme=ink]").click();
+    await page.locator("#brand-kit-apply").click();
+    assert.equal(await page.locator("#template-select").inputValue(),"editorial");
+    assert.equal(await page.locator("#theme-label").textContent(),"Светлый — мягкий и редакционный",
+      "Applying the saved brand kit restores its theme");
+    assert.equal(await page.locator("#brand-kit-apply").isDisabled(),false);
     const [zipDownload]=await Promise.all([page.waitForEvent("download"),page.locator("#export-all").click()]);
     assert.match(zipDownload.suggestedFilename(),/\.zip$/);
     const zipBytes=await readFile(await zipDownload.path());
