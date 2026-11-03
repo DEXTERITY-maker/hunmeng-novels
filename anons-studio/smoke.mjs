@@ -45,6 +45,11 @@ try {
     page.on("pageerror",error=>errors.push(error.message));
     await page.goto("http://127.0.0.1:"+port,{waitUntil:"domcontentloaded"});
     await page.locator("#poster").waitFor();
+    assert.ok(await page.locator("#library-guest").isVisible(),"Guests see login invitation for cloud library");
+    assert.equal(await page.locator("#library-auth").isVisible(),false,"Guests cannot see private project controls");
+    assert.equal(await page.locator("#library-list").count(),1);
+    assert.ok(await page.evaluate(()=>typeof window.AnonsEditor?.getSnapshot==="function"),"Editor exposes snapshot API");
+
     const brandImage=page.locator(".topbar .brand-image img");
     await brandImage.waitFor();
     await page.waitForFunction(()=>document.querySelector(".topbar .brand-image img")?.complete);
@@ -110,6 +115,20 @@ try {
     assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+2),"No horizontal overflow");
     assert.deepEqual(errors,[],"No browser JS errors");
     assert.equal(await page.locator("button.plan-action[disabled]").count(),3,"No deceptive payment actions");
+    const restored=await page.evaluate(()=>{
+      const old=window.AnonsEditor.getSnapshot();
+      const oldTitle=old.cards[old.activeCard].title;
+      window.AnonsEditor.newDraft();
+      const clean=window.AnonsEditor.getSnapshot();
+      window.AnonsEditor.loadSnapshot(old);
+      const again=window.AnonsEditor.getSnapshot();
+      return {oldTitle,cleanCount:clean.cards.length,restoredCount:again.cards.length,title:again.cards[again.activeCard].title,template:again.cards[again.activeCard].template};
+    });
+    assert.equal(restored.cleanCount,1,"New draft has one card");
+    assert.equal(restored.restoredCount,2,"Restored draft keeps multiple cards");
+    assert.equal(restored.title,restored.oldTitle,"Restored draft keeps editable text");
+    assert.equal(restored.template,"editorial","Restored draft keeps template");
+
     await context.close();
     console.log("PASS Anons Studio browser preview, editor, storage, PNG and responsive width="+width);
   }
