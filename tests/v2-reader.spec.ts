@@ -107,3 +107,38 @@ test('V2 focus mode with reduced motion keeps text visible', async ({ page }) =>
   await page.getByRole('button', { name: 'Show reading controls' }).click();
   await expect(page.locator('.reader-header')).toBeVisible();
 });
+
+test('editorial V2 chapter visuals stay responsive and preserve dark/sepia readability', async ({ page }, testInfo) => {
+  const errors: string[] = [];
+  page.on('pageerror', error => errors.push(error.message));
+  for (const width of [320, 390, 768, 1280]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto(preview);
+    await expect(page.locator('#chapter-text p').first()).toBeVisible();
+    await expect(page.locator('.reader-main > .reader-heading')).toBeVisible();
+    const headingStyle = await page.locator('.reader-main > .reader-heading').evaluate(el => ({
+      background: getComputedStyle(el).backgroundImage,
+      radius: getComputedStyle(el).borderTopLeftRadius,
+    }));
+    expect(headingStyle.background, 'editorial heading background @ ' + width).toContain('linear-gradient');
+    expect(headingStyle.radius, 'rounded heading @ ' + width).not.toBe('0px');
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1),
+      'reader overflow @ ' + width).toBe(true);
+    if (width === 390 || width === 1280) {
+      await page.screenshot({
+        path: testInfo.outputPath('hunmeng-v3-chapter-' + width + '.png'),
+        fullPage: true,
+        animations: 'disabled',
+      });
+    }
+  }
+  for (const theme of ['dark', 'sepia']) {
+    await page.locator('html').evaluate((el, name) => { el.dataset.theme = name; }, theme);
+    await expect(page.locator('#chapter-text p').first()).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), theme).toBe(true);
+  }
+  await page.getByRole('button', { name: 'Reading settings' }).first().click();
+  await expect(page.getByRole('dialog', { name: 'Reading settings' })).toBeVisible();
+  await page.getByRole('button', { name: 'Close settings' }).click();
+  expect(errors).toEqual([]);
+});

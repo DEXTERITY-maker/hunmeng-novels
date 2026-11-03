@@ -1,0 +1,165 @@
+/* Hunmeng 2.0 · editorial chapter reading refinement.
+   Apply only to the existing V2 preview and explicitly enabled public V2 reader.
+   Do not override chapter text size, width, line-height, theme choice, storage,
+   reading-progress calculation or JavaScript interactions. */
+body.v2-reader {
+  --v3-reader-gold: #bf9753;
+  --v3-reader-deep: #0b5542;
+}
+body.v2-reader .reader-header {
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 78%, var(--v3-reader-gold));
+  background: color-mix(in srgb, var(--surface) 97%, var(--v3-reader-deep));
+  box-shadow: 0 7px 22px #1b392011;
+}
+body.v2-reader .reader-header .reader-brand-label {
+  color: var(--ink);
+  letter-spacing: -.02em;
+}
+body.v2-reader .reader-header .reader-book-label {
+  color: var(--muted);
+}
+body.v2-reader .reader-header :is(.reader-back, .reader-header-actions .icon-button, .reader-more summary.icon-button) {
+  border-color: color-mix(in srgb, var(--line) 87%, var(--v3-reader-gold));
+  border-radius: 11px;
+}
+body.v2-reader .reading-progress {
+  background: color-mix(in srgb, var(--line) 85%, var(--v3-reader-gold));
+}
+body.v2-reader .reading-progress progress {
+  accent-color: var(--accent);
+}
+body.v2-reader .reader-main > .reader-heading {
+  isolation: isolate;
+  overflow: hidden;
+  border-radius: 19px;
+  border-color: color-mix(in srgb, var(--line) 69%, var(--v3-reader-gold));
+  background: linear-gradient(140deg,
+    color-mix(in srgb, var(--surface) 93%, var(--v3-reader-gold)) 0%,
+    var(--surface) 75%,
+    color-mix(in srgb, var(--surface) 96%, var(--accent)) 100%);
+  box-shadow: 0 13px 40px #162e2414;
+}
+body.v2-reader .reader-main > .reader-heading::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: 16px;
+  pointer-events: none;
+  border: 1px solid color-mix(in srgb, var(--line) 88%, transparent);
+  border-radius: 12px;
+}
+body.v2-reader .reader-heading-novel {
+  color: var(--accent);
+  text-decoration-color: var(--v3-reader-gold);
+}
+body.v2-reader .reader-heading-eyebrow {
+  color: var(--muted);
+  letter-spacing: .14em;
+}
+body.v2-reader .reader-heading h1 {
+  font-weight: 520;
+  letter-spacing: -.039em;
+  text-wrap: balance;
+}
+body.v2-reader .reader-heading-ornament {
+  color: var(--v3-reader-gold);
+}
+body.v2-reader .chapter-text {
+  /* Respect the user's per-novel text settings; only improve text rendering. */
+  font-kerning: normal;
+  font-optical-sizing: auto;
+  text-rendering: optimizeLegibility;
+}
+body.v2-reader .chapter-text :is(blockquote, pre) {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+body.v2-reader .chapter-end-nav {
+  border-top-color: color-mix(in srgb, var(--line) 75%, var(--v3-reader-gold));
+}
+body.v2-reader .chapter-end-nav .button {
+  border-radius: 999px;
+  min-height: 44px;
+}
+body.v2-reader .chapter-end-nav .chapter-next {
+  background: var(--accent);
+  color: var(--bg);
+}
+body.v2-reader .chapter-back-to-novel {
+  color: var(--accent);
+  text-underline-offset: 4px;
+}
+body.v2-reader .reader-toolbar {
+  border-color: color-mix(in srgb, var(--line) 75%, var(--v3-reader-gold));
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--surface) 97%, var(--v3-reader-deep));
+  box-shadow: 0 13px 36px #153b272b;
+}
+body.v2-reader .reader-toolbar :is(button, a) {
+  border-radius: 999px;
+}
+body.v2-reader #progress-label {
+  font-variant-numeric: tabular-nums;
+  color: var(--accent);
+  font-weight: 760;
+}
+body.v2-reader .reader-dialog {
+  border-color: color-mix(in srgb, var(--line) 77%, var(--v3-reader-gold));
+  background: var(--surface);
+  border-radius: 19px;
+  box-shadow: 0 25px 74px #10241f40;
+}
+body.v2-reader .reader-dialog h2 {
+  color: var(--ink);
+  font-weight: 580;
+}
+body.v2-reader .reader-dialog :is(input, button, a):focus-visible,
+body.v2-reader .reader-toolbar :is(button, a):focus-visible,
+body.v2-reader .reader-header :is(button, a, summary):focus-visible {
+  outline: 3px solid var(--v3-reader-gold);
+  outline-offset: 3px;
+}
+body.v2-reader .reader-toc-dialog .reader-toc-list a[aria-current="page"] {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--surface) 91%, var(--accent));
+}
+body.v2-reader .reader-settings-preview {
+  border-radius: 12px;
+  border-color: var(--line);
+}
+body.v2-reader .reader-more-panel {
+  background: var(--surface);
+  border-color: var(--line);
+  box-shadow: 0 12px 27px #132d2625;
+}
+body.v2-reader.reader-focus-mode .reader-main > .reader-heading {
+  overflow: visible;
+  background: transparent;
+  box-shadow: none;
+}
+body.v2-reader.reader-focus-mode .reader-main > .reader-heading::after {
+  display: none;
+}
+@media (max-width: 720px) {
+  body.v2-reader .reader-main > .reader-heading {
+    border-radius: 14px;
+    padding: 31px 22px;
+    box-shadow: 0 8px 22px #162e2410;
+  }
+  body.v2-reader .reader-main > .reader-heading::after {
+    inset: 9px;
+    border-radius: 9px;
+  }
+  body.v2-reader .reader-toolbar {
+    border-radius: 14px;
+  }
+  body.v2-reader .chapter-end-nav .button { min-height: 44px; }
+}
+@media (max-width: 390px) {
+  body.v2-reader .reader-main > .reader-heading { padding: 25px 16px; }
+  body.v2-reader .reader-main > .reader-heading::after { inset: 7px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  body.v2-reader .reader-toolbar :is(button, a),
+  body.v2-reader .chapter-end-nav .button { transition: none; }
+}

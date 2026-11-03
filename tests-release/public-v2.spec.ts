@@ -33,6 +33,9 @@ test('canonical reader uses V2 styles without changing chapter URL or progress k
   await page.goto('/novel/khranitel-mayaka/glava-1/');
   await expect(page.locator('body')).toHaveClass(/v2-reader/);
   await expect(page.locator('main[data-reader][data-chapter="glava-1"]')).toBeVisible();
+  const editorialChapterHeading = await page.locator('.reader-main > .reader-heading').evaluate(
+    element => getComputedStyle(element).backgroundImage);
+  expect(editorialChapterHeading).toContain('linear-gradient');
   await expect(page.locator('meta[name="robots"]')).toHaveCount(0);
   await expect(page.locator('.v2-reader-preview-bar')).toHaveCount(0);
   await expect(page.locator('#chapter-text p').first()).toBeVisible();
