@@ -64,4 +64,22 @@ test('V2 signed-in profile uses responsive editorial layout without real account
       animations: 'disabled',
     });
   }
+  // Regression: the signed-in profile retains readable ink on ivory cards even
+  // when the reader preference or the operating system requests dark mode.
+  await page.emulateMedia({colorScheme:'dark'});
+  await page.locator('.profile-sidebar [data-profile-section="profile-account"]').click();
+  await expect(page.locator('#account-email')).toBeVisible();
+  for(const theme of ['light','dark','system']){
+    await page.evaluate(value=>{document.documentElement.dataset.theme=value;},theme);
+    const colors=await page.evaluate(()=>({
+      email:getComputedStyle(document.querySelector('#account-email')!).color,
+      emailPaper:getComputedStyle(document.querySelector('#profile-account')!).backgroundColor,
+      quicklink:getComputedStyle(document.querySelector('.profile-quicklinks .profile-library-link')!).color,
+      sidebarPaper:getComputedStyle(document.querySelector('.profile-sidebar')!).backgroundColor,
+    }));
+    expect(colors.email,'email ink in '+theme).toBe('rgb(36, 57, 47)');
+    expect(colors.quicklink,'sidebar links in '+theme).toBe('rgb(36, 57, 47)');
+    expect(colors.emailPaper,'account paper in '+theme).toBe('rgb(255, 253, 246)');
+    expect(colors.sidebarPaper,'sidebar paper in '+theme).toBe('rgb(255, 253, 246)');
+  }
 });
