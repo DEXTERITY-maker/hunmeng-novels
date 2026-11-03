@@ -136,26 +136,59 @@ export function initLibrary(client) {
       elements.list.append(btn);
     }
   }
+  let refreshSerial=0;
   async function refresh() {
     if(!user)return;
-    const epoch=sessionEpoch, uid=user.id;
+    const epoch=sessionEpoch,uid=user.id,serial=++refreshSerial;
     const {data,error:failure}=await client.from("anons_studio_projects")
       .select("id,title,version,archived,updated_at,created_at")
       .eq("owner_id",uid).order("updated_at",{ascending:false}).limit(40);
-    if(epoch!==sessionEpoch||!user||user.id!==uid)return;
+    if(epoch!==sessionEpoch||!user||user.id!==uid||serial!==refreshSerial)return;
     if(failure){error(friendlyError(failure));return;}
     projects=data||[];
     if(projectId) {
       const remote=projects.find(p=>p.id===projectId);
       if(remote && remote.version>version){
+        if(!dirty&&!inFlight&&!conflict){
+          // Clean working copies can safely follow the latest cloud revision.
+          // Recheck every assumption after the asynchronous read: the user may
+          // have edited the draft, switched accounts or opened another project.
+          const oldId=projectId,oldVersion=version,oldChanged=changed;
+          const {data:latest,error:readError}=await client.from("anons_studio_projects")
+            .select("id,owner_id,title,snapshot,version,archived")
+            .eq("owner_id",uid).eq("id",oldId).maybeSingle();
+          if(epoch!==sessionEpoch||!user||user.id!==uid||serial!==refreshSerial)return;
+          if(dirty||inFlight||changed!==oldChanged||projectId!==oldId||version!==oldVersion){
+            // A concurrent local edit must never be overwritten by auto-pull.
+            conflict=true;clearPending();showConflict(true);
+            notify("Есть изменения с другого устройства","error");
+            error("На другом устройстве сохранена новая версия. Сохрани локальные изменения как копию или открой облачную версию.");
+          }else if(readError||!latest){
+            error("Не удалось получить новую облачную версию. Локальная копия сохранена.");
+          }else{
+            try{
+              editor().loadSnapshot(latest.snapshot);
+              version=latest.version;archived=Boolean(latest.archived);
+              elements.name.value=latest.title;
+              conflict=false;dirty=false;showConflict(false);
+              persistActive();updateControls();
+              notify("Открыта новая версия из облака","saved");
+              error("");
+              await refreshHistory();
+            }catch{
+              error("Новая облачная версия повреждена. Локальная копия не была заменена.");
+            }
+          }
+        }else{
+          conflict=true;clearPending();showConflict(true);
+          notify("Обновлено на другом устройстве","error");
+          error("Серверная версия новее. Выбери «Сохранить копию» или «Открыть облачную версию».");
+        }
+      }else if(!remote){
         conflict=true;clearPending();showConflict(true);
-        notify("Обновлено на другом устройстве","error");
-        error("Серверная версия новее. Выбери «Сохранить копию» или «Открыть облачную версию».");
-      } else if(!remote) {
-        conflict=true;clearPending();
         notify("Проект отсутствует в облаке","error");
         error("Проект удалён или стал недоступен на другом устройстве. Сохрани локальный черновик как копию.");
-      } else if(dirty&&!conflict) scheduleAutosave();
+      }else if(dirty&&!conflict)scheduleAutosave();
     }
     renderList();
   }
@@ -404,6 +437,19 @@ export function initLibrary(client) {
     }
     return true;
   }
+  // Refresh when the user returns to the tab or regains connectivity.
+  // Do not poll in the background; never discard dirty local changes.
+  let lastForegroundCheck=0;
+  const checkForeground=()=>{
+    if(!user||document.visibilityState==="hidden")return;
+    const now=Date.now();
+    if(now-lastForegroundCheck<10000)return;
+    lastForegroundCheck=now;
+    refresh().catch(()=>error("Не удалось проверить облачные обновления."));
+  };
+  window.addEventListener("focus",checkForeground);
+  window.addEventListener("online",checkForeground);
+  document.addEventListener("visibilitychange",checkForeground);
   setUser(null);
-  return {setUser,flushPending,importBackup};
+  return {setUser,flushPending,importBackup,refresh};
 }
