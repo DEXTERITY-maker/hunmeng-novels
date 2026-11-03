@@ -1,8 +1,21 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import '../../styles/v3-editorial.css';
+import '../../styles/v3-admin-editorial.css';
+const editorial = import.meta.env.HUNMENG_V2_PUBLIC === '1';
 ---
-<Layout title="Editorial sign-in" noindex description="Sign in for Hunmeng administrators and editors.">
-  <main id="main" class="page-shell admin-login-page">
+<Layout title="Editorial sign-in" noindex description="Sign in for Hunmeng administrators and editors." bodyClass={editorial ? "hm-editorial-site" : undefined}>
+  {editorial && (
+    <nav class="v3-primary-nav v3-admin-nav" aria-label="Reading room navigation">
+      <a href="/">Home</a>
+      <a href="/catalog/">Books</a>
+      <a href="/news/">Articles</a>
+      <a href="/#v3-collections">Collections</a>
+      <a href="/library/">My library</a>
+      <a href="/about/">About</a>
+    </nav>
+  )}
+  <main id="main" class="page-shell admin-login-page v3-admin-page v3-admin-login-page">
     <a class="back-link" href="/">← Home</a>
     <header class="page-heading">
       <h1>Editorial sign-in</h1>
