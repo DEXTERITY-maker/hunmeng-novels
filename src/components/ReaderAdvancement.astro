@@ -1,6 +1,8 @@
 ---
 import { ranks,readerMasteryTiers,titles,achievements,rankImage,masteryImage } from '../lib/reader-progression';
 import Icon from './Icon.astro';
+const titleIcons = { always: 'book', readingDays: 'calendar', verifiedLibrary: 'bookmark', scifiNovels: 'science', approvedReviews: 'pen', completedGenres: 'tag' } as const;
+const achievementIcons = { chapters: 'book', completedNovels: 'layers', readingDays: 'calendar' } as const;
 ---
 <div id="reader-advancement" class="reader-advancement" data-status="loading" aria-label="Reader progression">
   <p id="reader-advancement-status" class="fine" role="status" aria-live="polite">Loading verified reading achievements…</p>
@@ -32,7 +34,7 @@ import Icon from './Icon.astro';
       </section>
       <section id="profile-event-card" class="profile-dashboard-card" aria-labelledby="profile-event-title" hidden>
         <h3 id="profile-event-title"><Icon name="trophy" size={22} />Event awards</h3>
-        <div id="profile-event-awards-slot"><span class="profile-award-placeholder" aria-hidden="true">+</span></div>
+        <div id="profile-event-awards-slot"><span class="profile-award-placeholder" aria-hidden="true"><Icon name="trophy" size={26} /></span></div>
         <p id="profile-event-invitation" hidden>Halloween Reading Week is on. <a href="/events/halloween-2026/">Explore the event →</a></p>
       </section>
       <section class="profile-dashboard-card profile-recent-xp" aria-labelledby="profile-recent-xp-heading">
@@ -137,7 +139,7 @@ import Icon from './Icon.astro';
     <div class="reader-awards-list">
       {titles.map(t => (
         <article class="reader-award" data-title-id={t.id}>
-          <div class="award-symbol" aria-hidden="true">✦</div>
+          <div class="award-symbol" aria-hidden="true"><Icon name={titleIcons[t.metric]} size={22} /></div>
           <div class="award-body"><h4>{t.en}</h4><p>{t.description}</p>
             <progress max={Math.max(1,t.target)} value="0" aria-label={`${t.en} unlock progress`}></progress>
             <small data-award-progress>Checking progress…</small>
@@ -165,9 +167,9 @@ import Icon from './Icon.astro';
     </div>
     <p id="reader-achievements-summary" class="fine" aria-live="polite">Checking verified achievements…</p>
     <div class="reader-achievements-grid">
-      {achievements.map((a,i) => (
+      {achievements.map(a => (
         <article class="achievement-tile" data-achievement-id={a.id}>
-          <div class="achievement-icon" aria-hidden="true">{['✧','❖','✦','◈','✶','✵','✻'][i % 7]}</div>
+          <div class="achievement-icon" aria-hidden="true"><Icon name={achievementIcons[a.metric]} size={22} /></div>
           <h4>{a.en}</h4><p>{a.description}</p>
           <progress value="0" max={a.target} aria-label={`${a.en} achievement progress`}></progress>
           <span data-achievement-status>Checking…</span>

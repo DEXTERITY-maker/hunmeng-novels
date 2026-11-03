@@ -10,7 +10,12 @@ test('public V2 homepage is canonical and retains the old reader library', async
   await expect(page.locator('#continue-section')).toBeAttached();
   await expect(page.locator('form.v2-search')).toHaveAttribute('action', '/catalog/');
   await expect(page.getByRole('link', { name: /Browse the library/ })).toHaveAttribute('href', '/catalog/');
-  await expect(page.getByRole('link', { name: /Try the V2 reader/ })).toHaveAttribute('href', /\/novel\/[^/]+\/[^/]+\/$/);
+  const featuredReaderLink = page.locator('.v2-spotlight-link');
+  await expect(featuredReaderLink).toHaveAttribute('href', /\/novel\/[^/]+\/[^/]+\/$/);
+  await expect(featuredReaderLink).toHaveAttribute('aria-label', /^Read .+/);
+  await expect(page.locator('.v3-category-icon svg')).toHaveCount(6);
+  await expect(page.locator('.v3-category-row').filter({ hasText: 'Science Fiction' }))
+    .toHaveAttribute('href', '/catalog/?genre=Science%20Fiction');
   await expect(page.locator('.v2-bottom-note')).not.toContainText('Preview edition');
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', /https:\/\/hunmeng-novel\.ru\/$/);
 });
@@ -23,7 +28,7 @@ test('curated collection cards use their own original optimized cover art and pr
   const expected=[
     {name:'Fantasy & Wonder',src:'/images/editorial/collection-fantasy.webp',href:'/catalog/?genre=Fantasy'},
     {name:'Mystery & Intrigue',src:'/images/editorial/collection-mystery.webp',href:'/catalog/?genre=Mystery'},
-    {name:'Worlds of Tomorrow',src:'/images/editorial/collection-future.webp',href:'/catalog/?genre=Science%20fiction'},
+    {name:'Worlds of Tomorrow',src:'/images/editorial/collection-future.webp',href:'/catalog/?genre=Science%20Fiction'},
   ];
   for(const [index,item] of expected.entries()){
     const card=cards.nth(index);
@@ -59,6 +64,20 @@ test('public V2 catalog uses canonical search, tags and external reference label
   await expect(page.locator('#result-count')).toHaveText('Novels found: 1');
   await page.reload();
   await expect(page.locator('#catalog-filters input[name="search"]')).toHaveValue('lighthouse');
+});
+
+test('external story artwork is labeled and keeps its proportions on narrow screens', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/sources/highway-survival-lathe-gatling/');
+  const cover = page.locator('.external-novel-cover img');
+  await expect(cover).toHaveAttribute('src', '/images/editorial/highway-survival-art.webp');
+  await expect(cover).toHaveAttribute('alt', /Hunmeng editorial illustration/);
+  await expect(page.locator('.external-novel-cover span')).toContainText('Hunmeng illustration');
+  await expect.poll(() => cover.evaluate(image => (image as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
+  const bounds = await cover.boundingBox();
+  expect(bounds).not.toBeNull();
+  expect(bounds!.height / bounds!.width).toBeCloseTo(1.5, 1);
+  await expect(page.getByRole('link', { name: /Read on WTR-Lab/ })).toHaveAttribute('href', /^https:\/\/wtr-lab\.com\//);
 });
 
 test('canonical reader uses V2 styles without changing chapter URL or progress keys', async ({ page }) => {
