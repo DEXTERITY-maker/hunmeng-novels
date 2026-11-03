@@ -9,9 +9,18 @@ export function initLibrary(client) {
     search: $("library-search"), filter: $("library-filter"),
     error: $("library-error"), save: $("library-save"),
     checkpoint: $("library-checkpoint"), archive: $("library-archive"),
-    remove: $("library-delete"), duplicate: $("library-duplicate")
+    remove: $("library-delete"), duplicate: $("library-duplicate"),
+    conflictPanel: $("library-conflict"), conflictCopy: $("library-conflict-copy"),
+    loadLatest: $("library-load-latest")
   };
   const maximumSnapshotBytes = 900000;
+  const activeKey = "anons-studio:cloud-active-v05";
+  function readActive() {
+    try {return JSON.parse(localStorage.getItem(activeKey) || "null");}
+    catch {return null;}
+  }
+  function clearActive() {try {localStorage.removeItem(activeKey);}catch {}}
+
   const encoder = new TextEncoder();
   const formatTime = value => {
     try { return new Date(value).toLocaleString("ru-RU",{day:"numeric",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"}); }
@@ -30,6 +39,17 @@ export function initLibrary(client) {
   let saveTimer = null;
   let inFlight = null;
   let historyEpoch = 0;
+  function persistActive() {
+    if(!user||!projectId)return;
+    try {
+      localStorage.setItem(activeKey,JSON.stringify({
+        userId:user.id,id:projectId,version,archived,
+        title:elements.name.value.trim(),dirty
+      }));
+    }catch {}
+  }
+  function showConflict(visible) {elements.conflictPanel.hidden=!visible;}
+
 
   function notify(message, type = "") {
     elements.sync.textContent = message;
@@ -56,6 +76,7 @@ export function initLibrary(client) {
     if(!user)return;
     changed++;
     dirty = true;
+    persistActive();
     notify(projectId ? "Ожидает синхронизации" : "Не сохранён в облаке");
     if (projectId && !conflict) scheduleAutosave();
   }
@@ -77,6 +98,7 @@ export function initLibrary(client) {
   function clearCurrent(suggestedName) {
     clearPending();
     projectId=null;version=0;archived=false;conflict=false;dirty=false;
+    clearActive();showConflict(false);
     elements.name.value=suggestedName||editor()?.getSuggestedName?.()||"Новый анонс";
     elements.history.replaceChildren();
     const p=document.createElement("p");p.className="library-placeholder";p.textContent="Первое сохранение создаст начальную версию проекта.";elements.history.append(p);
@@ -123,6 +145,18 @@ export function initLibrary(client) {
     if(epoch!==sessionEpoch||!user||user.id!==uid)return;
     if(failure){error(friendlyError(failure));return;}
     projects=data||[];
+    if(projectId) {
+      const remote=projects.find(p=>p.id===projectId);
+      if(remote && remote.version!==version){
+        conflict=true;clearPending();showConflict(true);
+        notify("Обновлено на другом устройстве","error");
+        error("Серверная версия новее. Выбери «Сохранить копию» или «Открыть облачную версию».");
+      } else if(!remote) {
+        conflict=true;clearPending();
+        notify("Проект отсутствует в облаке","error");
+        error("Проект удалён или стал недоступен на другом устройстве. Сохрани локальный черновик как копию.");
+      } else if(dirty&&!conflict) scheduleAutosave();
+    }
     renderList();
   }
   async function refreshHistory() {
@@ -179,6 +213,7 @@ export function initLibrary(client) {
       projectId=id;version=data.version;archived=data.archived||false;
       if(changed===serial){dirty=false;notify(checkpoint?"Версия сохранена":"Сохранено в облаке","saved");}
       else{dirty=true;notify("Есть новые изменения");scheduleAutosave();}
+      conflict=false;showConflict(false);persistActive();
       updateControls();
       await refresh();
       if(checkpoint||expected===0)await refreshHistory();
@@ -189,6 +224,7 @@ export function initLibrary(client) {
     catch(err){
       if(epoch===sessionEpoch) {
         dirty=true;conflict=String(err?.message||"").includes("VERSION_CONFLICT")||err?.code==="23505";
+        if(conflict)showConflict(true);
         notify(conflict?"Конфликт версий":"Ошибка синхронизации","error");error(friendlyError(err));
       }
       throw err;
@@ -202,9 +238,12 @@ export function initLibrary(client) {
     }
     return true;
   }
-  async function openProject(id){
-    if(!user||!id||id===projectId)return;
-    if(!await ensureSaved())return;
+  async function openProject(id,force=false){
+    if(!user||!id||(id===projectId&&!force))return;
+    if(force){
+      if(inFlight){try{await inFlight;}catch{}}
+      clearPending();
+    }else if(!await ensureSaved())return;
     const epoch=sessionEpoch,uid=user.id;
     error("");notify("Загружаем проект…");
     const {data,error:failure}=await client.from("anons_studio_projects")
@@ -215,6 +254,7 @@ export function initLibrary(client) {
     try{editor().loadSnapshot(data.snapshot);}catch(err){error("Не удалось открыть содержимое этого проекта.");return;}
     projectId=data.id;version=data.version;archived=data.archived;
     dirty=false;conflict=false;elements.name.value=data.title;
+    showConflict(false);persistActive();
     updateControls();renderList();notify("Проект загружен","saved");
     await refreshHistory();
     $("editor").scrollIntoView({behavior:"smooth",block:"start"});
@@ -262,7 +302,7 @@ export function initLibrary(client) {
       .update({archived:newArchived,updated_at:new Date().toISOString()})
       .eq("id",projectId).eq("owner_id",uid).select("id,archived").maybeSingle();
     if(failure||!data){error(friendlyError(failure));return;}
-    archived=newArchived;updateControls();notify(archived?"Перенесён в архив":"Возвращён из архива","saved");
+    archived=newArchived;persistActive();updateControls();notify(archived?"Перенесён в архив":"Возвращён из архива","saved");
     await refresh();
   }
   async function removeProject(){
