@@ -11,10 +11,11 @@ const refundId='22222222-2222-4222-8222-222222222222';
 const storeId='test-shop';
 const payment=()=>({id:paymentId,test:true,status:'succeeded',recipient:{account_id:storeId},amount:{value:'299.00',currency:'RUB'}});
 const refund=()=>({id:refundId,status:'succeeded',payment_id:paymentId});
-function harness({p=payment(),r=refund(),credentials=true,verifiedShop=true,fail=false,providerStatus=200}={}){
+function harness({p=payment(),r=refund(),credentials=true,verifiedShop=true,verifiedSecret=true,fail=false,providerStatus=200}={}){
   let handler;const requests=[],warnings=[];
-  const env=credentials?{ANONS_YOOKASSA_TEST_SHOP_ID:'old-unverified',ANONS_YOOKASSA_TEST_SECRET_KEY:'dummy-secret',
-    ...(verifiedShop?{ANONS_YOOKASSA_TEST_VERIFIED_SHOP_ID:storeId}:{})}:{};
+  const env=credentials?{ANONS_YOOKASSA_TEST_SHOP_ID:'old-unverified',ANONS_YOOKASSA_TEST_SECRET_KEY:'old-unverified',
+    ...(verifiedShop?{ANONS_YOOKASSA_TEST_VERIFIED_SHOP_ID:storeId}:{}),
+    ...(verifiedSecret?{ANONS_YOOKASSA_TEST_SECRET_KEY_V2:'dummy-secret'}:{})}:{};
   const globals={Deno:{env:{get:name=>env[name]},serve:fn=>{handler=fn;}},
     console:{log(){},warn(...args){warnings.push(args);}},Response,Request,TextDecoder,Uint8Array,AbortSignal,btoa,
     fetch:async url=>{
@@ -35,6 +36,11 @@ test('unconfigured test shop cannot accept events',async()=>{
 });
 test('an old unverified shop identifier alone does not enable the test webhook',async()=>{
   const h=harness({verifiedShop:false});
+  assert.equal((await h.handler(request(message('payment.succeeded',paymentId)))).status,503);
+  assert.equal(h.requests.length,0);
+});
+test('an old unverified secret alone does not enable the test webhook',async()=>{
+  const h=harness({verifiedSecret:false});
   assert.equal((await h.handler(request(message('payment.succeeded',paymentId)))).status,503);
   assert.equal(h.requests.length,0);
 });
