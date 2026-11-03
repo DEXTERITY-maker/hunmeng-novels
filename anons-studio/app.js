@@ -82,6 +82,29 @@
   let toastTimer = null;
   let pendingRender = false;
   let suppressEditorSignal = false;
+  const brandKitKey="anons-studio:brand-kit-v1";
+  const undoFrames=[],redoFrames=[];
+  const HISTORY_LIMIT=20;
+  let historyReplaying=false,lastHistorySource="",lastHistoryAt=0;
+  let historyPresent=JSON.stringify(getSnapshot());
+  function updateHistoryButtons(){
+    $("editor-undo").disabled=undoFrames.length===0;
+    $("editor-redo").disabled=redoFrames.length===0;
+  }
+  function replayHistory(direction){
+    const source=direction==="undo"?undoFrames:redoFrames;
+    const destination=direction==="undo"?redoFrames:undoFrames;
+    if(!source.length)return;
+    const frame=source.pop();
+    destination.push(JSON.stringify(getSnapshot()));
+    if(destination.length>HISTORY_LIMIT)destination.shift();
+    historyReplaying=true;
+    try {loadSnapshot(JSON.parse(frame));}
+    finally{historyReplaying=false;historyPresent=JSON.stringify(getSnapshot());lastHistorySource="";lastHistoryAt=0;}
+    updateHistoryButtons();
+    window.dispatchEvent(new Event("anons:editor-change"));
+    showToast(direction==="undo"?"Последнее действие отменено.":"Действие повторено.");
+  }
 
   function snapshotCard() {
     const card=state.cards[state.activeCard];
@@ -158,6 +181,22 @@
   }
 
   function persist() {
+    const updated=JSON.stringify(getSnapshot());
+    if(suppressEditorSignal){
+      if(!historyReplaying){undoFrames.length=0;redoFrames.length=0;}
+      historyPresent=updated;lastHistorySource="";lastHistoryAt=0;
+    }else if(!historyReplaying && updated!==historyPresent){
+      const active=document.activeElement;
+      const group=(active&&(active.tagName==="TEXTAREA"||active.type==="range"||active.type==="text"))?active.id:"";
+      const now=Date.now();
+      if(!group||group!==lastHistorySource||now-lastHistoryAt>650||!undoFrames.length){
+        undoFrames.push(historyPresent);
+        if(undoFrames.length>HISTORY_LIMIT)undoFrames.shift();
+      }
+      redoFrames.length=0;
+      historyPresent=updated;lastHistorySource=group;lastHistoryAt=now;
+    }
+    updateHistoryButtons();
     try {
       localStorage.setItem(storageKey, JSON.stringify(state));
     } catch (_) {
