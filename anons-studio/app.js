@@ -590,7 +590,7 @@
   function loadSnapshot(raw) {
     if(!raw||typeof raw!=="object"||!Array.isArray(raw.cards)||!raw.cards.length||raw.cards.length>MAX_CARDS)throw new Error("INVALID_SNAPSHOT");
     const nextCards=raw.cards.map(sanitizeCard);
-    const data=(typeof raw.imageData==="string" && raw.imageData.length<750000 &&
+    const data=(typeof raw.imageData==="string" && raw.imageData.length<900000 &&
       /^data:image\/(jpeg|png|webp);base64,[a-zA-Z0-9+/=]+$/.test(raw.imageData))?raw.imageData:"";
     suppressEditorSignal=true;
     try{
