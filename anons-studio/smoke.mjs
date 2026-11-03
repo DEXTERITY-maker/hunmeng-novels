@@ -193,13 +193,51 @@ try {
     await page.locator("#card-list [role=tab]").last().click();
     await page.reload({waitUntil:"domcontentloaded"});
     const savedV08=await page.evaluate(()=>window.AnonsEditor.getSnapshot());
-    assert.equal(savedV08.schemaVersion,6,"New draft snapshot format");
+    assert.equal(savedV08.schemaVersion,7,"New draft snapshot format");
     assert.equal(savedV08.cards[1].titleFont,"arial");
     assert.equal(savedV08.cards[1].titleWeight,900);
     assert.equal(savedV08.cards[1].titleTracking,3);
     assert.equal(savedV08.cards[1].descriptionScale,120);
     assert.deepEqual(savedV08.cards[1].layerOffsets.title,moved,"Drag location survives reload");
     assert.deepEqual(savedV08.cards[1].layerOrder,zAfter,"Z-order survives reload");
+    // v0.9: one shared geometry contract, editor palette and real vector drawing.
+    assert.equal(await page.locator("[data-add-graphic]").count(),12,"12 vector assets");
+    const beforeGraphic=await page.locator("#poster").evaluate(canvas=>canvas.toDataURL());
+    await page.locator('[data-add-graphic="star"]').click();
+    assert.equal(await page.locator("#graphics-count").textContent(),"1 / 12");
+    assert.equal(await page.locator("#graphic-editor").isVisible(),true);
+    await page.locator("#graphic-color").fill("#ff7700");
+    await page.locator("#graphic-size").evaluate(el=>{
+      el.value="19";el.dispatchEvent(new Event("input",{bubbles:true}));
+    });
+    const afterGraphic=await page.locator("#poster").evaluate(canvas=>canvas.toDataURL());
+    assert.notEqual(afterGraphic,beforeGraphic,"Vector graphic changes actual Canvas pixels");
+    let icon=await page.evaluate(()=>window.AnonsEditor.getSnapshot().cards[1].graphicElements[0]);
+    assert.equal(icon.color,"#ff7700");
+    assert.equal(icon.size,19);
+    await page.locator("#direct-edit").check();
+    const graphicHandle=page.locator('[data-drag-graphic]').first();
+    await graphicHandle.scrollIntoViewIfNeeded();
+    const p=await graphicHandle.boundingBox();
+    assert.ok(p,"Custom vector element has a draggable handle");
+    await page.mouse.move(p.x+p.width/2,p.y+p.height/2);
+    await page.mouse.down();
+    await page.mouse.move(p.x+p.width/2+43,p.y+p.height/2+32,{steps:5});
+    await page.mouse.up();
+    const movedGraphic=await page.evaluate(()=>window.AnonsEditor.getSnapshot().cards[1].graphicElements[0]);
+    assert.ok(movedGraphic.x!==icon.x||movedGraphic.y!==icon.y,"Vector object position changes after drag");
+    await page.locator("#graphic-duplicate").click();
+    assert.equal(await page.locator("#graphics-count").textContent(),"2 / 12");
+    await page.locator("#card-list [role=tab]").first().click();
+    assert.equal(await page.locator("#graphics-count").textContent(),"0 / 12","Elements are independent per card");
+    await page.locator("#card-list [role=tab]").last().click();
+    await page.reload({waitUntil:"domcontentloaded"});
+    const savedGraphic=await page.evaluate(()=>window.AnonsEditor.getSnapshot().cards[1].graphicElements);
+    assert.equal(savedGraphic.length,2,"Graphic objects persist after reload");
+    assert.equal(savedGraphic[0].color,"#ff7700");
+    assert.equal(savedGraphic[0].x,movedGraphic.x);
+    assert.equal(savedGraphic[0].y,movedGraphic.y);
+    assert.ok(savedGraphic[0].id!==savedGraphic[1].id,"Duplicated graphic ids are distinct");
     const [zipDownload]=await Promise.all([page.waitForEvent("download"),page.locator("#export-all").click()]);
     assert.match(zipDownload.suggestedFilename(),/\.zip$/);
     const zipBytes=await readFile(await zipDownload.path());
@@ -263,13 +301,14 @@ try {
       old.schemaVersion=4;
       old.cards.forEach(card=>{
         for(const key of ["layers","titleShift","descriptionShift","layerOffsets","layerOrder",
-          "titleFont","titleWeight","titleTracking","descriptionScale"])delete card[key];
+          "titleFont","titleWeight","titleTracking","descriptionScale","graphicElements"])delete card[key];
       });
       window.AnonsEditor.loadSnapshot(old);
       const migrated=window.AnonsEditor.getSnapshot().cards;
       const works=migrated.every(card=>card.titleShift===0&&card.descriptionShift===0&&Object.values(card.layers).every(Boolean));
       const validV08=migrated.every(card=>card.layerOrder.length===6 && card.titleFont==="auto"
-        &&card.descriptionScale===100 && card.layerOffsets.title.x===0 && card.layerOffsets.title.y===0);
+        &&card.descriptionScale===100 && card.layerOffsets.title.x===0 && card.layerOffsets.title.y===0
+        &&card.graphicElements.length===0);
       window.AnonsEditor.loadSnapshot(current);
       return {works,validV08,count:migrated.length};
     });
