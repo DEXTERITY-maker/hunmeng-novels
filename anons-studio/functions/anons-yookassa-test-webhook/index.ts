@@ -1,7 +1,8 @@
 // Test-shop notifications only. This function deliberately has no database
 // client and cannot change subscriptions or create payments.
 const api='https://api.yookassa.ru/v3';
-const shop=Deno.env.get('ANONS_YOOKASSA_TEST_SHOP_ID')||'';
+// The verified identifier is separate from the earlier unverified input.
+const shop=Deno.env.get('ANONS_YOOKASSA_TEST_VERIFIED_SHOP_ID')||'';
 const secret=Deno.env.get('ANONS_YOOKASSA_TEST_SECRET_KEY')||'';
 const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const reply=(data:unknown,status=200)=>Response.json(data,{status,headers:{'Cache-Control':'no-store'}});
