@@ -62,9 +62,13 @@ test('V2 footer destinations resolve to actual routes and keep private pages pro
   expect(new Set(urls).size,'duplicate editorial footer destinations').toBe(urls.length);
   for(const href of urls){
     expect(href).toMatch(/^\/[a-z0-9\-/]*\/$/);
-    const result=await page.request.get(href);
-    expect(result.status(),'footer destination '+href).toBe(200);
+    // Browser navigation goes through serveStatic's context.route in
+    // STATIC_TEST=1; page.request bypasses the fixture (no TCP server).
+    const result=await page.goto(href);
+    expect(result?.status(),'footer destination '+href).toBe(200);
   }
+  // Return to the page whose footer contains the verified navigation link.
+  await page.goto('/');
   await page.getByRole('link',{name:'Writing studio'}).click();
   await expect(page).toHaveURL(/\/studio\/$/);
   await expect(page.locator('meta[name="robots"]'))
