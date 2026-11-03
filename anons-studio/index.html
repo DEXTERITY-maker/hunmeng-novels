@@ -11,7 +11,8 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="icon" type="image/webp" href="./assets/anons-icon-approved.webp">
   <link rel="stylesheet" href="./styles.css">
-  <script src="./app.js" defer></script>
+  <script src="./graphic-elements.js" defer></script>
+    <script src="./app.js" defer></script>
   <script src="./auth.bundle.js" defer></script>
 </head>
 <body>
@@ -135,6 +136,28 @@
                   </div>
                                     <p class="field-note">Настройки действуют только для выбранной карточки. Перекрывающиеся элементы можно вернуть в исходное положение.</p>
                 </details>
+                <section class="graphics-library" aria-labelledby="graphics-title">
+                  <div class="graphics-heading"><strong id="graphics-title">Графические элементы</strong><span id="graphics-count">0 / 12</span></div>
+                  <p class="field-note">Добавь готовые фигуры и значки. Каждый элемент можно перемещать, вращать, перекрашивать и удалять.</p>
+                  <div id="graphics-catalog" class="graphics-catalog" role="group" aria-label="Добавить графический элемент"></div>
+                  <div id="graphics-items" class="graphics-items" aria-label="Элементы этой карточки"></div>
+                  <div id="graphic-editor" class="graphic-editor" hidden>
+                    <div class="graphic-editor-heading"><strong>Выбранный элемент</strong><button type="button" id="graphic-remove">Удалить</button></div>
+                    <label for="graphic-color">Цвет элемента</label><input type="color" id="graphic-color" value="#c2a1ff">
+                    <label for="graphic-size">Размер <output id="graphic-size-label">12%</output></label><input type="range" id="graphic-size" min="4" max="35" step="1" value="12">
+                    <label for="graphic-rotate">Поворот <output id="graphic-rotate-label">0°</output></label><input type="range" id="graphic-rotate" min="-180" max="180" step="5" value="0">
+                    <label for="graphic-opacity">Непрозрачность <output id="graphic-opacity-label">100%</output></label><input type="range" id="graphic-opacity" min="20" max="100" step="5" value="100">
+                    <div class="graphic-position">
+                      <label for="graphic-x">X (%)</label><input type="number" id="graphic-x" min="0" max="100" step="1" value="50">
+                      <label for="graphic-y">Y (%)</label><input type="number" id="graphic-y" min="0" max="100" step="1" value="50">
+                    </div>
+                    <div class="graphic-commands">
+                      <button type="button" id="graphic-backward">↓ Ниже</button>
+                      <button type="button" id="graphic-forward">↑ Выше</button>
+                      <button type="button" id="graphic-duplicate">⧉ Копия</button>
+                    </div>
+                  </div>
+                </section>
                 <div class="brand-kit">
                   <strong>Фирменный набор</strong>
                   <p>Сохрани название бренда, цвет и тему, чтобы быстро применять оформление к другим карточкам. Набор хранится в этом браузере.</p>
@@ -374,7 +397,7 @@
 
       <section class="cta wrap"><div><div class="kicker">НАЧНИ СЕЙЧАС</div><h2>Всё готово.<br><em>Осталось рассказать.</em></h2><p>Попробуй бесплатный редактор с водяным знаком.</p></div><a href="#editor" class="btn btn-light">Открыть редактор ↗</a></section>
     </main>
-    <footer class="footer wrap"><img class="footer-logo" src="./assets/anons-logo-approved.webp" width="220" height="68" alt="Anons Studio" loading="lazy" decoding="async"><span>Создано для тех, кому есть что рассказать.</span><span>Бета v0.8 · 2026</span></footer>
+    <footer class="footer wrap"><img class="footer-logo" src="./assets/anons-logo-approved.webp" width="220" height="68" alt="Anons Studio" loading="lazy" decoding="async"><span>Создано для тех, кому есть что рассказать.</span><span>Бета v0.9 · 2026</span></footer>
     <div id="toast" role="status" aria-live="polite" class="toast" hidden></div>
   </div>
 </body>
