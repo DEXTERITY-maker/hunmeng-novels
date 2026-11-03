@@ -63,5 +63,63 @@
       project:typeof snapshot.project==="string"?snapshot.project.slice(0,45):"МОЙ ПРОЕКТ"
     };
   }
-  root.AnonsScene=Object.freeze({layout,formats,themes,presetLabels,rgb});
+  // Deterministic line breaking for the preview and the Edge renderer.
+  // Uses conservative font-independent width estimates; tests cover long Cyrillic.
+  function textWidth(value,size,tracking=0){
+    let result=0;
+    for(const ch of String(value||"")){
+      const code=ch.codePointAt(0);
+      let factor;
+      if(ch===" ")factor=.32;
+      else if(/[.,:;!|']/.test(ch))factor=.3;
+      else if(/[ilI1]/.test(ch))factor=.33;
+      else if(/[MWЖШЩФЮЫ]/.test(ch))factor=.82;
+      else if(/[A-ZА-ЯЁ]/.test(ch))factor=.69;
+      else if(/[а-яё]/.test(ch))factor=.59;
+      else if(/[a-z0-9]/.test(ch))factor=.56;
+      else if(code>0xffff)factor=1;
+      else factor=.59;
+      result+=factor*size+tracking;
+    }
+    return result;
+  }
+  function breakLines(source,maxWidth,fontSize,maxLines,tracking=0){
+    const words=String(source||"").replace(/\s+/g," ").trim().split(" ").filter(Boolean);
+    const lines=[];let line="";
+    const max=Math.max(fontSize,maxWidth*.92);
+    for(const word of words){
+      const candidate=line?line+" "+word:word;
+      if(line&&textWidth(candidate,fontSize,tracking)>max){
+        lines.push(line);line=word;
+      }else line=candidate;
+      if(textWidth(line,fontSize,tracking)>max){
+        let rest="";
+        for(const ch of line){
+          if(rest&&textWidth(rest+ch,fontSize,tracking)>max){
+            lines.push(rest);rest=ch;
+          }else rest+=ch;
+        }
+        line=rest;
+      }
+    }
+    if(line)lines.push(line);
+    if(lines.length>maxLines){
+      const last=lines.slice(maxLines-1).join(" ").trim();
+      lines.length=maxLines;
+      let short=last;
+      while(short.length&&textWidth(short+"…",fontSize,tracking)>max)short=short.slice(0,-1);
+      lines[maxLines-1]=short.trimEnd()+"…";
+    }
+    return lines;
+  }
+  function titleLines(value,scene){
+    const maxLines=scene.height<=1100?3:4,tracking=scene.titleTracking;
+    let size=scene.titleBaseSize,lines=[];
+    for(;size>=42;size-=3){
+      lines=breakLines(value,scene.contentWidth,size,maxLines,tracking);
+      if(lines.length*size*1.17<=scene.titleMaxHeight)break;
+    }
+    return {size:Math.max(42,size),lines};
+  }
+  root.AnonsScene=Object.freeze({layout,formats,themes,presetLabels,rgb,textWidth,breakLines,titleLines});
 })(globalThis);
