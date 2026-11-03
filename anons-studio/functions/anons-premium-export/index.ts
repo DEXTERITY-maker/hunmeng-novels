@@ -1,6 +1,8 @@
 import { createClient } from 'npm:@supabase/supabase-js@2.118.0';
 import { ImageResponse } from 'npm:@vercel/og@0.8.6';
 import React from 'npm:react@19.3.1';
+import './graphic-elements.js';
+const Graphics=(globalThis as any).AnonsGraphics;
 // Server-rendered PNGs are the only paid downloads; browser state cannot grant access.
 const ORIGIN='https://anons-studio-preview.pages.dev';
 const DBURL=Deno.env.get('SUPABASE_URL')||'https://kvgnjsntumofwqhywiea.supabase.co';
@@ -149,13 +151,26 @@ function renderPoster(snapshot:any,card:any,width:number,height:number,available
     ...cardPoints.map((p:string)=>el('div',{display:'flex',alignItems:'center',gap:18},
       el('div',{width:18,height:18,borderRadius:100,background:accent,flexShrink:0}),
       el('div',{display:'flex',fontSize:height<1200?25:29,lineHeight:1.4,color:ink,fontWeight:700,flex:1},p)))):null;
+  // The vector path and pixel frame come from the same immutable module as Canvas.
+  const graphics=Graphics.normalizeElements(card.graphicElements).map((item:any,i:number)=>{
+    const frame=Graphics.frame(item,width,height);
+    return React.createElement('svg',{
+      key:item.id,viewBox:'0 0 100 100',width:frame.size,height:frame.size,
+      style:{
+        position:'absolute',left:frame.x-frame.size/2,top:frame.y-frame.size/2,
+        width:frame.size,height:frame.size,transform:'rotate('+frame.rotation+'deg)',
+        transformOrigin:'center center',opacity:frame.opacity,zIndex:100+i
+      }
+    },React.createElement('path',{d:frame.path,fill:frame.color}));
+  });
   const foot=el('div',{display:'flex',justifyContent:'space-between',paddingTop:25,
       borderTop:'2px solid '+accent,color:muted,fontSize:19,letterSpacing:1},
     'СОЗДАНО ДЛЯ ВДОХНОВЕНИЯ','✦');
   return el('div',{display:'flex',flexDirection:'column',width:'100%',height:'100%',position:'relative',
       background,overflow:'hidden',padding:74,fontFamily:'Manrope'},decoration,photograph,
     el('div',{display:'flex',flexDirection:'column',position:'relative',width:'100%',height:'100%'},
-      row,titleBlock,el('div',{display:'flex',flexDirection:'column',gap:36,marginTop:'auto'},lines,foot)));
+      row,titleBlock,el('div',{display:'flex',flexDirection:'column',gap:36,marginTop:'auto'},lines,foot)),
+    ...graphics);
 }
 Deno.serve(async(req:Request)=>{
   if(req.method==='OPTIONS')return new Response(null,{status:204,headers:HEADERS});
