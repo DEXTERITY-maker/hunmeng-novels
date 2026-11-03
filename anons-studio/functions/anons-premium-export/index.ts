@@ -45,7 +45,19 @@ function text(v:unknown,max:number,fallback=''){return typeof v==='string'?v.rep
 function validColor(v:unknown,fallback:string){return typeof v==='string'&&/^#[A-Fa-f0-9]{6}$/.test(v)?v:fallback;}
 function el(tag:any,style:Record<string,unknown>,...children:any[]){return React.createElement(tag,{style},...children);}
 let fontsPromise:Promise<any[]>|null=null;
-function fonts(){
+const extras=new Map<string,Promise<any[]>>();
+async function loadFont(name:string,pkg:string){
+  const requests=['cyrillic','latin'].map(async block=>{
+    const path='https://cdn.jsdelivr.net/npm/@fontsource/'+pkg+'@5.3.0/files/'+pkg+'-'+block+'-700-normal.woff';
+    const response=await fetch(path);
+    if(!response.ok)throw Error('Optional font unavailable');
+    const data=await response.arrayBuffer();
+    if(data.byteLength<1000||data.byteLength>1500000)throw Error('Unexpected font size');
+    return {name,data,weight:700,style:'normal'};
+  });
+  return await Promise.all(requests);
+}
+async function fonts(requested='auto'){
   if(!fontsPromise)fontsPromise=Promise.all(['cyrillic','latin'].map(async block=>{
     const u='https://cdn.jsdelivr.net/npm/@fontsource/manrope@5.2.8/files/manrope-'+block+'-700-normal.woff';
     const response=await fetch(u);
@@ -54,7 +66,13 @@ function fonts(){
     if(data.byteLength<1000||data.byteLength>1500000)throw Error('Unexpected font size');
     return{name:'Manrope',data,weight:700,style:'normal'};
   })).catch(e=>{fontsPromise=null;throw e;});
-  return fontsPromise;
+  const base=await fontsPromise;
+  const option={georgia:['Noto Serif','noto-serif'],arial:['Arimo','arimo']}[requested];
+  if(!option)return base;
+  if(!extras.has(requested))extras.set(requested,loadFont(option[0],option[1]).catch(()=>{
+    extras.delete(requested);return [];
+  }));
+  return [...base,...(await extras.get(requested)!)];
 }
 function renderPoster(snapshot:any,card:any,width:number,height:number){
   const colors=THEMES[card.theme]||THEMES[snapshot.theme]||THEMES.ultraviolet;
@@ -169,8 +187,9 @@ Deno.serve(async(req:Request)=>{
   }
   try{
     const [width,height]=SIZES[snapshot.ratio];
+    const typefaces=await fonts(snapshot.cards[idx].titleFont);
     const element=renderPoster(snapshot,snapshot.cards[idx],width,height);
-    const image=new ImageResponse(element,{width,height,fonts:await fonts()});
+    const image=new ImageResponse(element,{width,height,fonts:typefaces});
     return new Response(image.body,{status:200,headers:{...HEADERS,'Content-Type':'image/png',
       'Content-Disposition':'attachment; filename="anons-premium.png"'}});
   }catch(e){console.error('premium render',String(e));return respond({error:'RENDER_UNAVAILABLE'},503);}
