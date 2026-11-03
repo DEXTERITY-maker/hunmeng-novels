@@ -59,7 +59,18 @@ const server=createServer(async(req,res)=>{
   if(path==="/")path="/index.html";
   if(!allowed.has(path)){res.writeHead(404);res.end();return;}
   try{
-    const buffer=await readFile(join(dist,path.slice(1)));
+    let buffer=await readFile(join(dist,path.slice(1)));
+    if(path==="/app.js"){
+      // Visual comparison is ONLY meaningful without the mandatory Free watermark.
+      // Strip this draw call solely in a local CI fixture; deployed app.js is untouched.
+      const js=buffer.toString("utf8");
+      const first=js.indexOf("  function drawWatermark(");
+      const last=js.indexOf("  const graphicPathCache",first);
+      assert.ok(first>=0&&last>first,"Fixture watermark function anchor");
+      buffer=Buffer.from(js.slice(0,first)+
+        "  function drawWatermark() { /* TEST FIXTURE ONLY */ }\\n"+
+        js.slice(last));
+    }
     res.writeHead(200,{"content-type":types[path.slice(path.lastIndexOf("."))]});
     res.end(buffer);
   }catch(e){res.writeHead(500);res.end(String(e.message));}
@@ -131,7 +142,6 @@ try{
       graphicElements:[]}];
     await page.evaluate(snapshot=>{
       window.AnonsEditor.loadSnapshot(snapshot);
-      window.dispatchEvent(new CustomEvent("anons:access",{detail:{plan:"pro",premium:true}}));
     },snapshot);
     await page.evaluate(async()=>{
       await document.fonts.ready;
@@ -157,7 +167,7 @@ try{
     assert.ok(metrics.meanAbsoluteError<105,"Severe image mismatch: "+name);
   }
   await writeFile(join(results,"summary.json"),JSON.stringify({generatedAt:new Date().toISOString(),
-    comparison:"Canvas premium preview (test entitlement only) vs actual local ImageResponse PNG; no payments or accounts",
+    comparison:"Canvas fixture without a watermark vs actual local ImageResponse PNG; no payments or accounts",
     note:"This verifies local server-renderer output, not live authenticated Edge delivery. Metrics are diagnostic, not pixel-perfect proof.",
     cases:report},null,2));
   await page.close();
