@@ -8,6 +8,7 @@ const client=createClient("https://kvgnjsntumofwqhywiea.supabase.co","sb_publish
 });
 const byId=id=>document.getElementById(id);
 const library=initLibrary(client);
+window.AnonsLibrary=library;
 const billing=initBilling(client);
 window.AnonsBilling=billing;
 const guest=byId("account-guest");
