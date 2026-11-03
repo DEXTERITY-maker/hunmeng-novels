@@ -221,7 +221,7 @@ export function initLibrary(client) {
   async function restoreRevision(revisionId){
     if(!user||!projectId)return;
     if(!confirm("Восстановить эту версию? Перед восстановлением текущие изменения будут сохранены в облаке."))return;
-    if(!await ensureSaved())return;
+    try{await save(true);}catch{return;}
     const id=projectId,uid=user.id;
     const {data,error:failure}=await client.from("anons_studio_project_revisions")
       .select("snapshot,title").eq("project_id",id).eq("owner_id",uid).eq("id",revisionId).maybeSingle();
@@ -299,6 +299,7 @@ export function initLibrary(client) {
   elements.duplicate.addEventListener("click",()=>duplicate());
   elements.archive.addEventListener("click",()=>toggleArchive());
   elements.remove.addEventListener("click",()=>removeProject());
+  window.addEventListener("anons:editor-reset",()=>{if(user)clearCurrent(editor()?.getSuggestedName?.());});
   window.addEventListener("anons:editor-change",markDirty);
   setUser(null);
   return {setUser};
