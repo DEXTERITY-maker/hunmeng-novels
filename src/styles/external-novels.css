@@ -26,7 +26,7 @@
 .external-novel-page { padding-top: 26px; }
 .external-novel-detail { display: grid; grid-template-columns: minmax(145px, 230px) minmax(0, 1fr); gap: clamp(18px, 4vw, 42px); padding: clamp(18px, 3.5vw, 32px); margin-top: 20px; }
 .external-novel-cover { position: relative; align-self: start; border-radius: 12px; overflow: hidden; background: var(--soft); }
-.external-novel-cover img { width: 100%; aspect-ratio: 2 / 3; object-fit: cover; }
+.external-novel-cover img { display: block; width: 100%; height: auto; aspect-ratio: 2 / 3; object-fit: cover; }
 .external-novel-cover span { position: absolute; bottom: 0; inset-inline: 0; padding: 7px; text-align: center; background: color-mix(in srgb,var(--bg) 92%,transparent); color: var(--ink); font-size: .74rem; font-weight: 750; }
 .external-novel-copy { min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 13px; }
 .external-novel-copy h1 { font-size: clamp(1.6rem, 3.4vw, 2.6rem); overflow-wrap: anywhere; }

@@ -8,6 +8,9 @@ export interface ExternalNovel {
   title: string;
   originalTitle: string;
   author: string;
+  /** Optional Hunmeng editorial illustration; not an official source cover. */
+  cover?: string;
+  coverAlt?: string;
   summary: string;
   status: string;
   genres: readonly string[];
@@ -24,6 +27,8 @@ export const externalNovels: readonly ExternalNovel[] = [
     title: 'Highway Survival: Lathe Is Also a Car, I Handcraft Gatling Gun',
     originalTitle: '公路求生车床也是车我手搓加特林',
     author: '凨羽',
+    cover: '/images/editorial/highway-survival-art.webp',
+    coverAlt: 'Hunmeng editorial illustration of a mobile workshop beside a deserted highway',
     summary: 'Transported into a highway survival game, Xie Changqing receives an old industrial lathe instead of a car. His Perfect Manufacturing talent turns an unlikely starting vehicle into the foundation for equipment, defenses and a mobile base.',
     status: 'Ongoing (original)',
     genres: ['Sci-Fi', 'Adventure', 'Survival'],

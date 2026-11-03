@@ -139,7 +139,8 @@ body.hm-editorial-site {
   backdrop-filter:blur(4px);
 }
 .v3-hero-chips a:hover { background:#1c6854;color:#fff; }
-.v3-hero-chips a span { color:#edc573;font-size:.95rem; }
+.v3-hero-chips a svg { flex:none;color:#edc573; }
+.v3-feature-secondary svg { vertical-align:middle; }
 .v3-art-direction .v2-hero-foot {
   justify-content:center;
   margin:16px 0 0;

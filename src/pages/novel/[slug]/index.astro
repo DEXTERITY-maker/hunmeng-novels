@@ -187,7 +187,9 @@ const extraCategories = n.categories.filter((category) =>
           )}
         </div>
       )}
-      {n.original ? (
+      {n.categories.includes('Public Domain Classics') ? (
+        <p class="fine author-permission">A public-domain classic.</p>
+      ) : n.original ? (
         <p class="fine author-permission">An original story written for Hunmeng.</p>
       ) : (
         !n.demo && <p class="fine author-permission">Published with the author's permission.</p>

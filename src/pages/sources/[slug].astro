@@ -36,8 +36,8 @@ const onSiteNovel = (await getLibrary()).find(book => book.slug === novel.slug);
     </nav>
     <article class="external-novel-detail">
       <div class="external-novel-cover">
-        <img src="/images/novel-placeholder.svg" alt="" width="260" height="380" />
-        <span>{onSiteNovel ? 'Read on Hunmeng' : 'External reference'}</span>
+        <img src={onSiteNovel?.cover ?? novel.cover ?? '/images/novel-placeholder.svg'} alt={onSiteNovel ? `Cover of ${onSiteNovel.title}` : novel.coverAlt ?? ''} width="260" height="380" />
+        <span>{onSiteNovel ? 'Read on Hunmeng' : novel.cover ? 'External reference · Hunmeng illustration' : 'External reference'}</span>
       </div>
       <div class="external-novel-copy">
         <p class="external-novel-eyebrow">{onSiteNovel ? 'Now published on Hunmeng' : 'External novel · chapters hosted elsewhere'}</p>

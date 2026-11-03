@@ -1,5 +1,6 @@
 ---
 import ContinueReading from './ContinueReading.astro';
+import Icon from './Icon.astro';
 import { getLibrary, chapterCount, dateLabel } from '../lib/content';
 import { getLatestChapters } from '../lib/updates';
 import { getNews, newsUrl, newsCover } from '../lib/news';
@@ -25,17 +26,17 @@ const number = new Intl.NumberFormat('en-US');
 // come only from published records already in the Hunmeng library.
 const taxonomy = getTaxonomy(novels);
 const categoryChoices = [
-  { title: 'Fantasy & Adventure', genre: 'Fantasy', symbol: '✧', tone: 'vermilion' },
-  { title: 'Mystery & Suspense', genre: 'Mystery', symbol: '◈', tone: 'earth' },
-  { title: 'Historical Stories', genre: 'Historical', symbol: '✦', tone: 'gold' },
-  { title: 'Science Fiction', genre: 'Science fiction', symbol: '◇', tone: 'sage' },
-  { title: 'Romance & Drama', genre: 'Romance', symbol: '❦', tone: 'leaf' },
-  { title: 'Martial Arts', genre: 'Martial arts', symbol: '△', tone: 'teal' },
+  { title: 'Fantasy & Adventure', genre: 'Fantasy', icon: 'fantasy', tone: 'vermilion' },
+  { title: 'Mystery & Suspense', genre: 'Mystery', icon: 'mystery', tone: 'earth' },
+  { title: 'Historical Stories', genre: 'Historical', icon: 'history', tone: 'gold' },
+  { title: 'Science Fiction', genre: 'Science Fiction', icon: 'science', tone: 'sage' },
+  { title: 'Romance & Drama', genre: 'Romance', icon: 'romance', tone: 'leaf' },
+  { title: 'Martial Arts', genre: 'Martial arts', icon: 'martial', tone: 'teal' },
 ].map(item => ({ ...item, count: taxonomy.genres.find(term => term.label === item.genre)?.count ?? 0 }));
 const themedCollections = [
   { title: 'Fantasy & Wonder', description: 'Other worlds to wander', genre: 'Fantasy', art: '/images/editorial/collection-fantasy.webp' },
   { title: 'Mystery & Intrigue', description: 'Stories with secrets', genre: 'Mystery', art: '/images/editorial/collection-mystery.webp' },
-  { title: 'Worlds of Tomorrow', description: 'Beyond the horizon', genre: 'Science fiction', art: '/images/editorial/collection-future.webp' },
+  { title: 'Worlds of Tomorrow', description: 'Beyond the horizon', genre: 'Science Fiction', art: '/images/editorial/collection-future.webp' },
 ];
 
 interface Props { launched?: boolean }
@@ -69,7 +70,7 @@ const catalogPath = launched ? '/catalog/' : '/v2/catalog/';
             <input id="v2-search-input" name="search" type="search" placeholder="Search books, authors, or topics" autocomplete="off" required />
             <button type="submit" aria-label="Find a story">Search <span aria-hidden="true">↗</span></button>
           </form>
-          <nav class="v3-hero-chips" aria-label="Discover your next read"><a href={catalogPath + '?sort=added'}><span aria-hidden="true">✦</span> New arrivals</a><a href="/genres/"><span aria-hidden="true">✧</span> Browse genres</a><a href="/library/"><span aria-hidden="true">♡</span> My library</a></nav>
+          <nav class="v3-hero-chips" aria-label="Discover your next read"><a href={catalogPath + '?sort=added'}><Icon name="clock" size={15} /> New arrivals</a><a href="/genres/"><Icon name="tag" size={15} /> Browse genres</a><a href="/library/"><Icon name="bookmark" size={15} /> My library</a></nav>
           <div class="v2-hero-foot">
             <span><strong>{number.format(novels.length)}</strong> published books</span>
             <span class="v2-foot-divider" aria-hidden="true"></span>
@@ -91,7 +92,7 @@ const catalogPath = launched ? '/catalog/' : '/v2/catalog/';
                   <p class="v2-spotlight-author">by {featured.author}</p>
                   <p class="v3-feature-summary">{featured.description}</p>
                   <p class="v2-spotlight-meta">{chapterCount(featured.chapterCount)}</p>
-                  <div class="v3-feature-actions"><a class="v2-spotlight-link" aria-label="Try the V2 reader" href={launched ? featured.firstUrl : `/v2/read/${encodeURIComponent(featured.slug)}/${encodeURIComponent(featured.chapters[0].data.slug)}/`}>Read more <span aria-hidden="true">→</span></a><a class="v3-feature-secondary" href="/library/">My library ♡</a></div>
+                  <div class="v3-feature-actions"><a class="v2-spotlight-link" aria-label={launched ? 'Read ' + featured.title : 'Try the V2 reader'} href={launched ? featured.firstUrl : `/v2/read/${encodeURIComponent(featured.slug)}/${encodeURIComponent(featured.chapters[0].data.slug)}/`}>Read more <span aria-hidden="true">→</span></a><a class="v3-feature-secondary" href="/library/">My library <Icon name="bookmark" size={14} /></a></div>
                 </div>
               </div>
             </article>
@@ -124,7 +125,7 @@ const catalogPath = launched ? '/catalog/' : '/v2/catalog/';
         <div class="v3-category-list">
           {categoryChoices.map(item => (
             <a class="v3-category-row" href={catalogPath + '?genre=' + encodeURIComponent(item.genre)}>
-              <span class:list={['v3-category-icon', 'v3-category-icon-' + item.tone]} aria-hidden="true">{item.symbol}</span>
+              <span class:list={['v3-category-icon', 'v3-category-icon-' + item.tone]} aria-hidden="true"><Icon name={item.icon as 'fantasy' | 'mystery' | 'history' | 'science' | 'romance' | 'martial'} size={23} /></span>
               <span class="v3-category-description"><strong>{item.title}</strong><small>{item.count ? number.format(item.count) + (item.count === 1 ? ' book' : ' books') : 'Explore this genre'}</small></span>
               <span class="v3-category-arrow" aria-hidden="true">›</span>
             </a>
@@ -143,9 +144,9 @@ const catalogPath = launched ? '/catalog/' : '/v2/catalog/';
         </div>
       </section>
       <nav class="v2-discover" aria-label="Explore the reading room">
-        <a href={catalogPath}><span class="v2-discover-symbol" aria-hidden="true">◈</span><span><strong>Browse the library</strong><small>All published books</small></span><span aria-hidden="true">↗</span></a>
-        <a href="/genres/"><span class="v2-discover-symbol" aria-hidden="true">✧</span><span><strong>Explore genres</strong><small>Find your next world</small></span><span aria-hidden="true">↗</span></a>
-        <a href="/updates/"><span class="v2-discover-symbol" aria-hidden="true">◷</span><span><strong>Latest chapters</strong><small>Pick up a new chapter</small></span><span aria-hidden="true">↗</span></a>
+        <a href={catalogPath}><span class="v2-discover-symbol" aria-hidden="true"><Icon name="book" size={20} /></span><span><strong>Browse the library</strong><small>All published books</small></span><span aria-hidden="true">↗</span></a>
+        <a href="/genres/"><span class="v2-discover-symbol" aria-hidden="true"><Icon name="tag" size={20} /></span><span><strong>Explore genres</strong><small>Find your next world</small></span><span aria-hidden="true">↗</span></a>
+        <a href="/updates/"><span class="v2-discover-symbol" aria-hidden="true"><Icon name="clock" size={20} /></span><span><strong>Latest chapters</strong><small>Pick up a new chapter</small></span><span aria-hidden="true">↗</span></a>
       </nav>
 
       <section class="v2-section" aria-labelledby="v2-shelf-title">
@@ -231,7 +232,7 @@ const catalogPath = launched ? '/catalog/' : '/v2/catalog/';
 
       <section class="v3-depth" aria-labelledby="v3-depth-title">
         <div class="v3-section-heading"><h2 id="v3-depth-title">In-Depth Reading</h2><a href="/genres/">Explore more <span aria-hidden="true">→</span></a></div>
-        <a class="v3-depth-card" href="/genres/"><span class="v3-depth-icon" aria-hidden="true">▤</span><span><strong>Discover your next reading journey</strong><small>Explore genres, themes and the stories that stay with you.</small><em>Reading guide <span aria-hidden="true">↗</span></em></span></a>
+        <a class="v3-depth-card" href="/genres/"><span class="v3-depth-icon" aria-hidden="true"><Icon name="book" size={24} /></span><span><strong>Discover your next reading journey</strong><small>Explore genres, themes and the stories that stay with you.</small><em>Reading guide <span aria-hidden="true">↗</span></em></span></a>
       </section>
       <section class="v2-reading-cta" aria-labelledby="v2-reading-title">
         <div><p class="v2-section-eyebrow">STAY IN THE LOOP</p><h2 id="v2-reading-title">Hunmeng’s stories<br /><em>in your corner.</em></h2><p>Discover the latest chapters, new releases and reading news. No email subscription is required.</p></div>

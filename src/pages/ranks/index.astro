@@ -1,5 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import Icon from '../../components/Icon.astro';
 import { ranks, rankImage } from '../../lib/reader-progression';
 import '../../styles/ranks-showcase.css';
 import '../../styles/v3-editorial.css';
@@ -62,9 +63,9 @@ const lore=[
   <section class="rank-world-info" aria-labelledby="rank-world-info-heading">
    <div class="rank-world-heading"><p class="rank-world-kicker">THE REWARD FOR YOUR JOURNEY</p><h2 id="rank-world-info-heading">What does a higher rank offer?</h2></div>
    <div class="rank-world-benefits">
-    <div><span aria-hidden="true">✦</span><h3>Your own emblem</h3><p>Each of the nine ranks has its own medallion displayed in your profile.</p></div>
-    <div><span aria-hidden="true">◈</span><h3>Profile styling</h3><p>Your rank is reflected in the profile colors and emblem. The emblem updates automatically.</p></div>
-    <div><span aria-hidden="true">✧</span><h3>Clear progression</h3><p>See your current level, XP to the next level and upcoming achievements.</p></div>
+    <div><span aria-hidden="true"><Icon name="trophy" size={26} /></span><h3>Your own emblem</h3><p>Each of the nine ranks has its own medallion displayed in your profile.</p></div>
+    <div><span aria-hidden="true"><Icon name="user" size={26} /></span><h3>Profile styling</h3><p>Your rank is reflected in the profile colors and emblem. The emblem updates automatically.</p></div>
+    <div><span aria-hidden="true"><Icon name="chart" size={26} /></span><h3>Clear progression</h3><p>See your current level, XP to the next level and upcoming achievements.</p></div>
    </div>
    <p class="rank-world-disclaimer">XP is awarded only for eligible, server-verified reading. Opening or scrolling a page alone grants no XP. Ranks and titles are separate systems.</p>
    <div class="rank-world-actions"><a href="/account/" class="rank-world-primary">My profile <span aria-hidden="true">→</span></a><a href="/news/" class="rank-world-secondary">Hunmeng news</a></div>

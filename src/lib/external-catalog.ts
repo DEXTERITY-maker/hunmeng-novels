@@ -14,7 +14,7 @@ export const externalCatalogEntries: CatalogIndexNovel[] = visibleExternalNovels
   title: source.title,
   originalTitle: source.originalTitle,
   author: source.author,
-  cover: '/images/novel-placeholder.svg',
+  cover: source.cover ?? '/images/novel-placeholder.svg',
   description: source.summary,
   original: false,
   external: true,
