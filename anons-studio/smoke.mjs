@@ -175,17 +175,15 @@ try {
     await page.locator("#direct-edit").check();
     assert.equal(await page.locator("#drag-overlay").isVisible(),true);
     const dragHandle=page.locator('[data-drag-layer="title"]');
+    await dragHandle.scrollIntoViewIfNeeded();
     const bounds=await dragHandle.boundingBox();
     assert.ok(bounds,"Title draggable label available in preview");
     const start={x:bounds.x+bounds.width/2,y:bounds.y+bounds.height/2};
-    console.log("Drag hit:",await page.evaluate(({x,y})=>document.elementFromPoint(x,y)?.getAttribute("data-drag-layer"),start));
     await page.mouse.move(start.x,start.y);
     await page.mouse.down();
     await page.mouse.move(start.x+50,start.y+33,{steps:5});
-    console.log("Drag interim:",await page.evaluate(()=>window.AnonsEditor.getSnapshot().cards[1].layerOffsets.title));
     await page.mouse.up();
     const moved=await page.evaluate(()=>window.AnonsEditor.getSnapshot().cards[1].layerOffsets.title);
-    console.log("Drag result:",JSON.stringify(moved));
     assert.ok(moved.x!==0||moved.y!==0,"Pointer drag moves a saved layer offset");
     assert.equal(moved.x%2,0,"Snap-to-grid rounds offset to 2% steps");
     await page.locator("#card-list [role=tab]").first().click();
