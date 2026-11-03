@@ -89,7 +89,7 @@
 
               <section class="pro-editor" aria-label="Профессиональный редактор">
                 <div class="pro-editor-heading">
-                  <div><span class="section-index">НОВОЕ · V0.7</span><h4>Профессиональные инструменты</h4></div>
+                  <div><span class="section-index">НОВОЕ · V0.8</span><h4>Профессиональные инструменты</h4></div>
                   <span class="pro-edition">STUDIO TOOLS</span>
                 </div>
                 <div class="editor-history" role="group" aria-label="История действий редактора">
@@ -107,6 +107,14 @@
                     <label><input type="checkbox" data-layer="photo" checked> Фотография</label>
                     <label><input type="checkbox" data-layer="decoration" checked> Украшения</label>
                   </div>
+                  <div class="direct-edit-tools">
+                    <label class="direct-edit-switch"><input type="checkbox" id="direct-edit"> Перетаскивать элементы на предпросмотре</label>
+                    <label class="direct-edit-switch"><input type="checkbox" id="snap-to-grid" checked> Привязка к сетке (2%)</label>
+                    <p class="field-note">Включи перетаскивание и потяни за подпись элемента на картинке. Работает мышью и пальцем; изменения сохраняются в карточке.</p>
+                    <div class="layer-order-heading"><strong>Порядок слоёв</strong><span>Верхний слой отображается поверх нижнего</span></div>
+                    <div id="layer-order-list" class="layer-order-list" aria-label="Порядок слоёв"></div>
+                    <button id="position-reset" class="layer-reset" type="button">↺ Сбросить размещение слоёв</button>
+                  </div>
                   <div class="editor-position">
                     <label for="title-shift">Сдвиг заголовка по вертикали <output id="title-shift-value" for="title-shift">0%</output></label>
                     <input id="title-shift" type="range" min="-12" max="12" step="1" value="0">
@@ -114,7 +122,18 @@
                     <input id="description-shift" type="range" min="-12" max="12" step="1" value="0">
                     <button id="layer-reset" type="button">↺ Вернуть расположение</button>
                   </div>
-                  <p class="field-note">Настройки действуют только для выбранной карточки. Перекрывающиеся элементы можно вернуть в исходное положение.</p>
+                  <div class="advanced-typography">
+                    <strong>Расширенная типографика</strong>
+                    <label for="title-font">Шрифт заголовка</label>
+                    <select id="title-font"><option value="auto">Из композиции</option><option value="manrope">Manrope</option><option value="georgia">Georgia</option><option value="arial">Arial</option></select>
+                    <label for="title-weight">Насыщенность заголовка</label>
+                    <select id="title-weight"><option value="700">Полужирный · 700</option><option value="800">Жирный · 800</option><option value="900">Очень жирный · 900</option></select>
+                    <label for="title-tracking">Межбуквенный интервал <output id="title-tracking-value" for="title-tracking">0 px</output></label>
+                    <input id="title-tracking" type="range" min="-2" max="6" value="0" step="1">
+                    <label for="description-scale">Размер описания <output id="description-scale-value" for="description-scale">100%</output></label>
+                    <input id="description-scale" type="range" min="80" max="130" value="100" step="5">
+                  </div>
+                                    <p class="field-note">Настройки действуют только для выбранной карточки. Перекрывающиеся элементы можно вернуть в исходное положение.</p>
                 </details>
                 <div class="brand-kit">
                   <strong>Фирменный набор</strong>
@@ -204,7 +223,7 @@
 
             <div class="preview-panel">
               <div class="panel-head preview-head"><div><span class="section-index">02 / ПРЕДПРОСМОТР</span><h3>Твой будущий пост</h3></div><span class="preview-badge" id="current-card-label">Карточка 1 / 1</span></div>
-              <div class="preview-stage"><div class="canvas-holder"><canvas id="poster" width="1080" height="1350" role="img" aria-label="Предпросмотр оформленного анонса">Предпросмотр изображения недоступен в этом браузере.</canvas></div></div>
+              <div class="preview-stage"><div class="canvas-holder"><canvas id="poster" width="1080" height="1350" role="img" aria-label="Предпросмотр оформленного анонса">Предпросмотр изображения недоступен в этом браузере.</canvas><div id="drag-overlay" class="drag-overlay" hidden aria-label="Перетаскиваемые элементы карточки"></div></div></div>
               <div class="preview-actions"><button type="button" class="btn btn-primary export-btn" id="export">⇩ Скачать PNG</button><button type="button" class="btn btn-secondary" id="export-all">⇩ Все карточки ZIP</button><button type="button" class="btn btn-secondary" id="copy">Скопировать текст ↗</button></div>
               <p class="preview-caption">На Free водяной знак сохраняется в предпросмотре и PNG</p>
             </div>
@@ -355,7 +374,7 @@
 
       <section class="cta wrap"><div><div class="kicker">НАЧНИ СЕЙЧАС</div><h2>Всё готово.<br><em>Осталось рассказать.</em></h2><p>Попробуй бесплатный редактор с водяным знаком.</p></div><a href="#editor" class="btn btn-light">Открыть редактор ↗</a></section>
     </main>
-    <footer class="footer wrap"><img class="footer-logo" src="./assets/anons-logo-approved.webp" width="220" height="68" alt="Anons Studio" loading="lazy" decoding="async"><span>Создано для тех, кому есть что рассказать.</span><span>Бета v0.7 · 2026</span></footer>
+    <footer class="footer wrap"><img class="footer-logo" src="./assets/anons-logo-approved.webp" width="220" height="68" alt="Anons Studio" loading="lazy" decoding="async"><span>Создано для тех, кому есть что рассказать.</span><span>Бета v0.8 · 2026</span></footer>
     <div id="toast" role="status" aria-live="polite" class="toast" hidden></div>
   </div>
 </body>
