@@ -268,6 +268,32 @@ try {
     assert.ok(zipBytes.includes(Buffer.from("anons-card-01.png")));
     assert.ok(zipBytes.includes(Buffer.from("anons-card-02.png")));
     assert.ok(zipBytes.length>30000,"ZIP contains rendered PNG files");
+    // Personal data portability: backup must be downloadable and reversible.
+    const beforeBackup=await page.evaluate(()=>window.AnonsEditor.getSnapshot());
+    const [backupFile]=await Promise.all([
+      page.waitForEvent("download"),page.locator("#backup-download").click()
+    ]);
+    assert.match(backupFile.suggestedFilename(),/^anons-studio-backup-\d{4}-\d{2}-\d{2}\.json$/);
+    const bytes=await readFile(await backupFile.path());
+    const backup=JSON.parse(bytes.toString("utf8"));
+    assert.equal(backup.format,"anons-studio-backup");
+    assert.equal(backup.version,1);
+    assert.deepEqual(backup.snapshot,beforeBackup,"JSON backup contains every card and setting");
+    await page.locator("#title").fill("Изменение перед восстановлением JSON");
+    page.once("dialog",dialog=>dialog.accept());
+    await page.locator("#backup-file").setInputFiles({
+      name:"my-anons-backup.json",mimeType:"application/json",buffer:bytes
+    });
+    await page.waitForFunction(expected=>document.querySelector("#title").value===expected,
+      beforeBackup.cards[beforeBackup.activeCard].title);
+    assert.deepEqual(await page.evaluate(()=>window.AnonsEditor.getSnapshot()),beforeBackup,
+      "Restore returns the complete saved project");
+    await page.locator("#backup-file").setInputFiles({
+      name:"bad.json",mimeType:"application/json",buffer:Buffer.from("{invalid","utf8")
+    });
+    await page.waitForFunction(()=>document.querySelector("#toast")?.textContent?.includes("не является корректной"));
+    assert.deepEqual(await page.evaluate(()=>window.AnonsEditor.getSnapshot()),beforeBackup,
+      "Corrupted backup cannot overwrite the draft");
     await page.locator("[data-account-mode=login]").click();
     assert.match(await page.locator("#account-submit").textContent(),/Войти/);
     assert.ok(await page.locator("#account-forgot").isVisible(),"Forgot-password entry point");
@@ -488,6 +514,23 @@ try {
     assert.ok(await page.evaluate(()=>window.__mockLibraryDb.projects.some(p=>p.title==="Второй проект (копия)"&&p.snapshot.cards[0].title==="Мои локальные изменения")),
       "Conflict copy must retain unsaved local text");
     assert.equal(await page.locator("#library-conflict").isVisible(),false);
+    // Imported JSON into a signed-in library must create a new project, not
+    // overwrite a previously synchronized cloud record.
+    const cloudOriginal=await page.evaluate(()=>JSON.parse(JSON.stringify(window.__mockLibraryDb.projects[0])));
+    const imported=await page.evaluate(async()=>{
+      const snapshot=JSON.parse(JSON.stringify(window.__mockLibraryDb.projects[0].snapshot));
+      snapshot.cards[0].title="Восстановленная резервная копия";
+      return await window.__testLibrary.importBackup(snapshot);
+    });
+    assert.equal(imported,true,"Cloud library can open a backup as new draft");
+    assert.equal(await page.locator("#library-current").textContent(),"Новый черновик");
+    assert.equal(await page.locator("#title").inputValue(),"Восстановленная резервная копия");
+    assert.deepEqual(await page.evaluate(()=>window.__mockLibraryDb.projects[0]),cloudOriginal,
+      "Import must not touch the existing cloud project");
+    await page.locator("#library-save").click();
+    await page.waitForFunction(()=>window.__mockLibraryDb.projects.length===3);
+    assert.equal(await page.evaluate(()=>window.__mockLibraryDb.projects[0].snapshot.cards[0].title),
+      cloudOriginal.snapshot.cards[0].title,"Old cloud project remains unchanged");
     console.log("PASS Cloud library mock: create/edit/checkpoint/load/restore/archive/delete/conflict-copy");
     await context.close();
   }
