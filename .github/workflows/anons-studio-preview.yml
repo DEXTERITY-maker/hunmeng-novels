@@ -62,7 +62,7 @@ jobs:
       - name: Install isolated visual PNG renderer for CI only
         run: |
           mkdir -p anons-studio/.visual-ci
-          printf '{"private":true,"type":"module"}\\n' > anons-studio/.visual-ci/package.json
+          echo '{"private":true,"type":"module"}' > anons-studio/.visual-ci/package.json
           npm install --prefix anons-studio/.visual-ci --no-save --no-package-lock --ignore-scripts @vercel/og@0.8.6
       - name: Compare actual PNGs from Canvas and premium server renderer
         run: node anons-studio/visual-parity.mjs
