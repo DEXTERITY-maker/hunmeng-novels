@@ -209,7 +209,7 @@
   function drawPhoto(W, H) {
     if (!photo) return;
     const x = W * 0.52, y = H * 0.11, w = W * 0.49, h = Math.min(H * 0.36, 570);
-    ctx.save(); ctx.globalAlpha = 0.36;
+    ctx.save(); ctx.globalAlpha = state.photoOpacity/100;
     roundedRect(x, y, w, h, 140); ctx.clip();
     const sc = Math.max(w / photo.width, h / photo.height);
     const dw = photo.width * sc, dh = photo.height * sc;
@@ -231,8 +231,25 @@
     glow.addColorStop(0,rgba(t.glow,.34));glow.addColorStop(1,rgba(t.glow,0));ctx.fillStyle=glow;ctx.fillRect(0,0,W,H);
     ctx.lineWidth=1.5;ctx.strokeStyle=rgba(t.text,.055);
     for(let i=-H;i<W+H;i+=73){ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i+H,H);ctx.stroke();}
+    if(state.decorations && state.template!=="minimal") {
+      if(state.template==="editorial") {
+        ctx.strokeStyle=rgba(t.text,.3);ctx.lineWidth=3;ctx.strokeRect(38,38,W-76,H-76);
+        ctx.fillStyle=rgba(t.accent,.28);ctx.fillRect(W-170,95,76,76);
+      } else if(state.template==="spotlight") {
+        ctx.fillStyle=rgba(t.accent,.22);
+        ctx.beginPath();ctx.arc(W*.84,H*.24,270,0,Math.PI*2);ctx.fill();
+        ctx.beginPath();ctx.arc(W*.84,H*.24,185,0,Math.PI*2);ctx.fill();
+      } else if(state.template==="pulse") {
+        ctx.save();ctx.translate(W*.77,H*.15);ctx.rotate(-.36);
+        ctx.fillStyle=rgba(t.accent,.48);ctx.fillRect(0,-190,118,H*.72);
+        ctx.fillStyle=rgba(t.text,.16);ctx.fillRect(137,-190,38,H*.72);ctx.restore();
+      } else if(state.template==="bulletin") {
+        ctx.fillStyle=t.accent;ctx.fillRect(0,0,W,20);
+        ctx.fillStyle=rgba(t.text,.12);ctx.fillRect(0,136,W,8);
+        for(let x=75;x<W-75;x+=80){ctx.fillStyle=rgba(t.accent,.3);ctx.fillRect(x,H*.19,48,8);}
+      } else drawDecoration(W,H,t);
+    }
     drawPhoto(W,H);
-    drawDecoration(W,H,t);
   }
   function drawWatermark(W,H,t) {
     if(paidAccess.premium)return;
@@ -251,7 +268,7 @@
     ctx.restore();
   }
   function draw() {
-    const sz = sizes[state.ratio];const W=sz.w,H=sz.h; const t=themes[state.theme];
+    const sz = sizes[state.ratio];const W=sz.w,H=sz.h; const t={...themes[state.theme],accent:state.accentColor||themes[state.theme].accent};
     if(canvas.width!==W||canvas.height!==H){canvas.width=W;canvas.height=H;}
     ctx.textBaseline="alphabetic";ctx.textAlign="left";
     drawBackground(W,H,t);
@@ -265,22 +282,29 @@
     ctx.textAlign="right";ctx.font="700 24px Manrope, sans-serif";ctx.fillStyle=rgba(t.text,.75);
     ctx.fillText("✳ ANONS / STUDIO",W-margin,105);ctx.textAlign="left";
 
-    const titleY=Math.round(H*(H>=1700?.258:H<=1100?.265:.285));
-    const detailsY=Math.round(H*(H>=1700?.735:H<=1100?.716:.733));
+    const layout=state.template;
+    const titleY=Math.round(H*(layout==="editorial"?.31:layout==="minimal"?.35:layout==="bulletin"?.27:H>=1700?.258:H<=1100?.265:.285));
+    const detailsY=Math.round(H*(layout==="editorial"?.75:layout==="minimal"?.77:layout==="bulletin"?.72:H>=1700?.735:H<=1100?.716:.733));
     ctx.fillStyle=t.accent;ctx.font="800 24px Manrope, sans-serif";
     ctx.fillText((presets[state.preset]?.label||"АНОНС")+"  /  2026",margin,titleY-52);
     const rawTitle=state.title.trim()||"Заголовок публикации";
     const maxTitleHeight=Math.max(195,detailsY-titleY-225);
-    const f=chooseFont(rawTitle,contentWidth,H<=1100?83:105,maxTitleHeight,H<=1100?3:4);
-    ctx.font="800 "+f.size+"px Manrope, sans-serif";ctx.fillStyle=t.text;
+    const titleFont=(layout==="editorial"||layout==="minimal")?"Georgia, serif":"Manrope, sans-serif";
+    const baseSize=Math.round((H<=1100?83:105)*state.headingScale/100);
+    const f=chooseFont(rawTitle,contentWidth,baseSize,maxTitleHeight,H<=1100?3:4);
+    ctx.font=(layout==="editorial"||layout==="minimal"?"700 ":"800 ")+f.size+"px "+titleFont;ctx.fillStyle=t.text;
+    const center=state.alignment==="center";
+    ctx.textAlign=center?"center":"left";
+    const tx=center?W/2:margin;
     let y=titleY+f.size*.8;
-    for(const line of f.lines){ctx.fillText(line,margin,y);y+=f.size*1.14;}
+    for(const line of f.lines){ctx.fillText(line,tx,y);y+=f.size*1.14;}
     const descText=state.description.trim()||"Расскажите коротко, что произошло и почему это важно.";
     const descY=Math.min(detailsY-130,y+28);
     let dsize=H<=1100?29:32;
     ctx.font="500 "+dsize+"px Manrope, sans-serif";ctx.fillStyle=t.sub;
     let dlines=fitLines(descText,contentWidth-(H<=1100?10:80),dsize,3);
-    for(let i=0;i<dlines.length;i++){ctx.fillText(dlines[i],margin,descY+i*(dsize*1.5));}
+    for(let i=0;i<dlines.length;i++){ctx.fillText(dlines[i],tx,descY+i*(dsize*1.5));}
+    ctx.textAlign="left";
 
     // Structured, legible highlights
     const points=state.points.split(/\r?\n/).map(x=>x.trim()).filter(Boolean).slice(0,3);
@@ -288,7 +312,10 @@
     const rowHeight=H<=1100?61:H>=1700?91:76;
     const top=detailsY;
     ctx.save();roundedRect(margin,top-27,contentWidth,28+list.length*rowHeight+21,23);
-    ctx.fillStyle=rgba(t.text,t.dark?.08:.085);ctx.fill();ctx.restore();
+    ctx.fillStyle=rgba(t.text,t.dark?.08:.085);
+    if(layout==="minimal"||layout==="editorial"){ctx.strokeStyle=rgba(t.text,.3);ctx.lineWidth=2;ctx.stroke();}
+    else ctx.fill();
+    ctx.restore();
     list.forEach((p,i)=>{
       const cy=top+i*rowHeight+16;
       ctx.fillStyle=t.accent;ctx.beginPath();ctx.arc(margin+31,cy+9,11,0,2*Math.PI);ctx.fill();
