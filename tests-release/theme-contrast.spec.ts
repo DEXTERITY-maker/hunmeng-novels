@@ -21,6 +21,10 @@ test('V2 editorial text remains readable across public routes in dark and system
     for(const item of surfaces){
       await page.goto(item.path);
       await expect(page.locator('body')).toHaveClass(/hm-editorial-site/);
+      // The home external-story panel is conditional on available references.
+      // The synthetic release dataset may omit it; do not treat absent data
+      // as a contrast failure. Other route targets are required.
+      if(item.path==='/' && await page.locator('.v2-external').count()===0) continue;
       const foreground=page.locator(item.foreground).first();
       await expect(foreground,item.path+' @ '+width).toBeVisible();
       for(const theme of ['light','dark','system']){
