@@ -241,3 +241,16 @@ button.plan-action[disabled]{cursor:not-allowed;color:#92869f;background:#f6f4f7
 .library-conflict-actions button:hover{background:#fdf0e7}
 .account-message{overflow-wrap:anywhere}
 @media(max-width:440px){.account-session-buttons{display:grid;grid-template-columns:1fr}.library-conflict-actions{display:grid;grid-template-columns:1fr}}
+
+/* Anons Studio v0.6 — payments visible only when the server enables checkout. */
+.billing-availability{margin-top:24px;padding:14px 18px;border:1px solid #e9e1f5;border-radius:13px;background:#f9f6ff;color:#685684;font-weight:750;font-size:12px;line-height:1.8}
+#buy-basic:not(:disabled){color:white;background:#7e52e7;border-color:#7e52e7}
+#buy-basic:not(:disabled):hover{background:#653fc9}
+.billing-history-panel{border:1px solid #e6def1;border-radius:13px;background:#faf7ff;padding:15px 17px;margin:10px 0 18px}
+.billing-history-panel summary{font-size:12px;font-weight:800;color:#58446e;cursor:pointer}
+#billing-member-status{font-size:12px;font-weight:750;margin:17px 0 10px;color:#5f5382;line-height:1.65}
+.billing-order-list{display:grid;gap:8px;margin-top:12px;max-height:240px;overflow-y:auto}
+.billing-order{display:flex;justify-content:space-between;align-items:center;gap:14px;border:1px solid #ece4f3;background:#fff;padding:10px 12px;border-radius:10px;font-size:11px}
+.billing-order strong{color:#4d4261}
+.billing-order span{color:#9890a4;text-align:right}
+@media(max-width:440px){.billing-order{flex-direction:column;align-items:flex-start}.billing-order span{text-align:left}}
