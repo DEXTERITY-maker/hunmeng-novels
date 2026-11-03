@@ -339,3 +339,77 @@ test('public V2 unknown URL returns the editorial 404 and keeps crawler protecti
   await expect(page).toHaveURL(/\/catalog\/$/);
   await expect(page.locator('main.v2-catalog-page')).toBeVisible();
 });
+
+test('V2 genre and tag directories preserve real taxonomy filters in responsive editorial cards', async ({ page }, testInfo) => {
+  const errors: string[] = [];
+  page.on('pageerror', error => errors.push(error.message));
+  const directories = [
+    { url: '/genres/', label: 'Genres', slug: 'genres' },
+    { url: '/tags/', label: 'Tags', slug: 'tags' },
+  ];
+  for (const width of [320, 390, 768, 1280]) {
+    await page.setViewportSize({width,height:900});
+    for (const directory of directories) {
+      await page.goto(directory.url);
+      await expect(page.locator('body')).toHaveClass(/hm-editorial-site/);
+      await expect(page.locator('main.v3-taxonomy-page')).toBeVisible();
+      await expect(page.locator('.v3-discovery-nav a')).toHaveCount(6);
+      await expect(page.getByRole('heading', {name:directory.label,exact:true})).toBeVisible();
+      await expect(page.locator('.taxonomy-nav [aria-current="page"]'))
+        .toHaveAttribute('href',directory.url);
+      await expect(page.locator('meta[name="robots"]')).toHaveCount(0);
+      await expect(page.locator('[data-term-search]')).toBeVisible();
+      await expect(page.locator('[data-term-count]')).toContainText('Showing ');
+      await expect(page.locator('[data-term]:visible').first()).toBeVisible();
+      const hero = await page.locator('main.v3-taxonomy-page > .page-heading')
+        .evaluate(el=>getComputedStyle(el).backgroundImage);
+      expect(hero).toContain('hero-mountains.svg');
+      expect(await page.evaluate(()=>document.documentElement.scrollWidth <= innerWidth+1),
+        directory.url+' overflow @ '+width).toBe(true);
+      if(width===390||width===1280){
+        await page.screenshot({path:testInfo.outputPath('hunmeng-v2-public-taxonomy-'+directory.slug+'-'+width+'.png'),
+          fullPage:true,animations:'disabled'});
+      }
+    }
+  }
+  await page.goto('/genres/');
+  await page.locator('[data-term-search]').fill('fantasy');
+  await expect(page.locator('[data-term]:visible')).not.toHaveCount(0);
+  await page.locator('[data-term]:visible a').first().click();
+  await expect(page.locator('#catalog-results')).toBeVisible();
+  await page.goto('/tags/');
+  await page.locator('[data-term-availability]').selectOption('all');
+  const total = await page.locator('[data-term]:visible').count();
+  expect(total).toBeGreaterThan(800);
+  await page.locator('[data-term-search]').fill('no-such-tag-hunmeng-2-test');
+  await expect(page.locator('[data-term-empty]')).toBeVisible();
+  await page.locator('[data-term-reset]').click();
+  await expect(page.locator('[data-term-empty]')).toBeHidden();
+  await expect(page.locator('[data-term-availability]')).toHaveValue('available');
+  expect(errors).toEqual([]);
+});
+
+test('V2 authors directory shows real authors and links into the existing catalog', async ({page},testInfo) => {
+  const errors: string[] = [];
+  page.on('pageerror', error => errors.push(error.message));
+  for(const width of [320,390,768,1280]){
+    await page.setViewportSize({width,height:900});
+    await page.goto('/authors/');
+    await expect(page.locator('body')).toHaveClass(/hm-editorial-site/);
+    await expect(page.locator('main.v3-authors-page')).toBeVisible();
+    await expect(page.locator('.v3-discovery-nav a')).toHaveCount(6);
+    await expect(page.locator('main h1')).toHaveText('Our authors');
+    await expect(page.locator('.author-directory-card').first()).toBeVisible();
+    await expect(page.locator('.author-directory-card h2 a').first()).toHaveAttribute('href',/^\/catalog\/\?search=/);
+    await expect(page.locator('.author-directory-card li a').first()).toHaveAttribute('href',/^\/novel\/[^/]+\/$/);
+    expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),
+      'authors overflow @ '+width).toBe(true);
+    if(width===390||width===1280){
+      await page.screenshot({path:testInfo.outputPath('hunmeng-v2-public-authors-'+width+'.png'),
+        fullPage:true,animations:'disabled'});
+    }
+  }
+  await page.locator('.author-directory-card h2 a').first().click();
+  await expect(page.locator('main.v2-catalog-page')).toBeVisible();
+  expect(errors).toEqual([]);
+});
