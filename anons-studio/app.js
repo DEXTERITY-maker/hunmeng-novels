@@ -429,7 +429,7 @@
     Object.assign(state,{...defaults,cards:[],activeCard:0});
     state.cards=[sanitizeCard({title:state.title,description:state.description,points:state.points,preset:state.preset,template:state.template})];
     photo=null;$("upload").value="";
-    syncFields();persist();scheduleRender();showToast("Создан новый чистый проект.");
+    syncFields();window.dispatchEvent(new Event("anons:editor-reset"));persist();scheduleRender();showToast("Создан новый чистый проект.");
   });
   $("upload").addEventListener("change",async(e)=>{
     const file=e.target.files?.[0];if(!file)return;
