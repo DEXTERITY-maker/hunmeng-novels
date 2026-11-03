@@ -213,3 +213,7 @@ button.plan-action[disabled]{cursor:not-allowed;color:#92869f;background:#f6f4f7
 @media(max-width:1100px){.library-layout{grid-template-columns:minmax(210px,.8fr) minmax(0,1.3fr)}.library-commands .btn{flex:1 1 45%;padding:0 11px}}
 @media(max-width:760px){.library-section{padding:78px 0 83px}.library-layout{grid-template-columns:1fr}.library-sidebar{min-height:0}.library-guest-panel{grid-template-columns:auto 1fr;padding:23px;gap:14px}.library-guest-panel .btn{grid-column:1 / -1}.library-guest-symbol{width:50px;height:50px;font-size:30px}}
 @media(max-width:440px){.library-sidebar,.library-workspace{padding:22px 18px}.library-panel-top h3,.library-status-bar h3{font-size:18px}.library-commands{display:grid;grid-template-columns:1fr}.library-history{padding:17px 12px}.library-revision{padding:10px}.library-sync{font-size:9px;white-space:normal;max-width:134px}.library-guest-panel{padding:20px}.library-guest-symbol{width:44px;height:44px}}
+
+/* Account shortcuts to the cloud library and subscription plans. */
+.account-destinations{display:flex;flex-wrap:wrap;gap:10px 20px;margin:14px 0 22px}
+.account-destinations .account-upgrade{margin:0;line-height:1.7}
