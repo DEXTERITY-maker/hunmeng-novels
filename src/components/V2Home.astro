@@ -8,6 +8,10 @@ import { site } from '../config/site';
 import { unpublishedExternalEntries } from '../lib/external-catalog';
 import '../styles/v2-home.css';
 import '../styles/v3-editorial.css';
+import { Image } from 'astro:assets';
+import fantasyBadge from '../assets/category-icons/fantasy.png';
+import detectiveBadge from '../assets/category-icons/detective.png';
+import historicalBadge from '../assets/category-icons/historical.png';
 
 // Hunmeng 2.0 is a read-only design pilot: production sources and URLs remain canonical.
 const novels = await getLibrary();
@@ -25,12 +29,12 @@ const number = new Intl.NumberFormat('en-US');
 // come only from published records already in the Hunmeng library.
 const taxonomy = getTaxonomy(novels);
 const categoryChoices = [
-  { title: 'Fantasy & Adventure', genre: 'Fantasy', symbol: '✧', tone: 'vermilion' },
-  { title: 'Mystery & Suspense', genre: 'Mystery', symbol: '◈', tone: 'earth' },
-  { title: 'Historical Stories', genre: 'Historical', symbol: '✦', tone: 'gold' },
-  { title: 'Science Fiction', genre: 'Science fiction', symbol: '◇', tone: 'sage' },
-  { title: 'Romance & Drama', genre: 'Romance', symbol: '❦', tone: 'leaf' },
-  { title: 'Martial Arts', genre: 'Martial arts', symbol: '△', tone: 'teal' },
+  { title: 'Fantasy & Adventure', genre: 'Fantasy', symbol: '✧', tone: 'vermilion', badgeArt: fantasyBadge },
+  { title: 'Mystery & Suspense', genre: 'Mystery', symbol: '◈', tone: 'earth', badgeArt: detectiveBadge },
+  { title: 'Historical Stories', genre: 'Historical', symbol: '✦', tone: 'gold', badgeArt: historicalBadge },
+  { title: 'Science Fiction', genre: 'Science fiction', symbol: '◇', tone: 'sage', badgeArt: null },
+  { title: 'Romance & Drama', genre: 'Romance', symbol: '❦', tone: 'leaf', badgeArt: null },
+  { title: 'Martial Arts', genre: 'Martial arts', symbol: '△', tone: 'teal', badgeArt: null },
 ].map(item => ({ ...item, count: taxonomy.genres.find(term => term.label === item.genre)?.count ?? 0 }));
 const themedCollections = [
   { title: 'Fantasy & Wonder', description: 'Other worlds to wander', genre: 'Fantasy', art: '/images/editorial/collection-fantasy.webp' },
@@ -124,7 +128,7 @@ const catalogPath = launched ? '/catalog/' : '/v2/catalog/';
         <div class="v3-category-list">
           {categoryChoices.map(item => (
             <a class="v3-category-row" href={catalogPath + '?genre=' + encodeURIComponent(item.genre)}>
-              <span class:list={['v3-category-icon', 'v3-category-icon-' + item.tone]} aria-hidden="true">{item.symbol}</span>
+              <span class:list={['v3-category-icon', 'v3-category-icon-' + item.tone, item.badgeArt && 'v3-category-icon-art']} aria-hidden="true">{item.badgeArt ? <Image src={item.badgeArt} width={64} height={64} format="webp" alt="" loading="lazy" /> : item.symbol}</span>
               <span class="v3-category-description"><strong>{item.title}</strong><small>{item.count ? number.format(item.count) + (item.count === 1 ? ' book' : ' books') : 'Explore this genre'}</small></span>
               <span class="v3-category-arrow" aria-hidden="true">›</span>
             </a>

@@ -261,6 +261,13 @@ body.hm-editorial-site {
 .v3-category-icon-sage {background:linear-gradient(145deg,#dfe4c8,#a7b690);color:#32765e;}
 .v3-category-icon-leaf {background:linear-gradient(145deg,#e8e9d5,#b9cfab);color:#19624c;}
 .v3-category-icon-teal {background:linear-gradient(145deg,#b8d4c8,#83aa96);color:#135746;}
+/* The approved fantasy, detective and historical badge PNGs are transformed
+   by astro:assets into tiny WebP files. Keep their transparent glow intact. */
+.v3-category-icon-art { background:transparent; box-shadow:none; overflow:visible; }
+.v3-category-icon-art img {
+  display:block; width:58px; height:58px; max-width:none; object-fit:contain;
+}
+
 .v3-category-description {display:flex;flex-direction:column;gap:4px;min-width:0; }
 .v3-category-description strong {font:600 .94rem/1.26 'Noto Serif Variable',Georgia,serif;overflow-wrap:anywhere;}
 .v3-category-description small {color:#647063;font-size:.66rem;}
