@@ -9,6 +9,7 @@ on:
       - feat/anons-studio-v10-rc-20261103
       - feat/anons-studio-v10-launch-qa-20261103
       - feat/anons-studio-multidevice-qa-20261103
+      - feat/anons-studio-png-parity-20261103
       - fix/anons-v06-audit-20261103
     paths:
       - 'anons-studio/**'
@@ -58,8 +59,20 @@ jobs:
         run: node anons-studio/smoke.mjs
       - name: Test two isolated simulated devices and cross-device edit conflicts
         run: node anons-studio/multi-device.mjs
+      - name: Install isolated visual PNG renderer for CI only
+        run: npm install --no-save --no-package-lock --ignore-scripts @vercel/og@0.8.6
+      - name: Compare actual PNGs from Canvas and premium server renderer
+        run: node anons-studio/visual-parity.mjs
+      - name: Save visual QA PNG pairs and difference maps
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: anons-visual-parity
+          path: anons-studio/visual-qa-report/
+          if-no-files-found: ignore
+          retention-days: 7
       - name: Publish standalone preview (never existing production)
-        if: github.ref == 'refs/heads/feat/anons-studio-multidevice-qa-20261103'
+        if: github.ref == 'refs/heads/feat/anons-studio-png-parity-20261103'
         uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
