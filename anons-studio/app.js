@@ -68,6 +68,43 @@
   let toastTimer = null;
   let pendingRender = false;
 
+  function snapshotCard() {
+    const card=state.cards[state.activeCard];
+    for(const k of cardKeys) card[k]=state[k];
+  }
+  function activateCard(index) {
+    if(!Number.isInteger(index)||index<0||index>=state.cards.length)return;
+    snapshotCard();
+    state.activeCard=index;
+    Object.assign(state,state.cards[index]);
+    syncFields();
+    persist();
+    scheduleRender();
+  }
+  function renderCardTabs() {
+    const holder=$("card-list");
+    holder.replaceChildren();
+    state.cards.forEach((card,i)=>{
+      const b=document.createElement("button");
+      b.type="button";
+      b.className="card-tab"+(i===state.activeCard?" active":"");
+      b.setAttribute("role","tab");
+      b.setAttribute("aria-selected",String(i===state.activeCard));
+      b.setAttribute("aria-label","Карточка "+(i+1)+": "+(card.title||"Без названия"));
+      b.textContent=String(i+1).padStart(2,"0");
+      b.addEventListener("click",()=>activateCard(i));
+      holder.append(b);
+    });
+    $("card-count").textContent=state.cards.length+" из "+MAX_CARDS;
+    $("current-card-label").textContent="Карточка "+(state.activeCard+1)+" / "+state.cards.length;
+    $("add-card").disabled=$("duplicate-card").disabled=state.cards.length>=MAX_CARDS;
+    $("remove-card").disabled=state.cards.length<=1;
+  }
+  function syncCardAndSave() {
+    snapshotCard();
+    persist();
+    scheduleRender();
+  }
   function syncFields() {
     for (const k of ["project", "title", "description", "points", "ratio"]) $(k).value = state[k];
     document.querySelectorAll("[data-preset]").forEach((b) => {
@@ -81,6 +118,20 @@
       b.setAttribute("aria-pressed", String(active));
     });
     $("theme-label").textContent = themes[state.theme].name;
+    $("template-select").value=state.template;
+    document.querySelectorAll("[data-template]").forEach(b=>{
+      const active=b.dataset.template===state.template;
+      b.classList.toggle("active",active);
+      b.setAttribute("aria-pressed",String(active));
+    });
+    $("heading-scale").value=state.headingScale;
+    $("heading-scale-value").textContent=state.headingScale+"%";
+    $("accent-color").value=state.accentColor||themes[state.theme].accent;
+    $("text-align").value=state.alignment;
+    $("photo-opacity").value=state.photoOpacity;
+    $("photo-opacity-value").textContent=state.photoOpacity+"%";
+    $("ornaments").checked=state.decorations;
+    renderCardTabs();
     $("clear-image").hidden = !state.imageData;
     $("image-name").textContent = state.imageData ? "Фото добавлено" : "PNG, JPG или WebP";
   }
