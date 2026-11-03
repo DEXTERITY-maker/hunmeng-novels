@@ -49,7 +49,7 @@ try {
     await brandImage.waitFor();
     await page.waitForFunction(()=>document.querySelector(".topbar .brand-image img")?.complete);
     assert.ok(await brandImage.evaluate(img=>img.naturalWidth>0),"Approved wordmark must load");
-    assert.match(await brandImage.getAttribute("src"),/anons-logo-approved\\.webp/);
+    assert.ok((await brandImage.getAttribute("src")).endsWith("/anons-logo-approved.webp"),"Approved logo source path");
     assert.equal(await page.locator(".footer-logo").count(),1);
     assert.ok((await page.evaluate(async()=> (await fetch("/assets/anons-icon-approved.webp")).status))===200,"Approved favicon must load");
     assert.equal(await page.evaluate(async()=> (await fetch("/auth.bundle.js")).status),200);
