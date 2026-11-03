@@ -200,6 +200,29 @@ try {
     assert.equal(savedV08.cards[1].descriptionScale,120);
     assert.deepEqual(savedV08.cards[1].layerOffsets.title,moved,"Drag location survives reload");
     assert.deepEqual(savedV08.cards[1].layerOrder,zAfter,"Z-order survives reload");
+    // v1.0 RC: same pure scene plan that the premium renderer imports.
+    const sceneAudit=await page.evaluate(()=>{
+      const raw=window.AnonsEditor.getSnapshot();
+      const card=raw.cards[raw.activeCard];
+      const plan=window.AnonsScene.layout(raw,card);
+      const title=window.AnonsScene.titleLines(card.title,plan);
+      const desc=window.AnonsScene.breakLines(card.description,
+        plan.contentWidth-(plan.height<=1100?10:80),plan.descriptionSize,3);
+      const canvas=document.querySelector("#poster");
+      return {
+        w:plan.width,h:plan.height,cw:canvas.width,ch:canvas.height,
+        theme:plan.theme,template:plan.template,
+        valid:plan.photo.width>0&&plan.detailsY>plan.titleY,
+        lines:title.lines,descriptionLines:desc,
+        order:plan.order,footer:plan.footerY
+      };
+    });
+    assert.equal(sceneAudit.w,sceneAudit.cw,"Scene width and Canvas must agree");
+    assert.equal(sceneAudit.h,sceneAudit.ch,"Scene height and Canvas must agree");
+    assert.ok(sceneAudit.valid,"Shared scene geometry is valid");
+    assert.ok(sceneAudit.lines.length>=1 && sceneAudit.lines.length<=4);
+    assert.equal(new Set(sceneAudit.order).size,6);
+    assert.equal(sceneAudit.footer,sceneAudit.h-74);
     // v0.9: one shared geometry contract, editor palette and real vector drawing.
     assert.equal(await page.locator("[data-add-graphic]").count(),12,"12 vector assets");
     const beforeGraphic=await page.locator("#poster").evaluate(canvas=>canvas.toDataURL());
