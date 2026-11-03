@@ -6,6 +6,8 @@ test('novel detail has a graceful no-art fallback, a single synopsis, and active
   await page.goto(demoNovel);
   await expect(page.locator('.novel-art-band')).toHaveCount(0);
   await expect(page.locator('.novel-detail')).toBeVisible();
+  await expect(page.locator('body')).not.toHaveClass(/hm-editorial-site/);
+  await expect(page.locator('.v3-novel-nav')).toHaveCount(0);
   await expect(page.locator('.synopsis-panel .detail-description')).toHaveCount(1);
   await expect(page.locator('.detail-copy .detail-description')).toHaveCount(0);
   await expect(page.locator('.synopsis-panel .detail-description')).not.toBeEmpty();
