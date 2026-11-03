@@ -389,6 +389,21 @@ export function initLibrary(client) {
       return !dirty&&!conflict;
     }catch{return false;}
   }
+  // Imported files are always opened as a new, unsaved project. Never reuse
+  // the previous cloud project ID and accidentally overwrite its snapshot.
+  async function importBackup(snapshot){
+    if(user && !await ensureSaved()){
+      error("Не удалось сохранить текущие изменения. Импорт отменён, чтобы не потерять проект.");
+      return false;
+    }
+    editor().loadSnapshot(snapshot);
+    if(user){
+      clearCurrent(editor().getSuggestedName());
+      markDirty();
+      notify("Резервная копия открыта как новый черновик. Сохрани её в облако по желанию.");
+    }
+    return true;
+  }
   setUser(null);
-  return {setUser,flushPending};
+  return {setUser,flushPending,importBackup};
 }
