@@ -53,11 +53,11 @@ function renderPoster(snapshot:any,card:any,width:number,height:number){
   const background='linear-gradient(145deg, '+primary+', '+secondary+')';
   const photograph=typeof snapshot.imageData==='string'&&snapshot.imageData.length<600000
       &&/^data:image\/(png|jpeg|webp);base64,[a-z0-9+/=]+$/i.test(snapshot.imageData)
-    ? el('img',{position:'absolute',right:30,top:height*.18,width:width*.43,height:height*.31,
-        borderRadius:32,objectFit:'cover',opacity:Math.max(.15,Math.min(.85,Number(card.photoOpacity||35)/100))})
+    ? React.createElement('img',{src:snapshot.imageData,style:{
+        position:'absolute',right:30,top:height*.18,width:width*.43,height:height*.31,
+        borderRadius:32,objectFit:'cover',opacity:Math.max(.15,Math.min(.85,Number(card.photoOpacity||35)/100))
+      }})
     : null;
-  // Using a real img React element to preserve user images in the premium render.
-  if(photograph)photograph.props.src=snapshot.imageData;
   const decoration=card.decorations!==false&&template!=='minimal'
     ?el('div',{position:'absolute',width:470,height:470,border:'55px solid '+accent,borderRadius:300,
       right:-95,top:height*.16,opacity:.18,transform:'rotate(19deg)'})
