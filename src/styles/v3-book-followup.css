@@ -156,6 +156,13 @@
 .hm-editorial-site .v3-source-page .external-novel-original {
   color: #576d5d;
 }
+/* Attribution on fixed cream cards must not inherit pale dark-theme tokens. */
+.hm-editorial-site .v3-source-page .external-novel-copy :is(.external-novel-author,.external-novel-status) {
+  color: #526b58;
+}
+.hm-editorial-site .v3-source-page .external-novel-copy :is(.external-novel-author,.external-novel-status) strong {
+  color: #234837;
+}
 .hm-editorial-site .v3-source-page .external-novel-tags span {
   border: 1px solid #e1d2b7;
   border-radius: 999px;
