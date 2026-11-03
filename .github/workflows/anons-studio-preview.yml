@@ -60,7 +60,10 @@ jobs:
       - name: Test two isolated simulated devices and cross-device edit conflicts
         run: node anons-studio/multi-device.mjs
       - name: Install isolated visual PNG renderer for CI only
-        run: npm install --no-save --no-package-lock --ignore-scripts @vercel/og@0.8.6
+        run: |
+          mkdir -p anons-studio/.visual-ci
+          printf '{"private":true,"type":"module"}\\n' > anons-studio/.visual-ci/package.json
+          npm install --prefix anons-studio/.visual-ci --no-save --no-package-lock --ignore-scripts @vercel/og@0.8.6
       - name: Compare actual PNGs from Canvas and premium server renderer
         run: node anons-studio/visual-parity.mjs
       - name: Save visual QA PNG pairs and difference maps
