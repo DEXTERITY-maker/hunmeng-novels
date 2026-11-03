@@ -6,6 +6,9 @@ import { fileURLToPath } from "node:url";
 import { chromium } from "@playwright/test";
 
 const root = join(dirname(fileURLToPath(import.meta.url)),"dist");
+const cloudflareHeaders=await readFile(join(root,"_headers"),"utf8");
+assert.match(cloudflareHeaders,/Content-Security-Policy:.*script-src 'self'/);
+assert.match(cloudflareHeaders,/X-Content-Type-Options: nosniff/);
 const types = { ".html": "text/html; charset=utf-8", ".css": "text/css; charset=utf-8", ".js": "application/javascript; charset=utf-8", ".webp": "image/webp" };
 const allow = new Set(["/","/index.html","/styles.css","/app.js","/auth.bundle.js","/assets/anons-logo-approved.webp","/assets/anons-icon-approved.webp"]);
 const server = createServer(async (req,res)=>{
@@ -109,6 +112,25 @@ try {
     assert.ok(zipBytes.length>30000,"ZIP contains rendered PNG files");
     await page.locator("[data-account-mode=login]").click();
     assert.match(await page.locator("#account-submit").textContent(),/Войти/);
+    assert.ok(await page.locator("#account-forgot").isVisible(),"Forgot-password entry point");
+    await page.locator("#account-forgot").click();
+    assert.equal(await page.locator("#account-password").isVisible(),false,"Password hidden during recovery request");
+    assert.match(await page.locator("#account-submit").textContent(),/Отправить ссылку/);
+    await page.route("**/auth/v1/recover**",route=>{
+      route.fulfill({status:200,contentType:"application/json",headers:{
+        "access-control-allow-origin":"*",
+        "access-control-allow-methods":"POST,OPTIONS",
+        "access-control-allow-headers":"*"
+      },body:"{}"});
+    });
+    await page.locator("#account-email").fill("reset-test@example.invalid");
+    await page.locator("#account-submit").click();
+    await page.waitForFunction(()=>document.querySelector("#account-message")?.textContent?.includes("Если аккаунт существует"));
+    assert.match(await page.locator("#account-submit").textContent(),/Войти/);
+    await page.locator("[data-account-mode=signup]").click();
+    assert.equal(await page.locator("#account-password").getAttribute("minlength"),"10");
+    assert.ok(await page.locator("#account-security").count()===1,"Password change controls available for logged-in users");
+    assert.ok(await page.locator("#account-logout-all").count()===1,"Global sign-out control exists");
     const [download] = await Promise.all([page.waitForEvent("download"),page.locator("#export").click()]);
     assert.match(download.suggestedFilename(),/\.png$/);
     assert.ok((await readFile(await download.path())).length>20000,"Downloaded PNG should contain image data");
@@ -224,7 +246,27 @@ try {
     assert.equal(await page.locator("#library-list .library-entry").count(),1);
     await page.locator("#library-delete").click();
     await page.waitForFunction(()=>window.__mockLibraryDb.projects.length===1);
-    console.log("PASS Cloud library mock: create/edit/checkpoint/load/restore/archive/delete");
+    await page.locator("#library-filter").selectOption("active");
+    await page.locator("#library-list .library-entry").filter({hasText:"Второй проект"}).click();
+    await page.waitForFunction(()=>document.querySelector("#title").value==="Новость второго проекта");
+    await page.evaluate(()=>{
+      const remote=window.__mockLibraryDb.projects.find(p=>p.title==="Второй проект");
+      remote.version++;
+      remote.snapshot.cards[0].title="Изменение с другого устройства";
+      remote.updated_at=new Date().toISOString();
+    });
+    await page.locator("#title").fill("Мои локальные изменения");
+    await page.locator("#library-refresh").click();
+    await page.waitForFunction(()=>!document.querySelector("#library-conflict").hidden);
+    assert.equal(await page.locator("#library-sync").textContent(),"Обновлено на другом устройстве");
+    await page.locator("#library-conflict-copy").click();
+    await page.waitForFunction(()=>window.__mockLibraryDb.projects.length===2);
+    assert.equal(await page.evaluate(()=>window.__mockLibraryDb.projects.find(p=>p.title==="Второй проект").snapshot.cards[0].title),
+      "Изменение с другого устройства","Remote change must not be overwritten");
+    assert.ok(await page.evaluate(()=>window.__mockLibraryDb.projects.some(p=>p.title==="Второй проект (копия)"&&p.snapshot.cards[0].title==="Мои локальные изменения")),
+      "Conflict copy must retain unsaved local text");
+    assert.equal(await page.locator("#library-conflict").isVisible(),false);
+    console.log("PASS Cloud library mock: create/edit/checkpoint/load/restore/archive/delete/conflict-copy");
     await context.close();
   }
 } finally {
