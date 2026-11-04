@@ -259,7 +259,7 @@
       button.type="button";
       button.className="graphic-list-item"+(index===selectedGraphicIndex?" active":"");
       button.setAttribute("aria-pressed",String(index===selectedGraphicIndex));
-      button.textContent=(index+1)+". "+Graphics.labels[item.kind];
+      button.textContent=(index+1)+". "+(item.label||Graphics.labels[item.kind]);
       button.addEventListener("click",()=>{selectedGraphicIndex=index;renderGraphicControls();});
       list.appendChild(button);
     });
@@ -1062,7 +1062,7 @@
       if(graphic.hidden)continue;
       const frame=Graphics.frame(graphic,W,H);
       const side=Math.max(frame.size,34);
-      items.push({key:"graphic:"+graphic.id,label:Graphics.labels[graphic.kind]+" · "+graphic.id,
+      items.push({key:"graphic:"+graphic.id,label:(graphic.label||Graphics.labels[graphic.kind])+" · "+graphic.id,
         type:"graphic",size:graphic.size,rotation:graphic.rotation,
         rect:{x:frame.x-side/2,y:frame.y-side/2,w:side,h:side}});
     }
@@ -1133,6 +1133,122 @@
     syncCardAndSave();
     return state.lockedLayers.includes(key);
   }
+  const baseLayerLabels={
+    decoration:"Фоновые элементы",photo:"Загруженное фото",brand:"Название проекта",
+    title:"Заголовок",description:"Описание",highlights:"Ключевые изменения"
+  };
+  function getLayerPanel(){
+    snapshotCard();
+    const order=cleanLayerOrder(state.layerOrder);
+    const base=order.map(key=>({
+      key,label:baseLayerLabels[key],type:"base",
+      visible:state.layers[key]!==false,
+      locked:state.lockedLayers.includes(key),
+      movable:key!=="decoration",
+      position:order.indexOf(key)
+    }));
+    const figures=Graphics.normalizeElements(state.graphicElements).map((graphic,index)=>({
+      key:"graphic:"+graphic.id,
+      label:graphic.label||Graphics.labels[graphic.kind],
+      type:"graphic",visible:!graphic.hidden,
+      locked:state.lockedLayers.includes("graphic:"+graphic.id),
+      movable:true,index,groupId:graphic.groupId||""
+    }));
+    return {base,figures,limit:Graphics.MAX,cardIndex:state.activeCard};
+  }
+  function changeLayerVisibility(key,visible){
+    if(typeof visible!=="boolean")return false;
+    if(baseLayerNames.includes(key)){
+      if(state.layers[key]===visible)return false;
+      state.layers={...cleanLayerVisibility(state.layers),[key]:visible};
+    }else if(typeof key==="string"&&key.startsWith("graphic:")){
+      const index=state.graphicElements.findIndex(graphic=>graphic.id===key.slice(8));
+      if(index<0)return false;
+      if(state.graphicElements[index].hidden===!visible)return false;
+      state.graphicElements=state.graphicElements.map((item,i)=>
+        i===index?Graphics.normalizeOne({...item,hidden:!visible},i):item);
+    }else return false;
+    historyKind="";
+    syncCardAndSave();
+    return true;
+  }
+  function moveLayer(key,delta){
+    if(delta!==1&&delta!==-1)return false;
+    if(movableLayers.includes(key)){
+      const order=cleanLayerOrder(state.layerOrder);
+      const pos=order.indexOf(key),dest=pos+delta;
+      if(dest<1||dest>=order.length)return false;
+      [order[pos],order[dest]]=[order[dest],order[pos]];
+      state.layerOrder=cleanLayerOrder(order);
+    }else if(typeof key==="string"&&key.startsWith("graphic:")){
+      const index=state.graphicElements.findIndex(g=>g.id===key.slice(8));
+      const dest=index+delta;
+      if(index<0||dest<0||dest>=state.graphicElements.length)return false;
+      const figures=[...state.graphicElements];
+      [figures[index],figures[dest]]=[figures[dest],figures[index]];
+      state.graphicElements=Graphics.normalizeElements(figures);
+      selectedGraphicIndex=dest;
+      renderGraphicControls();
+    }else return false;
+    historyKind="";
+    syncCardAndSave();
+    return true;
+  }
+  function duplicateGraphicLayer(key){
+    const index=typeof key==="string"&&key.startsWith("graphic:")
+      ?state.graphicElements.findIndex(g=>g.id===key.slice(8)):-1;
+    if(index<0||state.graphicElements.length>=Graphics.MAX)return "";
+    const source=state.graphicElements[index];
+    let id="g-copy-"+Date.now().toString(36)+"-"+state.graphicElements.length;
+    if(state.graphicElements.some(g=>g.id===id))id="g-copy-"+Date.now().toString(36)+"-"+(index+1);
+    const newGraphic=Graphics.normalizeOne({...source,id,
+      x:Math.min(100,source.x+5),y:Math.min(100,source.y+5),
+      hidden:false,label:source.label?source.label.slice(0,41)+" копия":""},index+1);
+    const figures=[...state.graphicElements];
+    figures.splice(index+1,0,newGraphic);
+    state.graphicElements=Graphics.normalizeElements(figures);
+    selectedGraphicIndex=index+1;
+    renderGraphicControls();
+    historyKind="";
+    syncCardAndSave();
+    return "graphic:"+newGraphic.id;
+  }
+  function renameGraphicLayer(key,label){
+    if(typeof label!=="string")return false;
+    const index=typeof key==="string"&&key.startsWith("graphic:")
+      ?state.graphicElements.findIndex(g=>g.id===key.slice(8)):-1;
+    if(index<0)return false;
+    const next=label.trim().slice(0,48);
+    if(state.graphicElements[index].label===next)return false;
+    state.graphicElements=state.graphicElements.map((g,i)=>i===index
+      ?Graphics.normalizeOne({...g,label:next},i):g);
+    historyKind="";
+    syncCardAndSave();
+    return true;
+  }
+  function groupGraphicLayers(keys){
+    if(!Array.isArray(keys)||keys.length<2)return "";
+    const ids=[...new Set(keys.filter(k=>typeof k==="string"&&k.startsWith("graphic:")
+      ).map(k=>k.slice(8)))];
+    const present=new Set(state.graphicElements.map(g=>g.id));
+    if(ids.length<2||ids.some(id=>!present.has(id)))return "";
+    const groupId="group-"+Date.now().toString(36);
+    state.graphicElements=state.graphicElements.map((g,i)=>ids.includes(g.id)
+      ?Graphics.normalizeOne({...g,groupId},i):g);
+    historyKind="";
+    syncCardAndSave();
+    return groupId;
+  }
+  function ungroupGraphicLayer(key){
+    const item=typeof key==="string"&&key.startsWith("graphic:")
+      ?state.graphicElements.find(g=>g.id===key.slice(8)):null;
+    if(!item?.groupId)return false;
+    state.graphicElements=state.graphicElements.map((g,i)=>g.groupId===item.groupId
+      ?Graphics.normalizeOne({...g,groupId:""},i):g);
+    historyKind="";
+    syncCardAndSave();
+    return true;
+  }
   window.AnonsEditor=Object.freeze({
     getSnapshot,
     loadSnapshot,
@@ -1140,6 +1256,13 @@
     getDirectTargets,
     transformDirect,
     toggleDirectLock,
+    getLayerPanel,
+    changeLayerVisibility,
+    moveLayer,
+    duplicateGraphicLayer,
+    renameGraphicLayer,
+    groupGraphicLayers,
+    ungroupGraphicLayer,
     getSuggestedName:()=> {
       snapshotCard();
       return (state.cards[0]?.title||"Новый анонс").trim().slice(0,100)||"Новый анонс";
