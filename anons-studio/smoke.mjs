@@ -10,7 +10,7 @@ const cloudflareHeaders=await readFile(join(root,"_headers"),"utf8");
 assert.match(cloudflareHeaders,/Content-Security-Policy:.*script-src 'self'/);
 assert.match(cloudflareHeaders,/X-Content-Type-Options: nosniff/);
 const types = { ".html": "text/html; charset=utf-8", ".css": "text/css; charset=utf-8", ".js": "application/javascript; charset=utf-8", ".webp": "image/webp" };
-const allow = new Set(["/","/index.html","/styles.css","/app.js","/scene-layout.js","/auth.bundle.js","/assets/anons-logo-approved.webp","/assets/anons-icon-approved.webp"]);
+const allow = new Set(["/","/index.html","/styles.css","/app.js","/navigation.js","/scene-layout.js","/auth.bundle.js","/assets/anons-logo-approved.webp","/assets/anons-icon-approved.webp"]);
 const server = createServer(async (req,res)=>{
   const url = new URL(req.url, "http://localhost");
   const path = url.pathname === "/" ? "/index.html" : url.pathname;
@@ -98,6 +98,33 @@ try {
     assert.equal(await page.locator("#account-billing").count(),1,"Private billing history panel exists");
     assert.ok(await page.locator("#account-form").isVisible());
     assert.ok(await page.locator("#nav-account").isVisible());
+    const mobileMenu=page.locator("#mobile-menu-toggle");
+    const primaryNav=page.locator("#primary-navigation");
+    if(width<=760){
+      assert.ok(await mobileMenu.isVisible(),"Mobile menu toggle must be accessible");
+      assert.equal(await primaryNav.isVisible(),false,"Navigation starts collapsed on phones");
+      assert.equal(await mobileMenu.getAttribute("aria-expanded"),"false");
+      await mobileMenu.click();
+      assert.ok(await primaryNav.isVisible(),"Menu opens on tap");
+      assert.equal(await mobileMenu.getAttribute("aria-expanded"),"true");
+      await page.keyboard.press("Escape");
+      assert.equal(await primaryNav.isVisible(),false,"Escape dismisses mobile navigation");
+      assert.equal(await mobileMenu.getAttribute("aria-expanded"),"false");
+      assert.equal(await mobileMenu.evaluate(el=>document.activeElement===el),true,
+        "Escape restores keyboard focus to toggle");
+      await mobileMenu.click();
+      await primaryNav.locator('a[href="#editor"]').click();
+      assert.equal(await primaryNav.isVisible(),false,"Choosing a section closes menu");
+      assert.equal(await mobileMenu.getAttribute("aria-expanded"),"false");
+      await page.setViewportSize({width:320,height:920});
+      assert.ok(await mobileMenu.isVisible(),"Menu remains usable at 320px");
+      assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2),
+        "No horizontal overflow at 320px");
+      await page.setViewportSize({width,height:920});
+    }else{
+      assert.equal(await mobileMenu.isVisible(),false,"Desktop hides menu toggle");
+      assert.ok(await primaryNav.isVisible(),"Desktop keeps direct navigation links");
+    }
     assert.ok(await page.evaluate(()=>window.__watermarkDraws>0),"Free watermark must appear in canvas");
     const previewBeforeFakeAccess=await page.locator("#poster").evaluate(c=>c.toDataURL("image/png"));
     await page.evaluate(async()=>{
