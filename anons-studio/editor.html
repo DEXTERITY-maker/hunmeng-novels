@@ -74,7 +74,7 @@
                 <a class="pro-series-link" href="./pricing.html?plan=pro#manual-order-root">Посмотреть тариф «Про»</a>
               </section>
 
-              <div class="field-group"><label for="template-select">Композиция текущей карточки</label><select id="template-select"><option value="aurora">Aurora — атмосферный</option><option value="editorial">Editorial — редакционный</option><option value="spotlight">Spotlight — выразительный</option><option value="pulse">Pulse — динамичный</option><option value="minimal">Minimal — минималистичный</option><option value="bulletin">Bulletin — новостной</option><optgroup label="Бизнес · платная подписка"><option value="business-brief" disabled>Business Brief — деловая сводка</option><option value="business-pitch" disabled>Business Pitch — презентация запуска</option><option value="business-report" disabled>Business Report — отчёт и аналитика</option></optgroup><optgroup label="Про · расширенные композиции"><option value="pro-campaign" disabled>Pro Campaign — рекламная кампания</option><option value="pro-magazine" disabled>Pro Magazine — премиальный журнал</option><option value="pro-impact" disabled>Pro Impact — выразительный запуск</option></optgroup></select><p class="field-note">Деловые шаблоны открываются в «Бизнес», а специальные Pro Campaign, Pro Magazine и Pro Impact — в «Про» и «Студии». Содержимое карточек при смене дизайна сохраняется.</p></div>
+              <div class="field-group"><label for="template-select">Композиция текущей карточки</label><select id="template-select"><option value="aurora">Aurora — атмосферный</option><option value="editorial">Editorial — редакционный</option><option value="spotlight">Spotlight — выразительный</option><option value="pulse">Pulse — динамичный</option><option value="minimal">Minimal — минималистичный</option><option value="bulletin">Bulletin — новостной</option><optgroup label="Бизнес · платная подписка"><option value="business-brief" disabled>Business Brief — деловая сводка</option><option value="business-pitch" disabled>Business Pitch — презентация запуска</option><option value="business-report" disabled>Business Report — отчёт и аналитика</option></optgroup><optgroup label="Про · расширенные композиции"><option value="pro-campaign" disabled>Pro Campaign — рекламная кампания</option><option value="pro-magazine" disabled>Pro Magazine — премиальный журнал</option><option value="pro-impact" disabled>Pro Impact — выразительный запуск</option></optgroup><optgroup label="Студия · бренд и портфолио"><option value="studio-identity" disabled>Studio Identity — фирменный стиль</option><option value="studio-launch" disabled>Studio Launch — презентация студии</option><option value="studio-portfolio" disabled>Studio Portfolio — портфолио</option></optgroup></select><p class="field-note">Деловые шаблоны открываются в «Бизнес», а специальные Pro Campaign, Pro Magazine и Pro Impact — в «Про» и «Студии». Для тарифа «Студия» добавлены Identity, Launch и Portfolio. Содержимое карточек при смене дизайна сохраняется.</p></div>
               <fieldset class="field-group">
                 <legend>Что анонсируем?</legend>
                 <div class="preset-grid" role="group" aria-label="Тип публикации">
@@ -430,6 +430,35 @@
               <p id="library-error" role="alert" class="library-error" hidden></p>
             </div>
           </div>
+          <section id="studio-workspace" class="studio-workspace" aria-labelledby="studio-workspace-title">
+            <div class="studio-workspace-head">
+              <div>
+                <span class="studio-workspace-eyebrow">СТУДИЯ · НЕСКОЛЬКО ПРОЕКТОВ</span>
+                <h3 id="studio-workspace-title">Единый фирменный стиль для портфолио</h3>
+                <p>Применяйте тему, акцент и шрифт текущего редактора к выбранным облачным проектам. Их названия, тексты, фото и композиции сохранятся.</p>
+              </div>
+              <span class="studio-tier-tag">Studio</span>
+            </div>
+            <div class="studio-workspace-preview">
+              <span id="studio-style-swatch" class="studio-style-swatch" aria-hidden="true"></span>
+              <div><strong>Фирменные настройки текущего редактора</strong><p id="studio-style-description">Настройки появятся после загрузки редактора.</p></div>
+              <button id="studio-refresh-style" type="button">Обновить стиль</button>
+            </div>
+            <div class="studio-workspace-controls">
+              <div><h4>Выберите проекты для оформления</h4><p>От 1 до 8 сохранённых проектов. Открытый сейчас проект исключён, чтобы не перезаписать его несохранённые изменения.</p></div>
+              <button id="studio-projects-refresh" type="button" disabled>Обновить проекты</button>
+            </div>
+            <div id="studio-project-list" class="studio-project-list" role="group" aria-label="Выбор проектов для массового применения стиля">
+              <p>Для просмотра проектов войдите в аккаунт.</p>
+            </div>
+            <div class="studio-workspace-footer">
+              <p id="studio-selected-count">Выбрано: 0 из 8</p>
+              <button id="studio-apply-brand" type="button" disabled>Применить стиль к выбранным проектам</button>
+            </div>
+            <p class="studio-workspace-note">Перед обновлением сохраняются версии для восстановления. Если хотя бы один проект изменён в другом месте, операция отменяется целиком. Требуется действующий тариф «Студия».</p>
+            <p id="studio-workspace-status" role="status" aria-live="polite">Проверяем доступ к инструментам Студии.</p>
+            <a class="studio-workspace-plan" href="./pricing.html?plan=studio#manual-order-root">Подробнее о тарифе «Студия»</a>
+          </section>
         </div>
       </section>
     </main>
