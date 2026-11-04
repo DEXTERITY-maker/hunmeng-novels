@@ -141,6 +141,10 @@ try {
     await page.locator("#whats-new-try").click();
     await page.waitForURL(/\/editor\.html$/);
     await page.locator("#poster").waitFor({state:"attached"});
+    // Rendering must complete, not merely catch a Canvas error behind a visible panel.
+    await page.waitForFunction(()=>window.__watermarkDraws>0,null,{timeout:7000});
+    assert.doesNotMatch(await page.locator("#toast").textContent()||"",/Ошибка предпросмотра/,
+      "Canvas preview should render its description and watermark without errors");
     const editorScreenshotDir=join(dirname(fileURLToPath(import.meta.url)),"test-artifacts");
     await mkdir(editorScreenshotDir,{recursive:true});
     await page.locator("#editor-controls").screenshot({

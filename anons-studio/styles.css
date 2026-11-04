@@ -1677,3 +1677,31 @@ body{background:#f2f3fe;color:#12172f}
 @media(prefers-reduced-motion:reduce){
   .studio-progress a{transition:none}
 }
+
+/* Stage 2 visual QA: project branding workspace belongs to the same violet system. */
+.inner-page-editor .studio-workspace{background:radial-gradient(circle at 91% 8%,#dcd1ff88,transparent 34%),linear-gradient(155deg,#fcfcff,#f2f0ff);border:1px solid #deddf8;color:#243057;border-radius:22px;box-shadow:0 17px 39px #2329601a;padding:27px}
+.inner-page-editor .studio-workspace-eyebrow{color:#7860ca}
+.inner-page-editor .studio-workspace h3{color:#23275b}
+.inner-page-editor .studio-workspace-head p{color:#737c9b}
+.inner-page-editor .studio-tier-tag{background:linear-gradient(120deg,#675fe7,#9363ed);box-shadow:0 6px 15px #6551d940;color:#fff}
+.inner-page-editor .studio-workspace-preview{border-color:#dcdcf3;background:#fff}
+.inner-page-editor .studio-style-swatch{box-shadow:0 0 0 1px #ab9be0}
+.inner-page-editor .studio-workspace-preview strong{color:#27315b}
+.inner-page-editor .studio-workspace-preview p{color:#7c84a4}
+.inner-page-editor .studio-workspace-preview button,.inner-page-editor .studio-workspace-controls button{border-color:#c7b8f5;color:#5a47bb;background:#fff}
+.inner-page-editor .studio-workspace-preview button:hover:not(:disabled),.inner-page-editor .studio-workspace-controls button:hover:not(:disabled){background:#f2edff}
+.inner-page-editor .studio-workspace-controls h4{color:#29315b}
+.inner-page-editor .studio-workspace-controls p{color:#727c9b}
+.inner-page-editor .studio-project-list>p{color:#767e9e}
+.inner-page-editor .studio-project-choice{border-color:#dcdcf2}
+.inner-page-editor .studio-project-choice:has(input:checked){background:#f0ebff;border-color:#9c83e5}
+.inner-page-editor .studio-project-choice input{accent-color:#7553e0}
+.inner-page-editor .studio-project-choice small{color:#7b83a0}
+.inner-page-editor .studio-workspace-footer p{color:#6358ae}
+.inner-page-editor .studio-workspace-footer button{background:linear-gradient(110deg,#5e6ce9,#8d5af0);box-shadow:0 8px 19px #625ee22b}
+.inner-page-editor .studio-workspace-footer button:not(:disabled):hover{background:linear-gradient(110deg,#5460d8,#7644df)}
+.inner-page-editor .studio-workspace-note{color:#7f83a4}
+.inner-page-editor #studio-workspace-status{color:#6157ab}
+.inner-page-editor #studio-workspace-status[data-error="true"]{color:#a53c58}
+.inner-page-editor .studio-workspace-plan{color:#6951c7}
+@media(max-width:700px){.inner-page-editor .studio-workspace{padding:18px}}

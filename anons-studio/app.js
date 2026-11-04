@@ -474,6 +474,8 @@
     drawBackground(W,H,t,scene);
     const margin=scene.margin,contentWidth=scene.contentWidth;
     const layout=scene.template,titleY=scene.titleY,detailsY=scene.detailsY;
+    // Title and description share this alignment across separate layer callbacks.
+    const center=scene.center,tx=center?W/2:margin;
     const rawTitle=state.title.trim()||"Заголовок публикации";
     const f=window.AnonsScene.titleLines(rawTitle,scene);
     const drawBrandLayer=()=>{
@@ -497,9 +499,7 @@
     ctx.fillText(scene.label+"  /  2026",margin,titleY-52);
     const titleFont=scene.titleFamily==="georgia"?"'Noto Serif', Georgia, serif":scene.titleFamily==="arial"?"Arial, sans-serif":"Manrope, sans-serif";
     ctx.font=scene.titleWeight+" "+f.size+"px "+titleFont;ctx.fillStyle=t.text;
-    const center=scene.center;
     ctx.textAlign=center?"center":"left";
-    const tx=center?W/2:margin;
     let y=titleY+f.size*.8;
     for(const line of f.lines){ctx.fillText(line,tx,y);y+=f.size*1.14;}
     ctx.restore();
