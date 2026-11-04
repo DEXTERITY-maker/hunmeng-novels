@@ -1156,6 +1156,17 @@
     }));
     return {base,figures,limit:Graphics.MAX,cardIndex:state.activeCard};
   }
+  function toggleLayerLock(key){
+    const known=getLayerPanel();
+    const item=[...known.base,...known.figures].find(row=>row.key===key);
+    if(!item||key==="decoration")return false;
+    const locks=new Set(state.lockedLayers);
+    if(locks.has(key))locks.delete(key);else locks.add(key);
+    state.lockedLayers=normalizeLocks([...locks],state.graphicElements);
+    historyKind="";
+    syncCardAndSave();
+    return state.lockedLayers.includes(key);
+  }
   function changeLayerVisibility(key,visible){
     if(typeof visible!=="boolean")return false;
     if(baseLayerNames.includes(key)){
@@ -1258,6 +1269,7 @@
     toggleDirectLock,
     getLayerPanel,
     changeLayerVisibility,
+    toggleLayerLock,
     moveLayer,
     duplicateGraphicLayer,
     renameGraphicLayer,
