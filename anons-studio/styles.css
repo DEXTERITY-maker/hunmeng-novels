@@ -1152,3 +1152,56 @@ html.whats-new-visible{overflow:hidden}
 #pricing[data-pricing-access="pending"] .pricing-personal-status{background:linear-gradient(122deg,#f7f2ff,#f8f9fe);border-color:#d8c6e9}
 #pricing[data-pricing-access="pending"] .pricing-personal-indicator{background:#eae0f8;color:#71479a}
 @media(max-width:670px){.pricing-personal-status{padding:18px;align-items:stretch;flex-direction:column;gap:15px}.pricing-personal-status h3{font-size:21px}.pricing-personal-side{display:flex;justify-content:space-between;align-items:center;gap:12px}.pricing-personal-side>a{white-space:nowrap}}
+
+
+/* Stage 12 — new Agency and Ultimate upper-tier cards and premium template art. */
+@media(min-width:1101px){.pricing-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.plan-agency{border-color:#add1ca;background:linear-gradient(178deg,#f8fffe 0%,#fff 54%)}
+.plan-ultimate{border:1px solid #c6b3e0;background:linear-gradient(160deg,#fcf9ff,#fff 65%);box-shadow:0 12px 32px #54417418}
+.plan-agency .plan-eyebrow{color:#277969}
+.plan-ultimate .plan-eyebrow{color:#7752b1}
+.tariff-compare{margin:40px 0 29px;padding:24px;border:1px solid #e4dfea;border-radius:20px;background:#fff}
+.tariff-compare-heading h3{margin:8px 0;color:#251e35;font-size:25px;letter-spacing:-.035em}
+.tariff-compare-heading p{font-size:12px;color:#716880;margin:0 0 20px;line-height:1.6}
+.tariff-compare-scroll{overflow-x:auto;scrollbar-width:thin;border-radius:12px;border:1px solid #ede7f2}
+.tariff-compare table{width:100%;min-width:740px;border-collapse:collapse;font-size:11px;text-align:center}
+.tariff-compare th,.tariff-compare td{padding:14px 10px;border-bottom:1px solid #eee7f3;line-height:1.5}
+.tariff-compare thead th{background:#eee9f6;font-weight:900;color:#493961;white-space:nowrap}
+.tariff-compare tbody th{text-align:left;background:#fbfaff;color:#453654;font-weight:800;min-width:175px}
+.tariff-compare tbody tr:last-child th,.tariff-compare tbody tr:last-child td{border-bottom:0}
+.tariff-compare td{color:#425066;white-space:nowrap;font-weight:650}
+.tariff-compare-note{margin:12px 0 0;font-size:10px;color:#776f82;line-height:1.6}
+.template-card-agency .template-info em{background:#206b63}
+.template-card-ultimate .template-info em{background:#58327c}
+.preview-agency-brand,.preview-agency-social,.preview-agency-showcase,
+.preview-ultimate-signature,.preview-ultimate-cinema,.preview-ultimate-vision{
+ position:relative;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;
+ isolation:isolate;overflow:hidden;min-height:190px;padding:20px 23px
+}
+.preview-agency-brand{background:linear-gradient(135deg,#092a39,#29677c);color:#fff}
+.preview-agency-social{background:linear-gradient(140deg,#171c38,#48528e);color:#fff}
+.preview-agency-showcase{background:linear-gradient(145deg,#f5eee8,#e4d0bf);color:#402727}
+.preview-ultimate-signature{background:linear-gradient(135deg,#12151c,#32343f);color:#fff}
+.preview-ultimate-cinema{background:linear-gradient(135deg,#0f133e,#4b2a82);color:#fff}
+.preview-ultimate-vision{background:linear-gradient(135deg,#f0f8f8,#bfdde0);color:#173b50}
+.preview-agency-brand::before,.preview-agency-social::before,.preview-agency-showcase::before,
+.preview-ultimate-signature::before,.preview-ultimate-cinema::before,.preview-ultimate-vision::before{
+ content:"";pointer-events:none;position:absolute;z-index:-1
+}
+.preview-agency-brand::before{right:-19%;top:-13%;width:80%;height:130%;border:2px solid #a4f5e068;transform:rotate(20deg);border-radius:18px;box-shadow:0 0 0 20px #a4f5e017}
+.preview-agency-social::before{right:-31%;top:0;width:83%;height:118%;border-radius:48%;border:26px solid #ffc4ad51;transform:rotate(22deg)}
+.preview-agency-showcase::before{right:-29%;top:4%;width:85%;height:115%;background:repeating-linear-gradient(135deg,#9d433c18 0 20px,#9d433c50 21px 23px);transform:rotate(15deg)}
+.preview-ultimate-signature::before{right:-27%;top:-29%;width:97%;height:133%;border:2px solid #ffdfa17a;border-radius:50%;box-shadow:0 0 0 20px #ffdfa119,0 0 0 46px #ffdfa10b}
+.preview-ultimate-cinema::before{right:-25%;top:-38%;width:94%;height:150%;border:34px solid #f3bcff41;border-radius:60%;transform:rotate(-30deg)}
+.preview-ultimate-vision::before{right:-25%;bottom:-19%;width:100%;height:80%;border:16px solid #17637c24;border-radius:18px;transform:rotate(-32deg);box-shadow:22px 22px #17637c13}
+.template-card-agency .business-preview-eyebrow{color:#a4f5e0}
+.preview-agency-social .business-preview-eyebrow{color:#ffc4ad}
+.preview-agency-showcase .business-preview-eyebrow{color:#9d433c}
+.template-card-ultimate .business-preview-eyebrow{color:#ffdfa1}
+.preview-ultimate-cinema .business-preview-eyebrow{color:#f3bcff}
+.preview-ultimate-vision .business-preview-eyebrow{color:#17637c}
+.template-card-agency.template-locked::after{content:"Доступен в Агентстве"}
+.template-card-ultimate.template-locked::after{content:"Только Максимум"}
+@media(max-width:680px){.tariff-compare{padding:16px;margin:24px 0}.tariff-compare-heading h3{font-size:21px}
+.preview-agency-brand,.preview-agency-social,.preview-agency-showcase,
+.preview-ultimate-signature,.preview-ultimate-cinema,.preview-ultimate-vision{min-height:185px}}
