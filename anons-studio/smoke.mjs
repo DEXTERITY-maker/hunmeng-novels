@@ -168,7 +168,11 @@ try {
     assert.ok(await page.locator("#library-guest").isVisible(),"Guests see login invitation for cloud library");
     assert.equal(await page.locator("#library-auth").isVisible(),false,"Guests cannot see private project controls");
     assert.equal(await page.locator("#library-list").count(),1);
-    assert.ok(await page.evaluate(()=>typeof window.AnonsEditor?.getSnapshot==="function"),"Editor exposes snapshot API");
+    assert.ok(await page.evaluate(()=>typeof window.AnonsEditor?.getSnapshot==="function"),
+      "Editor exposes snapshot API; page errors: "+JSON.stringify(errors)+
+      "; scripts: "+JSON.stringify(await page.locator("script[src]").evaluateAll(nodes=>
+        nodes.map(n=>n.getAttribute("src"))))+
+      "; shared graphic module: "+(await page.evaluate(()=>typeof window.AnonsGraphics)));
     assert.ok(await page.evaluate(()=>typeof window.AnonsScene?.layout==="function"),"Canvas uses the same scene contract as the paid renderer");
     const contract=await page.evaluate(()=>{
       const poster=window.AnonsEditor.getSnapshot();
