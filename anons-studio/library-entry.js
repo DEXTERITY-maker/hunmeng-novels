@@ -97,7 +97,7 @@ export function initLibrary(client) {
     elements.save.disabled=!user;
     elements.duplicate.disabled=!user;
     elements.current.textContent=hasProject ? (elements.name.value.trim()||"Без названия") : "Новый черновик";
-    elements.archive.textContent=archived?"Вернуть из архива":"В архив";
+    elements.archive.querySelector(".action-label").textContent=archived?"Вернуть из архива":"В архив";
   }
   function clearCurrent(suggestedName) {
     ++loadSerial;
