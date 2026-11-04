@@ -146,8 +146,43 @@ try {
     await page.locator("#editor-controls").screenshot({
       path:join(editorScreenshotDir,"editor-settings-"+width+".png"),animations:"disabled"
     });
+    await page.screenshot({
+      path:join(editorScreenshotDir,"editor-overview-"+width+".png"),
+      fullPage:false,animations:"disabled"
+    });
+    await page.locator("#library").screenshot({
+      path:join(editorScreenshotDir,"library-overview-"+width+".png"),
+      animations:"disabled"
+    });
+    const accountDesignPage=await context.newPage();
+    await accountDesignPage.route("https://fonts.googleapis.com/**",r=>r.abort());
+    await accountDesignPage.route("https://fonts.gstatic.com/**",r=>r.abort());
+    await accountDesignPage.goto("http://127.0.0.1:"+port+"/account.html",
+      {waitUntil:"domcontentloaded"});
+    assert.equal(await accountDesignPage.locator(".account-perks>div").count(),3,
+      "Account explains three real user benefits");
+    assert.equal(await accountDesignPage.locator(".account-card-head").count(),1,
+      "Account form retains its contents inside the redesigned card");
+    assert.equal(await accountDesignPage.locator("#account-form").count(),1,
+      "Guest auth form remains available");
+    assert.equal(await accountDesignPage.locator("#account-summary-placeholder").count(),0);
+    await accountDesignPage.screenshot({
+      path:join(editorScreenshotDir,"account-overview-"+width+".png"),
+      fullPage:false,animations:"disabled"
+    });
+    await accountDesignPage.close();
     assert.equal(await page.locator(".editor-tool-group").count(),3,
       "Editor tools are grouped into card, content and design sections");
+    assert.equal(await page.locator(".studio-progress a").count(),3,
+      "Redesigned editor has three actionable creation steps");
+    assert.equal(await page.locator(".studio-hero-details span").count(),3,
+      "Editor shows grounded workflow facts");
+    assert.equal(await page.locator(".studio-preview-grid").count(),1,
+      "Preview retains its canvas and gains visual framing");
+    assert.equal(await page.locator(".library-benefit-strip span").count(),3,
+      "Library introduction explains working capabilities");
+    assert.equal(await page.locator("#library-guest .library-guest-eyebrow").count(),1,
+      "Anonymous library experience has its new design");
     for(const id of ["editor-group-layout","editor-group-content","editor-group-design"]){
       assert.equal(await page.locator("#"+id).count(),1,"Missing grouped editor section "+id);
     }

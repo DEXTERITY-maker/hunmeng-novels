@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#111424">
+  <meta name="theme-color" content="#111a40">
   <meta name="description" content="Личное пространство Anons Studio: вход, регистрация, подписка, история платежей и безопасность аккаунта.">
   <title>Личное пространство — Anons Studio</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -34,8 +34,15 @@
     <main class="personal-page-main">
       <div class="wrap personal-breadcrumb"><a href="./index.html">Главная</a><span aria-hidden="true">/</span><span aria-current="page">Личное пространство</span></div>
       <section id="account" class="account-section" aria-labelledby="account-title"><div class="wrap account-layout">
-        <div class="account-intro"><div class="kicker">ЛИЧНОЕ ПРОСТРАНСТВО</div><h2 id="account-title">Творчество начинается<br>с твоего аккаунта.</h2><p>Зарегистрируйся по электронной почте, чтобы получить учётную запись и видеть свой тариф. Черновик сохраняется в браузере, а после сохранения проекта в облаке его можно продолжить с другого устройства.</p><div class="account-pill" id="account-status">Гость · Free</div></div>
+        <div class="account-intro"><div class="kicker">ТВОЯ СТУДИЯ · ТВОЙ ПРОФИЛЬ</div><h2 id="account-title">Твои идеи.<br><em>Твоё пространство.</em></h2><p>Один аккаунт для проектов, истории версий и управления тарифом. Войди, чтобы сохранять работы в облаке и продолжать их с другого устройства.</p>
+          <div class="account-pill" id="account-status">Гость · Free</div>
+          <div class="account-perks" aria-label="Преимущества личного кабинета">
+            <div><span><svg class="ui-icon" aria-hidden="true"><use href="./assets/ui-icons.svg#cloud-check"></use></svg></span><div><strong>Облачная библиотека</strong><small>До 30 сохранённых проектов</small></div></div>
+            <div><span><svg class="ui-icon" aria-hidden="true"><use href="./assets/ui-icons.svg#history"></use></svg></span><div><strong>История изменений</strong><small>Сохраняй версии и возвращайся к ним</small></div></div>
+            <div><span><svg class="ui-icon" aria-hidden="true"><use href="./assets/ui-icons.svg#shield-check"></use></svg></span><div><strong>Контроль аккаунта</strong><small>Подписка, заказы и безопасность</small></div></div>
+          </div></div>
         <div class="account-box">
+          <div class="account-card-head"><span class="account-card-mark"><svg class="ui-icon" aria-hidden="true"><use href="./assets/ui-icons.svg#user-round"></use></svg></span><div><strong>Добро пожаловать</strong><small>Аккаунт Anons Studio</small></div></div>
           <div id="account-guest">
             <div class="account-tabs" role="group" aria-label="Регистрация или вход">
               <button type="button" data-account-mode="signup" aria-pressed="true" class="active">Регистрация</button>
@@ -55,10 +62,12 @@
           </div>
           <div id="account-signed" hidden>
             <div class="account-success"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="./assets/ui-icons.svg#check"></use></svg> Аккаунт подключён</div>
-            <div class="account-profile-email" id="account-email-signed"></div>
-            <p>Текущий тариф: <strong id="account-plan-signed">Free</strong></p>
-            <p class="account-public-id">Ваш постоянный номер: <strong id="manual-customer-number">Проверяем ID…</strong></p>
-            <div class="account-destinations"><a class="account-upgrade" href="./editor.html#library">Моя библиотека <svg class="ui-icon" aria-hidden="true" focusable="false"><use href="./assets/ui-icons.svg#arrow-up-right"></use></svg></a><a class="account-upgrade" href="./pricing.html">Посмотреть тарифы <svg class="ui-icon" aria-hidden="true" focusable="false"><use href="./assets/ui-icons.svg#arrow-up-right"></use></svg></a></div>
+            <section class="account-summary-card" aria-label="Ваш профиль и подписка">
+              <span class="account-summary-eyebrow">ВАШ ЛИЧНЫЙ ПРОФИЛЬ</span>
+              <div class="account-profile-email" id="account-email-signed"></div>
+              <div class="account-summary-stats"><p>Текущий тариф <strong id="account-plan-signed">Free</strong></p><p class="account-public-id">Номер клиента <strong id="manual-customer-number">Проверяем ID…</strong></p></div>
+            </section>
+            <div class="account-destinations"><a class="account-upgrade" href="./editor.html">Открыть редактор <svg class="ui-icon" aria-hidden="true" focusable="false"><use href="./assets/ui-icons.svg#arrow-up-right"></use></svg></a><a class="account-upgrade" href="./editor.html#library">Моя библиотека <svg class="ui-icon" aria-hidden="true" focusable="false"><use href="./assets/ui-icons.svg#arrow-up-right"></use></svg></a><a class="account-upgrade" href="./pricing.html">Посмотреть тарифы <svg class="ui-icon" aria-hidden="true" focusable="false"><use href="./assets/ui-icons.svg#arrow-up-right"></use></svg></a></div>
             <details class="billing-history-panel" id="account-billing">
               <summary>Подписка и история покупок</summary>
               <div id="billing-member-status" role="status">Проверяем подписку…</div>
@@ -111,7 +120,7 @@
         </div>
       </div></section>
       <section class="personal-return wrap" aria-label="Перейти к творчеству">
-        <div><span class="kicker">ТВОИ ИДЕИ</span><h2>Вернись к творчеству.</h2><p>Редактор и облачная библиотека доступны в отдельной рабочей области Anons Studio.</p></div>
+        <div><span class="kicker">ТВОИ ИДЕИ</span><h2>Вернись к творчеству.</h2><p>Переходи в редактор, создавай графику и собирай собственную коллекцию публикаций в облаке.</p></div>
         <div class="personal-return-actions"><a href="./editor.html" class="btn btn-primary">Открыть редактор <svg class="ui-icon" aria-hidden="true" focusable="false"><use href="./assets/ui-icons.svg#arrow-up-right"></use></svg></a><a href="./editor.html#library" class="btn btn-outline">Моя библиотека</a></div>
       </section>
     </main>

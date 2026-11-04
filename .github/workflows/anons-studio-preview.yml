@@ -83,6 +83,9 @@ jobs:
             anons-studio/test-artifacts/editor-settings-*.png
             anons-studio/test-artifacts/direct-canvas-*.png
             anons-studio/test-artifacts/home-*.png
+            anons-studio/test-artifacts/editor-overview-*.png
+            anons-studio/test-artifacts/library-overview-*.png
+            anons-studio/test-artifacts/account-overview-*.png
           if-no-files-found: warn
           retention-days: 14
       - name: Publish standalone preview (never existing production)
