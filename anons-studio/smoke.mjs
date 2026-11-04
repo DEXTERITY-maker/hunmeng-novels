@@ -62,8 +62,14 @@ try {
     // available from the footer without disturbing ordinary page visits.
     const releaseDialog=page.locator("#whats-new-dialog");
     await page.waitForFunction(()=>document.getElementById("whats-new-dialog")?.open);
-    assert.match(await page.locator("#whats-new-title").textContent(),/студии стало/);
-    assert.equal(await page.locator(".whats-new-list li").count(),4);
+    assert.match(await page.locator("#whats-new-title").textContent(),/Обновление структуры сайта/);
+    assert.equal(await page.locator(".whats-new-list li").count(),6);
+    for(const destination of ["editor.html","templates.html","features.html","pricing.html","account.html"]){
+      assert.equal(await page.locator('.whats-new-list a[href="./'+destination+'"]').count(),1,
+        "Announcement links directly to "+destination);
+    }
+    assert.equal(await releaseDialog.getAttribute("data-release"),"2026-11-04-detailed-navigation-release",
+      "Latest announcement version must be recognized");
     assert.equal(await page.locator("#whats-new-close").evaluate(el=>el===document.activeElement),true,
       "Announcement initially focuses its accessible close control");
     await page.locator("#whats-new-dismiss").click();
