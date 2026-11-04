@@ -418,3 +418,41 @@ html.whats-new-visible{overflow:hidden}
 .whats-new-item-link{display:inline-block;margin-top:6px;color:#6740b4;font-size:11px;font-weight:800;text-decoration:underline;text-underline-offset:3px}
 .whats-new-item-link:hover{color:#432284}
 .whats-new-item-link:focus-visible{outline:3px solid #8552f0;outline-offset:3px;border-radius:2px}
+
+/* Site-wide icon system: self-hosted SVGs, consistent 24px vector strokes. */
+.ui-icon{display:inline-block;width:1em;height:1em;flex:none;vertical-align:-.14em;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;pointer-events:none;overflow:visible}
+:is(button,a,label,summary)>.ui-icon{width:16px;height:16px}
+:is(button,a,label,summary):has(>.ui-icon){display:inline-flex;align-items:center;gap:7px}
+.step-icon .ui-icon,.feature-icon .ui-icon{width:25px;height:25px}
+.step-num .ui-icon{width:17px;height:17px}
+.home-explore-icon .ui-icon,.home-explore-arrow .ui-icon,.feature-case-icon .ui-icon{width:23px;height:23px}
+.whats-new-item-icon .ui-icon{width:21px;height:21px}
+.whats-new-mark .ui-icon{width:28px;height:28px}
+.whats-new-close .ui-icon{width:20px;height:20px}
+.whats-new-open{display:inline-flex;align-items:center;gap:7px}
+.whats-new-open .ui-icon{width:15px;height:15px}
+.mobile-menu-icon{display:inline-flex;align-items:center;justify-content:center}
+.mobile-menu-icon .ui-icon{width:22px;height:22px}
+.preset-symbol{display:inline-flex;align-items:center}
+.preset-symbol .ui-icon{width:17px;height:17px}
+.preview-decoration .ui-icon{width:1em;height:1em}
+.hero-orbit .ui-icon{width:42px;height:42px}
+.decor-star .ui-icon{width:66px;height:66px}
+.hero-foot .ui-icon,.eyebrow-spark .ui-icon{width:1em;height:1em}
+.mini-label .ui-icon{width:14px;height:14px}
+.feature-illustration>.ui-icon{width:95px;height:95px}
+.library-guest-symbol .ui-icon{width:34px;height:34px}
+.account-success{display:flex;align-items:center;gap:6px}
+.account-success .ui-icon{width:16px;height:16px}
+.plan-ui-icon{display:grid;place-items:center;width:46px;height:46px;margin-bottom:14px;border:1px solid #e9e0fa;border-radius:13px;background:#f2ecff;color:#7148be}
+.plan-ui-icon .ui-icon{width:23px;height:23px}
+.plan-featured .plan-ui-icon{background:#f5edff;border-color:#d6bbff;color:#5d2dac}
+#library-refresh .ui-icon{width:20px;height:20px}
+.card-manager-actions button,.history-button,.library-quiet,#library-conflict-copy,#library-load-latest{display:inline-flex;align-items:center;justify-content:center;gap:6px}
+#library-refresh{min-width:36px;min-height:36px}
+#library-checkpoint .ui-icon{width:16px;height:16px}
+.advanced-panel summary>.advanced-title{display:inline-flex;align-items:center;gap:9px}
+.advanced-panel summary>.advanced-title .ui-icon{width:16px;height:16px}
+.advanced-panel summary>span:last-child .ui-icon{width:15px;height:15px}
+.upload-btn .ui-icon{width:16px;height:16px}
+@media(max-width:440px){.whats-new-item-icon .ui-icon{width:20px;height:20px}.plan-ui-icon{margin-bottom:10px}}
