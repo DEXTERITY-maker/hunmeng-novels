@@ -14,7 +14,9 @@ export function initManualOrders(client) {
   const plans=Object.freeze({
     basic:{name:"Бизнес",amount:29900},
     pro:{name:"Про",amount:49900},
-    studio:{name:"Студия",amount:99900}
+    studio:{name:"Студия",amount:99900},
+    agency:{name:"Агентство",amount:149900},
+    ultimate:{name:"Максимум",amount:249900}
   });
   const selectedPlan=()=>Object.hasOwn(plans,planSelect?.value)?planSelect.value:"basic";
   function renderPlan(){
