@@ -80,8 +80,12 @@
   function choose(key,focusCanvas=false){
     selected=key;
     refresh();
+    window.dispatchEvent(new CustomEvent("anons:direct-selected",{detail:{key:selected}}));
     if(focusCanvas&&enable.checked)canvas.focus({preventScroll:true});
   }
+  window.addEventListener("anons:select-layer",event=>{
+    if(typeof event.detail?.key==="string")choose(event.detail.key);
+  });
   function adjust(updates,group){
     if(!selected||!enable.checked)return false;
     const success=editor.transformDirect(selected,updates,group);
