@@ -436,8 +436,8 @@ try {
     if(width<=760)await page.locator("#editor-show-preview").click();
     const directEnable=page.locator("#direct-enable");
     await directEnable.check();
-    assert.equal(await page.locator("#direct-target option").count(),5,
-      "Title, description, highlights and added graphic are selectable");
+    assert.equal(await page.locator("#direct-target option").count(),6,
+      "Project title, heading, description, highlights and graphics are selectable");
     await page.locator("#direct-target").selectOption(directKey);
     assert.equal(await page.locator(".direct-selection-outline").isVisible(),true);
     assert.equal(await page.locator("#poster").evaluate(el=>el.classList.contains("direct-canvas-active")),true);
