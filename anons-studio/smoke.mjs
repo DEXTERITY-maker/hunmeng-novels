@@ -10,7 +10,7 @@ const cloudflareHeaders=await readFile(join(root,"_headers"),"utf8");
 assert.match(cloudflareHeaders,/Content-Security-Policy:.*script-src 'self'/);
 assert.match(cloudflareHeaders,/X-Content-Type-Options: nosniff/);
 const types = { ".html": "text/html; charset=utf-8", ".css": "text/css; charset=utf-8", ".js": "application/javascript; charset=utf-8", ".webp": "image/webp" };
-const allow = new Set(["/","/index.html","/styles.css","/app.js","/navigation.js","/scene-layout.js","/auth.bundle.js","/assets/anons-logo-approved.webp","/assets/anons-icon-approved.webp"]);
+const allow = new Set(["/","/index.html","/styles.css","/app.js","/navigation.js","/whats-new.js","/scene-layout.js","/auth.bundle.js","/assets/anons-logo-approved.webp","/assets/anons-icon-approved.webp"]);
 const server = createServer(async (req,res)=>{
   const url = new URL(req.url, "http://localhost");
   const path = url.pathname === "/" ? "/index.html" : url.pathname;
@@ -53,6 +53,39 @@ try {
     page.on("pageerror",error=>errors.push(error.message));
     await page.goto("http://127.0.0.1:"+port,{waitUntil:"domcontentloaded"});
     await page.locator("#poster").waitFor();
+    // Native dialog announces new features once per release and stays
+    // available from the footer without disturbing ordinary page visits.
+    const releaseDialog=page.locator("#whats-new-dialog");
+    await page.waitForFunction(()=>document.getElementById("whats-new-dialog")?.open);
+    assert.match(await page.locator("#whats-new-title").textContent(),/студии стало/);
+    assert.equal(await page.locator(".whats-new-list li").count(),4);
+    assert.equal(await page.locator("#whats-new-close").evaluate(el=>el===document.activeElement),true,
+      "Announcement initially focuses its accessible close control");
+    await page.locator("#whats-new-dismiss").click();
+    assert.equal(await releaseDialog.evaluate(d=>d.open),false,"Dismiss closes the dialog");
+    const firstRelease=await releaseDialog.getAttribute("data-release");
+    assert.equal(await page.evaluate(()=>localStorage.getItem("anons-studio:whats-new:seen")),firstRelease);
+    await page.locator("#whats-new-open").click();
+    assert.equal(await releaseDialog.evaluate(d=>d.open),true,"News can be reopened from footer");
+    await page.keyboard.press("Escape");
+    assert.equal(await releaseDialog.evaluate(d=>d.open),false,"Escape dismisses the native dialog");
+    assert.ok(await page.locator("#whats-new-open").evaluate(el=>el===document.activeElement),
+      "Keyboard focus returns to the news trigger");
+    await page.locator("#whats-new-open").click();
+    await page.mouse.click(4,4);
+    assert.equal(await releaseDialog.evaluate(d=>d.open),false,"Clicking the backdrop closes the dialog");
+    await page.reload({waitUntil:"domcontentloaded"});
+    await page.waitForTimeout(1050);
+    assert.equal(await releaseDialog.evaluate(d=>d.open),false,
+      "Dismissed release announcement must not reappear on reload");
+    await page.evaluate(()=>localStorage.setItem("anons-studio:whats-new:seen","previous-release"));
+    await page.reload({waitUntil:"domcontentloaded"});
+    await page.waitForFunction(()=>document.getElementById("whats-new-dialog")?.open);
+    assert.equal(await releaseDialog.evaluate(d=>d.open),true,
+      "Publishing a new release identifier reopens the announcement");
+    await page.locator("#whats-new-try").click();
+    assert.equal(await releaseDialog.evaluate(d=>d.open),false,"CTA closes the modal");
+    assert.equal(new URL(page.url()).hash,"#editor","CTA opens the editor section");
     assert.ok(await page.locator("#library-guest").isVisible(),"Guests see login invitation for cloud library");
     assert.equal(await page.locator("#library-auth").isVisible(),false,"Guests cannot see private project controls");
     assert.equal(await page.locator("#library-list").count(),1);
