@@ -10,7 +10,7 @@ const cloudflareHeaders=await readFile(join(root,"_headers"),"utf8");
 assert.match(cloudflareHeaders,/Content-Security-Policy:.*script-src 'self'/);
 assert.match(cloudflareHeaders,/X-Content-Type-Options: nosniff/);
 const types = { ".html": "text/html; charset=utf-8", ".css": "text/css; charset=utf-8", ".js": "application/javascript; charset=utf-8", ".webp": "image/webp", ".svg":"image/svg+xml" };
-const allow = new Set(["/","/index.html","/account.html","/editor.html","/templates.html","/features.html","/pricing.html","/styles.css","/app.js","/navigation.js","/whats-new.js","/scene-layout.js","/auth.bundle.js","/assets/anons-logo-approved.webp","/assets/anons-icon-approved.webp","/assets/ui-icons.svg"]);
+const allow = new Set(["/","/index.html","/account.html","/editor.html","/templates.html","/features.html","/pricing.html","/styles.css","/app.js","/editor-workspace.js","/navigation.js","/whats-new.js","/scene-layout.js","/auth.bundle.js","/assets/anons-logo-approved.webp","/assets/anons-icon-approved.webp","/assets/ui-icons.svg"]);
 const server = createServer(async (req,res)=>{
   const url = new URL(req.url, "http://localhost");
   const path = url.pathname === "/" ? "/index.html" : url.pathname;
@@ -129,7 +129,24 @@ try {
       "Publishing a new release identifier reopens the announcement");
     await page.locator("#whats-new-try").click();
     await page.waitForURL(/\/editor\.html$/);
-    await page.locator("#poster").waitFor();
+    await page.locator("#poster").waitFor({state:"attached"});
+    assert.equal(await page.locator(".editor-tool-group").count(),3,
+      "Editor tools are grouped into card, content and design sections");
+    for(const id of ["editor-group-layout","editor-group-content","editor-group-design"]){
+      assert.equal(await page.locator("#"+id).count(),1,"Missing grouped editor section "+id);
+    }
+    if(width<=760){
+      assert.equal(await page.locator(".editor-view-switch").isVisible(),true);
+      assert.equal(await page.locator("#editor-controls").isVisible(),true,
+        "Mobile editor initially displays settings");
+      assert.equal(await page.locator("#editor-preview").isVisible(),false,
+        "Mobile preview is initially hidden");
+      assert.equal(await page.locator('[data-workspace-view="edit"]').getAttribute("aria-pressed"),"true");
+    }else{
+      assert.equal(await page.locator(".editor-view-switch").isVisible(),false);
+      assert.equal(await page.locator("#editor-controls").isVisible(),true);
+      assert.equal(await page.locator("#editor-preview").isVisible(),true);
+    }
     assert.equal(await releaseDialog.count(),0,"Announcement was left on the home page");
     assert.equal(new URL(page.url()).pathname,"/editor.html","CTA opens the independent editor");
     assert.ok(await page.locator("#library-guest").isVisible(),"Guests see login invitation for cloud library");
@@ -287,6 +304,19 @@ try {
     assert.equal(await page.locator("#template-select").inputValue(),"editorial");
     assert.equal(await page.locator("#heading-scale").inputValue(),"120");
     assert.equal(await page.locator("#text-align").inputValue(),"center");
+    if(width<=760){
+      await page.locator("#editor-show-preview").click();
+      assert.equal(await page.locator("#editor-preview").isVisible(),true);
+      assert.equal(await page.locator("#editor-controls").isVisible(),false);
+      assert.equal(await page.locator('[data-workspace-view="preview"]').getAttribute("aria-pressed"),"true");
+      assert.equal(await page.locator('[data-workspace-view="preview"]').evaluate(el=>el===document.activeElement),true,
+        "Preview action restores focus to the visible toolbar");
+      await page.locator('[data-workspace-view="edit"]').click();
+      assert.equal(await page.locator("#title").inputValue(),"Вторая карточка",
+        "Returning to settings preserves editor state");
+      assert.equal(await page.locator("#editor-controls").isVisible(),true);
+      await page.locator('[data-workspace-view="preview"]').click();
+    }
     const [zipDownload]=await Promise.all([page.waitForEvent("download"),page.locator("#export-all").click()]);
     assert.match(zipDownload.suggestedFilename(),/\.zip$/);
     const zipBytes=await readFile(await zipDownload.path());
