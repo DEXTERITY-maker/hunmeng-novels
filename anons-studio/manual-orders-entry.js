@@ -21,7 +21,7 @@ export function initManualOrders(client) {
     const plan=plans[selectedPlan()];
     if(planPrice)planPrice.textContent=(plan.amount/100)+" ₽";
     if(planSummary)planSummary.textContent=plan.name+" · "+(plan.amount/100)+" ₽ за 30 дней. Без автоматических списаний.";
-    if(button&&!loading)button.textContent="Заказать «"+plan.name+"»";
+    if(button&&!loading)button.textContent=orderButtonText();
   }
   const customerLabel=$("manual-order-customer");
   const message=$("manual-order-status");
@@ -39,7 +39,16 @@ export function initManualOrders(client) {
   };
   const renderMoney=kopecks=>(kopecks/100).toLocaleString("ru-RU")+" ₽";
   const number=orderNo=>"AS-"+String(orderNo);
-  let userId=null,epoch=0,loading=false,orders=[],customerNo=null,isAdmin=false;
+  let userId=null,epoch=0,loading=false,orders=[],customerNo=null,isAdmin=false,activeSubscription=false;
+  const hasOpenOrder=()=>orders.some(o=>o.status==="awaiting_instructions"||o.status==="payment_reported");
+  const newOrderBlocked=()=>activeSubscription||hasOpenOrder();
+  const orderButtonText=()=>activeSubscription?"Подписка уже активна"
+    :hasOpenOrder()?"Заявка уже оформлена":"Заказать «"+plans[selectedPlan()].name+"»";
+  function broadcastOrders(){
+    window.dispatchEvent?.(new CustomEvent("anons:manual-orders",{
+      detail:{userId,orders:orders.map(o=>({order_no:o.order_no,plan:o.plan,status:o.status}))}
+    }));
+  }
   const own=()=>userId!==null;
   const live=(id,serial)=>userId===id&&epoch===serial;
   function say(el,value,error=false){
@@ -62,15 +71,16 @@ export function initManualOrders(client) {
   }
   function setBusy(value){
     loading=value;
-    if(button)button.disabled=value||!own()||customerNo===null;
-    if(button)button.textContent=value?"Обработка…":"Заказать «"+plans[selectedPlan()].name+"»";
+    if(button)button.disabled=value||!own()||customerNo===null||newOrderBlocked();
+    if(button)button.textContent=value?"Обработка…":orderButtonText();
   }
   function renderProfile(){
     const label=customerNo===null?"Проверяем номер…":String(customerNo);
     if(profile)profile.textContent=own()?label:"Войдите, чтобы получить номер";
     if(customerLabel)customerLabel.textContent=own()?label:"После входа появится постоянный номер";
     if(signedPrompt)signedPrompt.hidden=own();
-    if(button)button.disabled=loading||!own()||customerNo===null;
+    if(button)button.disabled=loading||!own()||customerNo===null||newOrderBlocked();
+    if(button&&!loading)button.textContent=orderButtonText();
   }
   function addText(tag,value,cls){
     const el=document.createElement(tag);
@@ -136,6 +146,7 @@ export function initManualOrders(client) {
     if(error)throw error;
     orders=Array.isArray(data)?data:[];
     renderAll();
+    broadcastOrders();
   }
   async function refresh(){
     const id=userId;
@@ -161,7 +172,7 @@ export function initManualOrders(client) {
     }
   }
   async function createOrder(){
-    if(!own()||loading||customerNo===null)return;
+    if(!own()||loading||customerNo===null||newOrderBlocked())return;
     const id=userId,serial=epoch;setBusy(true);
     say(message,"Создаём заявку…");
     try{
@@ -261,13 +272,19 @@ export function initManualOrders(client) {
     const id=typeof user?.id==="string"?user.id:null;
     if(id===userId){renderAll();return;}
     ++epoch;
-    userId=id;orders=[];customerNo=null;isAdmin=false;loading=false;
+    userId=id;orders=[];customerNo=null;isAdmin=false;loading=false;activeSubscription=false;
     say(message,id?"Проверяем аккаунт и постоянный ID…":"Для оформления заказа требуется подтверждённый аккаунт.");
     if(adminList)adminList.replaceChildren();
     if(adminMessage)say(adminMessage,"");
     renderAll();
+    broadcastOrders();
     if(id)void refresh();
   }
+  window.addEventListener("anons:access",event=>{
+    activeSubscription=event.detail?.loggedIn===true
+      &&event.detail?.verified!==false&&event.detail?.premium===true;
+    renderProfile();
+  });
   planSelect?.addEventListener("change",renderPlan);
   button?.addEventListener("click",()=>{void createOrder();});
   $("manual-order-refresh")?.addEventListener("click",()=>{void refresh();});
