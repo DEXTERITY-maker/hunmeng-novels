@@ -10,7 +10,7 @@ const cloudflareHeaders=await readFile(join(root,"_headers"),"utf8");
 assert.match(cloudflareHeaders,/Content-Security-Policy:.*script-src 'self'/);
 assert.match(cloudflareHeaders,/X-Content-Type-Options: nosniff/);
 const types = { ".html": "text/html; charset=utf-8", ".css": "text/css; charset=utf-8", ".js": "application/javascript; charset=utf-8", ".webp": "image/webp", ".svg":"image/svg+xml" };
-const allow = new Set(["/","/index.html","/account.html","/editor.html","/templates.html","/features.html","/pricing.html","/styles.css","/app.js","/editor-workspace.js","/editor-direct.js","/editor-layers.js","/navigation.js","/templates-catalog.js","/whats-new.js","/scene-layout.js","/graphic-elements.js","/auth.bundle.js","/assets/anons-logo-approved.webp","/assets/anons-icon-approved.webp","/assets/ui-icons.svg"]);
+const allow = new Set(["/","/index.html","/account.html","/editor.html","/templates.html","/features.html","/pricing.html","/styles.css","/app.js","/editor-workspace.js","/editor-direct.js","/editor-layers.js","/navigation.js","/templates-catalog.js","/templates-assistant.js","/whats-new.js","/scene-layout.js","/graphic-elements.js","/auth.bundle.js","/assets/anons-logo-approved.webp","/assets/anons-icon-approved.webp","/assets/ui-icons.svg"]);
 const server = createServer(async (req,res)=>{
   const url = new URL(req.url, "http://localhost");
   const path = url.pathname === "/" ? "/index.html" : url.pathname;
@@ -374,6 +374,16 @@ try {
     await page.goto("http://127.0.0.1:"+port+"/templates.html",{waitUntil:"domcontentloaded"});
     assert.equal(await page.locator("[data-template]").count(),6,"Six working template choices");
     await page.locator("#catalog-controls:not([hidden])").waitFor();
+    assert.equal(await page.locator("#assistant-open").getAttribute("href"),"./editor.html?template=aurora&preset=update",
+      "Quick-start defaults to a safe, editor-compatible suggestion");
+    await page.locator("#assistant-purpose").selectOption("event");
+    assert.equal(await page.locator("#assistant-open").getAttribute("href"),"./editor.html?template=pulse&preset=event",
+      "Quick-start recommends an energetic event composition");
+    await page.locator("#assistant-mood").selectOption("calm");
+    assert.equal(await page.locator("#assistant-open").getAttribute("href"),"./editor.html?template=bulletin&preset=event",
+      "Quick-start recomputes recommendation without navigation");
+    assert.equal(await page.locator("#assistant-result-art .template-art").count(),1,
+      "Recommended preview reuses a real gallery composition");
     assert.equal(await page.locator(".catalog-item:visible").count(),6,"All templates initially visible");
     await page.locator("#template-search").fill("Aurora");
     assert.equal(await page.locator(".catalog-item:visible").count(),1,"Catalogue search narrows the visible templates");
