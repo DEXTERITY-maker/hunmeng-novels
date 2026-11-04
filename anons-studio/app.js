@@ -83,8 +83,10 @@
     out.headingScale=Number.isFinite(original.headingScale)?Math.max(80,Math.min(120,original.headingScale)):state.headingScale;
     out.decorations=typeof original.decorations==="boolean"?original.decorations:state.decorations;
     out.photoOpacity=Number.isFinite(original.photoOpacity)?Math.max(15,Math.min(85,original.photoOpacity)):state.photoOpacity;
-    out.titleFont=textFonts.has(original.titleFont)?original.titleFont:state.titleFont;
-    out.descriptionScale=Math.round(clamp(original.descriptionScale,80,130,state.descriptionScale));
+    // Old project snapshots must not accidentally inherit the currently
+    // active card's typography when those fields did not yet exist.
+    out.titleFont=textFonts.has(original.titleFont)?original.titleFont:"auto";
+    out.descriptionScale=Math.round(clamp(original.descriptionScale,80,130,100));
     out.layerOffsets=normalizeOffsets(original.layerOffsets);
     out.graphicElements=Graphics.normalizeElements(original.graphicElements);
     return out;
