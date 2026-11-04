@@ -33,6 +33,8 @@
   const Graphics=window.AnonsGraphics; // Exact allowlisted shapes used by server PNG exports.
   if(!Graphics)throw new Error("GRAPHICS_MODULE_MISSING");
   const textFonts=new Set(["auto","manrope","georgia","arial"]);
+  const decorLevels=new Set(["subtle","balanced","expressive"]);
+  const textSpacings=new Set(["compact","balanced","airy"]);
   const layerAxes={title:["x","y"],description:["y"],highlights:["y"]};
   const clamp=(value,min,max,fallback)=>Number.isFinite(Number(value))
     ?Math.max(min,Math.min(max,Number(value))):fallback;
@@ -44,16 +46,17 @@
     }
     return result;
   }
-  const cardKeys=["title","description","points","preset","template","theme","accentColor","alignment","headingScale","decorations","photoOpacity","titleFont","descriptionScale","layerOffsets","graphicElements"];
+  const cardKeys=["title","description","points","preset","template","theme","accentColor","alignment","headingScale","decorations","photoOpacity","titleFont","descriptionScale","layerOffsets","graphicElements","decorationLevel","textSpacing"];
   const limits={project:45,title:85,description:210,points:240};
   const defaults = { preset: "update", theme: "ultraviolet", ratio: "portrait", ...presets.update, imageData: "",
     template:"aurora", headingScale:100, accentColor:"", alignment:"left", decorations:true, photoOpacity:35,
     titleFont:"auto",descriptionScale:100,layerOffsets:normalizeOffsets(null),graphicElements:[],
+    decorationLevel:"subtle",textSpacing:"balanced",
     activeCard:0, cards:[] };
   let saved = {};
   try { saved = JSON.parse(localStorage.getItem(storageKey) || "{}") || {}; } catch (_) {}
   const state = { ...defaults };
-  for (const key of ["preset", "theme", "ratio", "project", "title", "description", "points", "imageData","template","accentColor","alignment","titleFont"]) {
+  for (const key of ["preset", "theme", "ratio", "project", "title", "description", "points", "imageData","template","accentColor","alignment","titleFont","decorationLevel","textSpacing"]) {
     if (typeof saved[key] === "string") state[key] = saved[key];
   }
   if (!presets[state.preset]) state.preset = "update";
@@ -69,6 +72,8 @@
   state.descriptionScale=Math.round(clamp(saved.descriptionScale,80,130,100));
   state.layerOffsets=normalizeOffsets(saved.layerOffsets);
   state.graphicElements=Graphics.normalizeElements(saved.graphicElements);
+  if(!decorLevels.has(state.decorationLevel))state.decorationLevel="subtle";
+  if(!textSpacings.has(state.textSpacing))state.textSpacing="balanced";
   for (const key of ["project","title","description","points"]) state[key]=state[key].slice(0,limits[key]);
   const sanitizeCard = (v) => {
     const original=(v && typeof v==="object")?v:{};
@@ -89,6 +94,8 @@
     out.descriptionScale=Math.round(clamp(original.descriptionScale,80,130,100));
     out.layerOffsets=normalizeOffsets(original.layerOffsets);
     out.graphicElements=Graphics.normalizeElements(original.graphicElements);
+    out.decorationLevel=decorLevels.has(original.decorationLevel)?original.decorationLevel:"subtle";
+    out.textSpacing=textSpacings.has(original.textSpacing)?original.textSpacing:"balanced";
     return out;
   };
   // Migration: keep a previously saved single-card project when upgrading v0.2.
@@ -254,6 +261,8 @@
     $("photo-opacity").value=state.photoOpacity;
     $("photo-opacity-value").textContent=state.photoOpacity+"%";
     $("ornaments").checked=state.decorations;
+    $("decoration-level").value=state.decorationLevel;
+    $("text-spacing").value=state.textSpacing;
     $("title-font").value=state.titleFont;
     $("description-scale").value=state.descriptionScale;
     $("description-scale-value").textContent=state.descriptionScale+"%";
@@ -553,6 +562,12 @@
     $("photo-opacity-value").textContent=state.photoOpacity+"%";syncCardAndSave();
   });
   $("ornaments").addEventListener("change",e=>{state.decorations=e.target.checked;syncCardAndSave();});
+  $("decoration-level").addEventListener("change",e=>{
+    state.decorationLevel=decorLevels.has(e.target.value)?e.target.value:"subtle";syncCardAndSave();
+  });
+  $("text-spacing").addEventListener("change",e=>{
+    state.textSpacing=textSpacings.has(e.target.value)?e.target.value:"balanced";syncCardAndSave();
+  });
   $("title-font").addEventListener("change",e=>{
     state.titleFont=textFonts.has(e.target.value)?e.target.value:"auto";
     syncCardAndSave();
