@@ -455,6 +455,24 @@ try {
     assert.equal((await page.evaluate(()=>window.AnonsEditor.getSnapshot()
       .cards[0].graphicElements[0].x)),originalShape.x,"Locked figure cannot move");
     await page.locator("#direct-lock").click();
+    assert.equal(await page.locator("#direct-lock").getAttribute("aria-pressed"),"false",
+      "Second lock action unlocks the selected figure");
+    await page.evaluate(()=>{
+      window.__anonsPointerTrace=[];
+      const c=document.querySelector("#poster");
+      for(const type of ["pointerdown","pointermove","pointerup","lostpointercapture"]){
+        c.addEventListener(type,event=>{
+          window.__anonsPointerTrace.push({
+            type,pointerId:event.pointerId,buttons:event.buttons,
+            x:Math.round(event.clientX),y:Math.round(event.clientY),
+            selected:document.querySelector("#direct-target").value,
+            locked:window.AnonsEditor.getDirectTargets().items.find(i=>
+              i.key===document.querySelector("#direct-target").value)?.locked,
+            figureX:window.AnonsEditor.getSnapshot().cards[0].graphicElements[0].x
+          });
+        },true);
+      }
+    });
     const bbox=await page.locator("#poster").boundingBox();
     const handle=await page.locator(".direct-selection-outline").boundingBox();
     assert.ok(bbox?.width>50&&handle?.width>10);
@@ -467,7 +485,9 @@ try {
     await page.mouse.move(startX+bbox.width*.10,startY+bbox.height*.05,{steps:5});
     await page.mouse.up();
     const dragged=await page.evaluate(()=>window.AnonsEditor.getSnapshot().cards[0].graphicElements[0]);
-    assert.notEqual(dragged.x,originalShape.x,"Dragging the figure updates its saved x position");
+    assert.notEqual(dragged.x,originalShape.x,
+      "Dragging figure should update x; pointer trace: "+
+        JSON.stringify(await page.evaluate(()=>window.__anonsPointerTrace)));
     assert.ok(dragged.x%5===0,"Grid snapping applies during pointer movement");
     await page.locator("#direct-larger").click();
     await page.locator("#direct-rotate-right").click();
