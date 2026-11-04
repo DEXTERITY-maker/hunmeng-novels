@@ -25,6 +25,7 @@ const AUTH_RETURN_URL="https://anons-studio-preview.pages.dev/";
 const SIGNUP_MIN_PASSWORD=10;
 let mode="signup";
 let requestSerial=0;
+let authEventSerial=0;
 let recovering=false;
 let lastSignupEmail="";
 let currentAccountId=null;
@@ -80,6 +81,14 @@ function renderGuest(){
   status.textContent="Гость · Free";
   library.setUser(null);
   billing.setUser(null);
+}
+// Clear protected UI immediately when Auth reports that the current user
+// signed out or another user took over. Never wait for membership requests.
+function hidePreviousAccount(){
+  const hadAccount=Boolean(currentAccountId);
+  renderGuest();
+  publishEntitlements("free",false);
+  if(hadAccount)window.AnonsEditor?.newDraft?.();
 }
 function renderUser(user,plan){
   accountEmail.textContent=user.email||"Аккаунт";
@@ -251,13 +260,25 @@ window.addEventListener('anons:billing-updated',()=>{
   client.auth.getSession().then(({data})=>refreshAccount(data.session)).catch(()=>{});
 });
 client.auth.onAuthStateChange((event,session)=>{
-  if(event==="INITIAL_SESSION"&&!session?.user){
-    // A stale signed-in draft must not remain visible on a shared device.
+  const eventSerial=++authEventSerial;
+  const incomingId=session?.user?.id||null;
+  if(event==="SIGNED_OUT" || (currentAccountId && incomingId!==currentAccountId)){
+    ++requestSerial; // Cancel prior asynchronous authentication/plan responses.
+    hidePreviousAccount();
+  }
+  if(event==="INITIAL_SESSION"){
+    // Stale canvas state can otherwise display a previous user's private
+    // project while a different user's session is still being validated.
     try {
       const activeKey="anons-studio:cloud-active-v05";
-      if(localStorage.getItem(activeKey)){
-        localStorage.removeItem(activeKey);
-        window.AnonsEditor?.newDraft?.();
+      const raw=localStorage.getItem(activeKey);
+      if(raw){
+        let owner=null;
+        try{owner=JSON.parse(raw)?.userId||null;}catch{}
+        if(!incomingId || owner!==incomingId){
+          localStorage.removeItem(activeKey);
+          window.AnonsEditor?.newDraft?.();
+        }
       }
     }catch{}
   }
@@ -271,8 +292,14 @@ client.auth.onAuthStateChange((event,session)=>{
     setMode("login");
   }
   // Supabase advises against awaiting other Supabase queries inside this callback.
-  setTimeout(()=>refreshAccount(session).catch(()=>{
-    renderGuest();publishEntitlements("free",false);
-    showMessage("Не удалось проверить сеанс. Перезагрузи страницу или войди заново.",true);
-  }),0);
+  setTimeout(()=>{
+    if(eventSerial!==authEventSerial)return;
+    refreshAccount(session).catch(()=>{
+      // An older failed auth request must not hide the account that signed
+      // in later while that first request was still in progress.
+      if(eventSerial!==authEventSerial)return;
+      hidePreviousAccount();
+      showMessage("Не удалось проверить сеанс. Перезагрузи страницу или войди заново.",true);
+    });
+  },0);
 });
