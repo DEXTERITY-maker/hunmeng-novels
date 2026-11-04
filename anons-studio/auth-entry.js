@@ -128,7 +128,7 @@ function hidePreviousAccount(){
 }
 function renderUser(user,plan){
   if(accountEmail)accountEmail.textContent=user.email||"Аккаунт";
-  const labels={free:"Free",basic:"Basic",pro:"Pro",studio:"Studio"};
+  const labels={free:"Free",basic:"Бизнес",pro:"Про",studio:"Студия"};
   const label=labels[plan]||"Free";
   if(accountPlan)accountPlan.textContent=label;
   if(status)status.textContent="Аккаунт · "+label;
