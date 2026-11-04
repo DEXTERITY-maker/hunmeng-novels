@@ -147,8 +147,10 @@ function renderUser(user,plan){
   styles.setUser(user,client);
   brandKits.setUser(user);
 }
-function publishEntitlements(plan,premium){
-  window.dispatchEvent(new CustomEvent("anons:access",{detail:{plan,premium}}));
+function publishEntitlements(plan,premium,details={}){
+  window.dispatchEvent(new CustomEvent("anons:access",{
+    detail:{plan,premium,loggedIn:false,verified:true,expiresAt:null,...details}
+  }));
 }
 async function refreshAccount(session){
   const serial=++requestSerial;
@@ -170,7 +172,7 @@ async function refreshAccount(session){
     showMessage("Сеанс больше не действителен. Войди повторно.",true);
     return;
   }
-  let plan="free",premium=false;
+  let plan="free",premium=false,expiresAt=null,lookupFailed=false;
   try{
     const {data,error}=await client.from("anons_studio_memberships")
       .select("plan,status,current_period_end").eq("user_id",uid).maybeSingle();
@@ -178,15 +180,16 @@ async function refreshAccount(session){
     if(data&&["basic","pro","studio"].includes(data.plan)
       &&["active","trialing"].includes(data.status)
       &&data.current_period_end&&Date.parse(data.current_period_end)>Date.now()){
-      plan=data.plan;premium=true;
+      plan=data.plan;premium=true;expiresAt=data.current_period_end;
     }
   }catch(err){
+    lookupFailed=true;
     console.warn("Paid membership lookup failed",err?.code||"network");
     showMessage("Проверка тарифа временно недоступна; применяется бесплатный экспорт с водяным знаком.",true);
   }
   if(serial!==requestSerial)return;
   renderUser(validated.user,plan);
-  publishEntitlements(plan,premium);
+  publishEntitlements(plan,premium,{loggedIn:true,verified:!lookupFailed,expiresAt});
 }
 function checkPasswords(password,confirmPassword){
   if(password.length<SIGNUP_MIN_PASSWORD||password.length>128)
