@@ -1,4 +1,4 @@
-// Accessible catalogue enhancement for the six editor-compatible templates.
+// Searchable catalogue of Free, Business and Pro editor-compatible templates.
 // No authentication, payments or editor draft data are changed.
 (() => {
   "use strict";
@@ -15,7 +15,10 @@
     bulletin: { name: "Bulletin", categories: ["news", "update"],    keywords: "новости важное информационная карточка уведомление" },
     "business-brief":{ name:"Business Brief",categories:["news","update","universal"],keywords:"бизнес деловой сводка отчёт руководство бизнес новости",premium:true },
     "business-pitch":{ name:"Business Pitch",categories:["launch","universal"],keywords:"бизнес деловая презентация запуск продукт стартап питч",premium:true },
-    "business-report":{ name:"Business Report",categories:["news","universal"],keywords:"бизнес аналитика итоги отчёт метрики показатели",premium:true }
+    "business-report":{ name:"Business Report",categories:["news","universal"],keywords:"бизнес аналитика итоги отчёт метрики показатели",premium:true },
+    "pro-campaign":{name:"Pro Campaign",categories:["launch","event","update"],keywords:"про рекламная кампания серия карточки продвижение релиз",premium:true,proOnly:true},
+    "pro-magazine":{name:"Pro Magazine",categories:["news","universal"],keywords:"про журнал редакционный премиальный публикация статья",premium:true,proOnly:true},
+    "pro-impact":{name:"Pro Impact",categories:["launch","event"],keywords:"про акцент событие премьера яркий запуск",premium:true,proOnly:true}
   };
 
   const search = document.getElementById("template-search");
@@ -42,6 +45,8 @@
   let category = "all";
   let showFavorites = false;
   let paidAccess = false;
+  let proAccess = false;
+  const canOpen=info=>!info.premium||(paidAccess&&(!info.proOnly||proAccess));
   const cards = [];
 
   [...gallery.querySelectorAll(":scope > a.template-card")].forEach((link) => {
@@ -62,11 +67,11 @@
     item.append(button);
     if(info.premium){
       link.classList.toggle("template-locked",true);
-      link.setAttribute("aria-label",info.name+" — шаблон тарифа Бизнес");
+      link.setAttribute("aria-label",info.name+" — шаблон тарифа "+(info.proOnly?"Про":"Бизнес"));
       link.addEventListener("click",event=>{
-        if(!paidAccess){
+        if(!canOpen(info)){
           event.preventDefault();
-          window.location.assign("./pricing.html#manual-order-root");
+          window.location.assign("./pricing.html?plan="+(info.proOnly?"pro":"basic")+"#manual-order-root");
         }
       });
     }
@@ -91,9 +96,10 @@
     cards.forEach(({ id, info, item, button, keywords }) => {
       const link=item.querySelector?.("a.template-card")||item.children?.[0];
       if(info.premium&&link){
-        link.classList.toggle("template-locked",!paidAccess);
-        link.setAttribute("aria-label",info.name+(paidAccess?" — доступен":" — требуется подписка Бизнес"));
-        link.title=paidAccess?"Открыть в редакторе":"Для доступа требуется подписка Бизнес";
+        const allowed=canOpen(info);
+        link.classList.toggle("template-locked",!allowed);
+        link.setAttribute("aria-label",info.name+(allowed?" — доступен":" — требуется подписка "+(info.proOnly?"Про":"Бизнес")));
+        link.title=allowed?"Открыть в редакторе":"Для доступа требуется подписка "+(info.proOnly?"Про":"Бизнес");
       }
       const selected = favorites.has(id);
       button.classList.toggle("is-favorite", selected);
@@ -124,6 +130,7 @@
   }));
   window.addEventListener("anons:access",event=>{
     paidAccess=event.detail?.premium===true&&["basic","pro","studio"].includes(event.detail?.plan);
+    proAccess=paidAccess&&["pro","studio"].includes(event.detail?.plan);
     render();
   });
   search.addEventListener("input", render);
