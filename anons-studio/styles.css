@@ -934,3 +934,40 @@ html.whats-new-visible{overflow:hidden}
 .personal-styles-cloud-actions:empty{display:none}
 .personal-styles-cloud-actions button{flex:1 1 auto;background:#f8f4ff;border-color:#e2d9f0}
 @media(max-width:520px){.personal-styles-cloud-actions button{width:100%;flex:1 1 100%}}
+
+
+/* Anons Studio stage 7 — compact responsive identity presets */
+.brand-kit-panel{margin:20px 0 23px;padding:22px 21px;border:1px solid #d5c9e9;border-radius:18px;background:linear-gradient(142deg,#f9f5ff 0%,#f0ebf9 100%);min-width:0}
+.brand-kit-panel [hidden]{display:none!important}
+.brand-kit-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:11px}
+.brand-kit-eyebrow{display:block;font-size:9px;font-weight:850;letter-spacing:.16em;color:#7951aa;margin-bottom:7px}
+.brand-kit-panel h5{font-size:19px;line-height:1.25;letter-spacing:-.025em;color:#352248;margin:0}
+.brand-kit-count{white-space:nowrap;padding:6px 10px;border-radius:999px;background:#e3d7f4;color:#654091;font-weight:850;font-size:11px}
+.brand-kit-intro{margin:0 0 17px;color:#6a6075;font-size:12px;line-height:1.65}
+.brand-kit-field{display:grid;gap:8px;min-width:0;margin-bottom:14px}
+.brand-kit-field label,.brand-kit-target legend{font-size:11px;font-weight:850;color:#4a395c}
+.brand-kit-field input,.brand-kit-field select{width:100%;min-width:0;min-height:43px;background:#fff;border:1px solid #d5c7e7;border-radius:11px;padding:9px 12px;color:#30223f;font-size:12px}
+.brand-kit-field input::placeholder{color:#9b8aab}
+.brand-kit-create{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}
+.brand-kit-panel button{border:1px solid #d8cae9;border-radius:11px;padding:10px 13px;min-height:42px;background:#fff;color:#4b345e;font-size:11px;font-weight:850;cursor:pointer}
+.brand-kit-panel button:enabled:hover{background:#eadffd;border-color:#bea7de}
+.brand-kit-panel button:disabled{opacity:.45;cursor:not-allowed}
+.brand-kit-panel #brand-kit-save,.brand-kit-panel #brand-kit-apply{background:#35204f;color:#fff;border-color:#35204f}
+.brand-kit-panel #brand-kit-save:enabled:hover,.brand-kit-panel #brand-kit-apply:enabled:hover{background:#6c42b6}
+.brand-kit-panel #brand-kit-delete{color:#9a3f62}
+.brand-kit-preview{display:flex;align-items:center;gap:12px;margin:2px 0 14px;padding:11px 12px;border:1px solid #e4d9ef;border-radius:12px;background:#fff}
+.brand-kit-preview-swatch{display:block;width:42px;height:42px;flex:0 0 42px;border-radius:10px;background:#bda1ff;border:2px solid #ffffff;box-shadow:0 0 0 1px #d6c9de}
+.brand-kit-preview strong{display:block;font-size:13px;color:#382449;overflow-wrap:anywhere}
+.brand-kit-preview p{margin:5px 0 0;color:#85748d;font-size:10.5px;line-height:1.45}
+.brand-kit-target{display:grid;gap:8px;margin:12px 0 14px;padding:10px 12px;border-radius:12px;border:1px solid #e2d5ee;background:#fff}
+.brand-kit-target legend{padding:0 5px}
+.brand-kit-target label{display:flex;align-items:center;gap:9px;font-size:11px;font-weight:650;color:#55466a;cursor:pointer}
+.brand-kit-target input{accent-color:#7045ba;width:15px;height:15px}
+.brand-kit-actions{display:flex;gap:8px;flex-wrap:wrap}
+.brand-kit-actions button{flex:1 1 auto}
+.brand-kit-panel .brand-kit-info{margin:15px 0 0;color:#6e6379;font-size:10.5px;line-height:1.65}
+.brand-kit-identity{margin:12px 0 0;font-size:10px;font-weight:750;color:#765b9b}
+.brand-kit-status{margin:10px 0 0;color:#326c55;font-size:11px;line-height:1.6}
+.brand-kit-status:empty{display:none}
+.brand-kit-status[data-error="true"]{color:#ab3857}
+@media(max-width:520px){.brand-kit-panel{padding:18px 15px}.brand-kit-create{grid-template-columns:minmax(0,1fr)}.brand-kit-create button{width:100%}.brand-kit-actions button{flex:1 1 42%}}
