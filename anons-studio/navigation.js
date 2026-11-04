@@ -30,7 +30,7 @@
     toggle.setAttribute("aria-expanded", String(next));
     toggle.setAttribute("aria-label", next ? "Закрыть меню" : "Открыть меню");
     const icon = toggle.querySelector(".mobile-menu-icon");
-    if (icon) icon.textContent = next ? "×" : "☰";
+    if (icon) { const shape = icon.querySelector("use"); if (shape) shape.setAttribute("href", "./assets/ui-icons.svg#" + (next ? "x" : "menu")); }
     if (!next && wasOpen && restoreFocus) toggle.focus();
   }
 
