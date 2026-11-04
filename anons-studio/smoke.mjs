@@ -25,6 +25,9 @@ const server = createServer(async (req,res)=>{
 });
 // Every icon reference in every published page must exist in the bundled
 // vector sprite, so glyphs never silently disappear after a design update.
+assert.equal(await readFile(join(root,"graphic-elements.js"),"utf8"),
+  await readFile(join(dirname(fileURLToPath(import.meta.url)),"functions","anons-premium-export","graphic-elements.js"),"utf8"),
+  "Browser and paid renderer use the same allowlisted graphic paths");
 const iconSprite=await readFile(join(root,"assets","ui-icons.svg"),"utf8");
 const availableIcons=new Set([...iconSprite.matchAll(/<symbol id="([a-z-]+)"/g)].map(m=>m[1]));
 assert.ok(availableIcons.size>=30,"Ship a comprehensive locally hosted icon set");
@@ -286,6 +289,67 @@ try {
     await page.locator("#ornaments").uncheck();
     await page.locator("#heading-scale").evaluate(el=>{el.value="120";el.dispatchEvent(new Event("input",{bubbles:true}));});
     assert.equal(await page.locator("#heading-scale-value").textContent(),"120%");
+    // Per-card typography and relative offsets share server scene geometry.
+    await page.locator("#title-font").selectOption("georgia");
+    await page.locator("#description-scale").evaluate(el=>{
+      el.value="115";el.dispatchEvent(new Event("input",{bubbles:true}));
+    });
+    for(const [id,value] of [
+      ["title-offset-x","6"],["title-offset-y","-4"],
+      ["description-offset-y","8"],["highlights-offset-y","-3"]
+    ]){
+      await page.locator("#"+id).evaluate((el,value)=>{
+        el.value=value;el.dispatchEvent(new Event("input",{bubbles:true}));
+      },value);
+    }
+    let extended=await page.evaluate(()=>window.AnonsEditor.getSnapshot().cards[0]);
+    assert.equal(extended.titleFont,"georgia");
+    assert.equal(extended.descriptionScale,115);
+    assert.equal(extended.layerOffsets.title.x,6);
+    assert.equal(extended.layerOffsets.title.y,-4);
+    assert.equal(extended.layerOffsets.description.y,8);
+    assert.equal(extended.layerOffsets.highlights.y,-3);
+
+    const canvasBeforeShape=await page.locator("#poster").evaluate(c=>c.toDataURL("image/png"));
+    await page.locator("#graphic-add").click();
+    assert.equal(await page.locator("#graphic-list button").count(),1);
+    assert.equal(await page.locator("#graphic-count").textContent(),"1 из 12");
+    await page.locator("#graphic-kind").selectOption("star");
+    for(const [id,value] of [
+      ["graphic-x","74"],["graphic-y","36"],["graphic-size","18"],
+      ["graphic-rotation","45"],["graphic-opacity","70"]
+    ]){
+      await page.locator("#"+id).evaluate((el,value)=>{
+        el.value=value;el.dispatchEvent(new Event("input",{bubbles:true}));
+      },value);
+    }
+    await page.locator("#graphic-color").fill("#ffcc33");
+    await page.waitForFunction(old=>
+      document.getElementById("poster").toDataURL("image/png")!==old,canvasBeforeShape);
+    extended=await page.evaluate(()=>window.AnonsEditor.getSnapshot().cards[0]);
+    assert.equal(extended.graphicElements.length,1);
+    assert.equal(extended.graphicElements[0].kind,"star");
+    assert.equal(extended.graphicElements[0].x,74);
+    assert.equal(extended.graphicElements[0].y,36);
+    assert.equal(extended.graphicElements[0].size,18);
+    assert.equal(extended.graphicElements[0].rotation,45);
+    assert.equal(extended.graphicElements[0].opacity,70);
+    assert.equal(extended.graphicElements[0].color,"#ffcc33");
+    await page.locator("#duplicate-card").click();
+    assert.equal(await page.locator("#card-list [role=tab]").count(),2);
+    // A copied card must own its own graphic array and geometry objects.
+    await page.locator("#graphic-remove").click();
+    assert.equal((await page.evaluate(()=>window.AnonsEditor.getSnapshot().cards[1].graphicElements)).length,0);
+    assert.equal((await page.evaluate(()=>window.AnonsEditor.getSnapshot().cards[0].graphicElements)).length,1);
+    await page.locator("#undo").click();
+    assert.equal((await page.evaluate(()=>window.AnonsEditor.getSnapshot().cards[1].graphicElements)).length,1);
+    await page.locator("#card-list [role=tab]").first().click();
+    await page.locator("#card-list [role=tab]").last().click();
+    // Return to a single card before existing card lifecycle checks.
+    page.once("dialog",dialog=>dialog.accept());
+    await page.locator("#remove-card").click();
+    assert.equal(await page.locator("#card-list [role=tab]").count(),1);
+    assert.equal((await page.evaluate(()=>window.AnonsEditor.getSnapshot().cards[0].graphicElements)).length,1);
     await page.locator("#add-card").click();
     assert.equal(await page.locator("#card-list [role=tab]").count(),2);
     assert.equal(await page.locator("#title").inputValue(),"Новая карточка");
@@ -309,6 +373,13 @@ try {
     assert.equal(await page.locator("#template-select").inputValue(),"editorial");
     assert.equal(await page.locator("#heading-scale").inputValue(),"120");
     assert.equal(await page.locator("#text-align").inputValue(),"center");
+    await page.locator("#card-list [role=tab]").first().click();
+    assert.equal(await page.locator("#title-font").inputValue(),"georgia",
+      "Per-card font style survives browser reload");
+    assert.equal(await page.locator("#title-offset-x").inputValue(),"6");
+    assert.equal(await page.locator("#graphic-list button").count(),1,
+      "Graphic overlays survive browser reload");
+    await page.locator("#card-list [role=tab]").last().click();
     if(width<=760){
       await page.locator("#editor-show-preview").click();
       assert.equal(await page.locator("#editor-preview").isVisible(),true);
