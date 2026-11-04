@@ -11,6 +11,7 @@ on:
       - feat/anons-brand-kit-20261104
       - feat/anons-manual-orders-20261104
       - feat/anons-business-templates-flexible-orders-20261104
+      - feat/anons-pro-series-templates-20261104
     paths:
       - 'anons-studio/**'
       - '.github/workflows/anons-studio-preview.yml'
@@ -61,7 +62,7 @@ jobs:
       - name: Test payment and export authorization boundaries
         run: node --test anons-studio/security.test.mjs anons-studio/sandbox-webhook.test.mjs anons-studio/billing-ux.test.mjs anons-studio/renderer-contract.test.mjs anons-studio/auth-session.test.mjs
       - name: Test gallery, personal styles and brand kit libraries
-        run: node --test anons-studio/templates-catalog.test.mjs anons-studio/templates-assistant.test.mjs anons-studio/personal-styles.test.mjs anons-studio/cloud-styles.test.mjs anons-studio/brand-kit.test.mjs anons-studio/manual-orders.test.mjs anons-studio/manual-orders-security.test.mjs anons-studio/business-templates-and-plans.test.mjs
+        run: node --test anons-studio/templates-catalog.test.mjs anons-studio/templates-assistant.test.mjs anons-studio/personal-styles.test.mjs anons-studio/cloud-styles.test.mjs anons-studio/brand-kit.test.mjs anons-studio/manual-orders.test.mjs anons-studio/manual-orders-security.test.mjs anons-studio/business-templates-and-plans.test.mjs anons-studio/pro-features.test.mjs
       - name: Install Chromium for browser checks
         run: npx playwright install --with-deps chromium
       - name: Test actual editor, responsive layout and PNG export
@@ -79,7 +80,7 @@ jobs:
           if-no-files-found: warn
           retention-days: 14
       - name: Publish standalone preview (never existing production)
-        if: github.ref == 'refs/heads/feat/anons-studio-mvp-20261103' || github.ref == 'refs/heads/feat/anons-template-catalog-20261104' || github.ref == 'refs/heads/feat/anons-quick-start-20261104' || github.ref == 'refs/heads/feat/anons-personal-styles-20261104' || github.ref == 'refs/heads/feat/anons-cloud-styles-20261104' || github.ref == 'refs/heads/feat/anons-brand-kit-20261104' || github.ref == 'refs/heads/feat/anons-manual-orders-20261104' || github.ref == 'refs/heads/feat/anons-business-templates-flexible-orders-20261104'
+        if: github.ref == 'refs/heads/feat/anons-studio-mvp-20261103' || github.ref == 'refs/heads/feat/anons-template-catalog-20261104' || github.ref == 'refs/heads/feat/anons-quick-start-20261104' || github.ref == 'refs/heads/feat/anons-personal-styles-20261104' || github.ref == 'refs/heads/feat/anons-cloud-styles-20261104' || github.ref == 'refs/heads/feat/anons-brand-kit-20261104' || github.ref == 'refs/heads/feat/anons-manual-orders-20261104' || github.ref == 'refs/heads/feat/anons-business-templates-flexible-orders-20261104' || github.ref == 'refs/heads/feat/anons-pro-series-templates-20261104'
         uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
