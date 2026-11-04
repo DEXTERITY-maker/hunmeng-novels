@@ -380,6 +380,8 @@ try {
     await page.locator("#template-search").fill("");
     await page.locator('[data-catalog-category="news"]').click();
     assert.equal(await page.locator(".catalog-item:visible").count(),2,"News category matches two existing templates");
+    await page.locator("#template-search").fill("нет такого шаблона");
+    assert.equal(await page.locator("#template-empty").isVisible(),true,"No results shows reset action");
     await page.locator("#template-reset").click();
     await page.locator(".catalog-favorite").first().click();
     await page.locator("#template-favorites-toggle").click();
