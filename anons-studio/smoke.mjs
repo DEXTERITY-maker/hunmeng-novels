@@ -338,6 +338,7 @@ try {
     await page.locator("#duplicate-card").click();
     assert.equal(await page.locator("#card-list [role=tab]").count(),2);
     // A copied card must own its own graphic array and geometry objects.
+    await page.locator("#graphic-list button").first().click();
     await page.locator("#graphic-remove").click();
     assert.equal((await page.evaluate(()=>window.AnonsEditor.getSnapshot().cards[1].graphicElements)).length,0);
     assert.equal((await page.evaluate(()=>window.AnonsEditor.getSnapshot().cards[0].graphicElements)).length,1);
