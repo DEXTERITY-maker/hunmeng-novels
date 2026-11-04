@@ -153,6 +153,32 @@ try {
     assert.ok(zipBytes.includes(Buffer.from("anons-card-01.png")));
     assert.ok(zipBytes.includes(Buffer.from("anons-card-02.png")));
     assert.ok(zipBytes.length>30000,"ZIP contains rendered PNG files");
+    if(width===1440){
+      // High-entropy PNG makes sure adaptive photo compression does not keep
+      // a local draft that the paid server would reject as too large.
+      const png=await page.evaluate(()=>{
+        const c=document.createElement("canvas");c.width=1200;c.height=1200;
+        const cx=c.getContext("2d"),data=cx.createImageData(c.width,c.height);
+        let seed=0x12345678;
+        for(let i=0;i<data.data.length;i+=4){
+          seed^=seed<<13;seed^=seed>>>17;seed^=seed<<5;
+          data.data[i]=seed&255;
+          data.data[i+1]=(seed>>>8)&255;
+          data.data[i+2]=(seed>>>16)&255;
+          data.data[i+3]=255;
+        }
+        cx.putImageData(data,0,0);
+        return c.toDataURL("image/png").split(",")[1];
+      });
+      await page.locator("#upload").setInputFiles({
+        name:"noisy-upload.png",mimeType:"image/png",buffer:Buffer.from(png,"base64")
+      });
+      await page.waitForFunction(()=>window.AnonsEditor.getSnapshot().imageData.startsWith("data:image/jpeg;base64,"));
+      const compressed=await page.evaluate(()=>window.AnonsEditor.getSnapshot().imageData.length);
+      assert.ok(compressed<600000,"Uploaded image must fit paid server export limit");
+      await page.locator("#clear-image").click();
+      assert.equal(await page.evaluate(()=>window.AnonsEditor.getSnapshot().imageData),"","Removing uploaded photo must clear snapshot");
+    }
     await page.locator("[data-account-mode=login]").click();
     assert.match(await page.locator("#account-submit").textContent(),/Войти/);
     assert.ok(await page.locator("#account-forgot").isVisible(),"Forgot-password entry point");
