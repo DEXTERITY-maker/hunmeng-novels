@@ -31,7 +31,7 @@
       </nav>
       <div class="topbar-actions">
         <button type="button" id="mobile-menu-toggle" class="mobile-menu-toggle" aria-controls="primary-navigation" aria-expanded="false" aria-label="Открыть меню"><span class="mobile-menu-icon" aria-hidden="true">☰</span><span class="mobile-menu-label">Меню</span></button>
-        <a id="nav-account" class="header-action" href="#account">Войти</a>
+        <a id="nav-account" class="header-action" href="./account.html">Войти</a>
       </div>
     </header>
 
@@ -188,7 +188,7 @@
           <div id="library-guest" class="library-guest-panel">
             <div class="library-guest-symbol">✧</div>
             <div><h3>Твоя творческая библиотека</h3><p>Войди или зарегистрируйся, чтобы сохранять проекты в облаке. Пока аккаунт не подключён, редактор хранит черновик только в этом браузере.</p></div>
-            <a href="#account" class="btn btn-primary">Войти / регистрация ↗</a>
+            <a href="./account.html" class="btn btn-primary">Войти / регистрация ↗</a>
           </div>
           <div id="library-auth" class="library-layout" hidden>
             <div class="library-sidebar">
@@ -255,69 +255,6 @@
         <div class="billing-availability" role="status" aria-live="polite" id="billing-availability">Проверяем возможность оплаты…</div>
         <p class="pricing-disclaimer">Basic — доступ на 30 дней с ручным продлением, без автоматических списаний. Pro и Studio пока в разработке. Кнопки оплаты заработают только после проверки платёжного магазина, чеков и серверного экспорта.</p>
       </section>
-
-      <section id="account" class="account-section" aria-labelledby="account-title"><div class="wrap account-layout">
-        <div class="account-intro"><div class="kicker">ЛИЧНОЕ ПРОСТРАНСТВО</div><h2 id="account-title">Творчество начинается<br>с твоего аккаунта.</h2><p>Зарегистрируйся по электронной почте, чтобы получить учётную запись и видеть свой тариф. Черновик сохраняется в браузере, а после сохранения проекта в облаке его можно продолжить с другого устройства.</p><div class="account-pill" id="account-status">Гость · Free</div></div>
-        <div class="account-box">
-          <div id="account-guest">
-            <div class="account-tabs" role="group" aria-label="Регистрация или вход">
-              <button type="button" data-account-mode="signup" aria-pressed="true" class="active">Регистрация</button>
-              <button type="button" data-account-mode="login" aria-pressed="false">Вход</button>
-            </div>
-            <form id="account-form">
-              <label for="account-email">Электронная почта</label>
-              <input id="account-email" name="email" type="email" autocomplete="email" inputmode="email" required placeholder="name@example.com">
-              <label id="account-password-label" for="account-password">Пароль (от 10 символов для регистрации)</label>
-              <input id="account-password" name="password" type="password" minlength="8" autocomplete="new-password" required placeholder="Введите пароль">
-              <button class="btn btn-primary account-submit" id="account-submit" type="submit">Зарегистрироваться</button>
-              <button id="account-forgot" type="button" class="account-link" hidden>Забыли пароль?</button>
-              <button id="account-back-login" type="button" class="account-link" hidden>← Вернуться ко входу</button>
-            </form>
-            <p class="account-helper">Для регистрации требуется подтверждение электронной почты. Используй уникальный пароль, не передавай его другим.</p>
-            <button id="account-resend" type="button" class="account-link" hidden>Отправить письмо подтверждения ещё раз</button>
-          </div>
-          <div id="account-signed" hidden>
-            <div class="account-success">✓ Аккаунт подключён</div>
-            <div class="account-profile-email" id="account-email-signed"></div>
-            <p>Текущий тариф: <strong id="account-plan-signed">Free</strong></p>
-            <div class="account-destinations"><a class="account-upgrade" href="#library">Моя библиотека ↗</a><a class="account-upgrade" href="#pricing">Посмотреть тарифы ↗</a></div>
-            <details class="billing-history-panel" id="account-billing">
-              <summary>Подписка и история покупок</summary>
-              <div id="billing-member-status" role="status">Проверяем подписку…</div>
-              <button id="billing-check" type="button" class="account-link">↻ Проверить статус оплаты</button>
-              <div id="billing-history" class="billing-order-list"></div>
-            </details>
-            <details class="account-security" id="account-security">
-              <summary>Безопасность и пароль</summary>
-              <form id="account-change-form">
-                <label for="account-new-password">Новый пароль (минимум 10 символов)</label>
-                <input type="password" id="account-new-password" autocomplete="new-password" minlength="10" maxlength="128" required placeholder="Придумайте новый пароль">
-                <label for="account-change-confirm">Повторите новый пароль</label>
-                <input type="password" id="account-change-confirm" autocomplete="new-password" minlength="10" maxlength="128" required placeholder="Повторите пароль">
-                <button class="btn btn-outline" id="account-change-button" type="submit">Изменить пароль</button>
-              </form>
-              <p class="account-helper">На других устройствах вход может сохраниться до истечения срока текущего токена.</p>
-            </details>
-            <div class="account-session-buttons">
-              <button type="button" class="account-logout" id="account-logout">Выйти</button>
-              <button type="button" class="account-logout" id="account-logout-all">Выйти на всех устройствах</button>
-            </div>
-          </div>
-          <div id="account-recovery" hidden>
-            <h3>Создать новый пароль</h3>
-            <p class="account-helper">Ссылка для восстановления проверена. Установите новый пароль для аккаунта.</p>
-            <form id="account-recovery-form">
-              <label for="account-recovery-password">Новый пароль (минимум 10 символов)</label>
-              <input type="password" id="account-recovery-password" autocomplete="new-password" minlength="10" maxlength="128" required>
-              <label for="account-recovery-confirm">Повторите пароль</label>
-              <input type="password" id="account-recovery-confirm" autocomplete="new-password" minlength="10" maxlength="128" required>
-              <button id="account-recovery-submit" class="btn btn-primary account-submit" type="submit">Сохранить новый пароль</button>
-            </form>
-            <button id="account-recovery-cancel" class="account-link" type="button">Отменить восстановление</button>
-          </div>
-          <p id="account-message" role="status" aria-live="polite" class="account-message"></p>
-        </div>
-      </div></section>
 
       <section class="cta wrap"><div><div class="kicker">НАЧНИ СЕЙЧАС</div><h2>Всё готово.<br><em>Осталось рассказать.</em></h2><p>Попробуй бесплатный редактор с водяным знаком.</p></div><a href="#editor" class="btn btn-light">Открыть редактор ↗</a></section>
     </main>
