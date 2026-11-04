@@ -38,9 +38,20 @@
 <section id="editor" class="workspace-section">
         <div class="wrap">
           <div class="section-heading editor-intro"><div><div class="kicker">ТВОЯ СТУДИЯ</div><h2>Давай создадим<br><em>что-то классное.</em></h2></div><p>Все изменения сразу видны справа. Сохраняй текущий черновик в браузере или в облачной библиотеке аккаунта.</p></div>
-          <div class="workspace">
-            <div class="controls">
+          <div class="editor-view-switch" role="group" aria-label="Режим работы с публикацией">
+            <button type="button" class="editor-view-button is-active" data-workspace-view="edit" aria-pressed="true" aria-controls="editor-controls"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="./assets/ui-icons.svg#sliders"></use></svg> Настройки</button>
+            <button type="button" class="editor-view-button" data-workspace-view="preview" aria-pressed="false" aria-controls="editor-preview"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="./assets/ui-icons.svg#file-image"></use></svg> Предпросмотр</button>
+          </div>
+          <div class="workspace" data-mobile-view="edit">
+            <div class="controls" id="editor-controls">
               <div class="panel-head"><div><span class="section-index">01 / РЕДАКТОР</span><h3>Настрой свой анонс</h3></div><span class="live-tag"><i></i> В реальном времени</span></div>
+              <nav class="editor-control-nav" aria-label="Разделы настроек">
+                <a href="#editor-group-layout">Карточки и тип</a>
+                <a href="#editor-group-content">Содержание</a>
+                <a href="#editor-group-design">Оформление</a>
+              </nav>
+              <section id="editor-group-layout" class="editor-tool-group" aria-labelledby="editor-group-layout-title">
+                <div class="editor-tool-group-heading"><span class="editor-group-number">01</span><div><h4 id="editor-group-layout-title">Карточки и тип публикации</h4><p>Выберите композицию и подходящий тип сообщения.</p></div></div>
               <section class="card-manager" aria-label="Карточки анонса"><div class="card-manager-title"><strong>Карточки публикации</strong><span id="card-count">1 из 8</span></div><div id="card-list" class="card-list" role="tablist" aria-label="Выбор карточки"></div><div class="card-manager-actions"><button type="button" id="add-card"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="./assets/ui-icons.svg#plus"></use></svg> Добавить</button><button type="button" id="duplicate-card"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="./assets/ui-icons.svg#copy"></use></svg> Дублировать</button><button type="button" id="remove-card"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="./assets/ui-icons.svg#trash"></use></svg> Удалить</button></div><p class="field-note">У каждой карточки свой заголовок и шаблон. Экспортируй одну картинку или весь набор ZIP-архивом.</p></section>
 
               <div class="field-group"><label for="template-select">Композиция текущей карточки</label><select id="template-select"><option value="aurora">Aurora — атмосферный</option><option value="editorial">Editorial — редакционный</option><option value="spotlight">Spotlight — выразительный</option><option value="pulse">Pulse — динамичный</option><option value="minimal">Minimal — минималистичный</option><option value="bulletin">Bulletin — новостной</option></select></div>
@@ -53,7 +64,10 @@
                   <button type="button" class="preset" data-preset="notice" aria-pressed="false"><span class="preset-symbol"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="./assets/ui-icons.svg#megaphone"></use></svg></span> Объявление</button>
                 </div>
               </fieldset>
+              </section>
 
+              <section id="editor-group-content" class="editor-tool-group" aria-labelledby="editor-group-content-title">
+                <div class="editor-tool-group-heading"><span class="editor-group-number">02</span><div><h4 id="editor-group-content-title">Содержание публикации</h4><p>Укажите заголовок, описание и ключевые сведения.</p></div></div>
               <div class="field-group">
                 <label for="project">Название проекта / бренда</label>
                 <input id="project" maxlength="45" value="ANONS STUDIO" autocomplete="off" placeholder="Например, моя студия">
@@ -73,6 +87,9 @@
 Улучшенная скорость работы</textarea>
               </div>
 
+              </section>
+              <section id="editor-group-design" class="editor-tool-group" aria-labelledby="editor-group-design-title">
+                <div class="editor-tool-group-heading"><span class="editor-group-number">03</span><div><h4 id="editor-group-design-title">Оформление и формат</h4><p>Настройте цвета, размер изображения и графические элементы.</p></div></div>
               <fieldset class="field-group">
                 <legend>Визуальный стиль</legend>
                 <div class="theme-picker" role="group" aria-label="Выбор цветового оформления">
@@ -115,10 +132,12 @@
                   <label class="advanced-toggle"><input type="checkbox" id="ornaments" checked> Декоративные элементы</label>
                 </div>
               </details>
+              </section>
               <div class="panel-bottom"><button type="button" id="reset" class="text-button"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="./assets/ui-icons.svg#rotate-ccw"></use></svg> Начать заново</button><div class="history-actions" role="group" aria-label="История действий редактора"><button type="button" id="undo" class="history-button" title="Отменить последнее изменение" disabled><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="./assets/ui-icons.svg#undo"></use></svg> Отменить</button><button type="button" id="redo" class="history-button" title="Повторить изменение" disabled><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="./assets/ui-icons.svg#redo"></use></svg> Повторить</button></div><span class="history-note">Автосохранение в браузере · до 30 шагов назад</span></div>
+              <button id="editor-show-preview" class="editor-mobile-preview-action" type="button"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="./assets/ui-icons.svg#file-image"></use></svg> Проверить результат <svg class="ui-icon" aria-hidden="true" focusable="false"><use href="./assets/ui-icons.svg#arrow-up-right"></use></svg></button>
             </div>
 
-            <div class="preview-panel">
+            <div class="preview-panel" id="editor-preview">
               <div class="panel-head preview-head"><div><span class="section-index">02 / ПРЕДПРОСМОТР</span><h3>Твой будущий пост</h3></div><span class="preview-badge" id="current-card-label">Карточка 1 / 1</span></div>
               <div class="preview-stage"><div class="canvas-holder"><canvas id="poster" width="1080" height="1350" role="img" aria-label="Предпросмотр оформленного анонса">Предпросмотр изображения недоступен в этом браузере.</canvas></div></div>
               <div class="preview-actions"><button type="button" class="btn btn-primary export-btn" id="export"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="./assets/ui-icons.svg#download"></use></svg> Скачать PNG</button><button type="button" class="btn btn-secondary" id="export-all"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="./assets/ui-icons.svg#download"></use></svg> Все карточки ZIP</button><button type="button" class="btn btn-secondary" id="copy"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="./assets/ui-icons.svg#copy"></use></svg> Скопировать текст <svg class="ui-icon" aria-hidden="true" focusable="false"><use href="./assets/ui-icons.svg#arrow-up-right"></use></svg></button></div>
