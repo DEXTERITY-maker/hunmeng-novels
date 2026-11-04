@@ -35,6 +35,15 @@
   const textFonts=new Set(["auto","manrope","georgia","arial"]);
   const decorLevels=new Set(["subtle","balanced","expressive"]);
   const textSpacings=new Set(["compact","balanced","airy"]);
+  const compositions=new Set(["classic","compact","headline"]);
+  const highlightStyles=new Set(["soft","outline","separated"]);
+  const highlightIconKinds=new Set(["dot","check","star","diamond"]);
+  function cleanIcons(raw){
+    return Array.from({length:3},(_,i)=>{
+      const v=Array.isArray(raw)?raw[i]:null;
+      return highlightIconKinds.has(v)?v:"dot";
+    });
+  }
   const layerAxes={title:["x","y"],description:["y"],highlights:["y"]};
   const clamp=(value,min,max,fallback)=>Number.isFinite(Number(value))
     ?Math.max(min,Math.min(max,Number(value))):fallback;
@@ -46,17 +55,18 @@
     }
     return result;
   }
-  const cardKeys=["title","description","points","preset","template","theme","accentColor","alignment","headingScale","decorations","photoOpacity","titleFont","descriptionScale","layerOffsets","graphicElements","decorationLevel","textSpacing"];
+  const cardKeys=["title","description","points","preset","template","theme","accentColor","alignment","headingScale","decorations","photoOpacity","titleFont","descriptionScale","layerOffsets","graphicElements","decorationLevel","textSpacing","composition","highlightStyle","highlightIcons","featuredHighlight"];
   const limits={project:45,title:85,description:210,points:240};
   const defaults = { preset: "update", theme: "ultraviolet", ratio: "portrait", ...presets.update, imageData: "",
     template:"aurora", headingScale:100, accentColor:"", alignment:"left", decorations:true, photoOpacity:35,
     titleFont:"auto",descriptionScale:100,layerOffsets:normalizeOffsets(null),graphicElements:[],
     decorationLevel:"subtle",textSpacing:"balanced",
+    composition:"classic",highlightStyle:"soft",highlightIcons:["dot","dot","dot"],featuredHighlight:-1,
     activeCard:0, cards:[] };
   let saved = {};
   try { saved = JSON.parse(localStorage.getItem(storageKey) || "{}") || {}; } catch (_) {}
   const state = { ...defaults };
-  for (const key of ["preset", "theme", "ratio", "project", "title", "description", "points", "imageData","template","accentColor","alignment","titleFont","decorationLevel","textSpacing"]) {
+  for (const key of ["preset", "theme", "ratio", "project", "title", "description", "points", "imageData","template","accentColor","alignment","titleFont","decorationLevel","textSpacing","composition","highlightStyle"]) {
     if (typeof saved[key] === "string") state[key] = saved[key];
   }
   if (!presets[state.preset]) state.preset = "update";
@@ -74,6 +84,11 @@
   state.graphicElements=Graphics.normalizeElements(saved.graphicElements);
   if(!decorLevels.has(state.decorationLevel))state.decorationLevel="subtle";
   if(!textSpacings.has(state.textSpacing))state.textSpacing="balanced";
+  if(!compositions.has(state.composition))state.composition="classic";
+  if(!highlightStyles.has(state.highlightStyle))state.highlightStyle="soft";
+  state.highlightIcons=cleanIcons(saved.highlightIcons);
+  state.featuredHighlight=Number.isInteger(saved.featuredHighlight)&&saved.featuredHighlight>=-1&&saved.featuredHighlight<=2
+    ?saved.featuredHighlight:-1;
   for (const key of ["project","title","description","points"]) state[key]=state[key].slice(0,limits[key]);
   const sanitizeCard = (v) => {
     const original=(v && typeof v==="object")?v:{};
@@ -96,6 +111,11 @@
     out.graphicElements=Graphics.normalizeElements(original.graphicElements);
     out.decorationLevel=decorLevels.has(original.decorationLevel)?original.decorationLevel:"subtle";
     out.textSpacing=textSpacings.has(original.textSpacing)?original.textSpacing:"balanced";
+    out.composition=compositions.has(original.composition)?original.composition:"classic";
+    out.highlightStyle=highlightStyles.has(original.highlightStyle)?original.highlightStyle:"soft";
+    out.highlightIcons=cleanIcons(original.highlightIcons);
+    out.featuredHighlight=Number.isInteger(original.featuredHighlight)&&original.featuredHighlight>=-1&&original.featuredHighlight<=2
+      ?original.featuredHighlight:-1;
     return out;
   };
   // Migration: keep a previously saved single-card project when upgrading v0.2.
@@ -263,6 +283,10 @@
     $("ornaments").checked=state.decorations;
     $("decoration-level").value=state.decorationLevel;
     $("text-spacing").value=state.textSpacing;
+    $("composition").value=state.composition;
+    $("highlight-style").value=state.highlightStyle;
+    $("featured-highlight").value=String(state.featuredHighlight);
+    for(let i=0;i<3;i++)$("highlight-icon-"+i).value=state.highlightIcons[i];
     $("title-font").value=state.titleFont;
     $("description-scale").value=state.descriptionScale;
     $("description-scale-value").textContent=state.descriptionScale+"%";
@@ -585,6 +609,28 @@
   });
   $("text-spacing").addEventListener("change",e=>{
     state.textSpacing=textSpacings.has(e.target.value)?e.target.value:"balanced";syncCardAndSave();
+  });
+  $("composition").addEventListener("change",e=>{
+    state.composition=compositions.has(e.target.value)?e.target.value:"classic";
+    syncCardAndSave();
+  });
+  $("highlight-style").addEventListener("change",e=>{
+    state.highlightStyle=highlightStyles.has(e.target.value)?e.target.value:"soft";
+    syncCardAndSave();
+  });
+  $("featured-highlight").addEventListener("change",e=>{
+    const value=Number(e.target.value);
+    state.featuredHighlight=Number.isInteger(value)&&value>=-1&&value<=2?value:-1;
+    syncCardAndSave();
+  });
+  document.querySelectorAll("[data-highlight-icon]").forEach(select=>{
+    select.addEventListener("change",e=>{
+      const index=Number(e.target.dataset.highlightIcon);
+      if(!Number.isInteger(index)||index<0||index>2)return;
+      state.highlightIcons=cleanIcons(state.highlightIcons);
+      state.highlightIcons[index]=highlightIconKinds.has(e.target.value)?e.target.value:"dot";
+      syncCardAndSave();
+    });
   });
   $("title-font").addEventListener("change",e=>{
     state.titleFont=textFonts.has(e.target.value)?e.target.value:"auto";
