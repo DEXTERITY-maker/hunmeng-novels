@@ -131,7 +131,7 @@ function hidePreviousAccount(){
 }
 function renderUser(user,plan){
   if(accountEmail)accountEmail.textContent=user.email||"Аккаунт";
-  const labels={free:"Free",basic:"Бизнес",pro:"Про",studio:"Студия"};
+  const labels={free:"Free",basic:"Бизнес",pro:"Про",studio:"Студия",agency:"Агентство",ultimate:"Максимум"};
   const label=labels[plan]||"Free";
   if(accountPlan)accountPlan.textContent=label;
   if(status)status.textContent="Аккаунт · "+label;
@@ -177,7 +177,7 @@ async function refreshAccount(session){
     const {data,error}=await client.from("anons_studio_memberships")
       .select("plan,status,current_period_end").eq("user_id",uid).maybeSingle();
     if(error)throw error;
-    if(data&&["basic","pro","studio"].includes(data.plan)
+    if(data&&["basic","pro","studio","agency","ultimate"].includes(data.plan)
       &&["active","trialing"].includes(data.status)
       &&data.current_period_end&&Date.parse(data.current_period_end)>Date.now()){
       plan=data.plan;premium=true;expiresAt=data.current_period_end;
