@@ -10,7 +10,7 @@ const cloudflareHeaders=await readFile(join(root,"_headers"),"utf8");
 assert.match(cloudflareHeaders,/Content-Security-Policy:.*script-src 'self'/);
 assert.match(cloudflareHeaders,/X-Content-Type-Options: nosniff/);
 const types = { ".html": "text/html; charset=utf-8", ".css": "text/css; charset=utf-8", ".js": "application/javascript; charset=utf-8", ".webp": "image/webp", ".svg":"image/svg+xml" };
-const allow = new Set(["/","/index.html","/account.html","/editor.html","/templates.html","/features.html","/pricing.html","/styles.css","/app.js","/editor-workspace.js","/navigation.js","/whats-new.js","/scene-layout.js","/graphic-elements.js","/auth.bundle.js","/assets/anons-logo-approved.webp","/assets/anons-icon-approved.webp","/assets/ui-icons.svg"]);
+const allow = new Set(["/","/index.html","/account.html","/editor.html","/templates.html","/features.html","/pricing.html","/styles.css","/app.js","/editor-workspace.js","/editor-direct.js","/navigation.js","/whats-new.js","/scene-layout.js","/graphic-elements.js","/auth.bundle.js","/assets/anons-logo-approved.webp","/assets/anons-icon-approved.webp","/assets/ui-icons.svg"]);
 const server = createServer(async (req,res)=>{
   const url = new URL(req.url, "http://localhost");
   const path = url.pathname === "/" ? "/index.html" : url.pathname;
@@ -419,6 +419,55 @@ try {
     assert.equal(extended.graphicElements[0].rotation,45);
     assert.equal(extended.graphicElements[0].opacity,70);
     assert.equal(extended.graphicElements[0].color,"#ffcc33");
+    // Direct manipulation uses the exact Canvas geometry but its selection
+    // frame is DOM-only, so exporting a PNG never includes editing handles.
+    const directKey="graphic:"+extended.graphicElements[0].id;
+    if(width<=760)await page.locator("#editor-show-preview").click();
+    const directEnable=page.locator("#direct-enable");
+    await directEnable.check();
+    assert.equal(await page.locator("#direct-target option").count(),5,
+      "Title, description, highlights and added graphic are selectable");
+    await page.locator("#direct-target").selectOption(directKey);
+    assert.equal(await page.locator(".direct-selection-outline").isVisible(),true);
+    assert.equal(await page.locator("#poster").evaluate(el=>el.classList.contains("direct-canvas-active")),true);
+    const originalShape=await page.evaluate(()=>window.AnonsEditor.getSnapshot()
+      .cards[0].graphicElements[0]);
+    const beforeSelection=await page.locator("#poster").evaluate(c=>c.toDataURL("image/png"));
+    await page.locator("#direct-lock").click();
+    assert.equal(await page.locator("#direct-lock").getAttribute("aria-pressed"),"true");
+    assert.equal(await page.locator("#poster").evaluate(c=>c.toDataURL("image/png")),beforeSelection,
+      "Selecting and locking an object cannot pollute the PNG");
+    assert.ok((await page.evaluate(()=>window.AnonsEditor.getSnapshot()
+      .cards[0].lockedLayers)).includes(directKey));
+    await page.locator("#poster").focus();
+    await page.keyboard.press("ArrowRight");
+    assert.equal((await page.evaluate(()=>window.AnonsEditor.getSnapshot()
+      .cards[0].graphicElements[0].x)),originalShape.x,"Locked figure cannot move");
+    await page.locator("#direct-lock").click();
+    const bbox=await page.locator("#poster").boundingBox();
+    assert.ok(bbox?.width>50);
+    await page.mouse.move(bbox.x+bbox.width*.74,bbox.y+bbox.height*.36);
+    await page.mouse.down();
+    await page.mouse.move(bbox.x+bbox.width*.84,bbox.y+bbox.height*.41,{steps:5});
+    await page.mouse.up();
+    const dragged=await page.evaluate(()=>window.AnonsEditor.getSnapshot().cards[0].graphicElements[0]);
+    assert.notEqual(dragged.x,originalShape.x,"Dragging the figure updates its saved x position");
+    assert.ok(dragged.x%5===0,"Grid snapping applies during pointer movement");
+    await page.locator("#direct-larger").click();
+    await page.locator("#direct-rotate-right").click();
+    const transformed=await page.evaluate(()=>window.AnonsEditor.getSnapshot().cards[0].graphicElements[0]);
+    assert.equal(transformed.size,20,"Graphic resize button updates actual Canvas geometry");
+    assert.equal(transformed.rotation,60,"Graphic rotate button saves the new angle");
+    await page.locator("#direct-target").selectOption("title");
+    const titleBefore=await page.evaluate(()=>window.AnonsEditor.getSnapshot().cards[0].layerOffsets.title.x);
+    await page.locator("#poster").focus();
+    await page.keyboard.press("ArrowRight");
+    assert.equal(await page.evaluate(()=>window.AnonsEditor.getSnapshot().cards[0].layerOffsets.title.x),
+      titleBefore+5,"Arrow-key editing moves text layers");
+    await page.keyboard.press("ArrowLeft");
+    assert.equal(await page.evaluate(()=>window.AnonsEditor.getSnapshot().cards[0].layerOffsets.title.x),
+      titleBefore,"Text can be moved back precisely");
+    if(width<=760)await page.locator('[data-workspace-view="edit"]').click();
     await page.locator("#duplicate-card").click();
     assert.equal(await page.locator("#card-list [role=tab]").count(),2);
     // A copied card must own its own graphic array and geometry objects.
