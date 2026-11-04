@@ -71,3 +71,51 @@ test("graphic elements are capped and normalized without arbitrary SVG path inpu
   assert.equal(frame.path,Graphics.paths.spark);
   assert.ok(!frame.path.includes("script"));
 });
+
+test("Aurora visual intensity is bounded and applied only through allowlisted modes",()=>{
+  const low=Scene.layout({ratio:"portrait"},{template:"aurora",decorationLevel:"subtle"});
+  const middle=Scene.layout({ratio:"portrait"},{template:"aurora",decorationLevel:"balanced"});
+  const high=Scene.layout({ratio:"portrait"},{template:"aurora",decorationLevel:"expressive"});
+  const invalid=Scene.layout({ratio:"portrait"},{template:"aurora",decorationLevel:"<svg onload=alert(1)>"});
+  assert.equal(low.decorationLevel,"subtle");
+  assert.equal(invalid.decorationLevel,"subtle");
+  assert.ok(low.decorationTuning.grid<middle.decorationTuning.grid);
+  assert.ok(middle.decorationTuning.grid<high.decorationTuning.grid);
+  assert.ok(low.decorationTuning.rings<middle.decorationTuning.rings);
+  assert.ok(low.decorationTuning.centerY<high.decorationTuning.centerY);
+  assert.ok(low.decorationTuning.ringRadius<high.decorationTuning.ringRadius);
+  assert.ok(Object.isFrozen(low.decorationTuning));
+});
+
+test("balanced description spacing reduces blank title gap for every canvas format",()=>{
+  for(const ratio of ["portrait","square","story"]){
+    const card={template:"aurora",title:"Большое обновление!",textSpacing:"balanced"};
+    const scene=Scene.layout({ratio},card);
+    const title=Scene.titleLines(card.title,scene);
+    const lastBaseline=scene.titleY+title.size*.8+(title.lines.length-1)*title.size*1.14;
+    const y=Scene.descriptionTop(scene,title);
+    const compact=Scene.descriptionTop(Scene.layout({ratio},{...card,textSpacing:"compact"}),title);
+    const airy=Scene.descriptionTop(Scene.layout({ratio},{...card,textSpacing:"airy"}),title);
+    assert.ok(y>=compact && y<=airy);
+    assert.ok(y<scene.detailsY-90,"Description must stay above highlight box");
+    assert.ok(y>=lastBaseline+25 || y===scene.detailsY-(scene.height<=1100?140:155),
+      "Description should keep a readable gap below the title");
+  }
+  const invalid=Scene.layout({ratio:"portrait"},{textSpacing:"unexpected"});
+  assert.equal(invalid.textSpacing,"balanced");
+});
+
+test("free-watermark geometry is distributed, restrained and not removable by a plan flag",()=>{
+  for(const ratio of ["portrait","square","story"]){
+    const scene=Scene.layout({ratio},{});
+    const marks=Scene.watermarkStamps(scene.width,scene.height,scene.palette.dark);
+    assert.equal(marks.length,4);
+    assert.ok(new Set(marks.map(m=>m.y)).size===4,"Stamps are distributed vertically");
+    for(const mark of marks){
+      assert.ok(mark.x>0 && mark.x<scene.width && mark.y>0 && mark.y<scene.height);
+      assert.ok(mark.alpha>=.12 && mark.alpha<=.22);
+      assert.ok(mark.size>=35 && mark.size<=60);
+    }
+    assert.deepEqual([...marks.map(m=>m.y)].sort((a,b)=>a-b),marks.map(m=>m.y));
+  }
+});
