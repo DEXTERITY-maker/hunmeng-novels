@@ -84,15 +84,15 @@ try {
     // available from the footer without disturbing ordinary page visits.
     const releaseDialog=page.locator("#whats-new-dialog");
     await page.waitForFunction(()=>document.getElementById("whats-new-dialog")?.open);
-    assert.match(await page.locator("#whats-new-title").textContent(),/«Про»: серия карточек и новые шаблоны/);
-    assert.equal(await page.locator(".whats-new-list li").count(),29);
-    assert.equal(await page.locator(".whats-new-item-icon .ui-icon").count(),29,
+    assert.match(await page.locator("#whats-new-title").textContent(),/«Студия»: единый стиль и новые шаблоны/);
+    assert.equal(await page.locator(".whats-new-list li").count(),30);
+    assert.equal(await page.locator(".whats-new-item-icon .ui-icon").count(),30,
       "Announcement has coherent SVG icons instead of character placeholders");
     assert.equal(await page.locator("#whats-new-close").evaluate(el=>el===document.activeElement),true,
       "Announcement initially focuses its accessible close control");
     assert.equal(await page.locator(".whats-new-list:not(.whats-new-list-archive) li").count(),1,
       "Only the latest two changes are expanded by default");
-    assert.equal(await page.locator(".whats-new-list-archive li").count(),28);
+    assert.equal(await page.locator(".whats-new-list-archive li").count(),29);
     assert.equal(await page.locator(".whats-new-history").evaluate(el=>el.open),false);
     await page.locator(".whats-new-history summary").click();
     assert.equal(await page.locator(".whats-new-history").evaluate(el=>el.open),true);
@@ -104,7 +104,7 @@ try {
       assert.ok((await page.locator('.whats-new-list a[href="./'+destination+'"]').count())>=1,
         "Announcement links directly to "+destination);
     }
-    assert.equal(await releaseDialog.getAttribute("data-release"),"2026-11-04-pro-series",
+    assert.equal(await releaseDialog.getAttribute("data-release"),"2026-11-05-studio-workspace",
       "Latest announcement version must be recognized");
 
     await page.locator("#whats-new-dismiss").click();
@@ -392,7 +392,7 @@ try {
     assert.equal(await page.locator("#ratio").inputValue(),"story");
     assert.equal(await page.locator("[data-template]").count(),0,"Gallery now has its own page");
     await page.goto("http://127.0.0.1:"+port+"/templates.html",{waitUntil:"domcontentloaded"});
-    assert.equal(await page.locator("[data-template]").count(),12,"Six free, three Business and three Pro templates");
+    assert.equal(await page.locator("[data-template]").count(),15,"Six Free, three Business, three Pro, three Studio templates");
     await page.locator("#catalog-controls:not([hidden])").waitFor();
     assert.equal(await page.locator("#assistant-open").getAttribute("href"),"./editor.html?template=aurora&preset=update",
       "Quick-start defaults to a safe, editor-compatible suggestion");
@@ -404,12 +404,12 @@ try {
       "Quick-start recomputes recommendation without navigation");
     assert.equal(await page.locator("#assistant-result-art .template-art").count(),1,
       "Recommended preview reuses a real gallery composition");
-    assert.equal(await page.locator(".catalog-item:visible").count(),12,"All templates initially visible");
+    assert.equal(await page.locator(".catalog-item:visible").count(),15,"All templates initially visible");
     await page.locator("#template-search").fill("Aurora");
     assert.equal(await page.locator(".catalog-item:visible").count(),1,"Catalogue search narrows the visible templates");
     await page.locator("#template-search").fill("");
     await page.locator('[data-catalog-category="news"]').click();
-    assert.equal(await page.locator(".catalog-item:visible").count(),5,"News category includes Pro Magazine");
+    assert.equal(await page.locator(".catalog-item:visible").count(),6,"News category includes Studio Portfolio");
     await page.locator("#template-search").fill("нет такого шаблона");
     assert.equal(await page.locator("#template-empty").isVisible(),true,"No results shows reset action");
     await page.locator("#template-reset").click();
@@ -417,7 +417,7 @@ try {
     await page.locator("#template-favorites-toggle").click();
     assert.equal(await page.locator(".catalog-item:visible").count(),1,"Favorites filter finds the saved template");
     await page.locator("#template-favorites-toggle").click();
-    assert.equal(await page.locator(".catalog-item:visible").count(),12,"Switching off favorites restores gallery");
+    assert.equal(await page.locator(".catalog-item:visible").count(),15,"Switching off favorites restores gallery");
     await page.locator("[data-template=editorial]").click();
     await page.waitForFunction(()=>window.AnonsEditor?.getSnapshot().cards[0].template==="editorial");
     assert.equal(new URL(page.url()).pathname,"/editor.html","A gallery choice opens the editor");
@@ -1265,6 +1265,47 @@ try {
     assert.ok(await proPage.locator("#pro-series-generate").isDisabled());
     assert.deepEqual(proErrors,[],"Pro workflow page errors: "+proErrors.join("; "));
     await proContext.close();
+  }
+
+
+  // Stage 10: Studio has three unique palettes and an isolated workspace.
+  // A fabricated client access event must never enable real server-side writes.
+  for(const width of [390,1440]){
+    const studioContext=await browser.newContext({viewport:{width,height:960}});
+    const studioPage=await studioContext.newPage();
+    const errors=[];
+    studioPage.on("pageerror",err=>errors.push(err.message));
+    await studioPage.route("https://fonts.googleapis.com/**",r=>r.abort());
+    await studioPage.route("https://fonts.gstatic.com/**",r=>r.abort());
+    await studioPage.goto("http://127.0.0.1:"+port+"/editor.html",{waitUntil:"domcontentloaded"});
+    assert.equal(await studioPage.locator("#studio-workspace").count(),1);
+    assert.ok(await studioPage.locator("#studio-apply-brand").isDisabled());
+    for(const id of ["studio-identity","studio-launch","studio-portfolio"]){
+      assert.ok(await studioPage.locator('#template-select option[value="'+id+'"]').isDisabled());
+    }
+    await studioPage.evaluate(()=>window.dispatchEvent(
+      new CustomEvent("anons:access",{detail:{plan:"pro",premium:true}})));
+    assert.ok(await studioPage.locator('#template-select option[value="studio-launch"]').isDisabled());
+    await studioPage.evaluate(()=>window.dispatchEvent(
+      new CustomEvent("anons:access",{detail:{plan:"studio",premium:true}})));
+    for(const [id,bg] of [
+      ["studio-identity","#11182d"],
+      ["studio-launch","#2b1545"],
+      ["studio-portfolio","#ecf4f5"]
+    ]){
+      await studioPage.locator("#template-select").selectOption(id);
+      const snapshot=await studioPage.evaluate(()=>window.AnonsEditor.getSnapshot());
+      assert.equal(snapshot.cards[snapshot.activeCard].template,id);
+      const palette=await studioPage.evaluate(()=>{
+        const snap=window.AnonsEditor.getSnapshot();
+        return window.AnonsScene.layout(snap,snap.cards[snap.activeCard]).palette.bg1;
+      });
+      assert.equal(palette,bg);
+    }
+    assert.ok(await studioPage.locator("#studio-apply-brand").isDisabled(),
+      "Fake client plan with no authenticated user must never enable Studio cloud writes");
+    assert.deepEqual(errors,[],"Studio browser errors: "+errors.join("; "));
+    await studioContext.close();
   }
 
 } finally {
