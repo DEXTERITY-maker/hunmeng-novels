@@ -7,8 +7,8 @@ class Element {
   constructor(){this._value="";this.children=[];this.dataset={};this.textContent="";this.disabled=false;this.events={};}
   get value(){return this._value;}
   set value(v){this._value=String(v);}
-  addEventListener(type,fn){this.events[type]=fn;}
-  fire(type="click"){this.events[type]?.({target:this});}
+  addEventListener(type,fn){(this.events[type]??=[]).push(fn);}
+  fire(type="click"){for(const handler of this.events[type]||[])handler({target:this});}
   replaceChildren(){this.children=[];this.value="";}
   append(el){this.children.push(el);}
   focus(){this.focused=true;}
