@@ -21,7 +21,7 @@
   const toggle = document.getElementById("mobile-menu-toggle");
   const navigation = document.getElementById("primary-navigation");
   if (!toggle || !navigation) return;
-  const isMobile = window.matchMedia("(max-width: 760px)");
+  const isMobile = window.matchMedia("(max-width: 1100px)");
 
   function setOpen(open, restoreFocus = false) {
     const wasOpen = navigation.classList.contains("is-open");
