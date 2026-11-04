@@ -467,6 +467,15 @@ try {
     await page.keyboard.press("ArrowLeft");
     assert.equal(await page.evaluate(()=>window.AnonsEditor.getSnapshot().cards[0].layerOffsets.title.x),
       titleBefore,"Text can be moved back precisely");
+    await page.locator(".preview-stage").screenshot({
+      path:join(editorScreenshotDir,"direct-canvas-"+width+".png"),animations:"disabled"
+    });
+    const bitmapBeforeClose=await page.locator("#poster").evaluate(c=>c.toDataURL("image/png"));
+    await directEnable.uncheck();
+    assert.equal(await page.locator(".direct-selection-outline").isVisible(),false,
+      "Object handles disappear when direct editing is disabled");
+    assert.equal(await page.locator("#poster").evaluate(c=>c.toDataURL("image/png")),bitmapBeforeClose,
+      "Disabling the interaction UI cannot change the downloaded bitmap");
     if(width<=760)await page.locator('[data-workspace-view="edit"]').click();
     await page.locator("#duplicate-card").click();
     assert.equal(await page.locator("#card-list [role=tab]").count(),2);
@@ -569,6 +578,15 @@ try {
       await page.waitForFunction(()=>window.AnonsEditor.getSnapshot().imageData.startsWith("data:image/jpeg;base64,"));
       const compressed=await page.evaluate(()=>window.AnonsEditor.getSnapshot().imageData.length);
       assert.ok(compressed<600000,"Uploaded image must fit paid server export limit");
+      const photoHandle=await page.evaluate(()=>window.AnonsEditor.getDirectTargets().items.find(t=>t.key==="photo"));
+      assert.equal(photoHandle?.type,"photo","Imported photo is available for direct positioning");
+      const photoBitmap=await page.locator("#poster").evaluate(c=>c.toDataURL("image/png"));
+      assert.equal(await page.evaluate(()=>window.AnonsEditor.transformDirect("photo",{x:12,y:-8},"photo-test")),true);
+      await page.waitForFunction(previous=>document.querySelector("#poster").toDataURL("image/png")!==previous,photoBitmap);
+      const movedPhoto=await page.evaluate(()=>window.AnonsEditor.getSnapshot().cards[
+        window.AnonsEditor.getSnapshot().activeCard].layerOffsets.photo);
+      assert.equal(movedPhoto.x,12);
+      assert.equal(movedPhoto.y,-8);
       await page.locator("#clear-image").click();
       assert.equal(await page.evaluate(()=>window.AnonsEditor.getSnapshot().imageData),"","Removing uploaded photo must clear snapshot");
     }
