@@ -164,3 +164,25 @@ test("Studio is a separate manual order choice with matching label",async()=>{
   assert.equal(h.rows[0].plan,"studio");
   assert.equal(h.rows[0].amount_kopecks,99900);
 });
+
+test("existing pending manual order disables repeat submission and keeps chosen price",async()=>{
+  const h=setup();
+  h.instance.setUser({id:"buyer"});await tick();
+  h.els["manual-order-create"].click();await tick();
+  assert.equal(h.els["manual-order-create"].disabled,true);
+  assert.match(h.els["manual-order-create"].textContent,/Заявка уже оформлена/);
+  h.els["manual-order-create"].click();await tick();
+  assert.equal(h.calls.filter(c=>c.name==="anons_studio_manual_create_order").length,1);
+  assert.equal(h.paid,false);
+});
+test("confirmed active plan suppresses duplicate manual order button without altering DB",async()=>{
+  const h=setup();
+  h.instance.setUser({id:"buyer"});await tick();
+  h.events["anons:access"]({detail:{loggedIn:true,verified:true,premium:true,plan:"basic"}});
+  assert.equal(h.els["manual-order-create"].disabled,true);
+  assert.match(h.els["manual-order-create"].textContent,/Подписка уже активна/);
+  h.els["manual-order-create"].click();await tick();
+  assert.equal(h.calls.some(c=>c.name==="anons_studio_manual_create_order"),false);
+  h.instance.setUser(null);
+  assert.equal(h.els["manual-order-create"].disabled,true);
+});
