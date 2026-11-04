@@ -4,6 +4,7 @@ import { createClient } from 'npm:@supabase/supabase-js@2.118.0';
 const url = Deno.env.get('SUPABASE_URL') || 'https://kvgnjsntumofwqhywiea.supabase.co';
 const origin='https://anons-studio-preview.pages.dev';
 const api='https://api.yookassa.ru/v3/payments';
+const refundsApi='https://api.yookassa.ru/v3/refunds';
 const prices={basic:29900,pro:49900,studio:99900};
 const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 function key(named:string,old:string):string{
@@ -56,11 +57,21 @@ const kopecks=(s:any)=>typeof s==='string'&&/^[0-9]{1,8}\.[0-9]{2}$/.test(s)?Num
 const paymentHeaders=(id='')=>({'Authorization':'Basic '+btoa(shop+':'+merchantKey),'Content-Type':'application/json',...(id?{'Idempotence-Key':id}:{})});
 async function providerGet(id:string){
   if(!uuid.test(id))throw Error('INVALID_PAYMENT_ID');
-  const res=await fetch(api+'/'+encodeURIComponent(id),{headers:paymentHeaders()});
+  const res=await fetch(api+'/'+encodeURIComponent(id),{headers:paymentHeaders(),signal:AbortSignal.timeout(10000)});
   if(!res.ok)throw Error('PROVIDER_HTTP_'+res.status);
   const payment=await res.json();
   if(payment?.id!==id)throw Error('PROVIDER_ID_MISMATCH');
   return payment;
+}
+async function providerRefundGet(id:string){
+  if(!uuid.test(id))throw Error('INVALID_REFUND_ID');
+  const res=await fetch(refundsApi+'/'+encodeURIComponent(id),{headers:paymentHeaders(),signal:AbortSignal.timeout(10000)});
+  if(!res.ok)throw Error('PROVIDER_REFUND_HTTP_'+res.status);
+  const refund=await res.json();
+  if(refund?.id!==id||refund.status!=='succeeded'||typeof refund.payment_id!=='string'
+    ||!uuid.test(refund.payment_id)||refund.amount?.currency!=='RUB'||kopecks(refund.amount?.value)<=0)
+    throw Error('PROVIDER_REFUND_MISMATCH');
+  return refund;
 }
 async function userFrom(req:Request){
   const token=/^Bearer (.+)$/i.exec(req.headers.get('authorization')||'')?.[1];
@@ -147,15 +158,31 @@ async function webhook(req:Request){
   if(notice?.type!=='notification'
     ||!['payment.succeeded','payment.canceled','refund.succeeded'].includes(notice.event))
     return out({error:'INVALID_NOTICE'},400);
-  const id=notice.event==='refund.succeeded'?notice?.object?.payment_id:notice?.object?.id;
-  if(typeof id!=='string'||!uuid.test(id))return out({error:'INVALID_PAYMENT_ID'},400);
-  let provider:any;try{provider=await providerGet(id);}catch{return out({error:'VERIFY_FAILED'},503);}
+  const id=notice?.object?.id;
+  if(typeof id!=='string'||!uuid.test(id))return out({error:'INVALID_OBJECT_ID'},400);
+  let provider:any,refund:any;
+  try{
+    // A refund notification identifies a refund; its associated payment and
+    // amount are obtained from YooKassa, never trusted from the notice.
+    if(notice.event==='refund.succeeded')refund=await providerRefundGet(id);
+    provider=await providerGet(refund?refund.payment_id:id);
+  }catch{return out({error:'VERIFY_FAILED'},503);}
+  if((notice.event==='payment.succeeded'&&(provider.status!=='succeeded'||provider.paid!==true))
+    ||(notice.event==='payment.canceled'&&(provider.status!=='canceled'||provider.paid!==false)))
+    return out({error:'PAYMENT_NOT_READY'},503);
+  if(refund){
+    const paid=kopecks(provider?.amount?.value),totalRefunded=kopecks(provider?.refunded_amount?.value);
+    if(provider.status!=='succeeded'||provider.paid!==true||provider.refunded_amount?.currency!=='RUB'
+      ||paid<0||totalRefunded<kopecks(refund.amount.value)||totalRefunded>paid)
+      return out({error:'REFUND_NOT_READY'},503);
+  }
   const orderId=provider?.metadata?.order_id;
   if(!uuid.test(orderId||''))return out({received:true});
   const {data:order,error}=await admin.from('anons_studio_payment_orders').select('*').eq('id',orderId).maybeSingle();
   if(error||!order)return out({error:'ORDER_NOT_READY'},503);
   try{
     const state=await settle(provider,order);
+    if(state==='not_found')return out({error:'ORDER_NOT_READY'},503);
     if(state==='mismatch'||state.startsWith('rejected'))return out({error:'PAYMENT_MISMATCH'},400);
     return out({received:true});
   }catch(e){console.error('settle',String(e));return out({error:'SETTLEMENT_UNAVAILABLE'},503);}

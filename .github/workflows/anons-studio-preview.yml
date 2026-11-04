@@ -11,6 +11,7 @@ on:
       - feat/anons-studio-multidevice-qa-20261103
       - feat/anons-studio-png-parity-20261103
       - fix/anons-v06-audit-20261103
+      - fix/anons-refund-v10-20261104
     paths:
       - 'anons-studio/**'
       - '.github/workflows/anons-studio-preview.yml'
