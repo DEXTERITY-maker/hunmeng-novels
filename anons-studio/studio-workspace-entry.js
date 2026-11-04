@@ -50,6 +50,8 @@ export function initStudioWorkspace(client) {
   function updateControls(){
     const count=selected.size;
     counter.textContent="Выбрано: "+count+" из "+projectLimit();
+    const hint=$("studio-project-limit");
+    if(hint)hint.textContent=String(projectLimit());
     refreshButton.disabled=!studioAllowed()||loading;
     applyButton.disabled=!studioAllowed()||loading||count<1||count>projectLimit()||!getStyle();
     styleButton.disabled=loading;
@@ -64,7 +66,7 @@ export function initStudioWorkspace(client) {
     }else{
       const currentId=activeCloudId();
       const usable=projects.filter(p=>p.id!==currentId);
-      selected=new Set([...selected].filter(id=>usable.some(p=>p.id===id)));
+      selected=new Set([...selected].filter(id=>usable.some(p=>p.id===id)).slice(0,projectLimit()));
       if(!usable.length){
         projectList.append(text("p","Пока нет других сохранённых проектов. Создайте проекты в библиотеке и обновите список."));
       }
