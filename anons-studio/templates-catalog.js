@@ -18,7 +18,10 @@
     "business-report":{ name:"Business Report",categories:["news","universal"],keywords:"бизнес аналитика итоги отчёт метрики показатели",premium:true },
     "pro-campaign":{name:"Pro Campaign",categories:["launch","event","update"],keywords:"про рекламная кампания серия карточки продвижение релиз",premium:true,proOnly:true},
     "pro-magazine":{name:"Pro Magazine",categories:["news","universal"],keywords:"про журнал редакционный премиальный публикация статья",premium:true,proOnly:true},
-    "pro-impact":{name:"Pro Impact",categories:["launch","event"],keywords:"про акцент событие премьера яркий запуск",premium:true,proOnly:true}
+    "pro-impact":{name:"Pro Impact",categories:["launch","event"],keywords:"про акцент событие премьера яркий запуск",premium:true,proOnly:true},
+    "studio-identity":{name:"Studio Identity",categories:["universal","update"],keywords:"студия фирменный стиль визуальная идентичность брендинг",premium:true,studioOnly:true},
+    "studio-launch":{name:"Studio Launch",categories:["launch","event"],keywords:"студия презентация бренд премьера запуск",premium:true,studioOnly:true},
+    "studio-portfolio":{name:"Studio Portfolio",categories:["universal","news"],keywords:"студия портфолио кейсы проекты работы",premium:true,studioOnly:true}
   };
 
   const search = document.getElementById("template-search");
@@ -46,7 +49,8 @@
   let showFavorites = false;
   let paidAccess = false;
   let proAccess = false;
-  const canOpen=info=>!info.premium||(paidAccess&&(!info.proOnly||proAccess));
+  let studioAccess = false;
+  const canOpen=info=>!info.premium||(paidAccess&&(!info.proOnly||proAccess)&&(!info.studioOnly||studioAccess));
   const cards = [];
 
   [...gallery.querySelectorAll(":scope > a.template-card")].forEach((link) => {
@@ -67,11 +71,11 @@
     item.append(button);
     if(info.premium){
       link.classList.toggle("template-locked",true);
-      link.setAttribute("aria-label",info.name+" — шаблон тарифа "+(info.proOnly?"Про":"Бизнес"));
+      link.setAttribute("aria-label",info.name+" — шаблон тарифа "+(info.studioOnly?"Студия":info.proOnly?"Про":"Бизнес"));
       link.addEventListener("click",event=>{
         if(!canOpen(info)){
           event.preventDefault();
-          window.location.assign("./pricing.html?plan="+(info.proOnly?"pro":"basic")+"#manual-order-root");
+          window.location.assign("./pricing.html?plan="+(info.studioOnly?"studio":info.proOnly?"pro":"basic")+"#manual-order-root");
         }
       });
     }
@@ -98,8 +102,8 @@
       if(info.premium&&link){
         const allowed=canOpen(info);
         link.classList.toggle("template-locked",!allowed);
-        link.setAttribute("aria-label",info.name+(allowed?" — доступен":" — требуется подписка "+(info.proOnly?"Про":"Бизнес")));
-        link.title=allowed?"Открыть в редакторе":"Для доступа требуется подписка "+(info.proOnly?"Про":"Бизнес");
+        link.setAttribute("aria-label",info.name+(allowed?" — доступен":" — требуется подписка "+(info.studioOnly?"Студия":info.proOnly?"Про":"Бизнес")));
+        link.title=allowed?"Открыть в редакторе":"Для доступа требуется подписка "+(info.studioOnly?"Студия":info.proOnly?"Про":"Бизнес");
       }
       const selected = favorites.has(id);
       button.classList.toggle("is-favorite", selected);
@@ -131,6 +135,7 @@
   window.addEventListener("anons:access",event=>{
     paidAccess=event.detail?.premium===true&&["basic","pro","studio"].includes(event.detail?.plan);
     proAccess=paidAccess&&["pro","studio"].includes(event.detail?.plan);
+    studioAccess=paidAccess&&event.detail?.plan==="studio";
     render();
   });
   search.addEventListener("input", render);
