@@ -36,8 +36,8 @@ test("Business templates exist in catalogue, editor and both rendering engines",
     assert.equal(result.businessTemplate,id);
     assert.equal(result.palette.bg1,bg);
   }
-  assert.match(app,/businessTemplates\.has\(next\)&&!businessAllowed\(\)/);
-  assert.match(app,/businessTemplates\.has\(patch\.template\)&&!businessAllowed\(\)/);
+  assert.match(app,/canUseTemplate\(next\)/);
+  assert.match(app,/patch\.template&&!canUseTemplate\(patch\.template\)/);
 });
 
 test("manual plan selection sends only a server-validated plan key and updates price",()=>{
@@ -69,7 +69,7 @@ test("customer number is digits only and label is localized",()=>{
 test("YooKassa checkout stays disabled and Pro/Studio roadmap remains transparent",()=>{
   const provider=load("functions/anons-billing/index.ts");
   assert.match(provider,/const LIVE_CHECKOUT_REVIEWED=false/);
-  assert.match(pricing,/Дополнительные функции «Про» — следующий этап разработки/);
-  assert.match(pricing,/Дополнительные функции «Студия» — следующий после «Про» этап/);
+  assert.match(pricing,/Три эксклюзивных шаблона «Про»/);
+  assert.match(pricing,/Командные инструменты «Студии» будут добавлены на следующем этапе/);
   assert.match(pricing,/Автооплата по-прежнему выключена/);
 });
