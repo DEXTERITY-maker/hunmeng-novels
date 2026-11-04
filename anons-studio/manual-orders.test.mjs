@@ -37,7 +37,7 @@ function setup({admin=false,customerNo=2,delayed=false}={}){
       if(name==="anons_studio_manual_is_admin")return {data:admin,error:null};
       if(name==="anons_studio_manual_create_order"){
         if(!rows.some(x=>["awaiting_instructions","payment_reported"].includes(x.status))){
-          rows.unshift({order_no:100001,plan:args.p_plan,amount_kopecks:({basic:29900,pro:49900,studio:99900})[args.p_plan],
+          rows.unshift({order_no:100001,plan:args.p_plan,amount_kopecks:({basic:29900,pro:49900,studio:99900,agency:149900,ultimate:249900})[args.p_plan],
             status:"awaiting_instructions",created_at:"2026-11-04T13:00:00Z"});
         }
         return {data:100001,error:null};
