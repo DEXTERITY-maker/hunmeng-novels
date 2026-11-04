@@ -84,15 +84,15 @@ try {
     // available from the footer without disturbing ordinary page visits.
     const releaseDialog=page.locator("#whats-new-dialog");
     await page.waitForFunction(()=>document.getElementById("whats-new-dialog")?.open);
-    assert.match(await page.locator("#whats-new-title").textContent(),/Мой тариф и статус заказа/);
-    assert.equal(await page.locator(".whats-new-list li").count(),31);
-    assert.equal(await page.locator(".whats-new-item-icon .ui-icon").count(),31,
+    assert.match(await page.locator("#whats-new-title").textContent(),/Шесть тарифов и 21 шаблон/);
+    assert.equal(await page.locator(".whats-new-list li").count(),32);
+    assert.equal(await page.locator(".whats-new-item-icon .ui-icon").count(),32,
       "Announcement has coherent SVG icons instead of character placeholders");
     assert.equal(await page.locator("#whats-new-close").evaluate(el=>el===document.activeElement),true,
       "Announcement initially focuses its accessible close control");
     assert.equal(await page.locator(".whats-new-list:not(.whats-new-list-archive) li").count(),1,
       "Only the latest two changes are expanded by default");
-    assert.equal(await page.locator(".whats-new-list-archive li").count(),30);
+    assert.equal(await page.locator(".whats-new-list-archive li").count(),31);
     assert.equal(await page.locator(".whats-new-history").evaluate(el=>el.open),false);
     await page.locator(".whats-new-history summary").click();
     assert.equal(await page.locator(".whats-new-history").evaluate(el=>el.open),true);
@@ -104,7 +104,7 @@ try {
       assert.ok((await page.locator('.whats-new-list a[href="./'+destination+'"]').count())>=1,
         "Announcement links directly to "+destination);
     }
-    assert.equal(await releaseDialog.getAttribute("data-release"),"2026-11-05-pricing-current-plan",
+    assert.equal(await releaseDialog.getAttribute("data-release"),"2026-11-05-six-tier-plans",
       "Latest announcement version must be recognized");
 
     await page.locator("#whats-new-dismiss").click();
@@ -301,8 +301,8 @@ try {
     }));
     await pricingPage.goto("http://127.0.0.1:"+port+"/pricing.html",{waitUntil:"domcontentloaded"});
     assert.ok(await pricingPage.locator(".inner-page-hero h1").isVisible());
-    assert.equal(await pricingPage.locator("#pricing .plan").count(),4);
-    assert.equal(await pricingPage.locator("#pricing .plan-ui-icon .ui-icon").count(),4,
+    assert.equal(await pricingPage.locator("#pricing .plan").count(),6);
+    assert.equal(await pricingPage.locator("#pricing .plan-ui-icon .ui-icon").count(),6,
       "Each subscription tier has a matching vector icon");
     await pricingPage.waitForFunction(()=>document.querySelector("#billing-availability")?.textContent?.toLowerCase().includes("ручная заявка"));
     assert.ok(await pricingPage.locator("#buy-basic").isDisabled(),"Cannot charge without merchant configuration");
@@ -326,8 +326,14 @@ try {
       "Choosing Pro does not bypass guest authentication");
     await pricingPage.locator("#manual-order-plan").selectOption("studio");
     assert.equal(await pricingPage.locator("#manual-order-price").textContent(),"999 ₽");
-    assert.equal(await pricingPage.locator(".manual-plan-link").count(),3,
+    assert.equal(await pricingPage.locator(".manual-plan-link").count(),5,
       "Every paid plan links to the same manual-order form");
+    await pricingPage.locator("#manual-order-plan").selectOption("agency");
+    assert.match((await pricingPage.locator("#manual-order-price").textContent())?.replace(/\\s/g,"")||"",/1499₽/);
+    await pricingPage.locator("#manual-order-plan").selectOption("ultimate");
+    assert.match((await pricingPage.locator("#manual-order-price").textContent())?.replace(/\\s/g,"")||"",/2499₽/);
+    assert.equal(await pricingPage.locator(".tariff-compare table th").count()>=7,true,
+      "Six plans have an accessible feature comparison table");
     assert.equal(await pricingPage.locator("#pricing-personal-status").count(),1,
       "Pricing displays the user account membership separately from public prices");
     await pricingPage.evaluate(()=>{
@@ -428,7 +434,7 @@ try {
     assert.equal(await page.locator("#ratio").inputValue(),"story");
     assert.equal(await page.locator("[data-template]").count(),0,"Gallery now has its own page");
     await page.goto("http://127.0.0.1:"+port+"/templates.html",{waitUntil:"domcontentloaded"});
-    assert.equal(await page.locator("[data-template]").count(),15,"Six Free, three Business, three Pro, three Studio templates");
+    assert.equal(await page.locator("[data-template]").count(),21,"Six Free and fifteen paid templates across five plans");
     await page.locator("#catalog-controls:not([hidden])").waitFor();
     assert.equal(await page.locator("#assistant-open").getAttribute("href"),"./editor.html?template=aurora&preset=update",
       "Quick-start defaults to a safe, editor-compatible suggestion");
@@ -440,12 +446,12 @@ try {
       "Quick-start recomputes recommendation without navigation");
     assert.equal(await page.locator("#assistant-result-art .template-art").count(),1,
       "Recommended preview reuses a real gallery composition");
-    assert.equal(await page.locator(".catalog-item:visible").count(),15,"All templates initially visible");
+    assert.equal(await page.locator(".catalog-item:visible").count(),21,"All templates initially visible");
     await page.locator("#template-search").fill("Aurora");
     assert.equal(await page.locator(".catalog-item:visible").count(),1,"Catalogue search narrows the visible templates");
     await page.locator("#template-search").fill("");
     await page.locator('[data-catalog-category="news"]').click();
-    assert.equal(await page.locator(".catalog-item:visible").count(),6,"News category includes Studio Portfolio");
+    assert.equal(await page.locator(".catalog-item:visible").count(),8,"News category includes Agency and Ultimate");
     await page.locator("#template-search").fill("нет такого шаблона");
     assert.equal(await page.locator("#template-empty").isVisible(),true,"No results shows reset action");
     await page.locator("#template-reset").click();
@@ -453,7 +459,7 @@ try {
     await page.locator("#template-favorites-toggle").click();
     assert.equal(await page.locator(".catalog-item:visible").count(),1,"Favorites filter finds the saved template");
     await page.locator("#template-favorites-toggle").click();
-    assert.equal(await page.locator(".catalog-item:visible").count(),15,"Switching off favorites restores gallery");
+    assert.equal(await page.locator(".catalog-item:visible").count(),21,"Switching off favorites restores gallery");
     await page.locator("[data-template=editorial]").click();
     await page.waitForFunction(()=>window.AnonsEditor?.getSnapshot().cards[0].template==="editorial");
     assert.equal(new URL(page.url()).pathname,"/editor.html","A gallery choice opens the editor");
@@ -1340,6 +1346,35 @@ try {
     }
     assert.ok(await studioPage.locator("#studio-apply-brand").isDisabled(),
       "Fake client plan with no authenticated user must never enable Studio cloud writes");
+
+    await studioPage.evaluate(()=>window.dispatchEvent(
+      new CustomEvent("anons:access",{detail:{plan:"agency",premium:true}})));
+    assert.equal(await studioPage.locator('#template-select option[value="agency-social"]').isDisabled(),false);
+    assert.equal(await studioPage.locator('#template-select option[value="ultimate-cinema"]').isDisabled(),true);
+    for(const [id,bg] of [
+      ["agency-brand","#092a39"],["agency-social","#171c38"],["agency-showcase","#f5eee8"]
+    ]){
+      await studioPage.locator("#template-select").selectOption(id);
+      const palette=await studioPage.evaluate(()=>{
+        const snap=window.AnonsEditor.getSnapshot();
+        return window.AnonsScene.layout(snap,snap.cards[snap.activeCard]).palette.bg1;
+      });
+      assert.equal(palette,bg);
+    }
+    await studioPage.evaluate(()=>window.dispatchEvent(
+      new CustomEvent("anons:access",{detail:{plan:"ultimate",premium:true}})));
+    for(const [id,bg] of [
+      ["ultimate-signature","#12151c"],["ultimate-cinema","#0f133e"],["ultimate-vision","#f0f8f8"]
+    ]){
+      await studioPage.locator("#template-select").selectOption(id);
+      const palette=await studioPage.evaluate(()=>{
+        const snap=window.AnonsEditor.getSnapshot();
+        return window.AnonsScene.layout(snap,snap.cards[snap.activeCard]).palette.bg1;
+      });
+      assert.equal(palette,bg);
+    }
+    assert.ok(await studioPage.locator("#studio-apply-brand").isDisabled(),
+      "Fake plan event without Auth cannot grant bulk project writes");
     assert.deepEqual(errors,[],"Studio browser errors: "+errors.join("; "));
     await studioContext.close();
   }
