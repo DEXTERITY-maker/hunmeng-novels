@@ -39,6 +39,8 @@ export function initLibrary(client) {
   let saveTimer = null;
   let inFlight = null;
   let historyEpoch = 0;
+  // Invalidate delayed cloud reads whenever the current draft changes identity.
+  let loadSerial = 0;
   function persistActive() {
     if(!user||!projectId)return;
     try {
@@ -77,12 +79,14 @@ export function initLibrary(client) {
     changed++;
     dirty = true;
     persistActive();
-    notify(projectId ? "Ожидает синхронизации" : "Не сохранён в облаке");
+    notify(!navigator.onLine ? "Офлайн — изменения только в браузере"
+      : projectId ? "Ожидает синхронизации" : "Не сохранён в облаке",
+      !navigator.onLine ? "error" : "");
     if (projectId && !conflict) scheduleAutosave();
   }
   function scheduleAutosave() {
     clearPending();
-    if(!user || !projectId || conflict)return;
+    if(!user || !projectId || conflict || !navigator.onLine)return;
     saveTimer=setTimeout(() => {save(false).catch(()=>{});},4200);
   }
   function updateControls() {
@@ -96,6 +100,7 @@ export function initLibrary(client) {
     elements.archive.textContent=archived?"Вернуть из архива":"В архив";
   }
   function clearCurrent(suggestedName) {
+    ++loadSerial;
     clearPending();
     projectId=null;version=0;archived=false;conflict=false;dirty=false;
     clearActive();showConflict(false);
@@ -190,6 +195,13 @@ export function initLibrary(client) {
       if(checkpoint)return save(true);
       if(!dirty)return;
     }
+    if(!navigator.onLine){
+      dirty=true;
+      persistActive();
+      notify("Офлайн — сохранено только в браузере","error");
+      error("Нет соединения с интернетом. Правки остались в браузере и будут отправлены в облако после восстановления связи.");
+      throw new Error("OFFLINE");
+    }
     const ownerId=user.id, epoch=sessionEpoch;
     const serial=changed;
     const id=projectId||crypto.randomUUID();
@@ -231,26 +243,35 @@ export function initLibrary(client) {
     }finally{if(inFlight===action)inFlight=null;}
   }
   async function ensureSaved() {
-    if(!user)return false;
+    if(!user || conflict)return false;
+    const uid=user.id, epoch=sessionEpoch;
     if(inFlight){try{await inFlight;}catch{return false;}}
-    // A clean, never-saved draft should not become a ghost project when switching.
+    if(epoch!==sessionEpoch || user?.id!==uid || conflict)return false;
+    // Never switch if a new edit arrived during an asynchronous save.
     if(dirty){
       try{await save(false);}catch{return false;}
     }
-    return true;
+    return epoch===sessionEpoch && user?.id===uid && !dirty && !conflict;
   }
   async function openProject(id,force=false){
     if(!user||!id||(id===projectId&&!force))return;
+    const loadId=++loadSerial;
     if(force){
       if(inFlight){try{await inFlight;}catch{}}
       clearPending();
     }else if(!await ensureSaved())return;
-    const epoch=sessionEpoch,uid=user.id;
+    if(loadId!==loadSerial || !user)return;
+    const epoch=sessionEpoch,uid=user.id,editAtStart=changed;
     error("");notify("Загружаем проект…");
     const {data,error:failure}=await client.from("anons_studio_projects")
       .select("id,owner_id,title,snapshot,version,archived")
       .eq("owner_id",uid).eq("id",id).maybeSingle();
-    if(epoch!==sessionEpoch)return;
+    if(epoch!==sessionEpoch||loadId!==loadSerial||user?.id!==uid)return;
+    if(changed!==editAtStart){
+      notify("Загрузка отменена — есть новые изменения","error");
+      error("Пока проект загружался, ты изменил текущий черновик. Повтори открытие после сохранения, чтобы не потерять правки.");
+      return;
+    }
     if(failure||!data){error(friendlyError(failure));notify("Ошибка загрузки","error");return;}
     try{editor().loadSnapshot(data.snapshot);}catch(err){error("Не удалось открыть содержимое этого проекта.");return;}
     projectId=data.id;version=data.version;archived=data.archived;
@@ -263,10 +284,18 @@ export function initLibrary(client) {
   async function restoreRevision(revisionId){
     if(!user||!projectId)return;
     if(!confirm("Восстановить эту версию? Перед восстановлением текущие изменения будут сохранены в облаке."))return;
+    const epoch=sessionEpoch, uid=user.id, id=projectId, loadId=++loadSerial;
     try{await save(true);}catch{return;}
-    const id=projectId,uid=user.id;
+    if(epoch!==sessionEpoch||user?.id!==uid||projectId!==id||loadId!==loadSerial||dirty)return;
+    const editAtStart=changed;
     const {data,error:failure}=await client.from("anons_studio_project_revisions")
       .select("snapshot,title").eq("project_id",id).eq("owner_id",uid).eq("id",revisionId).maybeSingle();
+    if(epoch!==sessionEpoch||user?.id!==uid||projectId!==id||loadId!==loadSerial)return;
+    if(changed!==editAtStart){
+      error("Восстановление отменено: во время загрузки версии появились новые изменения.");
+      notify("Изменения сохранены в редакторе","error");
+      return;
+    }
     if(failure||!data){error(friendlyError(failure));return;}
     try{
       editor().loadSnapshot(data.snapshot);
@@ -369,6 +398,10 @@ export function initLibrary(client) {
   elements.remove.addEventListener("click",()=>removeProject());
   window.addEventListener("anons:editor-reset",()=>{if(user)clearCurrent(editor()?.getSuggestedName?.());});
   window.addEventListener("anons:editor-change",markDirty);
+  window.addEventListener("offline",()=>{
+    clearPending();
+    if(user&&dirty)notify("Офлайн — изменения только в браузере","error");
+  });
   window.addEventListener("online",()=>{
     if(user&&projectId&&dirty&&!conflict)scheduleAutosave();
     if(user)refresh().catch(()=>{});
