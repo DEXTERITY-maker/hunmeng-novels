@@ -265,7 +265,14 @@
                     <button type="button" id="personal-style-delete" class="personal-style-delete" disabled><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="./assets/ui-icons.svg#trash"></use></svg> Удалить</button>
                   </div>
                 </div>
-                <p class="personal-styles-note">До 20 стилей, только в этом браузере. Для переименования выберите стиль и введите новое название в поле выше. Применение заменяет оформление и фигуры только выбранной карточки; её текст и фото сохраняются. Сохранённые стили не синхронизируются с аккаунтом.</p>
+                <div class="personal-styles-cloud">
+                  <p id="personal-style-scope" class="personal-style-scope">Только этот браузер · без аккаунта</p>
+                  <div class="personal-styles-cloud-actions">
+                    <button type="button" id="personal-style-cloud-refresh" hidden><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="./assets/ui-icons.svg#refresh-cw"></use></svg> Обновить из облака</button>
+                    <button type="button" id="personal-style-cloud-import" hidden><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="./assets/ui-icons.svg#cloud-upload"></use></svg> Импортировать локальные стили</button>
+                  </div>
+                </div>
+                <p class="personal-styles-note">До 20 сохранённых стилей. Войдите в аккаунт, чтобы хранить стили в облаке и открывать их с других устройств. Гостевые стили остаются в этом браузере, пока вы явно не импортируете их в аккаунт. Применение изменяет только оформление выбранной карточки; её текст и фото сохраняются.</p>
                 <p id="personal-style-status" class="personal-styles-status" role="status" aria-live="polite"></p>
               </section>
               </section>
