@@ -456,10 +456,15 @@ try {
       .cards[0].graphicElements[0].x)),originalShape.x,"Locked figure cannot move");
     await page.locator("#direct-lock").click();
     const bbox=await page.locator("#poster").boundingBox();
-    assert.ok(bbox?.width>50);
-    await page.mouse.move(bbox.x+bbox.width*.74,bbox.y+bbox.height*.36);
+    const handle=await page.locator(".direct-selection-outline").boundingBox();
+    assert.ok(bbox?.width>50&&handle?.width>10);
+    const startX=handle.x+handle.width/2,startY=handle.y+handle.height/2;
+    await page.mouse.move(startX,startY);
     await page.mouse.down();
-    await page.mouse.move(bbox.x+bbox.width*.84,bbox.y+bbox.height*.41,{steps:5});
+    const selectedByPointer=await page.locator("#direct-target").inputValue();
+    assert.equal(selectedByPointer,directKey,
+      "Pointerdown at the visible selection frame should select the graphic");
+    await page.mouse.move(startX+bbox.width*.10,startY+bbox.height*.05,{steps:5});
     await page.mouse.up();
     const dragged=await page.evaluate(()=>window.AnonsEditor.getSnapshot().cards[0].graphicElements[0]);
     assert.notEqual(dragged.x,originalShape.x,"Dragging the figure updates its saved x position");
