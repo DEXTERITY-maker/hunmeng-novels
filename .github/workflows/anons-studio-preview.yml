@@ -48,6 +48,14 @@ jobs:
         run: npx playwright install --with-deps chromium
       - name: Test actual editor, responsive layout and PNG export
         run: node anons-studio/smoke.mjs
+      - name: Upload synthetic mobile and desktop editor previews
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: anons-editor-previews-${{ github.run_id }}
+          path: anons-studio/test-artifacts/preview-*.png
+          if-no-files-found: warn
+          retention-days: 14
       - name: Publish standalone preview (never existing production)
         if: github.ref == 'refs/heads/feat/anons-studio-mvp-20261103'
         uses: cloudflare/wrangler-action@v4
