@@ -1049,6 +1049,9 @@
         rect:{x:scene.margin+offsets.highlights.x*W/100,
           y:h.top+offsets.highlights.y*H/100,w:h.width,h:h.height}}
     ];
+    items.push({key:"brand",label:"Название проекта",type:"text",
+      rect:{x:scene.margin+scene.offsets.brand.x*W/100,
+        y:72+scene.offsets.brand.y*H/100,w:scene.contentWidth*.52,h:60}});
     if(state.imageData){
       items.push({key:"photo",label:"Загруженное изображение",type:"photo",
         rect:{x:scene.photo.x+offsets.photo.x*W/100,
@@ -1056,6 +1059,7 @@
           w:scene.photo.width,h:scene.photo.height}});
     }
     for(const graphic of Graphics.normalizeElements(state.graphicElements)){
+      if(graphic.hidden)continue;
       const frame=Graphics.frame(graphic,W,H);
       const side=Math.max(frame.size,34);
       items.push({key:"graphic:"+graphic.id,label:Graphics.labels[graphic.kind]+" · "+graphic.id,
@@ -1063,7 +1067,8 @@
         rect:{x:frame.x-side/2,y:frame.y-side/2,w:side,h:side}});
     }
     for(const item of items)item.locked=locked.has(item.key);
-    return {width:W,height:H,items};
+    return {width:W,height:H,items:items.filter(item=>
+      item.type==="graphic"||scene.enabled[item.key]!==false)};
   }
   function transformDirect(key,changes,group=""){
     if(typeof key!=="string"||!changes||typeof changes!=="object")return false;
@@ -1081,7 +1086,16 @@
       const next=Graphics.normalizeOne({...previous,...patch},index);
       changed=Object.keys(patch).some(prop=>next[prop]!==previous[prop]);
       if(changed){
-        state.graphicElements=state.graphicElements.map((graphic,i)=>i===index?next:graphic);
+        const dx=next.x-previous.x,dy=next.y-previous.y;
+        // Grouping is non-destructive: members retain their individual
+        // coordinates, but moving one shifts its unlocked group peers.
+        state.graphicElements=state.graphicElements.map((graphic,i)=>{
+          if(i===index)return next;
+          if(!previous.groupId||graphic.groupId!==previous.groupId||
+            state.lockedLayers.includes("graphic:"+graphic.id))return graphic;
+          if(!dx&&!dy)return graphic;
+          return Graphics.normalizeOne({...graphic,x:graphic.x+dx,y:graphic.y+dy},i);
+        });
         selectedGraphicIndex=index;
         renderGraphicControls();
       }
