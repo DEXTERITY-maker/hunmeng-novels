@@ -1132,3 +1132,23 @@ html.whats-new-visible{overflow:hidden}
 .preview-studio-portfolio .business-preview-eyebrow{color:#125f66}
 .template-card-studio.template-locked::after{content:"Только Студия"}
 @media(max-width:700px){.studio-workspace{padding:17px}.studio-project-list{grid-template-columns:1fr}.studio-workspace-head h3{font-size:19px}.studio-workspace-preview,.studio-workspace-controls,.studio-workspace-footer{flex-wrap:wrap}.studio-workspace-footer button{width:100%}}
+
+
+/* Account-specific pricing: membership is verified by Supabase, not by a browser payment click. */
+.pricing-personal-status{display:flex;gap:22px;align-items:center;justify-content:space-between;padding:24px 27px;margin:0 0 25px;border:1px solid #c5d9d5;border-radius:18px;background:linear-gradient(122deg,#f1faf7 0%,#f6f8ff 62%,#faf7ff 100%);box-shadow:0 10px 32px #183c4120;color:#193745}
+.pricing-personal-status-body{max-width:710px;min-width:0}
+.pricing-personal-eyebrow{font-size:10px;font-weight:850;letter-spacing:.14em;color:#407571}
+.pricing-personal-status h3{margin:8px 0 6px;font-size:23px;line-height:1.2;letter-spacing:-.035em;color:#142d37}
+.pricing-personal-status p{margin:0;color:#54717c;font-size:12px;line-height:1.65}
+.pricing-personal-side{display:grid;gap:12px;justify-items:end;flex-shrink:0}
+.pricing-personal-indicator{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;padding:8px 13px;background:#e0eee9;color:#24564c;font-size:11px;font-weight:850;white-space:nowrap}
+.pricing-personal-side>a{font-size:11px;font-weight:800;color:#316b73;text-decoration:underline;text-underline-offset:3px}
+.plan.is-current-plan{border-color:#2c9380;box-shadow:0 0 0 2px #269c8230,0 14px 35px #2c756022}
+.plan.is-pending-plan{border-color:#b8a6dc;box-shadow:0 0 0 2px #9c82d62b,0 12px 25px #644d8b18}
+.plan-current-state{padding:11px 13px;margin-top:11px;border-radius:11px;background:#e5f6ef;border:1px solid #a1d8c5;color:#1d6953;font-size:11px;font-weight:850;line-height:1.45}
+.plan.is-pending-plan .plan-current-state{background:#f3ecfb;border-color:#d1bde8;color:#684b88}
+.plan .plan-current-state:not([hidden]){display:block}
+.plan .plan-current-state[hidden],.plan .manual-plan-link[hidden],#buy-basic[hidden]{display:none!important}
+#pricing[data-pricing-access="pending"] .pricing-personal-status{background:linear-gradient(122deg,#f7f2ff,#f8f9fe);border-color:#d8c6e9}
+#pricing[data-pricing-access="pending"] .pricing-personal-indicator{background:#eae0f8;color:#71479a}
+@media(max-width:670px){.pricing-personal-status{padding:18px;align-items:stretch;flex-direction:column;gap:15px}.pricing-personal-status h3{font-size:21px}.pricing-personal-side{display:flex;justify-content:space-between;align-items:center;gap:12px}.pricing-personal-side>a{white-space:nowrap}}
