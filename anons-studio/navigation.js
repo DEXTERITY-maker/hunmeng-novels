@@ -1,6 +1,13 @@
 // Progressive mobile navigation; independent of the editor and authentication.
 (() => {
   "use strict";
+  // Old bookmarks linked to the profile section on the home page. Redirect
+  // them to the standalone account page without changing recovery URLs.
+  if((location.pathname.endsWith("/") || location.pathname.endsWith("/index.html"))
+    && location.hash === "#account"){
+    location.replace("./account.html");
+    return;
+  }
   const toggle = document.getElementById("mobile-menu-toggle");
   const navigation = document.getElementById("primary-navigation");
   if (!toggle || !navigation) return;
