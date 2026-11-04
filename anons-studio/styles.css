@@ -702,3 +702,47 @@ html.whats-new-visible{overflow:hidden}
 .whats-new-history[open] summary{border-bottom:1px solid #ebe5f3}
 .whats-new-history .whats-new-list-archive{margin:0;padding:20px 14px 9px;gap:18px}
 @media(max-width:440px){.whats-new-history .whats-new-list-archive{padding:16px 12px 6px}}
+
+/* Direct editing: handles are DOM-only. Canvas PNG stays free of selection art. */
+.direct-editor-toolbar{display:grid;gap:12px;padding:16px;margin:14px 0 20px;
+  border:1px solid #e5dcf3;border-radius:15px;background:linear-gradient(150deg,#fcfaff,#f6f1ff)}
+.direct-editor-top{display:flex;flex-wrap:wrap;align-items:center;gap:14px}
+.direct-editor-top label{display:inline-flex;align-items:center;gap:8px;cursor:pointer;
+  font-size:11px;font-weight:800;line-height:1.5;color:#4d4265}
+.direct-editor-top input{width:17px;height:17px;accent-color:#7045c8}
+.direct-editor-help{margin:0;color:#70677f;font-size:11px;line-height:1.65}
+.direct-editor-actions{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+.direct-editor-actions label{font-size:11px;font-weight:800;color:#54476a}
+.direct-editor-actions select{flex:1 1 150px;min-width:0;min-height:42px;
+  background:#fff;border:1px solid #dfd5ed;border-radius:10px;padding:7px 9px;color:#2f2740;font-size:11px}
+.direct-editor-actions button,.direct-transform-actions button{min-height:40px;
+  padding:8px 12px;border:1px solid #d8cbe9;background:#fff;color:#613fa8;
+  border-radius:10px;font-weight:800;font-size:11px;cursor:pointer}
+.direct-editor-actions button[aria-pressed="true"]{border-color:#b687d9;background:#efe3ff;color:#5d3092}
+.direct-editor-actions button:disabled,.direct-transform-actions button:disabled{opacity:.45;cursor:not-allowed}
+.direct-transform-actions{display:flex;gap:7px;flex-wrap:wrap}
+.direct-transform-actions button{flex:1 1 90px}
+.direct-editor-toolbar button:focus-visible,.direct-editor-toolbar select:focus-visible,
+.canvas-holder canvas.direct-canvas-active:focus-visible{outline:3px solid #8b58ed;outline-offset:3px}
+.canvas-holder canvas.direct-canvas-active{cursor:grab;touch-action:none}
+.canvas-holder canvas.direct-canvas-active:active{cursor:grabbing}
+.direct-selection-outline{position:absolute;z-index:2;box-sizing:border-box;
+  border:2px dashed #edb861;border-radius:5px;pointer-events:none;
+  background:#ffda640e;box-shadow:0 0 0 2px #1c104d66}
+.direct-selection-outline.is-locked{border-color:#e985a8;background:#fa6c8c0d}
+.direct-selection-outline[hidden]{display:none!important}
+.direct-selection-outline:before{content:"";position:absolute;right:-3px;top:-25px;
+  width:10px;height:10px;border-radius:50%;background:#f0c26f;
+  border:2px solid #211741;box-shadow:0 0 0 2px #fff7}
+@media(max-width:760px){
+  .direct-editor-toolbar{margin:12px 0 17px;padding:14px 11px}
+  .direct-editor-actions{align-items:stretch}
+  .direct-editor-actions label{flex:0 0 100%;margin-bottom:-5px}
+  .direct-editor-actions select{flex:1 1 auto}
+  .direct-transform-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+  .direct-transform-actions button{min-width:0}
+}
+@media(max-width:390px){
+  .direct-editor-top{align-items:flex-start;gap:10px}
+  .direct-editor-top label{width:100%}
+}
