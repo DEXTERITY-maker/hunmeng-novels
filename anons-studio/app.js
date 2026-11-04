@@ -976,10 +976,118 @@
       resetHistory();
     }
   }
+  // Interactive editing geometry is derived from the exact scene used to
+  // draw the poster. Selection handles are HTML only, never printed into PNG.
+  function getDirectTargets(){
+    const scene=window.AnonsScene.layout({ratio:state.ratio,project:state.project},state);
+    const W=scene.width,H=scene.height;
+    const offsets=scene.offsets;
+    const locked=new Set(state.lockedLayers);
+    const titleSpec=window.AnonsScene.titleLines(state.title.trim()||"Заголовок публикации",scene);
+    const titleLines=titleSpec.lines.length||1;
+    const descSize=scene.descriptionSize;
+    const descLines=window.AnonsScene.breakLines(
+      state.description.trim()||"Расскажите коротко, что произошло и почему это важно.",
+      scene.contentWidth-(H<=1100?10:80),descSize,3);
+    const bestWidth=(lines,size)=>Math.min(scene.contentWidth,
+      Math.max(size*2,...lines.map(line=>window.AnonsScene.textWidth(line,size)))+24);
+    const titleWidth=bestWidth(titleSpec.lines,titleSpec.size);
+    const descWidth=bestWidth(descLines,descSize);
+    const x=(size,offset)=>(
+      scene.center?(W-size)/2:scene.margin
+    )+offset.x*W/100;
+    const list=state.points.split(/\r?\n/).map(p=>p.trim()).filter(Boolean).slice(0,3);
+    const h=window.AnonsScene.highlightGeometry(scene,list.length||2);
+    const items=[
+      {key:"title",label:"Заголовок",type:"text",
+        rect:{x:x(titleWidth,offsets.title),
+          y:scene.titleY+offsets.title.y*H/100,w:titleWidth,
+          h:titleSpec.size*titleLines*1.14}},
+      {key:"description",label:"Описание",type:"text",
+        rect:{x:x(descWidth,offsets.description),
+          y:window.AnonsScene.descriptionTop(scene,titleSpec)+offsets.description.y*H/100,
+          w:descWidth,h:descSize*1.55*Math.max(1,descLines.length)}},
+      {key:"highlights",label:"Ключевые изменения",type:"text",
+        rect:{x:scene.margin+offsets.highlights.x*W/100,
+          y:h.top+offsets.highlights.y*H/100,w:h.width,h:h.height}}
+    ];
+    if(state.imageData){
+      items.push({key:"photo",label:"Загруженное изображение",type:"photo",
+        rect:{x:scene.photo.x+offsets.photo.x*W/100,
+          y:scene.photo.y+offsets.photo.y*H/100,
+          w:scene.photo.width,h:scene.photo.height}});
+    }
+    for(const graphic of Graphics.normalizeElements(state.graphicElements)){
+      const frame=Graphics.frame(graphic,W,H);
+      const side=Math.max(frame.size,34);
+      items.push({key:"graphic:"+graphic.id,label:Graphics.labels[graphic.kind]+" · "+graphic.id,
+        type:"graphic",size:graphic.size,rotation:graphic.rotation,
+        rect:{x:frame.x-side/2,y:frame.y-side/2,w:side,h:side}});
+    }
+    for(const item of items)item.locked=locked.has(item.key);
+    return {width:W,height:H,items};
+  }
+  function transformDirect(key,changes,group=""){
+    if(typeof key!=="string"||!changes||typeof changes!=="object")return false;
+    const target=getDirectTargets().items.find(item=>item.key===key);
+    if(!target||target.locked)return false;
+    let changed=false;
+    if(target.type==="graphic"){
+      const id=key.slice(8),index=state.graphicElements.findIndex(item=>item.id===id);
+      if(index<0)return false;
+      const previous=state.graphicElements[index];
+      const patch={};
+      for(const property of ["x","y","size","rotation"]){
+        if(Object.hasOwn(changes,property))patch[property]=changes[property];
+      }
+      const next=Graphics.normalizeOne({...previous,...patch},index);
+      changed=Object.keys(patch).some(prop=>next[prop]!==previous[prop]);
+      if(changed){
+        state.graphicElements=state.graphicElements.map((graphic,i)=>i===index?next:graphic);
+        selectedGraphicIndex=index;
+        renderGraphicControls();
+      }
+    }else{
+      const old=normalizeOffsets(state.layerOffsets),newPosition={...old[key]};
+      for(const axis of ["x","y"]){
+        if(Object.hasOwn(changes,axis)){
+          newPosition[axis]=Math.round(clamp(changes[axis],-30,30,0)*10)/10;
+        }
+      }
+      changed=newPosition.x!==old[key].x||newPosition.y!==old[key].y;
+      if(changed){
+        state.layerOffsets={...old,[key]:newPosition};
+        for(const axis of ["x","y"]){
+          const node=$(key+"-offset-"+axis);
+          if(node){
+            node.value=newPosition[axis];
+            $(node.id+"-value").textContent=(newPosition[axis]>0?"+":"")+newPosition[axis]+"%";
+          }
+        }
+      }
+    }
+    if(!changed)return false;
+    historyKind="direct:"+key+":"+group;
+    syncCardAndSave();
+    return true;
+  }
+  function toggleDirectLock(key){
+    const target=getDirectTargets().items.find(item=>item.key===key);
+    if(!target)return false;
+    const old=new Set(state.lockedLayers);
+    if(old.has(key))old.delete(key);else old.add(key);
+    state.lockedLayers=normalizeLocks([...old],state.graphicElements);
+    historyKind="";
+    syncCardAndSave();
+    return state.lockedLayers.includes(key);
+  }
   window.AnonsEditor=Object.freeze({
     getSnapshot,
     loadSnapshot,
     newDraft,
+    getDirectTargets,
+    transformDirect,
+    toggleDirectLock,
     getSuggestedName:()=> {
       snapshotCard();
       return (state.cards[0]?.title||"Новый анонс").trim().slice(0,100)||"Новый анонс";
