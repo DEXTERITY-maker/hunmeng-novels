@@ -701,6 +701,16 @@
       return (state.cards[0]?.title||"Новый анонс").trim().slice(0,100)||"Новый анонс";
     }
   });
+  // The gallery passes a single selected template to the editor. Apply it
+  // without discarding the existing draft, then remove the one-time URL
+  // parameter so refreshing does not overwrite later customization.
+  const editorUrl=new URL(window.location.href);
+  const requestedTemplate=editorUrl.searchParams.get("template");
+  if(requestedTemplate && templates.has(requestedTemplate)){
+    changeTemplate(requestedTemplate);
+    editorUrl.searchParams.delete("template");
+    window.history.replaceState(null,"",editorUrl.pathname+editorUrl.search+editorUrl.hash);
+  }
   syncFields();resetHistory();render();if(state.imageData)loadPhoto(state.imageData);
   if(document.fonts?.ready)document.fonts.ready.then(scheduleRender).catch(()=>{});
 })();
