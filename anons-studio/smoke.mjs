@@ -84,15 +84,15 @@ try {
     // available from the footer without disturbing ordinary page visits.
     const releaseDialog=page.locator("#whats-new-dialog");
     await page.waitForFunction(()=>document.getElementById("whats-new-dialog")?.open);
-    assert.match(await page.locator("#whats-new-title").textContent(),/Собственные стили оформления/);
-    assert.equal(await page.locator(".whats-new-list li").count(),24);
-    assert.equal(await page.locator(".whats-new-item-icon .ui-icon").count(),24,
+    assert.match(await page.locator("#whats-new-title").textContent(),/Стили доступны на разных устройствах/);
+    assert.equal(await page.locator(".whats-new-list li").count(),25);
+    assert.equal(await page.locator(".whats-new-item-icon .ui-icon").count(),25,
       "Announcement has coherent SVG icons instead of character placeholders");
     assert.equal(await page.locator("#whats-new-close").evaluate(el=>el===document.activeElement),true,
       "Announcement initially focuses its accessible close control");
     assert.equal(await page.locator(".whats-new-list:not(.whats-new-list-archive) li").count(),1,
       "Only the latest two changes are expanded by default");
-    assert.equal(await page.locator(".whats-new-list-archive li").count(),23);
+    assert.equal(await page.locator(".whats-new-list-archive li").count(),24);
     assert.equal(await page.locator(".whats-new-history").evaluate(el=>el.open),false);
     await page.locator(".whats-new-history summary").click();
     assert.equal(await page.locator(".whats-new-history").evaluate(el=>el.open),true);
@@ -104,7 +104,7 @@ try {
       assert.ok((await page.locator('.whats-new-list a[href="./'+destination+'"]').count())>=1,
         "Announcement links directly to "+destination);
     }
-    assert.equal(await releaseDialog.getAttribute("data-release"),"2026-11-04-personal-styles",
+    assert.equal(await releaseDialog.getAttribute("data-release"),"2026-11-04-cloud-styles",
       "Latest announcement version must be recognized");
 
     await page.locator("#whats-new-dismiss").click();
@@ -1034,6 +1034,12 @@ try {
     await personalPage.route("https://fonts.gstatic.com/**",r=>r.abort());
     await personalPage.goto("http://127.0.0.1:"+port+"/editor.html",{waitUntil:"domcontentloaded"});
     assert.equal(await personalPage.locator("#personal-styles").count(),1);
+    assert.equal(await personalPage.locator("#personal-style-cloud-refresh").isHidden(),true,
+      "Guests never see authenticated cloud actions");
+    assert.equal(await personalPage.locator("#personal-style-cloud-import").isHidden(),true,
+      "Guest styles remain local until verified account and explicit import");
+    assert.match(await personalPage.locator("#personal-style-scope").textContent(),/Только этот браузер/);
+
     assert.equal(await personalPage.evaluate(()=>typeof window.AnonsEditor?.getStyleSnapshot),"function");
     assert.equal(await personalPage.evaluate(()=>typeof window.AnonsEditor?.applyStyleSnapshot),"function");
     const visual=await personalPage.evaluate(()=>window.AnonsEditor.getStyleSnapshot());
