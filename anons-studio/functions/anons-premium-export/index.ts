@@ -1,6 +1,10 @@
 import { createClient } from 'npm:@supabase/supabase-js@2.118.0';
 import { ImageResponse } from 'npm:@vercel/og@0.8.6';
 import React from 'npm:react@19.3.1';
+import './graphic-elements.js';
+import './scene-layout.js';
+const Graphics=(globalThis as any).AnonsGraphics;
+const Scene=(globalThis as any).AnonsScene;
 // Server-rendered PNGs are the only paid downloads; browser state cannot grant access.
 const ORIGIN='https://anons-studio-preview.pages.dev';
 const DBURL=Deno.env.get('SUPABASE_URL')||'https://kvgnjsntumofwqhywiea.supabase.co';
@@ -45,7 +49,19 @@ function text(v:unknown,max:number,fallback=''){return typeof v==='string'?v.rep
 function validColor(v:unknown,fallback:string){return typeof v==='string'&&/^#[A-Fa-f0-9]{6}$/.test(v)?v:fallback;}
 function el(tag:any,style:Record<string,unknown>,...children:any[]){return React.createElement(tag,{style},...children);}
 let fontsPromise:Promise<any[]>|null=null;
-function fonts(){
+const extras=new Map<string,Promise<any[]>>();
+async function loadFont(name:string,pkg:string){
+  const requests=['cyrillic','latin'].map(async block=>{
+    const path='https://cdn.jsdelivr.net/npm/@fontsource/'+pkg+'@5.3.0/files/'+pkg+'-'+block+'-700-normal.woff';
+    const response=await fetch(path);
+    if(!response.ok)throw Error('Optional font unavailable');
+    const data=await response.arrayBuffer();
+    if(data.byteLength<1000||data.byteLength>1500000)throw Error('Unexpected font size');
+    return {name,data,weight:700,style:'normal'};
+  });
+  return await Promise.all(requests);
+}
+async function fonts(requested='auto'){
   if(!fontsPromise)fontsPromise=Promise.all(['cyrillic','latin'].map(async block=>{
     const u='https://cdn.jsdelivr.net/npm/@fontsource/manrope@5.2.8/files/manrope-'+block+'-700-normal.woff';
     const response=await fetch(u);
@@ -54,58 +70,185 @@ function fonts(){
     if(data.byteLength<1000||data.byteLength>1500000)throw Error('Unexpected font size');
     return{name:'Manrope',data,weight:700,style:'normal'};
   })).catch(e=>{fontsPromise=null;throw e;});
-  return fontsPromise;
+  const base=await fontsPromise;
+  const optional:Record<string,[string,string]>={georgia:['Noto Serif','noto-serif'],arial:['Arimo','arimo']};
+  const option=optional[requested];
+  if(!option)return base;
+  if(!extras.has(requested))extras.set(requested,loadFont(option[0],option[1]).catch(()=>{
+    extras.delete(requested);return [];
+  }));
+  return [...base,...(await extras.get(requested)!)];
 }
-function renderPoster(snapshot:any,card:any,width:number,height:number){
-  const colors=THEMES[card.theme]||THEMES[snapshot.theme]||THEMES.ultraviolet;
-  const template=TEMPLATES.has(card.template)?card.template:'aurora';
-  const pale=template==='minimal'||template==='editorial';
-  const primary=pale?'#f7efe2':colors[0],secondary=pale?'#e6d7c7':colors[1];
-  const ink=pale?'#302737':colors[3],muted=pale?'#5b5058':colors[4];
-  const accent=validColor(card.accentColor,colors[2]);
-  const title=text(card.title,85,'Новая публикация')||'Новая публикация';
-  const details=text(card.description,210,'');
-  const points=(typeof card.points==='string'?card.points:'').split('\n').map((s:string)=>s.trim().slice(0,100)).filter(Boolean).slice(0,3);
-  const scale=Math.max(80,Math.min(120,Number(card.headingScale)||100));
-  const fontsize=Math.round((height>1500?102:height<1200?76:94)*scale/100);
-  const align=card.alignment==='center'?'center':'left';
-  const background='linear-gradient(145deg, '+primary+', '+secondary+')';
-  const photograph=typeof snapshot.imageData==='string'&&snapshot.imageData.length<600000
-      &&/^data:image\/(png|jpeg|webp);base64,[a-z0-9+/=]+$/i.test(snapshot.imageData)
-    ? React.createElement('img',{src:snapshot.imageData,style:{
-        position:'absolute',right:30,top:height*.18,width:width*.43,height:height*.31,
-        borderRadius:32,objectFit:'cover',opacity:Math.max(.15,Math.min(.85,Number(card.photoOpacity||35)/100))
-      }})
-    : null;
-  const decoration=card.decorations!==false&&template!=='minimal'
-    ?el('div',{position:'absolute',width:470,height:470,border:'55px solid '+accent,borderRadius:300,
-      right:-95,top:height*.16,opacity:.18,transform:'rotate(19deg)'})
-    :null;
-  const row=el('div',{display:'flex',width:'100%',justifyContent:'space-between',alignItems:'center'},
-    el('div',{display:'flex',fontSize:24,fontWeight:700,color:ink,padding:'14px 22px',
-      borderRadius:27,background:pale?'#ffffffaa':'#ffffff1e'},text(snapshot.project,45,'ANONS STUDIO')),
-    el('div',{display:'flex',fontSize:19,fontWeight:700,color:muted,letterSpacing:2},'✦ ANONS STUDIO'));
-  const titleBlock=el('div',{display:'flex',flexDirection:'column',alignItems:align==='center'?'center':'flex-start',
-      width:'100%',marginTop:height>1700?300:height<1200?145:215,textAlign:align},
-    el('div',{display:'flex',fontSize:24,fontWeight:700,color:accent,letterSpacing:4,marginBottom:21},
-      LABELS[card.preset]||'АНОНС'),
-    el('div',{display:'flex',fontSize:fontsize,fontWeight:700,lineHeight:1.12,
-      color:ink,letterSpacing:-2,width:'100%',wordBreak:'break-word'},title),
-    el('div',{display:'flex',fontSize:29,fontWeight:700,lineHeight:1.5,marginTop:24,
-      maxWidth:850,color:muted,wordBreak:'break-word'},details));
-  const cardPoints=points.length?points:['Новые возможности','Подробности внутри'];
-  const lines=el('div',{display:'flex',flexDirection:'column',width:'100%',gap:14,padding:27,
-      borderRadius:25,background:pale?'#ffffff66':'#ffffff13',border:'1px solid '+accent},
-    ...cardPoints.map((p:string)=>el('div',{display:'flex',alignItems:'center',gap:18},
-      el('div',{width:18,height:18,borderRadius:100,background:accent,flexShrink:0}),
-      el('div',{display:'flex',fontSize:height<1200?25:29,lineHeight:1.4,color:ink,fontWeight:700,flex:1},p))));
-  const foot=el('div',{display:'flex',justifyContent:'space-between',paddingTop:25,
-      borderTop:'2px solid '+accent,color:muted,fontSize:19,letterSpacing:1},
-    'СОЗДАНО ДЛЯ ВДОХНОВЕНИЯ','✦');
-  return el('div',{display:'flex',flexDirection:'column',width:'100%',height:'100%',position:'relative',
-      background,overflow:'hidden',padding:74,fontFamily:'Manrope'},decoration,photograph,
-    el('div',{display:'flex',flexDirection:'column',position:'relative',width:'100%',height:'100%'},
-      row,titleBlock,el('div',{display:'flex',flexDirection:'column',gap:36,marginTop:'auto'},lines,foot)));
+function renderPoster(snapshot:any,card:any,width:number,height:number,availableFonts:string[]){
+  const plan=Scene.layout(snapshot,card);
+  if(plan.width!==width||plan.height!==height)throw Error('INVALID_SCENE');
+  const p=plan.palette,margin=plan.margin,order=plan.order;
+  const offset=(name:string)=>({
+    x:plan.offsets[name].x*width/100,
+    y:plan.offsets[name].y*height/100
+  });
+  const z=(name:string)=>order.indexOf(name)+1;
+  const box=(style:any,...children:any[])=>el('div',{position:'absolute',display:'flex',...style},...children);
+  const title=text(card.title,85,'Заголовок публикации')||'Заголовок публикации';
+  const description=text(card.description,210,'Расскажите коротко, что произошло и почему это важно.');
+  const titleSpec=Scene.titleLines(title,plan);
+  const titleBottom=plan.titleY+titleSpec.size*.8+titleSpec.lines.length*titleSpec.size*1.14;
+  const descriptionTop=Math.min(plan.detailsY-130,titleBottom+28)+plan.descriptionShift;
+  const descLines=Scene.breakLines(description,plan.contentWidth-(height<=1100?10:80),plan.descriptionSize,3);
+  const list=(typeof card.points==='string'?card.points:'').split(/\r?\n/).map((s:string)=>s.trim().slice(0,120)).filter(Boolean).slice(0,3);
+  if(!list.length)list.push('Важная информация','Следите за новостями');
+  const align=plan.center?'center':'left';
+  const fontMap:Record<string,string>={manrope:'Manrope',georgia:'Noto Serif',arial:'Arimo'};
+  const desiredFont=fontMap[plan.titleFamily]||'Manrope';
+  const titleFamily=availableFonts.includes(desiredFont)?desiredFont:'Manrope';
+  const fontTitleSize=titleSpec.size;
+  const layerShift=(name:string,baseX:number,baseY:number)=>({
+    left:baseX+offset(name).x,top:baseY+offset(name).y,zIndex:z(name)
+  });
+  const blocks:any[]=[];
+  // Match the Canvas background exactly: diagonal linear gradient, radial glow
+  // (inner radius 20 px), and diagonal 73 px-spaced hairlines.
+  const bgLines=[];
+  for(let i=-height;i<width+height;i+=73){
+    bgLines.push(React.createElement('line',{key:'line-'+i,x1:i,y1:0,
+      x2:i+height,y2:height,stroke:Scene.rgb(p.text,.055),strokeWidth:1.5}));
+  }
+  const svgStyle={position:'absolute',left:0,top:0,width,height,zIndex:0};
+  const linear=React.createElement('linearGradient',{
+    id:'anons-gradient',x1:0,y1:0,x2:width,y2:height,gradientUnits:'userSpaceOnUse'
+  },React.createElement('stop',{offset:'0%',stopColor:p.bg1}),
+    React.createElement('stop',{offset:'100%',stopColor:p.bg2}));
+  const inner=20/(width*.85);
+  const radial=React.createElement('radialGradient',{
+    id:'anons-glow',cx:width*.87,cy:height*.16,r:width*.85,gradientUnits:'userSpaceOnUse'
+  },React.createElement('stop',{offset:'0%',stopColor:p.glow,stopOpacity:.34}),
+    React.createElement('stop',{offset:inner,stopColor:p.glow,stopOpacity:.34}),
+    React.createElement('stop',{offset:'100%',stopColor:p.glow,stopOpacity:0}));
+  blocks.push(React.createElement('svg',{key:'background',width,height,
+    viewBox:'0 0 '+width+' '+height,style:svgStyle},
+    React.createElement('defs',null,linear,radial),
+    React.createElement('rect',{x:0,y:0,width,height,fill:'url(#anons-gradient)'}),
+    React.createElement('rect',{x:0,y:0,width,height,fill:'url(#anons-glow)'}),
+    ...bgLines));
+  if(plan.enabled.decoration && plan.decorations){
+    const pos=offset('decoration');
+    const deco:any[]=[];
+    if(plan.template==='editorial'){
+      deco.push(React.createElement('rect',{key:'border',x:38,y:38,
+        width:width-76,height:height-76,fill:'none',
+        stroke:Scene.rgb(p.text,.3),strokeWidth:3}));
+      deco.push(React.createElement('rect',{key:'accent',x:width-170,y:95,
+        width:76,height:76,fill:Scene.rgb(p.accent,.28)}));
+    }else if(plan.template==='spotlight'){
+      for(const r of [270,185])deco.push(React.createElement('circle',{
+        key:'c'+r,cx:width*.84,cy:height*.24,r,fill:Scene.rgb(p.accent,.22)
+      }));
+    }else if(plan.template==='pulse'){
+      deco.push(React.createElement('g',{key:'slants',
+        transform:'translate('+width*.77+' '+height*.15+') rotate('+(-.36*180/Math.PI)+')'},
+        React.createElement('rect',{x:0,y:-190,width:118,height:height*.72,fill:Scene.rgb(p.accent,.48)}),
+        React.createElement('rect',{x:137,y:-190,width:38,height:height*.72,fill:Scene.rgb(p.text,.16)})));
+    }else if(plan.template==='bulletin'){
+      deco.push(React.createElement('rect',{key:'top',x:0,y:0,width,height:20,fill:p.accent}));
+      deco.push(React.createElement('rect',{key:'rule',x:0,y:136,width,height:8,fill:Scene.rgb(p.text,.12)}));
+      for(let x=75;x<width-75;x+=80)deco.push(React.createElement('rect',{
+        key:'dash-'+x,x,y:height*.19,width:48,height:8,fill:Scene.rgb(p.accent,.3)
+      }));
+    }else{
+      const cx=width*.84,cy=height*.31;
+      for(let i=0;i<3;i++)deco.push(React.createElement('ellipse',{
+        key:'ellipse-'+i,cx,cy,rx:188+i*37,ry:170+i*37,
+        fill:'none',stroke:Scene.rgb(p.accent,.28),strokeWidth:3,
+        transform:'rotate('+(-.35*180/Math.PI)+' '+cx+' '+cy+')'
+      }));
+      deco.push(React.createElement('circle',{key:'center',cx,cy,r:142,
+        fill:Scene.rgb(p.accent,.15)}));
+      deco.push(React.createElement('path',{key:'spark',
+        d:'M0 -48 Q13 -13 48 0 Q13 13 0 48 Q-13 13 -48 0 Q-13 -13 0 -48 Z',
+        fill:p.accent,transform:'translate('+cx+' '+cy+') rotate(45)'}));
+    }
+    blocks.push(React.createElement('svg',{key:'decorations',width,height,
+      viewBox:'0 0 '+width+' '+height,style:{
+        position:'absolute',left:pos.x,top:pos.y,width,height,zIndex:z('decoration')
+      }},...deco));
+  }
+  if(plan.enabled.photo && typeof snapshot.imageData==='string' && snapshot.imageData.length<600000
+    && /^data:image\/(png|jpeg|webp);base64,[a-z0-9+/=]+$/i.test(snapshot.imageData)){
+    const r=plan.photo,off=offset('photo');
+    blocks.push(React.createElement('img',{key:'photo',src:snapshot.imageData,style:{
+      position:'absolute',left:r.x+off.x,top:r.y+off.y,width:r.width,height:r.height,
+      borderRadius:r.radius,objectFit:'cover',opacity:plan.imageOpacity,zIndex:z('photo')
+    }}));
+  }
+  if(plan.enabled.brand){
+    const p0=layerShift('brand',margin,72);
+    blocks.push(box({...p0,padding:'13px 24px',borderRadius:28,
+      background:Scene.rgb(p.text,.10),color:p.text,fontSize:27,fontWeight:700,
+      fontFamily:'Manrope',maxWidth:width*.52+48},text(snapshot.project,45,'МОЙ ПРОЕКТ')));
+    blocks.push(box({right:margin-offset('brand').x,top:82+offset('brand').y,
+      color:Scene.rgb(p.text,.75),fontSize:24,fontWeight:700,zIndex:z('brand')},'✳ ANONS / STUDIO'));
+  }
+  if(plan.enabled.title){
+    const x=margin+offset('title').x,y=plan.titleY+offset('title').y;
+    blocks.push(box({left:x,top:y-76,width:plan.contentWidth,
+      fontSize:24,fontWeight:700,color:p.accent,zIndex:z('title')},plan.label+'  /  2026'));
+    blocks.push(box({left:plan.center?margin+offset('title').x:x,top:y,width:plan.contentWidth,
+      height:Math.max(145,fontTitleSize*titleSpec.lines.length*1.2),color:p.text,
+      fontFamily:titleFamily,fontSize:fontTitleSize,fontWeight:plan.titleWeight,
+      letterSpacing:plan.titleTracking,zIndex:z('title'),
+      flexDirection:'column',alignItems:plan.center?'center':'flex-start',overflow:'hidden'},
+      ...titleSpec.lines.map((line:string,i:number)=>el('div',{
+        display:'flex',width:'100%',height:Math.round(fontTitleSize*1.14),
+        whiteSpace:'pre',alignItems:'flex-start',justifyContent:plan.center?'center':'flex-start'
+      },line))));
+  }
+  if(plan.enabled.description){
+    const x=margin+offset('description').x,y=descriptionTop+offset('description').y;
+    blocks.push(box({left:x,top:y,width:plan.contentWidth,height:plan.descriptionSize*1.5*3,
+      flexDirection:'column',alignItems:plan.center?'center':'flex-start',zIndex:z('description'),
+      color:p.sub,fontFamily:'Manrope',fontSize:plan.descriptionSize,fontWeight:700},
+      ...descLines.map((line:string,i:number)=>el('div',{
+        display:'flex',width:'100%',height:Math.round(plan.descriptionSize*1.5),
+        whiteSpace:'pre',justifyContent:plan.center?'center':'flex-start'
+      },line))));
+  }
+  if(plan.enabled.highlights){
+    const x=margin+offset('highlights').x,y=plan.detailsY+offset('highlights').y;
+    const heightCard=28+list.length*plan.highlightRowHeight+21;
+    blocks.push(box({left:x,top:y-27,width:plan.contentWidth,height:heightCard,borderRadius:23,
+      background:plan.template==='minimal'||plan.template==='editorial'?'transparent':Scene.rgb(p.text,.085),
+      border:plan.template==='minimal'||plan.template==='editorial'?'2px solid '+Scene.rgb(p.text,.3):'none',
+      zIndex:z('highlights')}));
+    list.forEach((line:string,i:number)=>{
+      const cy=y+i*plan.highlightRowHeight+16;
+      blocks.push(box({left:x+20,top:cy-1,width:22,height:22,borderRadius:999,
+        background:p.accent,zIndex:z('highlights')}));
+      let short=line;
+      while(Scene.textWidth(short,height<=1100?27:30,0)>plan.contentWidth-112 && short.length>1)short=short.slice(0,-1);
+      if(short!==line)short=short.slice(0,-1)+'…';
+      blocks.push(box({left:x+63,top:cy-10,width:plan.contentWidth-94,
+        fontSize:height<=1100?27:30,fontWeight:700,fontFamily:'Manrope',
+        color:p.text,zIndex:z('highlights')},short));
+    });
+  }
+  // Same immutable SVG paths and pixel frames as browser Canvas.
+  for(const [i,item] of Graphics.normalizeElements(card.graphicElements).entries()){
+    const fr=Graphics.frame(item,width,height);
+    blocks.push(React.createElement('svg',{
+      key:item.id,viewBox:'0 0 100 100',width:fr.size,height:fr.size,
+      style:{position:'absolute',left:fr.x-fr.size/2,top:fr.y-fr.size/2,width:fr.size,
+        height:fr.size,transform:'rotate('+fr.rotation+'deg)',
+        transformOrigin:'center center',opacity:fr.opacity,zIndex:100+i}
+    },React.createElement('path',{d:fr.path,fill:fr.color})));
+  }
+  blocks.push(box({left:margin,right:margin,top:plan.footerY-39,
+    height:2,background:Scene.rgb(p.text,.22),zIndex:200}));
+  blocks.push(box({left:margin,top:plan.footerY-19,color:p.sub,
+    fontFamily:'Manrope',fontWeight:700,fontSize:20,zIndex:200},'СОЗДАНО ДЛЯ ВДОХНОВЕНИЯ'));
+  blocks.push(box({right:margin,top:plan.footerY-19,color:p.accent,
+    fontFamily:'Manrope',fontWeight:700,fontSize:20,zIndex:200},'✦'));
+  return el('div',{display:'flex',width,height,position:'relative',overflow:'hidden',
+    background:p.bg1,fontFamily:'Manrope'},...blocks);
 }
 Deno.serve(async(req:Request)=>{
   if(req.method==='OPTIONS')return new Response(null,{status:204,headers:HEADERS});
@@ -139,8 +282,9 @@ Deno.serve(async(req:Request)=>{
   }
   try{
     const [width,height]=SIZES[snapshot.ratio];
-    const element=renderPoster(snapshot,snapshot.cards[idx],width,height);
-    const image=new ImageResponse(element,{width,height,fonts:await fonts()});
+    const typefaces=await fonts(snapshot.cards[idx].titleFont);
+    const element=renderPoster(snapshot,snapshot.cards[idx],width,height,typefaces.map((f:any)=>f.name));
+    const image=new ImageResponse(element,{width,height,fonts:typefaces});
     return new Response(image.body,{status:200,headers:{...HEADERS,'Content-Type':'image/png',
       'Content-Disposition':'attachment; filename="anons-premium.png"'}});
   }catch(e){console.error('premium render',String(e));return respond({error:'RENDER_UNAVAILABLE'},503);}
