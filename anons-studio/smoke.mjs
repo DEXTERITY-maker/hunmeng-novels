@@ -421,7 +421,7 @@ try {
     // A response from an old project selection must never overwrite edits
     // made while that response is awaiting the network.
     await page.evaluate(()=>{window.__mockLibraryDb.holdNextLoad=true;});
-    await page.locator("#library-list .library-entry").filter({hasText:"Второй проект"}).first().click();
+    await page.locator("#library-list .library-entry").filter({hasText:"Второй проект"}).last().click();
     await page.waitForFunction(()=>window.__mockLibraryDb.pendingLoads.length===1);
     await page.locator("#title").fill("Правка во время загрузки");
     await page.evaluate(()=>window.__mockLibraryDb.pendingLoads.shift()());
