@@ -92,8 +92,7 @@ function renderPoster(snapshot:any,card:any,width:number,height:number,available
   const title=text(card.title,85,'Заголовок публикации')||'Заголовок публикации';
   const description=text(card.description,210,'Расскажите коротко, что произошло и почему это важно.');
   const titleSpec=Scene.titleLines(title,plan);
-  const titleBottom=plan.titleY+titleSpec.size*.8+titleSpec.lines.length*titleSpec.size*1.14;
-  const descriptionTop=Math.min(plan.detailsY-130,titleBottom+28)+plan.descriptionShift;
+  const descriptionTop=Scene.descriptionTop(plan,titleSpec);
   const descLines=Scene.breakLines(description,plan.contentWidth-(height<=1100?10:80),plan.descriptionSize,3);
   const list=(typeof card.points==='string'?card.points:'').split(/\r?\n/).map((s:string)=>s.trim().slice(0,120)).filter(Boolean).slice(0,3);
   if(!list.length)list.push('Важная информация','Следите за новостями');
@@ -109,9 +108,12 @@ function renderPoster(snapshot:any,card:any,width:number,height:number,available
   // Match the Canvas background exactly: diagonal linear gradient, radial glow
   // (inner radius 20 px), and diagonal 73 px-spaced hairlines.
   const bgLines=[];
-  for(let i=-height;i<width+height;i+=73){
-    bgLines.push(React.createElement('line',{key:'line-'+i,x1:i,y1:0,
-      x2:i+height,y2:height,stroke:Scene.rgb(p.text,.055),strokeWidth:1.5}));
+  const aurora=plan.template==='aurora',d=plan.decorationTuning;
+  if(!aurora||plan.decorations){
+    for(let i=-height;i<width+height;i+=73){
+      bgLines.push(React.createElement('line',{key:'line-'+i,x1:i,y1:0,
+        x2:i+height,y2:height,stroke:Scene.rgb(p.text,aurora?d.grid:.055),strokeWidth:1.5}));
+    }
   }
   const svgStyle={position:'absolute',left:0,top:0,width,height,zIndex:0};
   const linear=React.createElement('linearGradient',{
@@ -121,8 +123,8 @@ function renderPoster(snapshot:any,card:any,width:number,height:number,available
   const inner=20/(width*.85);
   const radial=React.createElement('radialGradient',{
     id:'anons-glow',cx:width*.87,cy:height*.16,r:width*.85,gradientUnits:'userSpaceOnUse'
-  },React.createElement('stop',{offset:'0%',stopColor:p.glow,stopOpacity:.34}),
-    React.createElement('stop',{offset:inner,stopColor:p.glow,stopOpacity:.34}),
+  },React.createElement('stop',{offset:'0%',stopColor:p.glow,stopOpacity:aurora?d.glow:.34}),
+    React.createElement('stop',{offset:inner,stopColor:p.glow,stopOpacity:aurora?d.glow:.34}),
     React.createElement('stop',{offset:'100%',stopColor:p.glow,stopOpacity:0}));
   blocks.push(React.createElement('svg',{key:'background',width,height,
     viewBox:'0 0 '+width+' '+height,style:svgStyle},
@@ -155,17 +157,19 @@ function renderPoster(snapshot:any,card:any,width:number,height:number,available
         key:'dash-'+x,x,y:height*.19,width:48,height:8,fill:Scene.rgb(p.accent,.3)
       }));
     }else{
-      const cx=width*.84,cy=height*.31;
+      const cx=width*.84,cy=height*d.centerY;
       for(let i=0;i<3;i++)deco.push(React.createElement('ellipse',{
-        key:'ellipse-'+i,cx,cy,rx:188+i*37,ry:170+i*37,
-        fill:'none',stroke:Scene.rgb(p.accent,.28),strokeWidth:3,
+        key:'ellipse-'+i,cx,cy,rx:d.ringRadius+i*d.ringStep,
+        ry:d.ringRadius*.88+i*d.ringStep,
+        fill:'none',stroke:Scene.rgb(p.accent,d.rings),strokeWidth:2.5,
         transform:'rotate('+(-.35*180/Math.PI)+' '+cx+' '+cy+')'
       }));
-      deco.push(React.createElement('circle',{key:'center',cx,cy,r:142,
-        fill:Scene.rgb(p.accent,.15)}));
+      deco.push(React.createElement('circle',{key:'center',cx,cy,r:d.discRadius,
+        fill:Scene.rgb(p.accent,d.disc)}));
       deco.push(React.createElement('path',{key:'spark',
-        d:'M0 -48 Q13 -13 48 0 Q13 13 0 48 Q-13 13 -48 0 Q-13 -13 0 -48 Z',
-        fill:p.accent,transform:'translate('+cx+' '+cy+') rotate(45)'}));
+        d:'M0 -43 Q12 -12 43 0 Q12 12 0 43 Q-12 12 -43 0 Q-12 -12 0 -43 Z',
+        fill:Scene.rgb(p.accent,d.spark),
+        transform:'translate('+cx+' '+cy+') rotate(45)'}));
     }
     blocks.push(React.createElement('svg',{key:'decorations',width,height,
       viewBox:'0 0 '+width+' '+height,style:{
