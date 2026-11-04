@@ -1052,3 +1052,34 @@ html.whats-new-visible{overflow:hidden}
 .manual-plan-link{display:inline-flex;justify-content:center;text-align:center;margin-top:8px;border-color:#d8c5e7!important;background:#f8f3ff!important;color:#6b4390!important}
 .manual-plan-link:hover{background:#ebdcfa!important}
 @media(max-width:520px){.preview-business-brief,.preview-business-pitch,.preview-business-report{min-height:185px}.template-card-premium .preview-heading{font-size:27px!important}.manual-plan-select{max-width:100%}}
+
+
+/* Pro stage: three distinctive design previews and batch card creator. */
+.pro-series-panel{margin:16px 0 23px;padding:20px;border:1px solid #c1b4ec;background:linear-gradient(141deg,#f0efff,#faf6ff 60%,#e7f8ff);border-radius:16px;min-width:0}
+.pro-series-heading{margin-bottom:9px}
+.pro-series-eyebrow{font-size:10px;font-weight:850;letter-spacing:.13em;color:#5d46a5}
+.pro-series-panel h5{font-size:19px;line-height:1.3;margin:6px 0 0;color:#2c2b55;letter-spacing:-.03em}
+.pro-series-panel p{font-size:11.5px;line-height:1.7;margin:8px 0 14px;color:#5d5779}
+.pro-series-panel>label{display:block;margin:8px 0;font-size:11px;font-weight:850;color:#3c3761}
+.pro-series-panel select{width:100%;min-height:43px;border:1px solid #cbbfea;border-radius:10px;background:#fff;color:#342b60;padding:9px 12px;font-size:12px}
+.pro-series-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:12px}
+.pro-series-actions button{border:1px solid #55419d;background:#392972;color:#fff;border-radius:10px;font-size:11px;font-weight:850;line-height:1.4;min-height:43px;padding:9px 11px;cursor:pointer}
+.pro-series-actions button:enabled:hover{background:#5b40ac}
+.pro-series-actions button:disabled{opacity:.47;cursor:not-allowed}
+.pro-series-panel .pro-series-info{margin:12px 0 6px;font-weight:800;color:#654f9c}
+.pro-series-panel .pro-series-caution{font-size:10px;color:#726b89;margin:0 0 8px}
+.pro-series-link{display:inline-block;font-size:11px;font-weight:850;color:#6749a2;text-decoration:underline;text-underline-offset:3px}
+.template-card-pro .template-info em{background:#4a3197}
+.preview-pro-campaign,.preview-pro-magazine,.preview-pro-impact{position:relative;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;overflow:hidden;min-height:190px;padding:20px 23px;isolation:isolate;color:#fff}
+.preview-pro-campaign{background:linear-gradient(145deg,#091a2d,#175a8e)}
+.preview-pro-magazine{background:linear-gradient(140deg,#131b34,#42557d)}
+.preview-pro-impact{background:linear-gradient(135deg,#301135,#94365e)}
+.preview-pro-campaign::before,.preview-pro-magazine::before,.preview-pro-impact::before{content:"";position:absolute;z-index:-1;pointer-events:none}
+.preview-pro-campaign::before{right:-30%;top:-25%;height:150%;width:80%;border:20px solid #7ff8f060;transform:rotate(17deg);box-shadow:-20px 0 #7ff8f015}
+.preview-pro-magazine::before{right:10%;top:-8%;height:118%;width:2px;background:#e8c9926b;box-shadow:14px 0 #e8c99234,28px 0 #e8c9921e,42px 0 #e8c99214}
+.preview-pro-impact::before{right:-28%;top:-36%;width:95%;height:130%;border-radius:50%;border:42px solid #ffd2e542;box-shadow:0 0 0 33px #ff80a51d}
+.template-card-pro .business-preview-eyebrow{color:#b3fbfc}
+.preview-pro-magazine .business-preview-eyebrow{color:#f4d7a4}
+.preview-pro-impact .business-preview-eyebrow{color:#ffd2e5}
+.template-card-pro.template-locked::after{content:"Доступен в Про"}
+@media(max-width:520px){.pro-series-panel{padding:17px 14px}.pro-series-actions{grid-template-columns:1fr}.preview-pro-campaign,.preview-pro-magazine,.preview-pro-impact{min-height:185px}}
