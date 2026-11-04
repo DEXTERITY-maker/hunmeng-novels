@@ -1294,8 +1294,47 @@
     syncCardAndSave(); // preserves existing content/photo and records an undo step.
     return true;
   }
+  // Brand kits change the shared brand label and only the named visual fields.
+  // Publication copy, photos, templates, dimensions, layers and billing are untouched.
+  function getBrandKitSnapshot(){
+    snapshotCard();
+    return Object.freeze({
+      project:state.project.trim()||"МОЙ ПРОЕКТ",
+      theme:state.theme,
+      accentColor:state.accentColor||themes[state.theme].accent,
+      titleFont:state.titleFont
+    });
+  }
+  function applyBrandKitSnapshot(raw,scope="active"){
+    if(!raw||typeof raw!=="object"||Array.isArray(raw)
+      ||!["active","all"].includes(scope))return false;
+    const allowed=["project","theme","accentColor","titleFont"];
+    if(Object.keys(raw).some(key=>!allowed.includes(key)))return false;
+    const brand=typeof raw.project==="string"?raw.project.trim():"";
+    if(!brand||brand.length>limits.project
+      ||/[\u0000-\u001f\u007f]/.test(brand)
+      ||!themes[raw.theme]
+      ||!/^#[0-9a-fA-F]{6}$/.test(raw.accentColor)
+      ||!textFonts.has(raw.titleFont))return false;
+    snapshotCard();
+    const patch={theme:raw.theme,accentColor:raw.accentColor,titleFont:raw.titleFont};
+    state.project=brand;
+    if(scope==="all"){
+      state.cards=state.cards.map(card=>sanitizeCard({...card,...patch}));
+      Object.assign(state,state.cards[state.activeCard]);
+    }else{
+      Object.assign(state,patch);
+    }
+    selectedGraphicIndex=-1;
+    syncFields();
+    historyKind="";
+    syncCardAndSave(); // Single undo checkpoint for every affected card.
+    return true;
+  }
   window.AnonsEditor=Object.freeze({
     getSnapshot,
+    getBrandKitSnapshot,
+    applyBrandKitSnapshot,
     getStyleSnapshot,
     applyStyleSnapshot,
     loadSnapshot,
