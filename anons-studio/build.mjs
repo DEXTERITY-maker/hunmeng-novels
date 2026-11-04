@@ -12,6 +12,7 @@ for(const f of ["index.html","account.html","editor.html","templates.html","feat
 }
 // Single-source scene contract: the exact module used by Supabase Edge.
 await copyFile(join(dir,"functions","anons-premium-export","scene-layout.js"),join(out,"scene-layout.js"));
+await copyFile(join(dir,"functions","anons-premium-export","graphic-elements.js"),join(out,"graphic-elements.js"));
 await mkdir(join(out,"assets"),{recursive:true});
 for(const asset of ["anons-logo-approved.webp","anons-icon-approved.webp","ui-icons.svg"]){
   await copyFile(join(dir,"assets",asset),join(out,"assets",asset));
