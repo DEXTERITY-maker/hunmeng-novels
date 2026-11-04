@@ -132,11 +132,24 @@
                   <label for="photo-opacity">Выраженность фотографии <output for="photo-opacity" id="photo-opacity-value">35%</output></label>
                   <input type="range" id="photo-opacity" min="15" max="85" step="5" value="35">
                   <label class="advanced-toggle"><input type="checkbox" id="ornaments" checked> Декоративные элементы</label>
+                  <label for="decoration-level">Насыщенность декоративного фона</label>
+                  <select id="decoration-level">
+                    <option value="subtle">Сдержанная — рекомендуемая</option>
+                    <option value="balanced">Сбалансированная</option>
+                    <option value="expressive">Выразительная</option>
+                  </select>
+                  <p class="field-note">Для шаблона Aurora регулируются яркость свечения, сетка и кольца. Отключение декора убирает декоративные линии.</p>
                   <div class="layer-tool-section" aria-labelledby="layer-tools-title">
                     <h5 id="layer-tools-title">Шрифты и расположение текстовых блоков</h5>
                     <p class="field-note">Настройки применяются только к выбранной карточке и сохраняются вместе с проектом.</p>
                     <label for="title-font">Шрифт заголовка</label>
                     <select id="title-font"><option value="auto">По шаблону</option><option value="manrope">Manrope — современный</option><option value="georgia">Noto Serif — редакционный</option><option value="arial">Arial — нейтральный</option></select>
+                    <label for="text-spacing">Расстояние между заголовком и описанием</label>
+                    <select id="text-spacing">
+                      <option value="compact">Компактное</option>
+                      <option value="balanced">Сбалансированное</option>
+                      <option value="airy">Свободное</option>
+                    </select>
                     <label for="description-scale">Размер описания <output id="description-scale-value" for="description-scale">100%</output></label>
                     <input id="description-scale" type="range" min="80" max="130" step="5" value="100">
                     <label for="title-offset-x">Заголовок: горизонтально <output id="title-offset-x-value" for="title-offset-x">0%</output></label>
