@@ -61,7 +61,7 @@
     button.innerHTML = '<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" aria-hidden="true"><path d="m12 2.8 2.85 5.78 6.38.93-4.62 4.5 1.09 6.36L12 17.37l-5.7 3 1.09-6.36-4.62-4.5 6.38-.93L12 2.8Z"/></svg>';
     item.append(button);
     if(info.premium){
-      link.classList.add("template-locked");
+      link.classList.toggle("template-locked",true);
       link.setAttribute("aria-label",info.name+" — шаблон тарифа Бизнес");
       link.addEventListener("click",event=>{
         if(!paidAccess){
