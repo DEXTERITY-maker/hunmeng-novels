@@ -263,3 +263,34 @@ button.plan-action[disabled]{cursor:not-allowed;color:#92869f;background:#f6f4f7
 .history-button:disabled{color:#a9a3b5;border-color:#ebe7f0;background:#f9f8fb;cursor:not-allowed}
 .panel-bottom .history-note{font-size:10px;color:#9e9aab}
 @media(max-width:650px){.panel-bottom .history-note{flex-basis:100%;text-align:left}.history-actions{gap:6px}.history-button{min-height:40px}}
+
+/* Mobile-first accessible navigation: the desktop navigation remains unchanged. */
+.topbar-actions{display:flex;align-items:center;justify-content:flex-end;gap:9px;min-width:0}
+.mobile-menu-toggle{display:none;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:7px 10px;border:1px solid #e1d9ed;border-radius:10px;background:#fff;color:#30234f;font:800 12px/1 'DM Sans',sans-serif;cursor:pointer;white-space:nowrap}
+.mobile-menu-icon{font-size:21px;font-weight:600;line-height:1}
+.mobile-menu-toggle:hover{background:#f3eff9;border-color:#9d78df}
+.mobile-menu-toggle:focus-visible,.navigation a:focus-visible,.header-action:focus-visible{outline:3px solid #6b43cb;outline-offset:3px}
+.field-note,.controls .hint{color:#655e70}
+@media(max-width:760px){
+  .topbar{gap:8px}
+  .topbar-actions{flex:0 0 auto}
+  .mobile-menu-toggle{display:inline-flex}
+  .navigation.is-open{
+    display:flex;position:absolute;top:100%;left:0;right:0;
+    flex-direction:column;align-items:stretch;gap:0;
+    padding:9px 19px 15px;background:#fff;
+    border-bottom:1px solid #e5ddec;box-shadow:0 20px 35px #241c4129;
+    max-height:calc(100dvh - 74px);overflow-y:auto
+  }
+  .navigation.is-open a{
+    display:block;padding:13px 12px;border-radius:9px;
+    color:#322c41;font-size:14px;font-weight:750
+  }
+  .navigation.is-open a:hover,.navigation.is-open a:focus-visible{background:#f3effa;color:#5e31c5}
+}
+@media(max-width:380px){
+  .brand-image img{width:132px}
+  .mobile-menu-label{display:none}
+  .mobile-menu-toggle{width:44px;padding:6px}
+  .header-action{padding:11px 12px}
+}
