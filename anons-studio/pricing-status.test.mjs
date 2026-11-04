@@ -19,7 +19,7 @@ class Element{
   }
 }
 function setup(){
-  const cards=["free","basic","pro","studio"].map(name=>{
+  const cards=["free","basic","pro","studio","agency","ultimate"].map(name=>{
     const card=new Element();card.dataset.plan=name;card.link=new Element();card.note=new Element();
     card.note.hidden=true;return card;
   });
@@ -58,12 +58,12 @@ test("Business active plan and expiry are visible and duplicate order link is hi
   assert.equal(h.get("pro").link.hidden,true,"Cannot prematurely order another plan");
   assert.equal(h.get("studio").link.hidden,true);
 });
-test("Pro and Studio subscriptions mark only their own card",()=>{
-  for(const plan of ["pro","studio"]){
+test("Pro, Studio, Agency and Ultimate subscriptions mark only their own card",()=>{
+  for(const plan of ["pro","studio","agency","ultimate"]){
     const h=setup();
     h.emit("anons:access",login(plan,true,"2027-01-01T00:00:00Z"));
     assert.equal(h.get(plan).classes.has("is-current-plan"),true);
-    for(const other of ["basic","pro","studio"].filter(p=>p!==plan))
+    for(const other of ["basic","pro","studio","agency","ultimate"].filter(p=>p!==plan))
       assert.equal(h.get(other).classes.has("is-current-plan"),false);
   }
 });
@@ -113,7 +113,7 @@ test("signout erases previous account's membership and pending order",()=>{
   assert.equal(h.get("basic").link.hidden,false);
 });
 test("pricing uses verified Supabase session and never upgrades on client order state",()=>{
-  for(const plan of ["free","basic","pro","studio"])assert.match(html,new RegExp('data-plan="'+plan+'"'));
+  for(const plan of ["free","basic","pro","studio","agency","ultimate"])assert.match(html,new RegExp('data-plan="'+plan+'"'));
   assert.match(html,/id="pricing-current-title"/);
   assert.match(html,/src="\.\/pricing-status\.js"/);
   assert.match(auth,/loggedIn:true,verified:!lookupFailed,expiresAt/);
