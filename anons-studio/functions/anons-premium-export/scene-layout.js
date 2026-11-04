@@ -20,7 +20,17 @@
     "business-pitch":{bg1:"#271836",bg2:"#684269",glow:"#ecae77",accent:"#ffd59a",text:"#ffffff",sub:"#f7e3dd",dark:true},
     "business-report":{bg1:"#f5f8fc",bg2:"#dce8ef",glow:"#7bbacb",accent:"#195c79",text:"#1d3348",sub:"#49667a",dark:false}
   });
-  const templates=["aurora","editorial","spotlight","pulse","minimal","bulletin",...Object.keys(businessBases)];
+  const proBases=Object.freeze({
+    "pro-campaign":"pulse",
+    "pro-magazine":"editorial",
+    "pro-impact":"spotlight"
+  });
+  const proPalettes=Object.freeze({
+    "pro-campaign":{bg1:"#091a2d",bg2:"#175a8e",glow:"#20d4ff",accent:"#7ff8f0",text:"#ffffff",sub:"#d0f0ff",dark:true},
+    "pro-magazine":{bg1:"#131b34",bg2:"#42557d",glow:"#c59b61",accent:"#f4d7a4",text:"#ffffff",sub:"#ebdfc8",dark:true},
+    "pro-impact":{bg1:"#301135",bg2:"#94365e",glow:"#ff638d",accent:"#ffd2e5",text:"#ffffff",sub:"#ffdeee",dark:true}
+  });
+  const templates=["aurora","editorial","spotlight","pulse","minimal","bulletin",...Object.keys(businessBases),...Object.keys(proBases)];
   const formats=Object.freeze({portrait:[1080,1350],square:[1080,1080],story:[1080,1920]});
   const layers=["decoration","photo","brand","title","description","highlights"];
   const presetLabels=Object.freeze({update:"ОБНОВЛЕНИЕ",launch:"ЗАПУСК",event:"СОБЫТИЕ",notice:"ОБЪЯВЛЕНИЕ"});
@@ -44,10 +54,12 @@
     const theme=Object.hasOwn(themes,card.theme)?card.theme:(Object.hasOwn(themes,snapshot.theme)?snapshot.theme:"ultraviolet");
     const selectedTemplate=templates.includes(card.template)?card.template:"aurora";
     const businessTemplate=Object.hasOwn(businessBases,selectedTemplate)?selectedTemplate:null;
-    // Each new Business template has its own palette, backed by a tested
-    // composition shared by Canvas and paid edge rendering.
-    const template=businessTemplate?businessBases[selectedTemplate]:selectedTemplate;
-    const palette={...(businessTemplate?businessPalettes[businessTemplate]:themes[theme])};
+    const proTemplate=Object.hasOwn(proBases,selectedTemplate)?selectedTemplate:null;
+    // The same deterministic Pro scene and palette are used for editor preview and paid PNG export.
+    const template=businessTemplate?businessBases[selectedTemplate]
+      :proTemplate?proBases[selectedTemplate]:selectedTemplate;
+    const palette={...(businessTemplate?businessPalettes[businessTemplate]
+      :proTemplate?proPalettes[proTemplate]:themes[theme])};
     if(typeof card.accentColor==="string"&&/^#[0-9a-fA-F]{6}$/.test(card.accentColor))palette.accent=card.accentColor.toLowerCase();
     const offset=(name)=>{
       const v=card.layerOffsets?.[name];
@@ -94,7 +106,7 @@
     const decorationLevel=Object.hasOwn(decorations,card.decorationLevel)?card.decorationLevel:"subtle";
     const textSpacing=["compact","balanced","airy"].includes(card.textSpacing)?card.textSpacing:"balanced";
     return {
-      width,height,format,theme,template,businessTemplate,composition,palette,order,enabled,
+      width,height,format,theme,template,businessTemplate,proTemplate,composition,palette,order,enabled,
       highlightStyle,highlightIcons,featuredHighlight,
       offsets:Object.fromEntries(layers.map(name=>[name,offset(name)])),
       margin,contentWidth,titleY,detailsY,footerY,photo,imageOpacity,
