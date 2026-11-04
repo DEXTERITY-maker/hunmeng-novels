@@ -25,7 +25,7 @@ test("premium handler imports both versioned rendering contracts",()=>{
 
 test("all fifteen templates render finite geometry in every supported format",()=>{
   for(const ratio of ["portrait","square","story"]){
-    for(const template of ["aurora","editorial","spotlight","pulse","minimal","bulletin", "business-brief","business-pitch","business-report", "pro-campaign","pro-magazine","pro-impact","studio-identity","studio-launch","studio-portfolio"]){
+    for(const template of ["aurora","editorial","spotlight","pulse","minimal","bulletin", "business-brief","business-pitch","business-report", "pro-campaign","pro-magazine","pro-impact","studio-identity","studio-launch","studio-portfolio","agency-brand","agency-social","agency-showcase","ultimate-signature","ultimate-cinema","ultimate-vision"]){
       const info=Scene.layout({ratio,project:"Анонс"},{template,theme:"paper",titleShift:12});
       assert.ok(info.width===1080 && info.height>=1080);
       assert.ok(Number.isFinite(info.titleY)&&Number.isFinite(info.detailsY));
@@ -233,7 +233,7 @@ test("Pro template palettes are distinct and shared with the server-side rendere
   assert.equal(seen.size,3);
   assert.match(handler,/PRO_SUBSCRIPTION_REQUIRED/);
   assert.match(handler,/PRO_TEMPLATES\.has\(requestedTemplate\)/);
-  assert.match(handler,/\['pro','studio'\]\.includes\(member\.plan\)/);
+  assert.match(handler,/\['pro','studio','agency','ultimate'\]\.includes\(member\.plan\)/);
 });
 
 test("Studio scene variants have independent palettes and explicit server guards",()=>{
