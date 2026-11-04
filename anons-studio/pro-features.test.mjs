@@ -21,8 +21,8 @@ test("Pro-exclusive templates are fully integrated in both renderers and catalog
     assert.ok(server.includes("'"+id+"'"));
   }
   assert.match(app,/proTemplates\.has\(next\)/);
-  assert.match(catalog,/proAccess=paidAccess&&\["pro","studio"\]\.includes/);
-  assert.match(server,/if\(PRO_TEMPLATES\.has\(requestedTemplate\)&&!\['pro','studio'\]\.includes\(member\.plan\)\)/);
+  assert.match(catalog,/proAccess=paidAccess&&\["pro","studio","agency","ultimate"\]\.includes/);
+  assert.match(server,/if\(PRO_TEMPLATES\.has\(requestedTemplate\)&&!\['pro','studio','agency','ultimate'\]\.includes\(member\.plan\)\)/);
   assert.match(server,/auth\.auth\.getUser\(token\)/);
   assert.match(server,/SUBSCRIPTION_REQUIRED/);
 });
