@@ -274,6 +274,10 @@ export function initManualOrders(client) {
   $("manual-account-refresh")?.addEventListener("click",()=>{void refresh();});
   $("manual-admin-refresh")?.addEventListener("click",()=>{void refreshAdmin();});
   window.addEventListener("online",()=>{if(own())void refresh();});
+  try{
+    const requested=new URLSearchParams(window.location.search).get("plan");
+    if(planSelect&&Object.hasOwn(plans,requested))planSelect.value=requested;
+  }catch{}
   renderPlan();
   setUser(null);
   return {setUser,refresh};
