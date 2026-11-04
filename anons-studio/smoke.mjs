@@ -84,15 +84,15 @@ try {
     // available from the footer without disturbing ordinary page visits.
     const releaseDialog=page.locator("#whats-new-dialog");
     await page.waitForFunction(()=>document.getElementById("whats-new-dialog")?.open);
-    assert.match(await page.locator("#whats-new-title").textContent(),/Заказы по заявке и постоянный ID/);
-    assert.equal(await page.locator(".whats-new-list li").count(),27);
-    assert.equal(await page.locator(".whats-new-item-icon .ui-icon").count(),27,
+    assert.match(await page.locator("#whats-new-title").textContent(),/Бизнес-шаблоны и выбор тарифа/);
+    assert.equal(await page.locator(".whats-new-list li").count(),28);
+    assert.equal(await page.locator(".whats-new-item-icon .ui-icon").count(),28,
       "Announcement has coherent SVG icons instead of character placeholders");
     assert.equal(await page.locator("#whats-new-close").evaluate(el=>el===document.activeElement),true,
       "Announcement initially focuses its accessible close control");
     assert.equal(await page.locator(".whats-new-list:not(.whats-new-list-archive) li").count(),1,
       "Only the latest two changes are expanded by default");
-    assert.equal(await page.locator(".whats-new-list-archive li").count(),26);
+    assert.equal(await page.locator(".whats-new-list-archive li").count(),27);
     assert.equal(await page.locator(".whats-new-history").evaluate(el=>el.open),false);
     await page.locator(".whats-new-history summary").click();
     assert.equal(await page.locator(".whats-new-history").evaluate(el=>el.open),true);
@@ -104,7 +104,7 @@ try {
       assert.ok((await page.locator('.whats-new-list a[href="./'+destination+'"]').count())>=1,
         "Announcement links directly to "+destination);
     }
-    assert.equal(await releaseDialog.getAttribute("data-release"),"2026-11-04-manual-orders",
+    assert.equal(await releaseDialog.getAttribute("data-release"),"2026-11-04-business-templates",
       "Latest announcement version must be recognized");
 
     await page.locator("#whats-new-dismiss").click();
@@ -313,12 +313,21 @@ try {
     assert.ok(await pricingPage.locator("#manual-order-login").isVisible(),
       "Guests are guided to verified email registration");
     assert.match(await pricingPage.locator("#manual-order-customer").textContent(),
-      /После входа появится постоянный ID/);
+      /После входа появится постоянный номер/);
     assert.equal(await pricingPage.locator("#manual-order-list").count(),1,
       "Manual order history belongs to the authenticated customer");
 
-    assert.equal(await pricingPage.locator("button.plan-action[disabled]").count(),3,
-      "Unavailable tariffs must not accept payment");
+    assert.equal(await pricingPage.locator("button.plan-action[disabled]").count(),1,
+      "Card checkout stays disabled while manual plan selection is available");
+    assert.equal(await pricingPage.locator("#manual-order-plan").inputValue(),"basic");
+    await pricingPage.locator("#manual-order-plan").selectOption("pro");
+    assert.equal(await pricingPage.locator("#manual-order-price").textContent(),"499 ₽");
+    assert.equal(await pricingPage.locator("#manual-order-create").isDisabled(),true,
+      "Choosing Pro does not bypass guest authentication");
+    await pricingPage.locator("#manual-order-plan").selectOption("studio");
+    assert.equal(await pricingPage.locator("#manual-order-price").textContent(),"999 ₽");
+    assert.equal(await pricingPage.locator(".manual-plan-link").count(),3,
+      "Every paid plan links to the same manual-order form");
     await pricingPage.close();
     assert.equal(await page.locator("#account-form").count(),0,"Account form lives only on account.html");
     assert.equal(await page.locator("#account").count(),0,"Personal space is no longer embedded on home");
@@ -383,7 +392,7 @@ try {
     assert.equal(await page.locator("#ratio").inputValue(),"story");
     assert.equal(await page.locator("[data-template]").count(),0,"Gallery now has its own page");
     await page.goto("http://127.0.0.1:"+port+"/templates.html",{waitUntil:"domcontentloaded"});
-    assert.equal(await page.locator("[data-template]").count(),6,"Six working template choices");
+    assert.equal(await page.locator("[data-template]").count(),9,"Six free and three Business templates");
     await page.locator("#catalog-controls:not([hidden])").waitFor();
     assert.equal(await page.locator("#assistant-open").getAttribute("href"),"./editor.html?template=aurora&preset=update",
       "Quick-start defaults to a safe, editor-compatible suggestion");
@@ -395,12 +404,12 @@ try {
       "Quick-start recomputes recommendation without navigation");
     assert.equal(await page.locator("#assistant-result-art .template-art").count(),1,
       "Recommended preview reuses a real gallery composition");
-    assert.equal(await page.locator(".catalog-item:visible").count(),6,"All templates initially visible");
+    assert.equal(await page.locator(".catalog-item:visible").count(),9,"All templates initially visible");
     await page.locator("#template-search").fill("Aurora");
     assert.equal(await page.locator(".catalog-item:visible").count(),1,"Catalogue search narrows the visible templates");
     await page.locator("#template-search").fill("");
     await page.locator('[data-catalog-category="news"]').click();
-    assert.equal(await page.locator(".catalog-item:visible").count(),2,"News category matches two existing templates");
+    assert.equal(await page.locator(".catalog-item:visible").count(),4,"News category includes Business templates");
     await page.locator("#template-search").fill("нет такого шаблона");
     assert.equal(await page.locator("#template-empty").isVisible(),true,"No results shows reset action");
     await page.locator("#template-reset").click();
@@ -408,7 +417,7 @@ try {
     await page.locator("#template-favorites-toggle").click();
     assert.equal(await page.locator(".catalog-item:visible").count(),1,"Favorites filter finds the saved template");
     await page.locator("#template-favorites-toggle").click();
-    assert.equal(await page.locator(".catalog-item:visible").count(),6,"Switching off favorites restores gallery");
+    assert.equal(await page.locator(".catalog-item:visible").count(),9,"Switching off favorites restores gallery");
     await page.locator("[data-template=editorial]").click();
     await page.waitForFunction(()=>window.AnonsEditor?.getSnapshot().cards[0].template==="editorial");
     assert.equal(new URL(page.url()).pathname,"/editor.html","A gallery choice opens the editor");
@@ -1156,6 +1165,49 @@ try {
     assert.deepEqual(errors,[],"Brand kit page errors: "+errors.join("; "));
     await brandContext.close();
   }
+
+  // Business templates are real scene variants. Authentication gates their
+  // selection, while the server independently protects watermark-free export.
+  const businessContext=await browser.newContext({viewport:{width:390,height:820}});
+  const businessPage=await businessContext.newPage();
+  const businessErrors=[];
+  businessPage.on("pageerror",e=>businessErrors.push(e.message));
+  await businessPage.route("https://fonts.googleapis.com/**",r=>r.abort());
+  await businessPage.route("https://fonts.gstatic.com/**",r=>r.abort());
+  await businessPage.goto("http://127.0.0.1:"+port+"/editor.html",{waitUntil:"domcontentloaded"});
+  for(const id of ["business-brief","business-pitch","business-report"]){
+    assert.equal(await businessPage.locator('#template-select option[value="'+id+'"]').count(),1);
+    assert.equal(await businessPage.locator('#template-select option[value="'+id+'"]').isDisabled(),true);
+  }
+  const free=await businessPage.evaluate(()=>window.AnonsEditor.getSnapshot().cards[0].template);
+  await businessPage.evaluate(()=>{
+    const select=document.getElementById("template-select");
+    select.value="business-brief";
+    select.dispatchEvent(new Event("change",{bubbles:true}));
+  });
+  assert.equal(await businessPage.evaluate(()=>window.AnonsEditor.getSnapshot().cards[0].template),free,
+    "Free accounts cannot activate Business templates through normal controls");
+  await businessPage.evaluate(()=>{
+    window.dispatchEvent(new CustomEvent("anons:access",{detail:{premium:true,plan:"basic"}}));
+  });
+  for(const [id,background] of [
+    ["business-brief","#071f32"],["business-pitch","#271836"],["business-report","#f5f8fc"]
+  ]){
+    await businessPage.locator("#template-select").selectOption(id);
+    assert.equal(await businessPage.evaluate(()=>window.AnonsEditor.getSnapshot().cards[0].template),id);
+    const bg=await businessPage.evaluate(()=>{
+      const snapshot=window.AnonsEditor.getSnapshot();
+      return window.AnonsScene.layout(snapshot,snapshot.cards[0]).palette.bg1;
+    });
+    assert.equal(bg,background,"Each Business design receives its own palette");
+  }
+  await businessPage.evaluate(()=>{
+    window.dispatchEvent(new CustomEvent("anons:access",{detail:{premium:false,plan:"free"}}));
+  });
+  assert.equal(await businessPage.locator('#template-select option[value="business-report"]').isDisabled(),true);
+  assert.deepEqual(businessErrors,[],"Business template page errors");
+  await businessContext.close();
+
 } finally {
   if(browser) await browser.close();
   await new Promise(r=>server.close(r));
