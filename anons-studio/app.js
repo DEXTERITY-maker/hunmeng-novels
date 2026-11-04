@@ -551,6 +551,70 @@
     $("photo-opacity-value").textContent=state.photoOpacity+"%";syncCardAndSave();
   });
   $("ornaments").addEventListener("change",e=>{state.decorations=e.target.checked;syncCardAndSave();});
+  $("title-font").addEventListener("change",e=>{
+    state.titleFont=textFonts.has(e.target.value)?e.target.value:"auto";
+    syncCardAndSave();
+  });
+  $("description-scale").addEventListener("input",e=>{
+    historyKind="slider:description-scale";
+    state.descriptionScale=Math.round(clamp(e.target.value,80,130,100));
+    $("description-scale-value").textContent=state.descriptionScale+"%";
+    syncCardAndSave();
+  });
+  const positionSliders=[
+    ["title-offset-x","title","x"],["title-offset-y","title","y"],
+    ["description-offset-y","description","y"],["highlights-offset-y","highlights","y"]
+  ];
+  for(const [id,layer,axis] of positionSliders){
+    $(id).addEventListener("input",e=>{
+      historyKind="slider:layer:"+id;
+      state.layerOffsets=normalizeOffsets(state.layerOffsets);
+      const value=Math.round(clamp(e.target.value,-30,30,0));
+      state.layerOffsets[layer][axis]=value;
+      $(id+"-value").textContent=(value>0?"+":"")+value+"%";
+      syncCardAndSave();
+    });
+  }
+  $("reset-layer-positions").addEventListener("click",()=>{
+    state.layerOffsets=normalizeOffsets(null);
+    syncFields();syncCardAndSave();
+    showToast("Расположение текстовых блоков восстановлено.");
+  });
+  $("graphic-add").addEventListener("click",()=>{
+    if(state.graphicElements.length>=Graphics.MAX)return;
+    const next=Graphics.normalizeOne({
+      id:"g-"+Date.now().toString(36)+"-"+state.graphicElements.length,
+      kind:"spark",x:78,y:40,size:10,rotation:0,opacity:100,
+      color:state.accentColor||themes[state.theme].accent
+    },state.graphicElements.length);
+    state.graphicElements=[...state.graphicElements,next];
+    selectedGraphicIndex=state.graphicElements.length-1;
+    renderGraphicControls();
+    syncCardAndSave();
+    showToast("Графический элемент добавлен.");
+  });
+  $("graphic-remove").addEventListener("click",()=>{
+    if(selectedGraphicIndex<0 || selectedGraphicIndex>=state.graphicElements.length)return;
+    state.graphicElements=state.graphicElements.filter((_,i)=>i!==selectedGraphicIndex);
+    selectedGraphicIndex=Math.min(selectedGraphicIndex,state.graphicElements.length-1);
+    renderGraphicControls();
+    syncCardAndSave();
+    showToast("Элемент удалён. Отменить удаление можно кнопкой «Отменить».");
+  });
+  for(const key of ["kind","x","y","size","rotation","opacity","color"]){
+    const id="graphic-"+key;
+    const input=$(id);
+    input.addEventListener(key==="kind"?"change":"input",e=>{
+      if(selectedGraphicIndex<0||selectedGraphicIndex>=state.graphicElements.length)return;
+      const old=state.graphicElements[selectedGraphicIndex];
+      historyKind=key==="kind"?"":"graphic:"+old.id+":"+key;
+      const value=["kind","color"].includes(key)?e.target.value:Number(e.target.value);
+      const updated=Graphics.normalizeOne({...old,[key]:value},selectedGraphicIndex);
+      state.graphicElements=state.graphicElements.map((item,i)=>i===selectedGraphicIndex?updated:item);
+      renderGraphicControls();
+      syncCardAndSave();
+    });
+  }
   $("reset").addEventListener("click",()=>{
     const keep=window.confirm("Начать заново? Текущий текст, оформление и загруженное фото будут удалены из этого браузера.");
     if(!keep)return;
