@@ -9,8 +9,8 @@ const root = join(dirname(fileURLToPath(import.meta.url)),"dist");
 const cloudflareHeaders=await readFile(join(root,"_headers"),"utf8");
 assert.match(cloudflareHeaders,/Content-Security-Policy:.*script-src 'self'/);
 assert.match(cloudflareHeaders,/X-Content-Type-Options: nosniff/);
-const types = { ".html": "text/html; charset=utf-8", ".css": "text/css; charset=utf-8", ".js": "application/javascript; charset=utf-8", ".webp": "image/webp" };
-const allow = new Set(["/","/index.html","/account.html","/editor.html","/templates.html","/features.html","/pricing.html","/styles.css","/app.js","/navigation.js","/whats-new.js","/scene-layout.js","/auth.bundle.js","/assets/anons-logo-approved.webp","/assets/anons-icon-approved.webp"]);
+const types = { ".html": "text/html; charset=utf-8", ".css": "text/css; charset=utf-8", ".js": "application/javascript; charset=utf-8", ".webp": "image/webp", ".svg":"image/svg+xml" };
+const allow = new Set(["/","/index.html","/account.html","/editor.html","/templates.html","/features.html","/pricing.html","/styles.css","/app.js","/navigation.js","/whats-new.js","/scene-layout.js","/auth.bundle.js","/assets/anons-logo-approved.webp","/assets/anons-icon-approved.webp","/assets/ui-icons.svg"]);
 const server = createServer(async (req,res)=>{
   const url = new URL(req.url, "http://localhost");
   const path = url.pathname === "/" ? "/index.html" : url.pathname;
@@ -23,6 +23,19 @@ const server = createServer(async (req,res)=>{
     res.end(body);
   } catch (error) { res.writeHead(500);res.end("Error"); }
 });
+// Every icon reference in every published page must exist in the bundled
+// vector sprite, so glyphs never silently disappear after a design update.
+const iconSprite=await readFile(join(root,"assets","ui-icons.svg"),"utf8");
+const availableIcons=new Set([...iconSprite.matchAll(/<symbol id="([a-z-]+)"/g)].map(m=>m[1]));
+assert.ok(availableIcons.size>=30,"Ship a comprehensive locally hosted icon set");
+for(const page of ["index","editor","templates","features","pricing","account"]){
+  const html=await readFile(join(root,page+".html"),"utf8");
+  const refs=[...html.matchAll(/ui-icons\.svg#([a-z-]+)/g)].map(m=>m[1]);
+  assert.ok(refs.length>0,page+" has no SVG icons");
+  for(const name of refs)assert.ok(availableIcons.has(name),page+" uses unknown icon "+name);
+  assert.doesNotMatch(html,/[✦✧✳◈◉▧☁🔒▤◇◎✎↗↘↓↶↷↻⇩⚙⧉☰◫↺＋⌘]/u,
+    page+" contains an unconverted placeholder glyph");
+}
 const listen = () => new Promise((resolve,reject)=>{
   server.once("error",reject);
   server.listen(0,"127.0.0.1",()=>resolve(server.address().port));
@@ -64,6 +77,11 @@ try {
     await page.waitForFunction(()=>document.getElementById("whats-new-dialog")?.open);
     assert.match(await page.locator("#whats-new-title").textContent(),/Обновление структуры сайта/);
     assert.equal(await page.locator(".whats-new-list li").count(),6);
+    assert.equal(await page.locator(".whats-new-item-icon .ui-icon").count(),6,
+      "Announcement has coherent SVG icons instead of character placeholders");
+    await page.waitForFunction(()=>document.querySelector(".whats-new-item-icon svg")?.getBBox().width>0);
+    assert.equal(await page.evaluate(async()=> (await fetch("/assets/ui-icons.svg")).status),200,
+      "The self-hosted icon sprite is available in the built site");
     for(const destination of ["editor.html","templates.html","features.html","pricing.html","account.html"]){
       assert.equal(await page.locator('.whats-new-list a[href="./'+destination+'"]').count(),1,
         "Announcement links directly to "+destination);
@@ -151,6 +169,8 @@ try {
     await pricingPage.goto("http://127.0.0.1:"+port+"/pricing.html",{waitUntil:"domcontentloaded"});
     assert.ok(await pricingPage.locator(".inner-page-hero h1").isVisible());
     assert.equal(await pricingPage.locator("#pricing .plan").count(),4);
+    assert.equal(await pricingPage.locator("#pricing .plan-ui-icon .ui-icon").count(),4,
+      "Each subscription tier has a matching vector icon");
     await pricingPage.waitForFunction(()=>document.querySelector("#billing-availability")?.textContent?.toLowerCase().includes("покупки"));
     assert.ok(await pricingPage.locator("#buy-basic").isDisabled(),"Cannot charge without merchant configuration");
     assert.equal(await pricingPage.locator("button.plan-action[disabled]").count(),3,
@@ -168,10 +188,14 @@ try {
       assert.equal(await mobileMenu.getAttribute("aria-expanded"),"false");
       await mobileMenu.click();
       assert.ok(await primaryNav.isVisible(),"Menu opens on tap");
+      assert.ok((await mobileMenu.locator("use").getAttribute("href")).endsWith("#x"),
+        "Opening mobile navigation switches the SVG to a close icon");
       assert.equal(await mobileMenu.getAttribute("aria-expanded"),"true");
       await page.keyboard.press("Escape");
       assert.equal(await primaryNav.isVisible(),false,"Escape dismisses mobile navigation");
       assert.equal(await mobileMenu.getAttribute("aria-expanded"),"false");
+      assert.ok((await mobileMenu.locator("use").getAttribute("href")).endsWith("#menu"),
+        "Closing mobile navigation restores the SVG menu icon");
       assert.equal(await mobileMenu.evaluate(el=>document.activeElement===el),true,
         "Escape restores keyboard focus to toggle");
       await mobileMenu.click();
@@ -257,6 +281,8 @@ try {
     assert.ok(zipBytes.includes(Buffer.from("anons-card-01.png")));
     assert.ok(zipBytes.includes(Buffer.from("anons-card-02.png")));
     assert.ok(zipBytes.length>30000,"ZIP contains rendered PNG files");
+    assert.equal(await page.locator("#export-all .ui-icon").count(),1,
+      "Downloading ZIP preserves the restored SVG button icon");
     if(width===1440){
       // High-entropy PNG makes sure adaptive photo compression does not keep
       // a local draft that the paid server would reject as too large.
