@@ -22,6 +22,7 @@ const library=document.getElementById("library-guest")
 const billing=initBilling(client);
 // The style panel is local on the editor page and absent on the account page.
 const styles=window.AnonsPersonalStyles||{setUser(){}};
+const brandKits=window.AnonsBrandKit||{setUser(){}};
 
 window.AnonsBilling=billing;
 const guest=byId("account-guest");
@@ -103,6 +104,7 @@ function renderGuest(){
   library.setUser(null);
   billing.setUser(null);
   styles.setUser(null,client);
+  brandKits.setUser(null);
 }
 // Clear protected UI immediately when Auth reports that the current user
 // signed out or another user took over. Never wait for membership requests.
@@ -135,6 +137,7 @@ function renderUser(user,plan){
   library.setUser(user);
   billing.setUser(user);
   styles.setUser(user,client);
+  brandKits.setUser(user);
 }
 function publishEntitlements(plan,premium){
   window.dispatchEvent(new CustomEvent("anons:access",{detail:{plan,premium}}));
