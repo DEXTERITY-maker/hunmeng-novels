@@ -10,7 +10,17 @@
     ink:{bg1:"#181c2a",bg2:"#34405c",glow:"#8299b8",accent:"#b8c9ef",text:"#ffffff",sub:"#e0e5ee",dark:true},
     paper:{bg1:"#f9f0e1",bg2:"#e9d5b5",glow:"#d8ac76",accent:"#95592f",text:"#302737",sub:"#5b5058",dark:false}
   });
-  const templates=["aurora","editorial","spotlight","pulse","minimal","bulletin"];
+  const businessBases=Object.freeze({
+    "business-brief":"bulletin",
+    "business-pitch":"spotlight",
+    "business-report":"editorial"
+  });
+  const businessPalettes=Object.freeze({
+    "business-brief":{bg1:"#071f32",bg2:"#174f60",glow:"#39bdbf",accent:"#81efdd",text:"#ffffff",sub:"#d6f4f1",dark:true},
+    "business-pitch":{bg1:"#271836",bg2:"#684269",glow:"#ecae77",accent:"#ffd59a",text:"#ffffff",sub:"#f7e3dd",dark:true},
+    "business-report":{bg1:"#f5f8fc",bg2:"#dce8ef",glow:"#7bbacb",accent:"#195c79",text:"#1d3348",sub:"#49667a",dark:false}
+  });
+  const templates=["aurora","editorial","spotlight","pulse","minimal","bulletin",...Object.keys(businessBases)];
   const formats=Object.freeze({portrait:[1080,1350],square:[1080,1080],story:[1080,1920]});
   const layers=["decoration","photo","brand","title","description","highlights"];
   const presetLabels=Object.freeze({update:"ОБНОВЛЕНИЕ",launch:"ЗАПУСК",event:"СОБЫТИЕ",notice:"ОБЪЯВЛЕНИЕ"});
@@ -32,8 +42,12 @@
     const format=Object.hasOwn(formats,snapshot.ratio)?snapshot.ratio:"portrait";
     const [width,height]=formats[format];
     const theme=Object.hasOwn(themes,card.theme)?card.theme:(Object.hasOwn(themes,snapshot.theme)?snapshot.theme:"ultraviolet");
-    const template=templates.includes(card.template)?card.template:"aurora";
-    const palette={...themes[theme]};
+    const selectedTemplate=templates.includes(card.template)?card.template:"aurora";
+    const businessTemplate=Object.hasOwn(businessBases,selectedTemplate)?selectedTemplate:null;
+    // Each new Business template has its own palette, backed by a tested
+    // composition shared by Canvas and paid edge rendering.
+    const template=businessTemplate?businessBases[selectedTemplate]:selectedTemplate;
+    const palette={...(businessTemplate?businessPalettes[businessTemplate]:themes[theme])};
     if(typeof card.accentColor==="string"&&/^#[0-9a-fA-F]{6}$/.test(card.accentColor))palette.accent=card.accentColor.toLowerCase();
     const offset=(name)=>{
       const v=card.layerOffsets?.[name];
@@ -80,7 +94,7 @@
     const decorationLevel=Object.hasOwn(decorations,card.decorationLevel)?card.decorationLevel:"subtle";
     const textSpacing=["compact","balanced","airy"].includes(card.textSpacing)?card.textSpacing:"balanced";
     return {
-      width,height,format,theme,template,composition,palette,order,enabled,
+      width,height,format,theme,template,businessTemplate,composition,palette,order,enabled,
       highlightStyle,highlightIcons,featuredHighlight,
       offsets:Object.fromEntries(layers.map(name=>[name,offset(name)])),
       margin,contentWidth,titleY,detailsY,footerY,photo,imageOpacity,
