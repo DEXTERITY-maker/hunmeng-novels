@@ -12,6 +12,7 @@
   <link rel="icon" type="image/webp" href="./assets/anons-icon-approved.webp">
   <link rel="stylesheet" href="./styles.css">
   <script src="./navigation.js" defer></script>
+  <script src="./whats-new.js" defer></script>
   <script src="./scene-layout.js" defer></script>
   <script src="./app.js" defer></script>
   <script src="./auth.bundle.js" defer></script>
@@ -320,8 +321,30 @@
 
       <section class="cta wrap"><div><div class="kicker">НАЧНИ СЕЙЧАС</div><h2>Всё готово.<br><em>Осталось рассказать.</em></h2><p>Попробуй бесплатный редактор с водяным знаком.</p></div><a href="#editor" class="btn btn-light">Открыть редактор ↗</a></section>
     </main>
-    <footer class="footer wrap"><img class="footer-logo" src="./assets/anons-logo-approved.webp" width="220" height="68" alt="Anons Studio" loading="lazy" decoding="async"><span>Создано для тех, кому есть что рассказать.</span><span>Бета v0.6 · 2026</span></footer>
+    <footer class="footer wrap"><img class="footer-logo" src="./assets/anons-logo-approved.webp" width="220" height="68" alt="Anons Studio" loading="lazy" decoding="async"><span>Создано для тех, кому есть что рассказать.</span><button id="whats-new-open" class="whats-new-open" type="button" aria-haspopup="dialog" aria-controls="whats-new-dialog">✦ Что нового</button><span>Бета v0.6 · 2026</span></footer>
     <div id="toast" role="status" aria-live="polite" class="toast" hidden></div>
   </div>
+    <dialog id="whats-new-dialog" class="whats-new-dialog" data-release="2026-11-04-library-security-navigation" aria-labelledby="whats-new-title" aria-describedby="whats-new-description">
+      <div class="whats-new-head">
+        <span class="whats-new-eyebrow">✦ ОБНОВЛЕНИЕ ANONS STUDIO · НОЯБРЬ 2026</span>
+        <button type="button" id="whats-new-close" class="whats-new-close" aria-label="Закрыть окно с нововведениями">×</button>
+        <div class="whats-new-mark" aria-hidden="true">✦</div>
+        <h2 id="whats-new-title">В студии стало ещё удобнее.</h2>
+        <p id="whats-new-description">Мы улучшили редактор и защиту ваших проектов. Вот что изменилось.</p>
+      </div>
+      <div class="whats-new-body">
+        <ul class="whats-new-list">
+          <li><span class="whats-new-item-icon" aria-hidden="true">☁</span><div><strong>Надёжное сохранение</strong><p>Изменения остаются в браузере без интернета и синхронизируются после восстановления связи.</p></div></li>
+          <li><span class="whats-new-item-icon" aria-hidden="true">🔒</span><div><strong>Защита ваших проектов</strong><p>Улучшена безопасность при выходе, переключении аккаунтов и одновременном редактировании.</p></div></li>
+          <li><span class="whats-new-item-icon" aria-hidden="true">▤</span><div><strong>Удобнее на телефоне</strong><p>Новое мобильное меню позволяет быстро переходить между разделами.</p></div></li>
+          <li><span class="whats-new-item-icon" aria-hidden="true">✧</span><div><strong>Точнее предпросмотр</strong><p>Редактор и серверный экспорт теперь используют общие правила компоновки.</p></div></li>
+        </ul>
+        <div class="whats-new-actions">
+          <a id="whats-new-try" class="whats-new-primary" href="#editor">Перейти к редактору <span aria-hidden="true">↗</span></a>
+          <button id="whats-new-dismiss" class="whats-new-secondary" type="button">Понятно</button>
+        </div>
+        <p class="whats-new-once">Покажем это окно один раз для каждого нового обновления. Его всегда можно открыть внизу страницы.</p>
+      </div>
+    </dialog>
 </body>
 </html>
