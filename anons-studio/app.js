@@ -593,6 +593,7 @@
   $("export-all").addEventListener("click",async()=>{
     const btn=$("export-all");
     if(btn.disabled)return;
+    const idleButtonMarkup=btn.innerHTML;
     snapshotCard();
     const oldIndex=state.activeCard;
     btn.disabled=true;btn.textContent="Готовим ZIP…";
@@ -617,7 +618,7 @@
       state.activeCard=oldIndex;
       Object.assign(state,state.cards[oldIndex]);
       syncFields();render();
-      btn.disabled=false;btn.textContent="⇩ Все карточки ZIP";
+      btn.disabled=false;btn.innerHTML=idleButtonMarkup;
     }
   });
   $("copy").addEventListener("click",async()=>{
