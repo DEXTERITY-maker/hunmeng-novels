@@ -690,3 +690,15 @@ html.whats-new-visible{overflow:hidden}
   .highlight-icon-grid{grid-template-columns:1fr}
   .highlight-icon-grid label{display:grid;grid-template-columns:72px minmax(0,1fr);align-items:center}
 }
+
+/* Compact release notes: recent changes visible immediately, older entries
+   available through a native keyboard-accessible disclosure control. */
+.whats-new-history{margin:-4px 0 21px;padding:0 0 14px;border:1px solid #e5def0;border-radius:13px}
+.whats-new-history summary{display:flex;justify-content:space-between;align-items:center;gap:12px;
+  cursor:pointer;padding:15px 16px;min-height:48px;color:#513383;font-size:12px;font-weight:850}
+.whats-new-history summary span{color:#82748e;font-size:10px;font-weight:750}
+.whats-new-history summary:hover{background:#faf7ff}
+.whats-new-history summary:focus-visible{outline:3px solid #8658db;outline-offset:3px}
+.whats-new-history[open] summary{border-bottom:1px solid #ebe5f3}
+.whats-new-history .whats-new-list-archive{margin:0;padding:20px 14px 9px;gap:18px}
+@media(max-width:440px){.whats-new-history .whats-new-list-archive{padding:16px 12px 6px}}
