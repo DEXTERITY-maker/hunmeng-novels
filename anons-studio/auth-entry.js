@@ -2,6 +2,7 @@ import { createClient } from "@supabase/supabase-js";
 import { initLibrary } from "./library-entry.js";
 import { initBilling } from "./billing-entry.js";
 import { initManualOrders } from "./manual-orders-entry.js";
+import { initStudioWorkspace } from "./studio-workspace-entry.js";
 
 // Public publishable key only. Never bundle a service_role or Supabase secret.
 const client=createClient("https://kvgnjsntumofwqhywiea.supabase.co","sb_publishable_8nleVqBbbyDEbgyMWPkS6A_oEHkisoN",{
@@ -25,6 +26,7 @@ const billing=initBilling(client);
 const styles=window.AnonsPersonalStyles||{setUser(){}};
 const brandKits=window.AnonsBrandKit||{setUser(){}};
 const manualOrders=initManualOrders(client);
+const studioWorkspace=initStudioWorkspace(client);
 
 window.AnonsBilling=billing;
 const guest=byId("account-guest");
@@ -106,6 +108,7 @@ function renderGuest(){
   library.setUser(null);
   billing.setUser(null);
   manualOrders.setUser(null);
+  studioWorkspace.setUser(null);
   styles.setUser(null,client);
   brandKits.setUser(null);
 }
@@ -140,6 +143,7 @@ function renderUser(user,plan){
   library.setUser(user);
   billing.setUser(user);
   manualOrders.setUser(user);
+  studioWorkspace.setUser(user);
   styles.setUser(user,client);
   brandKits.setUser(user);
 }
