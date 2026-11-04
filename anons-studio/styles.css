@@ -889,3 +889,38 @@ html.whats-new-visible{overflow:hidden}
   .assistant-open{width:100%;grid-column:auto}
   .assistant-result-copy{padding:14px 3px}
 }
+
+
+/* Personal style presets, stage 5: preserve the existing editor design system. */
+.personal-styles{margin-top:21px;border:1px solid #e1d5f0;background:linear-gradient(155deg,#fbf9ff,#f4effd);border-radius:17px;padding:22px 21px 20px;min-width:0}
+.personal-styles-head{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:12px}
+.personal-styles-eyebrow{font-weight:850;font-size:9px;color:#8253d8;letter-spacing:.14em}
+.personal-styles h5{font-size:17px;color:#322343;margin:6px 0 0;letter-spacing:-.025em}
+.personal-styles-count{white-space:nowrap;border-radius:999px;padding:7px 9px;background:#e9ddfb;font-size:10px;color:#67409f;font-weight:800}
+.personal-styles-intro{color:#685e76;font-size:12px;line-height:1.75;margin:0 0 17px}
+.personal-styles-form,.personal-styles-picker{display:flex;flex-direction:column;gap:8px;min-width:0}
+.personal-styles-picker{margin-top:17px}
+.personal-styles label{font-size:11px;font-weight:850;color:#453456}
+.personal-styles input,.personal-styles select{min-width:0;width:100%;min-height:43px;padding:10px 12px;border-radius:11px;border:1px solid #d8cce8;background:#fff;color:#322343;font-size:12px}
+.personal-styles input::placeholder{color:#91859e}
+.personal-styles button{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:41px;padding:10px 13px;border-radius:11px;border:1px solid #ded4eb;background:#fff;color:#57436b;font-size:11px;font-weight:850;transition:background .15s,color .15s,border-color .15s}
+.personal-styles button:enabled:hover{background:#eadffd;border-color:#bca5ec}
+.personal-styles button:disabled{cursor:not-allowed;opacity:.48}
+.personal-styles button .ui-icon{width:15px;height:15px;flex-shrink:0}
+.personal-styles-save-line{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}
+.personal-styles #personal-style-save,.personal-styles .personal-style-apply{background:#332049;color:#fff;border-color:#332049}
+.personal-styles #personal-style-save:enabled:hover,.personal-styles .personal-style-apply:enabled:hover{background:#633aa4}
+.personal-styles-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.personal-styles-actions button{flex:1 1 auto}
+.personal-styles .personal-style-delete{color:#913954}
+.personal-styles-note{font-size:10.5px;line-height:1.7;color:#766c85;margin:16px 0 0}
+.personal-styles-status{font-size:11px;line-height:1.6;color:#3c725d;margin:9px 0 0;min-height:0}
+.personal-styles-status:empty{display:none}
+.personal-styles-status[data-error="true"]{color:#a83556}
+@media(max-width:520px){
+ .personal-styles{padding:17px 15px}
+ .personal-styles-save-line{grid-template-columns:minmax(0,1fr)}
+ .personal-styles-save-line button{width:100%}
+ .personal-styles-actions button{flex:1 1 42%}
+ .personal-styles h5{font-size:16px}
+}
