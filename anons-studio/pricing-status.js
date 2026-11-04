@@ -7,7 +7,7 @@
   const title=document.getElementById("pricing-current-title");
   const description=document.getElementById("pricing-current-description");
   const indicator=document.getElementById("pricing-current-indicator");
-  const names={free:"Free",basic:"Бизнес",pro:"Про",studio:"Студия"};
+  const names={free:"Free",basic:"Бизнес",pro:"Про",studio:"Студия",agency:"Агентство",ultimate:"Максимум"};
   const cards=[...root.querySelectorAll(".pricing-grid .plan[data-plan]")];
   let resolved=false,loggedIn=false,verified=false,activePlan=null,expiresAt=null,orders=[];
   const openStatus=new Set(["awaiting_instructions","payment_reported"]);
@@ -76,7 +76,7 @@
     loggedIn=info.loggedIn===true;
     verified=info.verified!==false;
     const plan=info.plan;
-    activePlan=info.premium===true&&["basic","pro","studio"].includes(plan)?plan:null;
+    activePlan=info.premium===true&&["basic","pro","studio","agency","ultimate"].includes(plan)?plan:null;
     expiresAt=activePlan?info.expiresAt:null;
     if(!loggedIn)orders=[];
     render();
