@@ -396,8 +396,8 @@ try {
     await page.locator(".catalog-favorite").first().click();
     await page.locator("#template-favorites-toggle").click();
     assert.equal(await page.locator(".catalog-item:visible").count(),1,"Favorites filter finds the saved template");
-    await page.locator("#template-reset").click();
-    assert.equal(await page.locator(".catalog-item:visible").count(),6,"Reset restores gallery");
+    await page.locator("#template-favorites-toggle").click();
+    assert.equal(await page.locator(".catalog-item:visible").count(),6,"Switching off favorites restores gallery");
     await page.locator("[data-template=editorial]").click();
     await page.waitForFunction(()=>window.AnonsEditor?.getSnapshot().cards[0].template==="editorial");
     assert.equal(new URL(page.url()).pathname,"/editor.html","A gallery choice opens the editor");
