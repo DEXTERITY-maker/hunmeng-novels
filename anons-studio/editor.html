@@ -131,8 +131,53 @@
                   <label for="photo-opacity">Выраженность фотографии <output for="photo-opacity" id="photo-opacity-value">35%</output></label>
                   <input type="range" id="photo-opacity" min="15" max="85" step="5" value="35">
                   <label class="advanced-toggle"><input type="checkbox" id="ornaments" checked> Декоративные элементы</label>
+                  <div class="layer-tool-section" aria-labelledby="layer-tools-title">
+                    <h5 id="layer-tools-title">Шрифты и расположение текстовых блоков</h5>
+                    <p class="field-note">Настройки применяются только к выбранной карточке и сохраняются вместе с проектом.</p>
+                    <label for="title-font">Шрифт заголовка</label>
+                    <select id="title-font"><option value="auto">По шаблону</option><option value="manrope">Manrope — современный</option><option value="georgia">Noto Serif — редакционный</option><option value="arial">Arial — нейтральный</option></select>
+                    <label for="description-scale">Размер описания <output id="description-scale-value" for="description-scale">100%</output></label>
+                    <input id="description-scale" type="range" min="80" max="130" step="5" value="100">
+                    <label for="title-offset-x">Заголовок: горизонтально <output id="title-offset-x-value" for="title-offset-x">0%</output></label>
+                    <input id="title-offset-x" type="range" min="-15" max="15" step="1" value="0">
+                    <label for="title-offset-y">Заголовок: вертикально <output id="title-offset-y-value" for="title-offset-y">0%</output></label>
+                    <input id="title-offset-y" type="range" min="-12" max="12" step="1" value="0">
+                    <label for="description-offset-y">Описание: вертикально <output id="description-offset-y-value" for="description-offset-y">0%</output></label>
+                    <input id="description-offset-y" type="range" min="-12" max="12" step="1" value="0">
+                    <label for="highlights-offset-y">Детали: вертикально <output id="highlights-offset-y-value" for="highlights-offset-y">0%</output></label>
+                    <input id="highlights-offset-y" type="range" min="-12" max="12" step="1" value="0">
+                    <button type="button" id="reset-layer-positions" class="layer-reset">Сбросить расположение</button>
+                  </div>
+
                 </div>
               </details>
+              <section class="graphic-element-manager" aria-labelledby="graphic-element-title">
+                <div class="graphic-element-head"><div><h5 id="graphic-element-title">Графические элементы</h5><p>Добавляйте фигуры и настраивайте их положение. До 12 элементов на карточку.</p></div><span id="graphic-count">0 из 12</span></div>
+                <div id="graphic-list" class="graphic-element-list" role="group" aria-label="Элементы текущей карточки"></div>
+                <div class="graphic-element-buttons">
+                  <button type="button" id="graphic-add" class="graphic-add"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="./assets/ui-icons.svg#plus"></use></svg> Добавить элемент</button>
+                  <button type="button" id="graphic-remove" class="graphic-remove" disabled><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="./assets/ui-icons.svg#trash"></use></svg> Удалить</button>
+                </div>
+                <div id="graphic-settings" class="graphic-settings" hidden>
+                  <label for="graphic-kind">Форма</label>
+                  <select id="graphic-kind">
+                    <option value="spark">Искра</option><option value="star">Звезда</option>
+                    <option value="bolt">Молния</option><option value="heart">Сердце</option>
+                    <option value="check">Галочка</option><option value="circle">Круг</option>
+                    <option value="diamond">Ромб</option><option value="badge">Значок</option>
+                    <option value="arrow">Стрелка</option><option value="bubble">Облако</option>
+                    <option value="ribbon">Лента</option><option value="wave">Волна</option>
+                  </select>
+                  <div class="graphic-settings-grid">
+                    <div><label for="graphic-x">Положение X <output id="graphic-x-value" for="graphic-x">50%</output></label><input id="graphic-x" type="range" min="0" max="100" step="1" value="50"></div>
+                    <div><label for="graphic-y">Положение Y <output id="graphic-y-value" for="graphic-y">50%</output></label><input id="graphic-y" type="range" min="0" max="100" step="1" value="50"></div>
+                    <div><label for="graphic-size">Размер <output id="graphic-size-value" for="graphic-size">12%</output></label><input id="graphic-size" type="range" min="4" max="35" step="1" value="12"></div>
+                    <div><label for="graphic-rotation">Поворот <output id="graphic-rotation-value" for="graphic-rotation">0°</output></label><input id="graphic-rotation" type="range" min="-180" max="180" step="5" value="0"></div>
+                    <div><label for="graphic-opacity">Непрозрачность <output id="graphic-opacity-value" for="graphic-opacity">100%</output></label><input id="graphic-opacity" type="range" min="20" max="100" step="5" value="100"></div>
+                    <div><label for="graphic-color">Цвет элемента</label><input id="graphic-color" type="color" value="#c2a1ff"></div>
+                  </div>
+                </div>
+              </section>
               </section>
               <div class="panel-bottom"><button type="button" id="reset" class="text-button"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="./assets/ui-icons.svg#rotate-ccw"></use></svg> Начать заново</button><div class="history-actions" role="group" aria-label="История действий редактора"><button type="button" id="undo" class="history-button" title="Отменить последнее изменение" disabled><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="./assets/ui-icons.svg#undo"></use></svg> Отменить</button><button type="button" id="redo" class="history-button" title="Повторить изменение" disabled><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="./assets/ui-icons.svg#redo"></use></svg> Повторить</button></div><span class="history-note">Автосохранение в браузере · до 30 шагов назад</span></div>
               <button id="editor-show-preview" class="editor-mobile-preview-action" type="button"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="./assets/ui-icons.svg#file-image"></use></svg> Проверить результат <svg class="ui-icon" aria-hidden="true" focusable="false"><use href="./assets/ui-icons.svg#arrow-up-right"></use></svg></button>
