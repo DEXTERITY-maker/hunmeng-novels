@@ -31,15 +31,21 @@
   const businessTemplates=new Set(["business-brief","business-pitch","business-report"]);
   const proTemplates=new Set(["pro-campaign","pro-magazine","pro-impact"]);
   const studioTemplates=new Set(["studio-identity","studio-launch","studio-portfolio"]);
-  const templates = new Set(["aurora","editorial","spotlight","pulse","minimal","bulletin",...businessTemplates,...proTemplates,...studioTemplates]);
+  const agencyTemplates=new Set(["agency-brand","agency-social","agency-showcase"]);
+  const ultimateTemplates=new Set(["ultimate-signature","ultimate-cinema","ultimate-vision"]);
+  const templates = new Set(["aurora","editorial","spotlight","pulse","minimal","bulletin",...businessTemplates,...proTemplates,...studioTemplates,...agencyTemplates,...ultimateTemplates]);
   let currentPlan="free";
-  const businessAllowed=()=>["basic","pro","studio"].includes(currentPlan);
-  const proAllowed=()=>currentPlan==="pro"||currentPlan==="studio";
-  const studioAllowed=()=>currentPlan==="studio";
+  const businessAllowed=()=>["basic","pro","studio","agency","ultimate"].includes(currentPlan);
+  const proAllowed=()=>["pro","studio","agency","ultimate"].includes(currentPlan);
+  const studioAllowed=()=>["studio","agency","ultimate"].includes(currentPlan);
+  const agencyAllowed=()=>["agency","ultimate"].includes(currentPlan);
+  const ultimateAllowed=()=>currentPlan==="ultimate";
   const canUseTemplate=template=>templates.has(template)
     &&(!businessTemplates.has(template)||businessAllowed())
     &&(!proTemplates.has(template)||proAllowed())
-    &&(!studioTemplates.has(template)||studioAllowed());
+    &&(!studioTemplates.has(template)||studioAllowed())
+    &&(!agencyTemplates.has(template)||agencyAllowed())
+    &&(!ultimateTemplates.has(template)||ultimateAllowed());
   let pendingPremiumTemplate=null;
   const MAX_CARDS=8;
   const Graphics=window.AnonsGraphics; // Exact allowlisted shapes used by server PNG exports.
@@ -622,15 +628,21 @@
   const themeForTemplate={aurora:"ultraviolet",editorial:"paper",spotlight:"sunset",pulse:"ink",minimal:"paper",bulletin:"emerald",
     "business-brief":"ink","business-pitch":"sunset","business-report":"paper",
     "pro-campaign":"ink","pro-magazine":"ink","pro-impact":"sunset",
-    "studio-identity":"ink","studio-launch":"sunset","studio-portfolio":"paper"};
+    "studio-identity":"ink","studio-launch":"sunset","studio-portfolio":"paper",
+    "agency-brand":"ink","agency-social":"ink","agency-showcase":"paper",
+    "ultimate-signature":"ink","ultimate-cinema":"sunset","ultimate-vision":"paper"};
   function changeTemplate(next) {
     if(!templates.has(next))return;
     if(!canUseTemplate(next)){
       syncFields();
-      showToast(studioTemplates.has(next)
-        ?"Шаблоны «Студия» доступны только с активной подпиской «Студия»."
+      showToast(ultimateTemplates.has(next)
+        ?"Шаблоны «Максимум» доступны только с активной подпиской «Максимум»."
+        :agencyTemplates.has(next)
+        ?"Шаблоны «Агентство» доступны на тарифах «Агентство» и «Максимум»."
+        :studioTemplates.has(next)
+        ?"Шаблоны «Студия» доступны с активной подпиской «Студия» и выше."
         :proTemplates.has(next)
-        ?"Шаблоны «Про» доступны на тарифах «Про» и «Студия»."
+        ?"Шаблоны «Про» доступны с активной подпиской «Про» и выше."
         :"Шаблоны «Бизнес» доступны по платной подписке. Откройте тарифы для заказа.");
       return;
     }
@@ -1411,15 +1423,19 @@
   // The menu is cosmetic: server-side paid export independently re-checks
   // active verified membership and NEVER trusts the value of currentPlan.
   window.addEventListener("anons:access",event=>{
-    currentPlan=event.detail?.premium===true&&["basic","pro","studio"].includes(event.detail?.plan)
+    currentPlan=event.detail?.premium===true&&["basic","pro","studio","agency","ultimate"].includes(event.detail?.plan)
       ?event.detail.plan:"free";
     document.querySelectorAll("#template-select option").forEach(option=>{
       if(businessTemplates.has(option.value))option.disabled=!businessAllowed();
       if(proTemplates.has(option.value))option.disabled=!proAllowed();
       if(studioTemplates.has(option.value))option.disabled=!studioAllowed();
+      if(agencyTemplates.has(option.value))option.disabled=!agencyAllowed();
+      if(ultimateTemplates.has(option.value))option.disabled=!ultimateAllowed();
     });
     const selection=document.getElementById("template-select");
-    if(selection)selection.title=studioAllowed()?"Все шаблоны доступны":
+    if(selection)selection.title=ultimateAllowed()?"Все шаблоны доступны":
+      agencyAllowed()?"Композиции «Максимум» доступны на старшем тарифе":
+      studioAllowed()?"Композиции «Агентство» и «Максимум» доступны на старших тарифах":
       proAllowed()?"Композиции «Студия» доступны только на старшем тарифе":
       businessAllowed()?"Дополнительные композиции «Про» и «Студия» доступны в старших тарифах":
       "Платные шаблоны открываются при действующей подписке";
@@ -1430,7 +1446,7 @@
     const notice=$("pro-series-status");
     if(notice)notice.textContent=proAllowed()
       ?"Подписка подтверждена. Создавайте серии карточек и меняйте их дизайн вместе."
-      :"Доступно по активной подписке «Про» или «Студия».";
+      :"Доступно по активной подписке «Про» или выше.";
     if(pendingPremiumTemplate&&canUseTemplate(pendingPremiumTemplate)){
       const selected=pendingPremiumTemplate;
       pendingPremiumTemplate=null;
@@ -1438,7 +1454,7 @@
     }
   });
   document.querySelectorAll("#template-select option").forEach(option=>{
-    if(businessTemplates.has(option.value)||proTemplates.has(option.value)||studioTemplates.has(option.value))option.disabled=true;
+    if(businessTemplates.has(option.value)||proTemplates.has(option.value)||studioTemplates.has(option.value)||agencyTemplates.has(option.value)||ultimateTemplates.has(option.value))option.disabled=true;
   });
   window.AnonsEditor=Object.freeze({
     getSnapshot,
@@ -1471,7 +1487,7 @@
   const requestedTemplate=editorUrl.searchParams.get("template");
   if(requestedTemplate && templates.has(requestedTemplate)){
     if(canUseTemplate(requestedTemplate))changeTemplate(requestedTemplate);
-    else if(businessTemplates.has(requestedTemplate)||proTemplates.has(requestedTemplate)||studioTemplates.has(requestedTemplate)){
+    else if(businessTemplates.has(requestedTemplate)||proTemplates.has(requestedTemplate)||studioTemplates.has(requestedTemplate)||agencyTemplates.has(requestedTemplate)||ultimateTemplates.has(requestedTemplate)){
       pendingPremiumTemplate=requestedTemplate;
     }
     editorUrl.searchParams.delete("template");
