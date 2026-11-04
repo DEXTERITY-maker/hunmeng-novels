@@ -238,44 +238,6 @@
     ctx.lineTo(x + rad, y + h); ctx.quadraticCurveTo(x, y + h, x, y + h - rad);
     ctx.lineTo(x, y + rad); ctx.quadraticCurveTo(x, y, x + rad, y); ctx.closePath();
   }
-  function fitLines(text, maxWidth, fontSize, maxLines = 5) {
-    const words = (text || "").replace(/\s+/g, " ").trim().split(" ").filter(Boolean);
-    if (!words.length) return [];
-    let lines = []; let line = "";
-    for (const word of words) {
-      const candidate = line ? line + " " + word : word;
-      if (ctx.measureText(candidate).width > maxWidth && line) { lines.push(line); line = word; }
-      else line = candidate;
-    }
-    if (line) lines.push(line);
-    // Split a single very long word to guarantee every line stays within the canvas.
-    lines = lines.flatMap((l) => {
-      if (ctx.measureText(l).width <= maxWidth) return [l];
-      const chunks = []; let cur = "";
-      for (const ch of Array.from(l)) {
-        if (ctx.measureText(cur + ch).width > maxWidth && cur) { chunks.push(cur); cur = ch; } else cur += ch;
-      }
-      if (cur) chunks.push(cur);
-      return chunks;
-    });
-    if (lines.length > maxLines) {
-      lines = lines.slice(0, maxLines);
-      let last = lines[maxLines - 1];
-      while (last.length && ctx.measureText(last + "…").width > maxWidth) last = last.slice(0, -1);
-      lines[maxLines - 1] = last + "…";
-    }
-    return lines;
-  }
-  function chooseFont(text, width, startSize, maxHeight, maxLines) {
-    let size = startSize; let lines = [];
-    while (size >= 42) {
-      ctx.font = "800 " + size + "px Manrope, sans-serif";
-      lines = fitLines(text, width, size, maxLines);
-      if (lines.length * size * 1.17 <= maxHeight) break;
-      size -= 3;
-    }
-    return {size, lines};
-  }
   function drawPhoto(W, H) {
     if (!photo) return;
     const x = W * 0.52, y = H * 0.11, w = W * 0.49, h = Math.min(H * 0.36, 570);
@@ -371,7 +333,9 @@
     const dsize=scene.descriptionSize;
     ctx.font="700 "+dsize+"px Manrope, sans-serif";ctx.fillStyle=t.sub;
     const dlines=window.AnonsScene.breakLines(descText,contentWidth-(H<=1100?10:80),dsize,3);
-    for(let i=0;i<dlines.length;i++){ctx.fillText(dlines[i],tx,descY+i*(dsize*1.5));}
+    // CSS/Satori places the first text baseline within its line box; align
+    // the Canvas baseline instead of painting above the server text position.
+    for(let i=0;i<dlines.length;i++){ctx.fillText(dlines[i],tx,descY+dsize*.82+i*(dsize*1.5));}
     ctx.textAlign="left";
 
     // Structured, legible highlights
