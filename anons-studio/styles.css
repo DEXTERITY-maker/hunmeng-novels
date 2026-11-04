@@ -456,3 +456,90 @@ html.whats-new-visible{overflow:hidden}
 .advanced-panel summary>span:last-child .ui-icon{width:15px;height:15px}
 .upload-btn .ui-icon{width:16px;height:16px}
 @media(max-width:440px){.whats-new-item-icon .ui-icon{width:20px;height:20px}.plan-ui-icon{margin-bottom:10px}}
+
+/* Homepage refinement based on the mobile overview: consistent hierarchy,
+   shorter section gaps, readable supporting text and practical entry points. */
+.hero{padding-top:72px;padding-bottom:80px;min-height:565px}
+.how{padding-top:78px;padding-bottom:82px}
+.home-explore{padding-top:76px;padding-bottom:86px}
+.home-explore-card{min-height:235px}
+.home-explore-card p{font-size:12px;line-height:1.7;color:#625c71}
+.section-heading>p{font-size:14px;line-height:1.75;color:#655e70}
+.steps p{font-size:13px;line-height:1.75;color:#635e72}
+.hero-content>p{color:#625d70}
+.cta{padding-top:60px;padding-bottom:58px;margin-bottom:44px}
+.quick-start{background:linear-gradient(180deg,#f5f1fc 0%,#faf8fd 100%);padding:77px 0 83px}
+.quick-start-heading{margin-bottom:30px}
+.quick-start-heading h2 em{font-style:normal;color:#8453df}
+.quick-start-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.quick-start-card{min-width:0;background:#fff;display:flex;flex-direction:column;padding:9px;border:1px solid #ebe5f4;border-radius:19px;text-decoration:none;color:#241b39;box-shadow:0 10px 26px #2920390d;transition:transform .18s,box-shadow .18s,border-color .18s}
+.quick-start-card:hover{transform:translateY(-4px);border-color:#ba9bea;box-shadow:0 20px 38px #3220521c}
+.quick-start-card:focus-visible{outline:3px solid #7649d1;outline-offset:4px}
+.quick-start-poster{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;min-height:230px;aspect-ratio:4/4.2;border-radius:12px;position:relative;overflow:hidden;padding:24px 20px;color:#fff;isolation:isolate}
+.quick-start-poster:before{content:"";position:absolute;z-index:-1;width:170px;height:170px;border:26px solid #ffffff18;border-radius:50%;right:-60px;top:-60px}
+.quick-start-poster:after{content:"";position:absolute;z-index:-1;width:85px;height:85px;border:1px solid #ffffff3d;border-radius:50%;right:18px;bottom:10px}
+.quick-start-update{background:linear-gradient(136deg,#1f153d,#6841c4)}
+.quick-start-launch{background:linear-gradient(140deg,#172d35,#16756b)}
+.quick-start-event{background:linear-gradient(140deg,#4e244c,#b65f79)}
+.quick-start-notice{background:linear-gradient(140deg,#232d47,#57688f)}
+.quick-start-poster-label{font-size:9px;font-weight:850;letter-spacing:.15em;opacity:.83;margin-bottom:36px}
+.quick-start-poster strong{font-size:clamp(22px,2.25vw,30px);line-height:1.13;letter-spacing:-.055em;font-weight:850}
+.quick-start-poster small{font-size:10px;line-height:1.6;opacity:.8;margin-top:13px}
+.quick-start-poster-line{display:block;width:56px;height:2px;background:#fff8;border-radius:5px;margin-top:22px}
+.quick-start-meta{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:17px 9px 14px}
+.quick-start-meta>span{display:flex;flex-direction:column;gap:4px;min-width:0}
+.quick-start-meta strong{font-size:13px;line-height:1.35;font-weight:850;letter-spacing:-.025em}
+.quick-start-meta small{font-size:11px;line-height:1.5;color:#736c80}
+.quick-start-meta>.ui-icon{width:19px;height:19px;color:#7549ca;flex-shrink:0}
+.quick-start-footnote{font-size:11px;color:#655b76;line-height:1.6;margin:20px 0 0}
+.preset-suggested{outline:2px solid #7f58dc;outline-offset:3px;background:#f0e8ff!important}
+/* Prevent the six-link desktop header from shrinking into illegibility on
+   tablets or a phone browser requesting a desktop-width page. */
+@media(max-width:1100px){
+  .topbar{padding-left:22px;padding-right:22px;gap:10px}
+  .navigation{display:none}
+  .mobile-menu-toggle{display:inline-flex}
+  .navigation.is-open{display:flex;position:absolute;top:100%;left:0;right:0;z-index:11;flex-direction:column;align-items:stretch;gap:0;padding:9px 22px 15px;background:#fff;border-bottom:1px solid #e5ddec;box-shadow:0 20px 35px #241c4129;max-height:calc(100dvh - 74px);overflow-y:auto}
+  .navigation.is-open a{display:block;padding:13px 12px;border-radius:9px;color:#322c41;font-size:14px;font-weight:750}
+  .navigation.is-open a:hover,.navigation.is-open a:focus-visible{background:#f3effa;color:#5e31c5}
+}
+@media(max-width:1020px){
+  .quick-start-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .quick-start-poster{min-height:210px;aspect-ratio:4/3.2}
+  .quick-start-poster strong{font-size:clamp(24px,3.8vw,34px)}
+}
+@media(max-width:760px){
+  .hero{min-height:0;padding-top:47px;padding-bottom:54px}
+  .hero-art{height:370px}
+  .how{padding-top:53px;padding-bottom:58px}
+  .home-explore{padding-top:54px;padding-bottom:60px}
+  .quick-start{padding-top:58px;padding-bottom:60px}
+  .cta{margin-bottom:32px}
+  .section-heading>p{font-size:13px;line-height:1.75}
+}
+@media(max-width:500px){
+  .quick-start-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+  .quick-start-card{padding:6px;border-radius:14px}
+  .quick-start-poster{min-height:156px;aspect-ratio:4/4.6;padding:15px 12px;border-radius:10px}
+  .quick-start-poster-label{font-size:7px;margin-bottom:24px}
+  .quick-start-poster strong{font-size:clamp(17px,5vw,24px)}
+  .quick-start-poster small{font-size:9px;line-height:1.4;margin-top:10px}
+  .quick-start-poster-line{margin-top:14px}
+  .quick-start-meta{padding:12px 5px 10px;align-items:flex-start}
+  .quick-start-meta strong{font-size:11px}
+  .quick-start-meta small{font-size:10px}
+  .quick-start-meta>.ui-icon{width:16px;height:16px}
+  .quick-start-footnote{font-size:11px}
+  .home-explore-card{min-height:210px;padding:20px}
+  .hero-content>p{font-size:13px;line-height:1.75}
+  .steps p{font-size:12.5px}
+}
+@media(max-width:360px){
+  .quick-start-grid{grid-template-columns:1fr}
+  .quick-start-poster{aspect-ratio:16/9;min-height:180px}
+  .quick-start-poster strong{font-size:27px}
+}
+@media(prefers-reduced-motion:reduce){
+  .quick-start-card,.home-explore-card{transition:none}
+  html{scroll-behavior:auto}
+}
