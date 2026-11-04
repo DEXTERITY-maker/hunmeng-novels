@@ -171,6 +171,12 @@ try {
     assert.equal(contract.width,1080);
     assert.equal(contract.height,1350);
     assert.ok(contract.title.lines.length>0,"Shared scene breaks default heading");
+    assert.equal(await page.locator("#composition").inputValue(),"classic");
+    assert.equal(await page.locator("#highlight-style").inputValue(),"soft");
+    assert.equal(await page.locator("#featured-highlight").inputValue(),"-1");
+    assert.equal(await page.locator("[data-highlight-icon]").count(),3);
+    assert.deepEqual(await page.locator("[data-highlight-icon]").evaluateAll(els=>els.map(el=>el.value)),
+      ["dot","dot","dot"],"Existing cards preserve legacy dot markers");
     assert.equal(await page.locator("#decoration-level").inputValue(),"subtle",
       "Aurora starts with less distracting background decoration");
     assert.equal(await page.locator("#text-spacing").inputValue(),"balanced",
@@ -230,6 +236,32 @@ try {
     });
     assert.equal(await page.evaluate(()=>window.AnonsEditor.getSnapshot().cards[0].textSpacing),
       "balanced");
+
+    // Aurora compositions, highlight styles and per-row SVG markers are saved
+    // in the same snapshot used by browser downloads and the cloud library.
+    const beforeStyle=await page.locator("#poster").evaluate(c=>c.toDataURL("image/png"));
+    await page.locator("#composition").selectOption("headline");
+    await page.locator("#highlight-style").selectOption("separated");
+    await page.locator("#featured-highlight").selectOption("1");
+    await page.locator("#highlight-icon-0").selectOption("check");
+    await page.locator("#highlight-icon-1").selectOption("star");
+    await page.locator("#highlight-icon-2").selectOption("diamond");
+    await page.waitForFunction(previous=>document.querySelector("#poster").toDataURL("image/png")!==previous,beforeStyle);
+    const styleSnapshot=await page.evaluate(()=>window.AnonsEditor.getSnapshot());
+    assert.equal(styleSnapshot.cards[0].composition,"headline");
+    assert.equal(styleSnapshot.cards[0].highlightStyle,"separated");
+    assert.equal(styleSnapshot.cards[0].featuredHighlight,1);
+    assert.deepEqual(styleSnapshot.cards[0].highlightIcons,["check","star","diamond"]);
+    const styleScene=await page.evaluate(()=>{
+      const snapshot=window.AnonsEditor.getSnapshot();
+      const scene=window.AnonsScene.layout(snapshot,snapshot.cards[0]);
+      return {composition:scene.composition,style:scene.highlightStyle,
+        withinFooter:window.AnonsScene.highlightGeometry(scene,3).top+
+          window.AnonsScene.highlightGeometry(scene,3).height<=scene.footerY-55};
+    });
+    assert.equal(styleScene.composition,"headline");
+    assert.equal(styleScene.style,"separated");
+    assert.equal(styleScene.withinFooter,true);
 
     const brandImage=page.locator(".topbar .brand-image img");
     await brandImage.waitFor();
@@ -382,6 +414,9 @@ try {
     await page.locator("#duplicate-card").click();
     assert.equal(await page.locator("#card-list [role=tab]").count(),2);
     // A copied card must own its own graphic array and geometry objects.
+    await page.locator("#highlight-icon-0").selectOption("dot");
+    assert.deepEqual((await page.evaluate(()=>window.AnonsEditor.getSnapshot().cards[0].highlightIcons)),
+      ["check","star","diamond"],"Changing a duplicated card cannot change original highlight icons");
     await page.locator("#graphic-list button").first().click();
     await page.locator("#graphic-remove").click();
     assert.equal((await page.evaluate(()=>window.AnonsEditor.getSnapshot().cards[1].graphicElements)).length,0);
@@ -424,6 +459,11 @@ try {
     assert.equal(await page.locator("#decoration-level").inputValue(),"subtle");
     assert.equal(await page.locator("#text-spacing").inputValue(),"balanced");
     assert.equal(await page.locator("#title-offset-x").inputValue(),"6");
+    assert.equal(await page.locator("#composition").inputValue(),"headline");
+    assert.equal(await page.locator("#highlight-style").inputValue(),"separated");
+    assert.equal(await page.locator("#featured-highlight").inputValue(),"1");
+    assert.deepEqual(await page.locator("[data-highlight-icon]").evaluateAll(els=>els.map(el=>el.value)),
+      ["check","star","diamond"],"Highlight settings survive reload");
     assert.equal(await page.locator("#graphic-list button").count(),1,
       "Graphic overlays survive browser reload");
     await page.locator("#card-list [role=tab]").last().click();
