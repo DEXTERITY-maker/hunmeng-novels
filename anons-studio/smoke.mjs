@@ -10,7 +10,7 @@ const cloudflareHeaders=await readFile(join(root,"_headers"),"utf8");
 assert.match(cloudflareHeaders,/Content-Security-Policy:.*script-src 'self'/);
 assert.match(cloudflareHeaders,/X-Content-Type-Options: nosniff/);
 const types = { ".html": "text/html; charset=utf-8", ".css": "text/css; charset=utf-8", ".js": "application/javascript; charset=utf-8", ".webp": "image/webp", ".svg":"image/svg+xml" };
-const allow = new Set(["/","/index.html","/account.html","/editor.html","/templates.html","/features.html","/pricing.html","/styles.css","/app.js","/editor-workspace.js","/editor-direct.js","/editor-layers.js","/navigation.js","/templates-catalog.js","/templates-assistant.js","/whats-new.js","/scene-layout.js","/graphic-elements.js","/auth.bundle.js","/assets/anons-logo-approved.webp","/assets/anons-icon-approved.webp","/assets/ui-icons.svg"]);
+const allow = new Set(["/","/index.html","/account.html","/editor.html","/templates.html","/features.html","/pricing.html","/styles.css","/app.js","/editor-workspace.js","/editor-direct.js","/editor-layers.js","/navigation.js","/templates-catalog.js","/templates-assistant.js","/personal-styles.js","/whats-new.js","/scene-layout.js","/graphic-elements.js","/auth.bundle.js","/assets/anons-logo-approved.webp","/assets/anons-icon-approved.webp","/assets/ui-icons.svg"]);
 const server = createServer(async (req,res)=>{
   const url = new URL(req.url, "http://localhost");
   const path = url.pathname === "/" ? "/index.html" : url.pathname;
@@ -84,15 +84,15 @@ try {
     // available from the footer without disturbing ordinary page visits.
     const releaseDialog=page.locator("#whats-new-dialog");
     await page.waitForFunction(()=>document.getElementById("whats-new-dialog")?.open);
-    assert.match(await page.locator("#whats-new-title").textContent(),/Подбор шаблона за два шага/);
-    assert.equal(await page.locator(".whats-new-list li").count(),23);
-    assert.equal(await page.locator(".whats-new-item-icon .ui-icon").count(),23,
+    assert.match(await page.locator("#whats-new-title").textContent(),/Собственные стили оформления/);
+    assert.equal(await page.locator(".whats-new-list li").count(),24);
+    assert.equal(await page.locator(".whats-new-item-icon .ui-icon").count(),24,
       "Announcement has coherent SVG icons instead of character placeholders");
     assert.equal(await page.locator("#whats-new-close").evaluate(el=>el===document.activeElement),true,
       "Announcement initially focuses its accessible close control");
     assert.equal(await page.locator(".whats-new-list:not(.whats-new-list-archive) li").count(),1,
       "Only the latest two changes are expanded by default");
-    assert.equal(await page.locator(".whats-new-list-archive li").count(),22);
+    assert.equal(await page.locator(".whats-new-list-archive li").count(),23);
     assert.equal(await page.locator(".whats-new-history").evaluate(el=>el.open),false);
     await page.locator(".whats-new-history summary").click();
     assert.equal(await page.locator(".whats-new-history").evaluate(el=>el.open),true);
@@ -104,7 +104,7 @@ try {
       assert.ok((await page.locator('.whats-new-list a[href="./'+destination+'"]').count())>=1,
         "Announcement links directly to "+destination);
     }
-    assert.equal(await releaseDialog.getAttribute("data-release"),"2026-11-04-quick-start",
+    assert.equal(await releaseDialog.getAttribute("data-release"),"2026-11-04-personal-styles",
       "Latest announcement version must be recognized");
 
     await page.locator("#whats-new-dismiss").click();
@@ -1021,6 +1021,60 @@ try {
       localStorage.getItem("anons-studio:cloud-active-v05")).userId),"user-two");
     console.log("PASS Cloud library mock: create/edit/checkpoint/load/restore/archive/delete/conflict-copy/offline/stale-read/account-switch");
     await context.close();
+  }
+
+  // Stage 5: personal styles are independent of project text, uploaded images,
+  // account billing and the editor's multi-card state. Exercise both layouts.
+  for(const width of [390,1440]){
+    const personalContext=await browser.newContext({viewport:{width,height:920}});
+    const personalPage=await personalContext.newPage();
+    const personalErrors=[];
+    personalPage.on("pageerror",error=>personalErrors.push(error.message));
+    await personalPage.route("https://fonts.googleapis.com/**",r=>r.abort());
+    await personalPage.route("https://fonts.gstatic.com/**",r=>r.abort());
+    await personalPage.goto("http://127.0.0.1:"+port+"/editor.html",{waitUntil:"domcontentloaded"});
+    assert.equal(await personalPage.locator("#personal-styles").count(),1);
+    assert.equal(await personalPage.evaluate(()=>typeof window.AnonsEditor?.getStyleSnapshot),"function");
+    assert.equal(await personalPage.evaluate(()=>typeof window.AnonsEditor?.applyStyleSnapshot),"function");
+    const visual=await personalPage.evaluate(()=>window.AnonsEditor.getStyleSnapshot());
+    assert.equal(visual.template,"aurora");
+    for(const key of ["title","description","points","project","imageData","preset","cards","ratio"]){
+      assert.equal(Object.hasOwn(visual,key),false,"Personal style cannot store "+key);
+    }
+    await personalPage.locator("#personal-style-name").fill("Мой стиль проверки");
+    await personalPage.locator("#personal-style-save").click();
+    assert.match(await personalPage.locator("#personal-style-status").textContent(),/сохранён/);
+    assert.equal(await personalPage.locator("#personal-style-count").textContent(),"1 из 20");
+    const stored=await personalPage.evaluate(()=>JSON.parse(localStorage.getItem("anons-studio:personal-styles:v1")));
+    assert.equal(stored.length,1);
+    assert.equal(stored[0].style.template,"aurora");
+    assert.equal(stored[0].style.title,undefined,"Stored style excludes user content");
+    const selectedId=stored[0].id;
+    await personalPage.reload({waitUntil:"domcontentloaded"});
+    await personalPage.locator("#personal-style-select").selectOption(selectedId);
+    await personalPage.locator("#template-select").selectOption("pulse");
+    await personalPage.locator("#title").fill("Контент останется без изменений");
+    await personalPage.locator("#personal-style-apply").click();
+    const applied=await personalPage.evaluate(()=>window.AnonsEditor.getSnapshot());
+    assert.equal(applied.cards[applied.activeCard].template,"aurora","Saved style restores layout");
+    assert.equal(applied.cards[applied.activeCard].title,"Контент останется без изменений","Style does not copy text");
+    assert.ok(await personalPage.locator("#undo").isEnabled(),"Applying style adds an undo checkpoint");
+    await personalPage.locator("#undo").click();
+    assert.equal(await personalPage.locator("#template-select").inputValue(),"pulse",
+      "Undo restores the previous visual style");
+    assert.equal(await personalPage.locator("#title").inputValue(),"Контент останется без изменений");
+    await personalPage.locator("#redo").click();
+    assert.equal(await personalPage.locator("#template-select").inputValue(),"aurora");
+    await personalPage.locator("#personal-style-name").fill("Обновлённое название");
+    await personalPage.locator("#personal-style-rename").click();
+    assert.equal(await personalPage.locator("#personal-style-select option").nth(1).textContent(),"Обновлённое название");
+    personalPage.once("dialog",dialog=>dialog.accept());
+    await personalPage.locator("#personal-style-delete").click();
+    assert.equal(await personalPage.locator("#personal-style-count").textContent(),"0 из 20");
+    assert.equal(await personalPage.locator("#title").inputValue(),"Контент останется без изменений",
+      "Removing saved preset does not modify the canvas");
+    assert.deepEqual(personalErrors,[],"Personal styles page errors: "+personalErrors.join("; "));
+    await personalContext.close();
   }
 } finally {
   if(browser) await browser.close();
