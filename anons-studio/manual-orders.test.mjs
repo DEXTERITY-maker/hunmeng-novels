@@ -17,14 +17,15 @@ class E {
 }
 function setup({admin=false,customerNo=2,delayed=false}={}){
   const names=["manual-order-root","manual-customer-number","manual-account-orders","manual-admin-panel",
-    "manual-order-create","manual-order-customer","manual-order-status","manual-order-list","manual-account-order-list",
+    "manual-order-create","manual-order-plan","manual-order-price","manual-order-plan-summary","manual-order-customer","manual-order-status","manual-order-list","manual-account-order-list",
     "manual-admin-order-list","manual-admin-status","manual-order-login","manual-order-refresh",
     "manual-account-refresh","manual-admin-refresh"];
   const els=Object.fromEntries(names.map(n=>[n,new E()]));
+  els["manual-order-plan"].value="basic";
   const calls=[],rows=[],events={},ordersForAdmin=[];
   let confirmed=true,paid=false,freeze=null;
   const document={getElementById:name=>els[name]||null,createElement:()=>new E()};
-  const window={addEventListener:(name,fn)=>{events[name]=fn;},
+  const window={location:{search:""},addEventListener:(name,fn)=>{events[name]=fn;},
     confirm:()=>confirmed,AnonsBilling:{refresh:()=>{paid=true;}}};
   const client={
     rpc:async(name,args={})=>{
@@ -36,7 +37,7 @@ function setup({admin=false,customerNo=2,delayed=false}={}){
       if(name==="anons_studio_manual_is_admin")return {data:admin,error:null};
       if(name==="anons_studio_manual_create_order"){
         if(!rows.some(x=>["awaiting_instructions","payment_reported"].includes(x.status))){
-          rows.unshift({order_no:100001,plan:"basic",amount_kopecks:29900,
+          rows.unshift({order_no:100001,plan:args.p_plan,amount_kopecks:({basic:29900,pro:49900,studio:99900})[args.p_plan],
             status:"awaiting_instructions",created_at:"2026-11-04T13:00:00Z"});
         }
         return {data:100001,error:null};
@@ -77,7 +78,7 @@ test("guest cannot submit, account receives server number not a browser-selected
   assert.equal(h.calls.length,0);
   h.instance.setUser({id:"customer-uuid-2"});
   await tick();
-  assert.equal(h.els["manual-order-customer"].textContent,"ID-2");
+  assert.equal(h.els["manual-order-customer"].textContent,"2");
   assert.equal(h.els["manual-order-create"].disabled,false);
   assert.equal(h.els["manual-order-login"].hidden,true);
   assert.equal(h.calls.some(x=>x.name==="anons_studio_customer_number"),true);
@@ -116,7 +117,7 @@ test("admin review requires explicit confirmation and never displays to guests",
     plan:"basic",amount_kopecks:29900,status:"payment_reported",transfer_note:"",
     created_at:"2026-11-04T13:00:00Z"});
   h.instance.setUser({id:"admin-id"});await tick();
-  assert.equal(h.els["manual-customer-number"].textContent,"ID-1");
+  assert.equal(h.els["manual-customer-number"].textContent,"1");
   assert.equal(h.els["manual-admin-panel"].hidden,false);
   const adminButtons=h.els["manual-admin-order-list"].children[0].children
     .find(x=>x.className==="manual-admin-actions").children;
@@ -141,4 +142,25 @@ test("checkout code contains no card number, card data or automatic payment requ
   assert.match(source,/anons_studio_manual_create_order/);
   assert.match(source,/anons_studio_manual_review/);
   assert.doesNotMatch(source,/yookassa\.ru|confirmation_url/);
+});
+
+test("manual orders honor the selected plan and its trusted price",async()=>{
+  const h=setup(),select=h.els["manual-order-plan"];
+  h.instance.setUser({id:"a"});await tick();
+  select.value="pro";select.listeners.change.forEach(cb=>cb());
+  assert.equal(h.els["manual-order-price"].textContent,"499 ₽");
+  h.els["manual-order-create"].click();await tick();
+  assert.equal(h.rows[0].plan,"pro");
+  assert.equal(h.rows[0].amount_kopecks,49900);
+  const call=h.calls.find(x=>x.name==="anons_studio_manual_create_order");
+  assert.equal(call.args.p_plan,"pro");
+});
+test("Studio is a separate manual order choice with matching label",async()=>{
+  const h=setup(),select=h.els["manual-order-plan"];
+  h.instance.setUser({id:"a"});await tick();
+  select.value="studio";select.listeners.change.forEach(cb=>cb());
+  assert.equal(h.els["manual-order-price"].textContent,"999 ₽");
+  h.els["manual-order-create"].click();await tick();
+  assert.equal(h.rows[0].plan,"studio");
+  assert.equal(h.rows[0].amount_kopecks,99900);
 });
