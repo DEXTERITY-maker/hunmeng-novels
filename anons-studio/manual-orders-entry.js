@@ -164,7 +164,10 @@ export function initManualOrders(client) {
       renderAll();
       await getOrders(id,serial);
       if(isAdmin)await refreshAdmin(id,serial);
-      if(live(id,serial))say(message,"Номер пользователя постоянный. Оплата оформляется только заявкой.");
+      if(live(id,serial))say(message,activeSubscription
+        ?"Ваш платный тариф уже активен. Повторная заявка не требуется."
+        :hasOpenOrder()?"У вас уже есть заявка. Дождитесь подтверждения; оформлять её повторно не нужно."
+        :"Номер пользователя постоянный. Оплата оформляется только заявкой.");
     }catch(error){
       if(!live(id,serial))return;
       say(message,unavailableText(error),true);
@@ -284,6 +287,7 @@ export function initManualOrders(client) {
     activeSubscription=event.detail?.loggedIn===true
       &&event.detail?.verified!==false&&event.detail?.premium===true;
     renderProfile();
+    if(activeSubscription)say(message,"Ваш платный тариф уже активен. Повторная заявка не требуется.");
   });
   planSelect?.addEventListener("change",renderPlan);
   button?.addEventListener("click",()=>{void createOrder();});
