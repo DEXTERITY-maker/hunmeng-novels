@@ -510,13 +510,34 @@
     if(file.size>10*1024*1024){showToast("Файл слишком большой. Максимум 10 МБ.");return;}
     try{
       const image=await createImageBitmap(file);
-      const scale=Math.min(1,1400/Math.max(image.width,image.height));
-      const temp=document.createElement("canvas");temp.width=Math.round(image.width*scale);temp.height=Math.round(image.height*scale);
-      temp.getContext("2d").drawImage(image,0,0,temp.width,temp.height);image.close?.();
-      state.imageData=temp.toDataURL("image/jpeg",.76);
+      let encoded="";
+      try {
+        // Paid server exports reject data URLs >= 600,000 characters. Compress
+        // uploaded photos before saving them so a project remains exportable.
+        if(image.width*image.height>24000000)throw new Error("IMAGE_DIMENSIONS_TOO_LARGE");
+        const steps=[[1400,.76],[1200,.68],[1000,.60],[850,.50],[700,.42]];
+        for(const [longest,quality] of steps){
+          const scale=Math.min(1,longest/Math.max(image.width,image.height));
+          const temp=document.createElement("canvas");
+          temp.width=Math.max(1,Math.round(image.width*scale));
+          temp.height=Math.max(1,Math.round(image.height*scale));
+          const pen=temp.getContext("2d");
+          if(!pen)throw new Error("PHOTO_CANVAS_UNAVAILABLE");
+          pen.drawImage(image,0,0,temp.width,temp.height);
+          encoded=temp.toDataURL("image/jpeg",quality);
+          if(encoded.length<=560000)break;
+        }
+        if(!encoded||encoded.length>=600000)throw new Error("PHOTO_EXPORT_LIMIT");
+      } finally {
+        image.close?.();
+      }
+      state.imageData=encoded;
       loadPhoto(state.imageData);persist();syncFields();
-      showToast("Фото добавлено. При облачном сохранении оно попадёт в проект.");
-    }catch(err){console.error(err);showToast("Не удалось прочитать изображение.");}
+      showToast("Фото подготовлено для сохранения и экспорта.");
+    }catch(err){
+      console.warn("Photo import failed",err?.message||"image");
+      showToast(err?.message==="IMAGE_DIMENSIONS_TOO_LARGE"?"Слишком большое разрешение фото. Выберите изображение до 24 млн пикселей.":err?.message==="PHOTO_EXPORT_LIMIT"?"Не удалось уменьшить фотографию до лимита экспорта. Попробуйте другое изображение.":"Не удалось прочитать изображение.");
+    }
   });
   $("clear-image").addEventListener("click",()=>{
     state.imageData="";photo=null;$("upload").value="";syncFields();persist();scheduleRender();showToast("Фото удалено.");
