@@ -10,6 +10,8 @@ await mkdir(out,{recursive:true});
 for(const f of ["index.html","styles.css","app.js","_headers"]){
   await copyFile(join(dir,f),join(out,f));
 }
+// Single-source scene contract: the exact module used by Supabase Edge.
+await copyFile(join(dir,"functions","anons-premium-export","scene-layout.js"),join(out,"scene-layout.js"));
 await mkdir(join(out,"assets"),{recursive:true});
 for(const asset of ["anons-logo-approved.webp","anons-icon-approved.webp"]){
   await copyFile(join(dir,"assets",asset),join(out,"assets",asset));
