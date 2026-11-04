@@ -356,8 +356,12 @@ export function initLibrary(client) {
     if(id===(user?.id||null))return;
     const remembered=readActive();
     const former=user?.id||null;
-    ++sessionEpoch;historyEpoch++;
-    clearPending();user=next?.id?{id:next.id,email:next.email}:null;
+    ++sessionEpoch;historyEpoch++;++loadSerial;
+    clearPending();
+    // Previous account's request may still be pending. It must not block a
+    // different account's save or be mistaken for its in-flight write.
+    inFlight=null;
+    user=next?.id?{id:next.id,email:next.email}:null;
     projects=[];projectId=null;version=0;archived=false;dirty=false;conflict=false;
     elements.guest.hidden=Boolean(user);
     elements.auth.hidden=!user;
