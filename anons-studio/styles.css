@@ -326,3 +326,31 @@ html.whats-new-visible{overflow:hidden}
 @media(max-width:760px){.footer{flex-wrap:wrap}.whats-new-dialog{border-radius:18px}.whats-new-head{padding:29px 25px 26px}.whats-new-body{padding:24px 25px 25px}}
 @media(max-width:440px){.whats-new-dialog{width:calc(100% - 24px);max-width:calc(100% - 24px);max-height:calc(100dvh - 24px)}.whats-new-head{padding:25px 20px 23px}.whats-new-body{padding:23px 20px 21px}.whats-new-head h2{font-size:25px}.whats-new-mark{width:46px;height:46px;margin-top:21px;font-size:24px}.whats-new-list{gap:14px}.whats-new-list p{font-size:11px}.whats-new-item-icon{flex-basis:37px;width:37px;height:37px}.whats-new-actions{display:grid;grid-template-columns:1fr}.whats-new-primary,.whats-new-secondary{width:100%}}
 @media(prefers-reduced-motion:reduce){.whats-new-dialog::backdrop{backdrop-filter:none}}
+
+/* Dedicated personal space: shared brand, independent account-page layout. */
+.personal-page-main{background:#f8f6fc;min-height:calc(100dvh - 86px)}
+.personal-breadcrumb{display:flex;align-items:center;gap:11px;padding:24px 0;color:#6b607f;font-size:12px;font-weight:700}
+.personal-breadcrumb a{color:#6441b3}
+.personal-breadcrumb a:hover{text-decoration:underline}
+.personal-page-main .account-section{position:relative;background:linear-gradient(125deg,#211b38 0%,#322651 53%,#533990 100%);padding:90px 0 98px;overflow:hidden}
+.personal-page-main .account-section:before{content:"";position:absolute;width:340px;height:340px;right:-135px;top:-180px;border:50px solid #ffffff0b;border-radius:50%;pointer-events:none}
+.personal-page-main .account-section .wrap{position:relative;z-index:1}
+.personal-page-main .account-intro h2{max-width:480px}
+.personal-page-main .account-box{box-shadow:0 30px 70px #120b2d75}
+.personal-page-main .account-destinations{display:flex;flex-wrap:wrap;gap:10px}
+.personal-return{display:flex;align-items:center;justify-content:space-between;gap:28px;padding-top:65px;padding-bottom:72px}
+.personal-return h2{font-size:clamp(28px,3vw,38px);line-height:1.2;margin:9px 0 10px;letter-spacing:-.05em}
+.personal-return p{max-width:480px;color:#676076;font-size:13px;line-height:1.8;margin-bottom:0}
+.personal-return-actions{display:flex;flex-wrap:wrap;gap:10px}
+.personal-page-main~.footer{padding-top:15px}
+@media(max-width:760px){
+  .personal-page-main{min-height:calc(100dvh - 74px)}
+  .personal-breadcrumb{padding:19px 0}
+  .personal-page-main .account-section{padding:63px 0 72px}
+  .personal-return{flex-direction:column;align-items:flex-start;padding-top:50px;padding-bottom:54px;gap:23px}
+}
+@media(max-width:440px){
+  .personal-page-main .account-section{padding:51px 0 57px}
+  .personal-return-actions{width:100%}
+  .personal-return-actions .btn{width:100%;text-align:center}
+}
