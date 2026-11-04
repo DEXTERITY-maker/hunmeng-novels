@@ -90,7 +90,7 @@ test("sorting alphabetically and restoring original order", () => {
   const initial = ids();
   elements["template-sort"].value = "name";
   elements["template-sort"].fire("change");
-  assert.deepEqual(ids(), ["aurora", "business-brief", "business-pitch", "business-report", "bulletin", "editorial", "minimal", "pulse", "spotlight"]);
+  assert.deepEqual(ids(), ["aurora", "bulletin", "business-brief", "business-pitch", "business-report", "editorial", "minimal", "pulse", "spotlight"]);
   elements["template-sort"].value = "default";
   elements["template-sort"].fire("change");
   assert.deepEqual(ids(), initial);
