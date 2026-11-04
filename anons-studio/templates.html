@@ -13,6 +13,7 @@
   <link rel="stylesheet" href="./styles.css">
   <script src="./navigation.js" defer></script>
   <script src="./templates-catalog.js" defer></script>
+  <script src="./templates-assistant.js" defer></script>
   <script src="./auth.bundle.js" defer></script>
 </head>
 <body>
@@ -36,6 +37,40 @@
       <section class="inner-page-hero wrap"><span class="kicker">ВЫБЕРИ СВОЙ СТИЛЬ</span><h1>Профессиональные шаблоны.</h1><p>Подберите подходящую композицию для обновления, запуска, события или новости. Все представленные шаблоны доступны в редакторе.</p></section>
 <section id="templates" class="gallery-section wrap" aria-labelledby="templates-title">
         <div class="section-heading"><div><div class="kicker">КАТАЛОГ ШАБЛОНОВ</div><h2 id="templates-title">Шаблон, который<br><em>расскажет твою историю.</em></h2></div><p>Это не просто смена цвета: каждый шаблон по-своему располагает акценты и текст. Выбирай композицию и сразу открывай её в редакторе. Изменить текст, цвет и формат можно после выбора.</p></div>
+        <section id="template-assistant" class="template-assistant" aria-labelledby="assistant-title">
+          <div class="template-assistant-form">
+            <span class="assistant-eyebrow">БЫСТРЫЙ СТАРТ · 2 ШАГА</span>
+            <h3 id="assistant-title">Подберём оформление под вашу идею</h3>
+            <p>Укажите тип публикации и настроение. Мы предложим одну из существующих композиций — без регистрации и без изменения ваших проектов.</p>
+            <div class="assistant-fields">
+              <div><label for="assistant-purpose">1. Что хотите опубликовать?</label>
+                <select id="assistant-purpose">
+                  <option value="update">Обновление проекта</option>
+                  <option value="launch">Запуск или премьера</option>
+                  <option value="event">Мероприятие</option>
+                  <option value="notice">Новость или объявление</option>
+                </select>
+              </div>
+              <div><label for="assistant-mood">2. Какое оформление ближе?</label>
+                <select id="assistant-mood">
+                  <option value="bold">Яркое и выразительное</option>
+                  <option value="calm">Спокойное и лаконичное</option>
+                  <option value="editorial">Премиальное и редакционное</option>
+                </select>
+              </div>
+            </div>
+            <p class="assistant-safety-note">Подбор работает в браузере и не отправляет ваши ответы на сервер. Существующие черновики не удаляются; при открытии выбранный шаблон может заменить их текущее оформление.</p>
+          </div>
+          <div class="template-assistant-result">
+            <div class="assistant-result-head"><span class="assistant-eyebrow">РЕКОМЕНДУЕМАЯ КОМПОЗИЦИЯ</span><span class="assistant-result-dot" aria-hidden="true"></span></div>
+            <div id="assistant-result-art" class="assistant-result-art" aria-hidden="true"><span class="template-art preview-aurora"><span class="preview-heading">БОЛЬШИЕ<br>ПЕРЕМЕНЫ</span><span class="preview-bars"></span></span></div>
+            <div class="assistant-result-copy" aria-live="polite" aria-atomic="true">
+              <h4 id="assistant-result-title">Рекомендуем Aurora</h4>
+              <p id="assistant-result-reason">Яркие акценты подчёркивают масштаб обновления.</p>
+            </div>
+            <a id="assistant-open" class="assistant-open" href="./editor.html?template=aurora&amp;preset=update">Использовать в редакторе <span aria-hidden="true">→</span></a>
+          </div>
+        </section>
         <div id="catalog-controls" class="catalog-controls" hidden>
           <div class="catalog-controls-top">
             <div class="catalog-search"><label for="template-search">Поиск шаблона</label><input id="template-search" type="search" placeholder="Название, стиль или назначение" autocomplete="off" aria-describedby="template-results-count"></div>
