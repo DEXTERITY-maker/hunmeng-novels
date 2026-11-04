@@ -7,7 +7,7 @@ const dir = dirname(fileURLToPath(import.meta.url));
 const out = join(dir,"dist");
 await rm(out,{recursive:true,force:true});
 await mkdir(out,{recursive:true});
-for(const f of ["index.html","account.html","styles.css","app.js","navigation.js","whats-new.js","_headers"]){
+for(const f of ["index.html","account.html","editor.html","templates.html","features.html","pricing.html","styles.css","app.js","navigation.js","whats-new.js","_headers"]){
   await copyFile(join(dir,f),join(out,f));
 }
 // Single-source scene contract: the exact module used by Supabase Edge.
