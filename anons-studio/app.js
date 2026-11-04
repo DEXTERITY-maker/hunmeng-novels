@@ -28,7 +28,10 @@
     square: { w: 1080, h: 1080 },
     story: { w: 1080, h: 1920 }
   };
-  const templates = new Set(["aurora","editorial","spotlight","pulse","minimal","bulletin"]);
+  const businessTemplates=new Set(["business-brief","business-pitch","business-report"]);
+  const templates = new Set(["aurora","editorial","spotlight","pulse","minimal","bulletin",...businessTemplates]);
+  let currentPlan="free";
+  const businessAllowed=()=>["basic","pro","studio"].includes(currentPlan);
   const MAX_CARDS=8;
   const Graphics=window.AnonsGraphics; // Exact allowlisted shapes used by server PNG exports.
   if(!Graphics)throw new Error("GRAPHICS_MODULE_MISSING");
@@ -412,19 +415,19 @@
     if(scene.enabled.decoration&&(!aurora||state.decorations)){
       for(let i=-H;i<W+H;i+=73){ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i+H,H);ctx.stroke();}
     }
-    if(scene.enabled.decoration&&state.decorations && state.template!=="minimal") {
-      if(state.template==="editorial"){
+    if(scene.enabled.decoration&&state.decorations && scene.template!=="minimal") {
+      if(scene.template==="editorial"){
         ctx.strokeStyle=rgba(t.text,.3);ctx.lineWidth=3;ctx.strokeRect(38,38,W-76,H-76);
         ctx.fillStyle=rgba(t.accent,.28);ctx.fillRect(W-170,95,76,76);
-      }else if(state.template==="spotlight"){
+      }else if(scene.template==="spotlight"){
         ctx.fillStyle=rgba(t.accent,.22);
         ctx.beginPath();ctx.arc(W*.84,H*.24,270,0,Math.PI*2);ctx.fill();
         ctx.beginPath();ctx.arc(W*.84,H*.24,185,0,Math.PI*2);ctx.fill();
-      }else if(state.template==="pulse"){
+      }else if(scene.template==="pulse"){
         ctx.save();ctx.translate(W*.77,H*.15);ctx.rotate(-.36);
         ctx.fillStyle=rgba(t.accent,.48);ctx.fillRect(0,-190,118,H*.72);
         ctx.fillStyle=rgba(t.text,.16);ctx.fillRect(137,-190,38,H*.72);ctx.restore();
-      }else if(state.template==="bulletin"){
+      }else if(scene.template==="bulletin"){
         ctx.fillStyle=t.accent;ctx.fillRect(0,0,W,20);
         ctx.fillStyle=rgba(t.text,.12);ctx.fillRect(0,136,W,8);
         for(let x=75;x<W-75;x+=80){ctx.fillStyle=rgba(t.accent,.3);ctx.fillRect(x,H*.19,48,8);}
@@ -607,9 +610,15 @@
     if(changed) for(const k of ["project","title","description","points"])state[k]=presets[p][k];
     syncFields();syncCardAndSave();
   }));
-  const themeForTemplate={aurora:"ultraviolet",editorial:"paper",spotlight:"sunset",pulse:"ink",minimal:"paper",bulletin:"emerald"};
+  const themeForTemplate={aurora:"ultraviolet",editorial:"paper",spotlight:"sunset",pulse:"ink",minimal:"paper",bulletin:"emerald",
+    "business-brief":"ink","business-pitch":"sunset","business-report":"paper"};
   function changeTemplate(next) {
     if(!templates.has(next))return;
+    if(businessTemplates.has(next)&&!businessAllowed()){
+      syncFields();
+      showToast("Шаблоны «Бизнес» доступны по платной подписке. Откройте тарифы для заказа.");
+      return;
+    }
     state.template=next;
     state.theme=themeForTemplate[next];
     state.accentColor="";
@@ -1331,6 +1340,21 @@
     syncCardAndSave(); // Single undo checkpoint for every affected card.
     return true;
   }
+  // The menu is cosmetic: server-side paid export independently re-checks
+  // active verified membership and NEVER trusts the value of currentPlan.
+  window.addEventListener("anons:access",event=>{
+    currentPlan=event.detail?.premium===true&&["basic","pro","studio"].includes(event.detail?.plan)
+      ?event.detail.plan:"free";
+    document.querySelectorAll("#template-select option").forEach(option=>{
+      if(businessTemplates.has(option.value))option.disabled=!businessAllowed();
+    });
+    const selection=document.getElementById("template-select");
+    if(selection)selection.title=businessAllowed()?"Все шаблоны доступны":
+      "Шаблоны Бизнес открываются при действующей подписке";
+  });
+  document.querySelectorAll("#template-select option").forEach(option=>{
+    if(businessTemplates.has(option.value))option.disabled=true;
+  });
   window.AnonsEditor=Object.freeze({
     getSnapshot,
     getBrandKitSnapshot,
