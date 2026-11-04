@@ -71,13 +71,19 @@ try {
       assert.equal(await page.locator('#primary-navigation a[href="./'+path+'"]').count(),1,
         "Home navigation links to the standalone "+path+" page");
     }
+    assert.equal(await page.locator(".quick-start-card").count(),4,
+      "Homepage offers four ready-to-edit publication scenarios");
+    for(const type of ["update","launch","event","notice"]){
+      assert.equal(await page.locator('.quick-start-card[href="./editor.html?preset='+type+'"]').count(),1,
+        "Every scenario links to a valid editor preset");
+    }
     // Native dialog announces new features once per release and stays
     // available from the footer without disturbing ordinary page visits.
     const releaseDialog=page.locator("#whats-new-dialog");
     await page.waitForFunction(()=>document.getElementById("whats-new-dialog")?.open);
-    assert.match(await page.locator("#whats-new-title").textContent(),/Обновление интерфейса и навигации/);
-    assert.equal(await page.locator(".whats-new-list li").count(),7);
-    assert.equal(await page.locator(".whats-new-item-icon .ui-icon").count(),7,
+    assert.match(await page.locator("#whats-new-title").textContent(),/Улучшение главной страницы/);
+    assert.equal(await page.locator(".whats-new-list li").count(),8);
+    assert.equal(await page.locator(".whats-new-item-icon .ui-icon").count(),8,
       "Announcement has coherent SVG icons instead of character placeholders");
     await page.waitForFunction(()=>document.querySelector(".whats-new-item-icon svg")?.getBBox().width>0);
     assert.equal(await page.evaluate(async()=> (await fetch("/assets/ui-icons.svg")).status),200,
@@ -86,7 +92,7 @@ try {
       assert.equal(await page.locator('.whats-new-list a[href="./'+destination+'"]').count(),1,
         "Announcement links directly to "+destination);
     }
-    assert.equal(await releaseDialog.getAttribute("data-release"),"2026-11-04-unified-svg-icons",
+    assert.equal(await releaseDialog.getAttribute("data-release"),"2026-11-04-home-quick-start",
       "Latest announcement version must be recognized");
     assert.equal(await page.locator("#whats-new-close").evaluate(el=>el===document.activeElement),true,
       "Announcement initially focuses its accessible close control");
@@ -399,6 +405,41 @@ try {
     await context.close();
     console.log("PASS Anons Studio browser preview, editor, storage, PNG and responsive width="+width);
   }
+  // The latest mobile navigation and homepage examples must work at narrow
+  // phone width and tablet/desktop-mode widths, without overwriting a draft.
+  for(const width of [360,980]){
+    const context=await browser.newContext({viewport:{width,height:900}});
+    const page=await context.newPage();
+    await page.route("https://fonts.googleapis.com/**",route=>route.abort());
+    await page.route("https://fonts.gstatic.com/**",route=>route.abort());
+    await page.goto("http://127.0.0.1:"+port+"/",{waitUntil:"domcontentloaded"});
+    assert.equal(await page.locator(".quick-start-card").count(),4);
+    assert.ok(await page.locator("#mobile-menu-toggle").isVisible(),
+      "Compact navigation is available at width "+width);
+    assert.equal(await page.locator("#primary-navigation").isVisible(),false);
+    await page.locator("#mobile-menu-toggle").click();
+    assert.equal(await page.locator("#primary-navigation").isVisible(),true);
+    await page.keyboard.press("Escape");
+    assert.equal(await page.locator("#primary-navigation").isVisible(),false);
+    await page.waitForFunction(()=>document.getElementById("whats-new-dialog")?.open);
+    await page.locator("#whats-new-dismiss").click();
+    assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2),
+      "Quick-start page has no horizontal overflow at "+width);
+    await page.locator('.quick-start-card[href="./editor.html?preset=event"]').click();
+    await page.waitForURL(/\/editor\.html$/);
+    assert.equal(await page.locator("#title").inputValue(),"Не пропустите встречу",
+      "First-time editor opens the selected example");
+    assert.equal(await page.locator('[data-preset="event"]').getAttribute("aria-pressed"),"true");
+    await page.locator("#title").fill("Мой сохранённый черновик");
+    await page.goto("http://127.0.0.1:"+port+"/editor.html?preset=notice",
+      {waitUntil:"domcontentloaded"});
+    assert.equal(await page.locator("#title").inputValue(),"Мой сохранённый черновик",
+      "Following a new example must never replace an existing draft");
+    assert.equal(await page.locator('[data-preset="notice"].preset-suggested').count(),1,
+      "The requested preset is visually indicated without modifying the draft");
+    await context.close();
+  }
+  console.log("PASS homepage quick-start, protected drafts and tablet/mobile navigation");
   // Full cloud library interaction test with an in-memory Supabase adapter.
   // It tests UI and concurrency without creating test users or writing production data.
   {
