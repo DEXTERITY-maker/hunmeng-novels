@@ -11,15 +11,22 @@ function deferred(){
   const promise=new Promise((ok,no)=>{resolve=ok;reject=no;});
   return {promise,resolve,reject};
 }
-function harness(){
+function harness({dedicated=false}={}){
   const elements=new Map(),stored=new Map(),events=[];
-  const calls={users:[],billing:[],drafts:0};
+  let confirmation=true;
+  const calls={users:[],billing:[],drafts:0,signouts:0};
   const makeElement=()=>({
     textContent:"",value:"",hidden:false,disabled:false,classList:{toggle(){},add(){},remove(){}},
-    addEventListener(){},setAttribute(){},querySelector(){return null;}
+    listeners:{},
+    addEventListener(event,handler){this.listeners[event]=handler;},
+    click(){return this.listeners.click?.();},
+    setAttribute(){},querySelector(){return null;}
   });
   const document={
-    getElementById(id){if(!elements.has(id))elements.set(id,makeElement());return elements.get(id);},
+    getElementById(id){
+      if(dedicated&&id==="library-guest")return null;
+      if(!elements.has(id))elements.set(id,makeElement());return elements.get(id);
+    },
     querySelectorAll(){return []}
   };
   const responses=[];
@@ -29,7 +36,7 @@ function harness(){
       onAuthStateChange(fn){onAuthEvent=fn;return {data:{subscription:{unsubscribe(){}}}};},
       getUser(){return responses.shift()??Promise.resolve({data:{user:null},error:null});},
       getSession(){return Promise.resolve({data:{session:null},error:null});},
-      signOut(){return Promise.resolve({error:null});}
+      signOut(){calls.signouts++;return Promise.resolve({error:null});}
     },
     from(table){
       assert.equal(table,"anons_studio_memberships");
@@ -40,7 +47,7 @@ function harness(){
   const library={setUser(u){calls.users.push(u?.id??null);},async flushPending(){return true;}};
   const billing={setUser(u){calls.billing.push(u?.id??null);}};
   const window={
-    AnonsEditor:{newDraft(){calls.drafts++;}},
+    AnonsEditor:dedicated?null:{newDraft(){calls.drafts++;}},
     dispatchEvent(e){events.push(e);},
     addEventListener(){},
     location:{hash:""}
@@ -54,11 +61,11 @@ function harness(){
   const stripped=source.replace(/^import .*;\s*$/gm,"");
   vm.runInNewContext(stripped,{
     document,window,localStorage,CustomEvent,console,setTimeout,clearTimeout,
-    createClient:()=>client,initLibrary:()=>library,initBilling:()=>billing,confirm:()=>true
+    createClient:()=>client,initLibrary:()=>library,initBilling:()=>billing,confirm:()=>confirmation
   },{timeout:1000,filename:"auth-entry.js"});
   assert.equal(typeof onAuthEvent,"function");
   return {
-    elements,stored,events,calls,responses,
+    elements,stored,events,calls,responses,setConfirmation:value=>{confirmation=value;},
     emit:(type,id)=>onAuthEvent(type,id?{user:{id,email:id+"@example.invalid"}}:null),
     resolved:id=>Promise.resolve({data:{user:{id,email:id+"@example.invalid"}},error:null}),
     element:id=>elements.get(id)
@@ -132,4 +139,22 @@ test("signed-out events revoke account UI and access without waiting for the net
   assert.equal(h.calls.drafts,draftsBefore+1);
   assert.equal(h.events.at(-1).detail.plan,"free");
   assert.equal(h.events.at(-1).detail.premium,false);
+});
+
+test("standalone account blocks signout with unsynced work and asks before clearing a local draft",async()=>{
+  const h=harness({dedicated:true});
+  h.stored.set("anons-studio:cloud-active-v05",JSON.stringify({dirty:true}));
+  await h.element("account-logout").click();
+  assert.equal(h.calls.signouts,0,"A dirty project must prevent signing out");
+  assert.match(h.element("account-message").textContent,/несохранённые изменения/i);
+
+  h.stored.set("anons-studio:cloud-active-v05",JSON.stringify({dirty:false}));
+  h.stored.set("anons-studio:mvp-v1",JSON.stringify({title:"Несохранённая идея"}));
+  h.setConfirmation(false);
+  await h.element("account-logout").click();
+  assert.equal(h.calls.signouts,0,"Declining a local draft warning must cancel signout");
+
+  h.setConfirmation(true);
+  await h.element("account-logout").click();
+  assert.equal(h.calls.signouts,1,"Explicit consent allows signing out");
 });
