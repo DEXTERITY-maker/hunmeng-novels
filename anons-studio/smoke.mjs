@@ -171,6 +171,24 @@ try {
     assert.equal(contract.width,1080);
     assert.equal(contract.height,1350);
     assert.ok(contract.title.lines.length>0,"Shared scene breaks default heading");
+    assert.equal(await page.locator("#decoration-level").inputValue(),"subtle",
+      "Aurora starts with less distracting background decoration");
+    assert.equal(await page.locator("#text-spacing").inputValue(),"balanced",
+      "Text starts with a legible balanced gap");
+    const artContract=await page.evaluate(()=>{
+      const snapshot=window.AnonsEditor.getSnapshot(),card=snapshot.cards[snapshot.activeCard];
+      const scene=window.AnonsScene.layout(snapshot,card);
+      const title=window.AnonsScene.titleLines(card.title,scene);
+      return {
+        gap:window.AnonsScene.descriptionTop(scene,title),
+        stamps:window.AnonsScene.watermarkStamps(scene.width,scene.height,scene.palette.dark),
+        tone:scene.decorationLevel,grid:scene.decorationTuning.grid
+      };
+    });
+    assert.equal(artContract.tone,"subtle");
+    assert.equal(artContract.stamps.length,4,"Watermark stays across multiple parts of local poster");
+    assert.ok(artContract.stamps.every(x=>x.size<65&&x.alpha>=.12));
+
     assert.ok(await page.locator("#undo").isDisabled(),"Undo starts disabled");
     assert.ok(await page.locator("#redo").isDisabled(),"Redo starts disabled");
     const originalTitle=await page.locator("#title").inputValue();
@@ -186,6 +204,32 @@ try {
     assert.ok(await page.locator("#redo").isDisabled(),"A new edit clears the redo branch");
     await page.locator("#undo").click();
     assert.equal(await page.locator("#title").inputValue(),originalTitle);
+
+    // Visual tuning is per card, changes Canvas, and is included in project saves.
+    const originalCanvas=await page.locator("#poster").evaluate(c=>c.toDataURL("image/png"));
+    await page.locator("#decoration-level").evaluate(el=>{
+      el.value="expressive";el.dispatchEvent(new Event("change",{bubbles:true}));
+    });
+    await page.waitForFunction(original=>
+      document.querySelector("#poster")?.toDataURL("image/png")!==original,originalCanvas);
+    assert.equal(await page.evaluate(()=>window.AnonsEditor.getSnapshot().cards[0].decorationLevel),
+      "expressive");
+    await page.locator("#text-spacing").evaluate(el=>{
+      el.value="compact";el.dispatchEvent(new Event("change",{bubbles:true}));
+    });
+    assert.equal(await page.evaluate(()=>{
+      const card=window.AnonsEditor.getSnapshot().cards[0];
+      const scene=window.AnonsScene.layout(window.AnonsEditor.getSnapshot(),card);
+      return window.AnonsScene.descriptionTop(scene,window.AnonsScene.titleLines(card.title,scene));
+    })<artContract.gap,true,"Compact spacing moves description toward title");
+    await page.locator("#decoration-level").evaluate(el=>{
+      el.value="subtle";el.dispatchEvent(new Event("change",{bubbles:true}));
+    });
+    await page.locator("#text-spacing").evaluate(el=>{
+      el.value="balanced";el.dispatchEvent(new Event("change",{bubbles:true}));
+    });
+    assert.equal(await page.evaluate(()=>window.AnonsEditor.getSnapshot().cards[0].textSpacing),
+      "balanced");
 
     const brandImage=page.locator(".topbar .brand-image img");
     await brandImage.waitFor();
@@ -377,6 +421,8 @@ try {
     await page.locator("#card-list [role=tab]").first().click();
     assert.equal(await page.locator("#title-font").inputValue(),"georgia",
       "Per-card font style survives browser reload");
+    assert.equal(await page.locator("#decoration-level").inputValue(),"subtle");
+    assert.equal(await page.locator("#text-spacing").inputValue(),"balanced");
     assert.equal(await page.locator("#title-offset-x").inputValue(),"6");
     assert.equal(await page.locator("#graphic-list button").count(),1,
       "Graphic overlays survive browser reload");
