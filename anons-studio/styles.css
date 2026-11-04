@@ -413,3 +413,8 @@ html.whats-new-visible{overflow:hidden}
   .inner-page-hero-actions .btn{width:100%;text-align:center}
   .inner-next-step .btn{width:100%;text-align:center}
 }
+
+/* Release notes links provide direct access to the announced sections. */
+.whats-new-item-link{display:inline-block;margin-top:6px;color:#6740b4;font-size:11px;font-weight:800;text-decoration:underline;text-underline-offset:3px}
+.whats-new-item-link:hover{color:#432284}
+.whats-new-item-link:focus-visible{outline:3px solid #8552f0;outline-offset:3px;border-radius:2px}
