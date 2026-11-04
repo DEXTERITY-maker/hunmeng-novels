@@ -84,15 +84,15 @@ try {
     // available from the footer without disturbing ordinary page visits.
     const releaseDialog=page.locator("#whats-new-dialog");
     await page.waitForFunction(()=>document.getElementById("whats-new-dialog")?.open);
-    assert.match(await page.locator("#whats-new-title").textContent(),/Оформление бренда — в один клик/);
-    assert.equal(await page.locator(".whats-new-list li").count(),26);
-    assert.equal(await page.locator(".whats-new-item-icon .ui-icon").count(),26,
+    assert.match(await page.locator("#whats-new-title").textContent(),/Заказы по заявке и постоянный ID/);
+    assert.equal(await page.locator(".whats-new-list li").count(),27);
+    assert.equal(await page.locator(".whats-new-item-icon .ui-icon").count(),27,
       "Announcement has coherent SVG icons instead of character placeholders");
     assert.equal(await page.locator("#whats-new-close").evaluate(el=>el===document.activeElement),true,
       "Announcement initially focuses its accessible close control");
     assert.equal(await page.locator(".whats-new-list:not(.whats-new-list-archive) li").count(),1,
       "Only the latest two changes are expanded by default");
-    assert.equal(await page.locator(".whats-new-list-archive li").count(),25);
+    assert.equal(await page.locator(".whats-new-list-archive li").count(),26);
     assert.equal(await page.locator(".whats-new-history").evaluate(el=>el.open),false);
     await page.locator(".whats-new-history summary").click();
     assert.equal(await page.locator(".whats-new-history").evaluate(el=>el.open),true);
@@ -104,7 +104,7 @@ try {
       assert.ok((await page.locator('.whats-new-list a[href="./'+destination+'"]').count())>=1,
         "Announcement links directly to "+destination);
     }
-    assert.equal(await releaseDialog.getAttribute("data-release"),"2026-11-04-brand-kits",
+    assert.equal(await releaseDialog.getAttribute("data-release"),"2026-11-04-manual-orders",
       "Latest announcement version must be recognized");
 
     await page.locator("#whats-new-dismiss").click();
@@ -306,6 +306,17 @@ try {
       "Each subscription tier has a matching vector icon");
     await pricingPage.waitForFunction(()=>document.querySelector("#billing-availability")?.textContent?.toLowerCase().includes("покупки"));
     assert.ok(await pricingPage.locator("#buy-basic").isDisabled(),"Cannot charge without merchant configuration");
+    assert.equal(await pricingPage.locator("#manual-order-root").count(),1,
+      "Standalone pricing page shows a manual Basic request flow");
+    assert.ok(await pricingPage.locator("#manual-order-create").isDisabled(),
+      "Guests cannot create an unbound order");
+    assert.ok(await pricingPage.locator("#manual-order-login").isVisible(),
+      "Guests are guided to verified email registration");
+    assert.match(await pricingPage.locator("#manual-order-customer").textContent(),
+      /После входа появится постоянный ID/);
+    assert.equal(await pricingPage.locator("#manual-order-list").count(),1,
+      "Manual order history belongs to the authenticated customer");
+
     assert.equal(await pricingPage.locator("button.plan-action[disabled]").count(),3,
       "Unavailable tariffs must not accept payment");
     await pricingPage.close();
@@ -717,6 +728,12 @@ try {
     assert.equal(await personal.locator("h1, h2#account-title").count(),1);
     assert.ok(await personal.locator("#account-form").isVisible());
     assert.ok(await personal.locator("#account-billing").count()===1,"Subscription history belongs to profile page");
+    assert.equal(await personal.locator("#manual-customer-number").count(),1);
+    assert.equal(await personal.locator("#manual-account-orders").count(),1);
+    assert.equal(await personal.locator("#manual-admin-panel").count(),1);
+    assert.equal(await personal.locator("#manual-admin-panel").isHidden(),true,
+      "Owner approval dashboard is never visible to guests");
+
     assert.equal(await personal.locator("#poster").count(),0,"Account page does not load editor Canvas");
     assert.equal(await personal.locator("#library-auth").count(),0,"Cloud library remains in editor view");
     assert.equal(await personal.locator("#nav-account").getAttribute("href"),"./account.html");
