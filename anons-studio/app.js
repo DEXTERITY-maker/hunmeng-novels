@@ -75,6 +75,64 @@
   let toastTimer = null;
   let pendingRender = false;
   let suppressEditorSignal = false;
+  const HISTORY_LIMIT = 30;
+  const undoStack = [];
+  const redoStack = [];
+  let historyCurrent = "";
+  let historyKind = "";
+  let lastHistoryKind = "";
+  let lastHistoryAt = 0;
+  let historyApplying = false;
+
+  function updateHistoryControls() {
+    $("undo").disabled = undoStack.length === 0;
+    $("redo").disabled = redoStack.length === 0;
+  }
+  function resetHistory() {
+    undoStack.length = 0;
+    redoStack.length = 0;
+    historyCurrent = JSON.stringify(getSnapshot());
+    historyKind = "";
+    lastHistoryKind = "";
+    lastHistoryAt = 0;
+    updateHistoryControls();
+  }
+  function recordHistory() {
+    if (historyApplying) return;
+    const next = JSON.stringify(getSnapshot());
+    if (next === historyCurrent) return;
+    const now = Date.now();
+    const kind = historyKind;
+    const grouped = kind && kind === lastHistoryKind && (now - lastHistoryAt) < 900 && undoStack.length > 0;
+    if (!grouped && historyCurrent) {
+      undoStack.push(historyCurrent);
+      if (undoStack.length > HISTORY_LIMIT) undoStack.shift();
+    }
+    historyCurrent = next;
+    redoStack.length = 0;
+    lastHistoryKind = kind;
+    lastHistoryAt = now;
+    updateHistoryControls();
+  }
+  function stepHistory(direction) {
+    const from = direction === "undo" ? undoStack : redoStack;
+    const to = direction === "undo" ? redoStack : undoStack;
+    if (!from.length) return;
+    to.push(historyCurrent);
+    if (to.length > HISTORY_LIMIT) to.shift();
+    historyCurrent = from.pop();
+    historyApplying = true;
+    try {
+      loadSnapshot(JSON.parse(historyCurrent), true);
+    } finally {
+      historyApplying = false;
+    }
+    lastHistoryKind = "";
+    lastHistoryAt = 0;
+    updateHistoryControls();
+    window.dispatchEvent(new Event("anons:editor-change"));
+    showToast(direction === "undo" ? "Последнее изменение отменено." : "Изменение повторено.");
+  }
 
   function snapshotCard() {
     const card=state.cards[state.activeCard];
@@ -151,6 +209,8 @@
     } catch (_) {
       showToast("Не удалось сохранить проект в браузере. Экспорт остаётся доступен.");
     }
+    recordHistory();
+    historyKind = "";
     if(!suppressEditorSignal)window.dispatchEvent(new Event("anons:editor-change"));
   }
   function showToast(message) {
@@ -351,6 +411,7 @@
   }
   for (const key of ["project","title","description","points"]) {
     $(key).addEventListener("input",(e)=>{
+      historyKind="text:"+key;
       state[key]=e.target.value;
       if(key==="project"){persist();scheduleRender();}else syncCardAndSave();
     });
@@ -374,6 +435,16 @@
     state.accentColor="";
     syncFields();syncCardAndSave();
   }
+  $("undo").addEventListener("click",()=>stepHistory("undo"));
+  $("redo").addEventListener("click",()=>stepHistory("redo"));
+  document.addEventListener("keydown",e=>{
+    if(!(e.ctrlKey||e.metaKey)||e.altKey)return;
+    // Native text editing undo remains available inside form controls.
+    if(e.target?.isContentEditable||["INPUT","TEXTAREA","SELECT"].includes(e.target?.tagName))return;
+    const key=e.key.toLowerCase();
+    if(key==="z"){e.preventDefault();stepHistory(e.shiftKey?"redo":"undo");}
+    else if(key==="y"&&!e.shiftKey){e.preventDefault();stepHistory("redo");}
+  });
   $("template-select").addEventListener("change",e=>changeTemplate(e.target.value));
   document.querySelectorAll("[data-template]").forEach(b=>{
     b.addEventListener("click",()=>{
@@ -398,7 +469,7 @@
   });
   $("remove-card").addEventListener("click",()=>{
     if(state.cards.length<=1)return;
-    if(!confirm("Удалить текущую карточку? Это действие нельзя отменить."))return;
+    if(!confirm("Удалить текущую карточку? Её можно восстановить кнопкой «Отменить»."))return;
     const index=state.activeCard;
     state.cards.splice(index,1);
     state.activeCard=Math.min(index,state.cards.length-1);
@@ -407,17 +478,20 @@
     showToast("Карточка удалена.");
   });
   $("heading-scale").addEventListener("input",e=>{
+    historyKind="slider:heading";
     state.headingScale=Math.max(80,Math.min(120,Number(e.target.value)||100));
     $("heading-scale-value").textContent=state.headingScale+"%";syncCardAndSave();
   });
   $("accent-color").addEventListener("input",e=>{
     if(!/^#[0-9a-fA-F]{6}$/.test(e.target.value))return;
+    historyKind="color:accent";
     state.accentColor=e.target.value;syncCardAndSave();
   });
   $("text-align").addEventListener("change",e=>{
     state.alignment=e.target.value==="center"?"center":"left";syncCardAndSave();
   });
   $("photo-opacity").addEventListener("input",e=>{
+    historyKind="slider:photo";
     state.photoOpacity=Math.max(15,Math.min(85,Number(e.target.value)||35));
     $("photo-opacity-value").textContent=state.photoOpacity+"%";syncCardAndSave();
   });
@@ -428,7 +502,7 @@
     Object.assign(state,{...defaults,cards:[],activeCard:0});
     state.cards=[sanitizeCard({title:state.title,description:state.description,points:state.points,preset:state.preset,template:state.template})];
     photo=null;$("upload").value="";
-    syncFields();window.dispatchEvent(new Event("anons:editor-reset"));persist();scheduleRender();showToast("Создан новый чистый проект.");
+    syncFields();window.dispatchEvent(new Event("anons:editor-reset"));persist();resetHistory();scheduleRender();showToast("Создан новый чистый проект.");
   });
   $("upload").addEventListener("change",async(e)=>{
     const file=e.target.files?.[0];if(!file)return;
@@ -598,7 +672,7 @@
     };
     return copy;
   }
-  function loadSnapshot(raw) {
+  function loadSnapshot(raw, preserveHistory=false) {
     if(!raw||typeof raw!=="object"||!Array.isArray(raw.cards)||!raw.cards.length||raw.cards.length>MAX_CARDS)throw new Error("INVALID_SNAPSHOT");
     const nextCards=raw.cards.map(sanitizeCard);
     const data=(typeof raw.imageData==="string" && raw.imageData.length<900000 &&
@@ -617,7 +691,10 @@
       persist();
       scheduleRender();
       if(data)loadPhoto(data);
-    } finally {suppressEditorSignal=false;}
+    } finally {
+      suppressEditorSignal=false;
+      if(!preserveHistory)resetHistory();
+    }
   }
   function newDraft() {
     suppressEditorSignal=true;
@@ -627,7 +704,10 @@
       Object.assign(state,state.cards[0]);
       photo=null;$("upload").value="";
       syncFields();persist();scheduleRender();
-    } finally {suppressEditorSignal=false;}
+    } finally {
+      suppressEditorSignal=false;
+      resetHistory();
+    }
   }
   window.AnonsEditor=Object.freeze({
     getSnapshot,
@@ -638,6 +718,6 @@
       return (state.cards[0]?.title||"Новый анонс").trim().slice(0,100)||"Новый анонс";
     }
   });
-  syncFields();render();if(state.imageData)loadPhoto(state.imageData);
+  syncFields();resetHistory();render();if(state.imageData)loadPhoto(state.imageData);
   if(document.fonts?.ready)document.fonts.ready.then(scheduleRender).catch(()=>{});
 })();
