@@ -61,6 +61,7 @@ jobs:
           name: anons-editor-previews-${{ github.run_id }}
           path: |
             anons-studio/test-artifacts/preview-*.png
+            anons-studio/test-artifacts/editor-settings-*.png
             anons-studio/test-artifacts/home-*.png
           if-no-files-found: warn
           retention-days: 14
