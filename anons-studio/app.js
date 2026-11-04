@@ -1295,6 +1295,7 @@
       if(Object.hasOwn(payload,key))patch[key]=payload[key];
     }
     if(!Object.keys(patch).length)return false;
+    if(businessTemplates.has(patch.template)&&!businessAllowed())return false;
     const cleaned=sanitizeCard({...state,...patch});
     selectedGraphicIndex=-1;
     for(const key of personalStyleKeys)state[key]=cleaned[key];
