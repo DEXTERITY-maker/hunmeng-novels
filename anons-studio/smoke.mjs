@@ -102,6 +102,13 @@ try {
     await page.waitForFunction(release=>
       localStorage.getItem("anons-studio:whats-new:seen")===release,firstRelease);
     assert.equal(await page.evaluate(()=>localStorage.getItem("anons-studio:whats-new:seen")),firstRelease);
+    // Save anonymous full-page references for reviewing the new responsive
+    // homepage. No private projects or signed-in profile data are captured.
+    const homeShotDir=join(dirname(fileURLToPath(import.meta.url)),"test-artifacts");
+    await mkdir(homeShotDir,{recursive:true});
+    await page.screenshot({
+      path:join(homeShotDir,"home-"+width+".png"),fullPage:true,animations:"disabled"
+    });
     await page.locator("#whats-new-open").click();
     assert.equal(await releaseDialog.evaluate(d=>d.open),true,"News can be reopened from footer");
     await page.keyboard.press("Escape");
