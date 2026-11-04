@@ -326,53 +326,71 @@
     ctx.drawImage(photo, x + (w - dw) / 2, y + (h - dh) / 2, dw, dh);
     ctx.restore();
   }
-  function drawDecoration(W, H, t) {
-    const cx = W * .84, cy = H * .31;
-    ctx.save(); ctx.strokeStyle = rgba(t.accent, .28);ctx.lineWidth=3;
-    for(let i=0;i<3;i++){ctx.beginPath();ctx.ellipse(cx, cy, 188+i*37, 170+i*37, -.35, 0, Math.PI*2);ctx.stroke();}
-    ctx.fillStyle=rgba(t.accent,.15);ctx.beginPath();ctx.arc(cx,cy,142,0,Math.PI*2);ctx.fill();
-    ctx.translate(cx,cy);ctx.rotate(Math.PI/4);ctx.fillStyle=t.accent;
-    ctx.beginPath(); ctx.moveTo(0,-48);ctx.quadraticCurveTo(13,-13,48,0);ctx.quadraticCurveTo(13,13,0,48);ctx.quadraticCurveTo(-13,13,-48,0);ctx.quadraticCurveTo(-13,-13,0,-48);ctx.fill();
+  function drawDecoration(W,H,t,scene) {
+    const d=scene.decorationTuning;
+    const cx=W*.84,cy=H*d.centerY;
+    ctx.save();
+    ctx.strokeStyle=rgba(t.accent,d.rings);ctx.lineWidth=2.5;
+    for(let i=0;i<3;i++){
+      ctx.beginPath();ctx.ellipse(cx,cy,d.ringRadius+i*d.ringStep,
+        d.ringRadius*.88+i*d.ringStep,-.35,0,Math.PI*2);ctx.stroke();
+    }
+    ctx.fillStyle=rgba(t.accent,d.disc);
+    ctx.beginPath();ctx.arc(cx,cy,d.discRadius,0,Math.PI*2);ctx.fill();
+    ctx.translate(cx,cy);ctx.rotate(Math.PI/4);
+    ctx.globalAlpha=d.spark;ctx.fillStyle=t.accent;
+    ctx.beginPath();ctx.moveTo(0,-43);
+    ctx.quadraticCurveTo(12,-12,43,0);ctx.quadraticCurveTo(12,12,0,43);
+    ctx.quadraticCurveTo(-12,12,-43,0);ctx.quadraticCurveTo(-12,-12,0,-43);ctx.fill();
     ctx.restore();
   }
-  function drawBackground(W,H,t) {
-    const grad=ctx.createLinearGradient(0,0,W,H);grad.addColorStop(0,t.bg1);grad.addColorStop(1,t.bg2);ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);
+  function drawBackground(W,H,t,scene) {
+    const aurora=scene.template==="aurora";
+    const d=scene.decorationTuning;
+    const grad=ctx.createLinearGradient(0,0,W,H);
+    grad.addColorStop(0,t.bg1);grad.addColorStop(1,t.bg2);
+    ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);
     const glow=ctx.createRadialGradient(W*.87,H*.16,20,W*.87,H*.16,W*.85);
-    glow.addColorStop(0,rgba(t.glow,.34));glow.addColorStop(1,rgba(t.glow,0));ctx.fillStyle=glow;ctx.fillRect(0,0,W,H);
-    ctx.lineWidth=1.5;ctx.strokeStyle=rgba(t.text,.055);
-    for(let i=-H;i<W+H;i+=73){ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i+H,H);ctx.stroke();}
+    glow.addColorStop(0,rgba(t.glow,aurora?d.glow:.34));
+    glow.addColorStop(1,rgba(t.glow,0));
+    ctx.fillStyle=glow;ctx.fillRect(0,0,W,H);
+    ctx.lineWidth=1.5;
+    ctx.strokeStyle=rgba(t.text,aurora?(state.decorations?d.grid:0):.055);
+    if(!aurora||state.decorations){
+      for(let i=-H;i<W+H;i+=73){ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i+H,H);ctx.stroke();}
+    }
     if(state.decorations && state.template!=="minimal") {
-      if(state.template==="editorial") {
+      if(state.template==="editorial"){
         ctx.strokeStyle=rgba(t.text,.3);ctx.lineWidth=3;ctx.strokeRect(38,38,W-76,H-76);
         ctx.fillStyle=rgba(t.accent,.28);ctx.fillRect(W-170,95,76,76);
-      } else if(state.template==="spotlight") {
+      }else if(state.template==="spotlight"){
         ctx.fillStyle=rgba(t.accent,.22);
         ctx.beginPath();ctx.arc(W*.84,H*.24,270,0,Math.PI*2);ctx.fill();
         ctx.beginPath();ctx.arc(W*.84,H*.24,185,0,Math.PI*2);ctx.fill();
-      } else if(state.template==="pulse") {
+      }else if(state.template==="pulse"){
         ctx.save();ctx.translate(W*.77,H*.15);ctx.rotate(-.36);
         ctx.fillStyle=rgba(t.accent,.48);ctx.fillRect(0,-190,118,H*.72);
         ctx.fillStyle=rgba(t.text,.16);ctx.fillRect(137,-190,38,H*.72);ctx.restore();
-      } else if(state.template==="bulletin") {
+      }else if(state.template==="bulletin"){
         ctx.fillStyle=t.accent;ctx.fillRect(0,0,W,20);
         ctx.fillStyle=rgba(t.text,.12);ctx.fillRect(0,136,W,8);
         for(let x=75;x<W-75;x+=80){ctx.fillStyle=rgba(t.accent,.3);ctx.fillRect(x,H*.19,48,8);}
-      } else drawDecoration(W,H,t);
+      }else drawDecoration(W,H,t,scene);
     }
     drawPhoto(W,H);
   }
   function drawWatermark(W,H,t) {
-    // Preview and local PNGs always carry a watermark; only the server may
-    // provide a clean export after independently checking the subscription.
+    // All local exports carry multiple brand stamps, including on paid plans;
+    // only the server provides a clean PNG after entitlement verification.
     ctx.save();
-    ctx.translate(W*.5,H*.51);
-    ctx.rotate(-Math.PI/6.4);
-    ctx.textAlign="center";
-    ctx.textBaseline="middle";
-    ctx.font="800 79px Manrope, sans-serif";
-    ctx.fillStyle=rgba(t.text,t.dark?.21:.25);
-    for(const dy of [-260,80,410]) {
-      ctx.fillText("ANONS STUDIO",0,dy);
+    ctx.textAlign="center";ctx.textBaseline="middle";
+    for(const stamp of window.AnonsScene.watermarkStamps(W,H,t.dark)){
+      ctx.save();
+      ctx.translate(stamp.x,stamp.y);ctx.rotate(stamp.rotation);
+      ctx.font="800 "+stamp.size+"px Manrope, sans-serif";
+      ctx.fillStyle=rgba(t.text,stamp.alpha);
+      ctx.fillText("ANONS STUDIO",0,0);
+      ctx.restore();
     }
     ctx.restore();
   }
@@ -382,7 +400,7 @@
     const W=scene.width,H=scene.height,t=scene.palette;
     if(canvas.width!==W||canvas.height!==H){canvas.width=W;canvas.height=H;}
     ctx.textBaseline="alphabetic";ctx.textAlign="left";
-    drawBackground(W,H,t);
+    drawBackground(W,H,t,scene);
     const margin=scene.margin,contentWidth=scene.contentWidth;
     // Topline
     ctx.font="700 27px Manrope, sans-serif"; ctx.fillStyle=t.text;
@@ -410,7 +428,7 @@
     for(const line of f.lines){ctx.fillText(line,tx,y);y+=f.size*1.14;}
     ctx.restore();
     const descText=state.description.trim()||"Расскажите коротко, что произошло и почему это важно.";
-    const descY=Math.min(detailsY-130,y+28)+scene.descriptionShift;
+    const descY=window.AnonsScene.descriptionTop(scene,f);
     const dsize=scene.descriptionSize;
     ctx.save();
     ctx.translate(scene.offsets.description.x*W/100,scene.offsets.description.y*H/100);
