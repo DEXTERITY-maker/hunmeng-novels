@@ -70,6 +70,7 @@ test("YooKassa checkout stays disabled and Pro/Studio roadmap remains transparen
   const provider=load("functions/anons-billing/index.ts");
   assert.match(provider,/const LIVE_CHECKOUT_REVIEWED=false/);
   assert.match(pricing,/Три эксклюзивных шаблона «Про»/);
-  assert.match(pricing,/Командные инструменты «Студии» будут добавлены на следующем этапе/);
+  assert.match(pricing,/Массовое применение фирменного стиля доступно в «Студии»/);
+  assert.match(pricing,/многопользовательская командная работа пока не реализована/);
   assert.match(pricing,/Автооплата по-прежнему выключена/);
 });
