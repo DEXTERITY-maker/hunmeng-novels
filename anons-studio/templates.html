@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#111424">
+  <meta name="description" content="Шесть профессиональных шаблонов Anons Studio для графических анонсов и публикаций.">
+  <title>Шаблоны — Anons Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=Noto+Serif:wght@700;800&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/webp" href="./assets/anons-icon-approved.webp">
+  <link rel="stylesheet" href="./styles.css">
+  <script src="./navigation.js" defer></script>
+  <script src="./auth.bundle.js" defer></script>
+</head>
+<body>
+  <div class="site-shell">
+    <header class="topbar">
+      <a href="./index.html" class="brand brand-image" aria-label="Anons Studio — главная"><img src="./assets/anons-logo-approved.webp" width="220" height="68" alt="Anons Studio" fetchpriority="high" decoding="async"></a>
+      <nav id="primary-navigation" class="navigation" aria-label="Основная навигация">
+        <a href="./index.html">Главная</a>
+        <a href="./editor.html">Редактор</a>
+        <a href="./templates.html" aria-current="page">Шаблоны</a>
+        <a href="./features.html">Возможности</a>
+        <a href="./pricing.html">Тарифы</a>
+        <a href="./editor.html#library">Моя библиотека</a>
+      </nav>
+      <div class="topbar-actions">
+        <button type="button" id="mobile-menu-toggle" class="mobile-menu-toggle" aria-controls="primary-navigation" aria-expanded="false" aria-label="Открыть меню"><span class="mobile-menu-icon" aria-hidden="true">☰</span><span class="mobile-menu-label">Меню</span></button>
+        <a id="nav-account" class="header-action" href="./account.html">Войти</a>
+      </div></header>
+    <main class="inner-page-main inner-page-templates">
+      <div class="wrap personal-breadcrumb"><a href="./index.html">Главная</a><span aria-hidden="true">/</span><span aria-current="page">Шаблоны</span></div>
+      <section class="inner-page-hero wrap"><span class="kicker">ВЫБЕРИ СВОЙ СТИЛЬ</span><h1>Профессиональные шаблоны.</h1><p>Шесть композиций для обновлений, презентаций, запусков и новостей. Начни с готового оформления и сделай его своим.</p></section>
+<section id="templates" class="gallery-section wrap" aria-labelledby="templates-title">
+        <div class="section-heading"><div><div class="kicker">ШЕСТЬ АВТОРСКИХ КОМПОЗИЦИЙ</div><h2 id="templates-title">Шаблон, который<br><em>расскажет твою историю.</em></h2></div><p>Это не просто смена цвета: каждый шаблон по-своему располагает акценты и текст. Выбирай композицию и сразу открывай её в редакторе. Изменить текст, цвет и формат можно после выбора.</p></div>
+        <div class="template-gallery" role="group" aria-label="Галерея шаблонов">
+          <a class="template-card active" href="./editor.html?template=aurora" data-template="aurora"><span class="template-art preview-aurora"><span class="preview-decoration">✧</span><span class="preview-heading">БОЛЬШИЕ<br>ПЕРЕМЕНЫ</span><span class="preview-bars"></span></span><span class="template-info"><strong>Aurora</strong><small>Атмосферные обновления</small></span></a>
+          <a class="template-card" href="./editor.html?template=editorial" data-template="editorial"><span class="template-art preview-editorial"><span class="preview-top">THE UPDATE / 2026</span><span class="preview-heading">Новая<br>глава.</span><span class="preview-bars"></span></span><span class="template-info"><strong>Editorial</strong><small>Премиальная типографика</small></span></a>
+          <a class="template-card" href="./editor.html?template=spotlight" data-template="spotlight"><span class="template-art preview-spotlight"><span class="preview-decoration">◉</span><span class="preview-heading">ВАШ<br>АНОНС</span><span class="preview-bars"></span></span><span class="template-info"><strong>Spotlight</strong><small>Яркие запуски</small></span></a>
+          <a class="template-card" href="./editor.html?template=pulse" data-template="pulse"><span class="template-art preview-pulse"><span class="preview-decoration">↗</span><span class="preview-heading">ВРЕМЯ<br>ДЕЙСТВОВАТЬ</span><span class="preview-bars"></span></span><span class="template-info"><strong>Pulse</strong><small>События и энергия</small></span></a>
+          <a class="template-card" href="./editor.html?template=minimal" data-template="minimal"><span class="template-art preview-minimal"><span class="preview-top">01 / ANNOUNCEMENT</span><span class="preview-heading">Просто.<br>По делу.</span><span class="preview-bars"></span></span><span class="template-info"><strong>Minimal</strong><small>Чистота и пространство</small></span></a>
+          <a class="template-card" href="./editor.html?template=bulletin" data-template="bulletin"><span class="template-art preview-bulletin"><span class="preview-top">● NEWSROOM</span><span class="preview-heading">ВАЖНОЕ<br>СЕГОДНЯ</span><span class="preview-bars"></span></span><span class="template-info"><strong>Bulletin</strong><small>Информационные карточки</small></span></a>
+        </div>
+      </section>
+    </main>
+    <footer class="footer wrap"><a href="./index.html" aria-label="Anons Studio — главная"><img class="footer-logo" src="./assets/anons-logo-approved.webp" width="220" height="68" alt="Anons Studio" loading="lazy" decoding="async"></a><span>Создано для тех, кому есть что рассказать.</span><a class="site-footer-link" href="./account.html">Личное пространство</a><span>Бета v0.6 · 2026</span></footer>
+    <div id="toast" role="status" aria-live="polite" class="toast" hidden></div>
+  </div>
+</body>
+</html>
