@@ -88,6 +88,8 @@ try {
     assert.equal(await page.locator(".whats-new-list li").count(),16);
     assert.equal(await page.locator(".whats-new-item-icon .ui-icon").count(),16,
       "Announcement has coherent SVG icons instead of character placeholders");
+    assert.equal(await page.locator("#whats-new-close").evaluate(el=>el===document.activeElement),true,
+      "Announcement initially focuses its accessible close control");
     assert.equal(await page.locator(".whats-new-list:not(.whats-new-list-archive) li").count(),2,
       "Only the latest two changes are expanded by default");
     assert.equal(await page.locator(".whats-new-list-archive li").count(),14);
@@ -104,8 +106,7 @@ try {
     }
     assert.equal(await releaseDialog.getAttribute("data-release"),"2026-11-04-aurora-compositions",
       "Latest announcement version must be recognized");
-    assert.equal(await page.locator("#whats-new-close").evaluate(el=>el===document.activeElement),true,
-      "Announcement initially focuses its accessible close control");
+
     await page.locator("#whats-new-dismiss").click();
     assert.equal(await releaseDialog.evaluate(d=>d.open),false,"Dismiss closes the dialog");
     const firstRelease=await releaseDialog.getAttribute("data-release");
