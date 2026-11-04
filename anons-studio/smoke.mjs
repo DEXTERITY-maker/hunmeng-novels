@@ -10,7 +10,7 @@ const cloudflareHeaders=await readFile(join(root,"_headers"),"utf8");
 assert.match(cloudflareHeaders,/Content-Security-Policy:.*script-src 'self'/);
 assert.match(cloudflareHeaders,/X-Content-Type-Options: nosniff/);
 const types = { ".html": "text/html; charset=utf-8", ".css": "text/css; charset=utf-8", ".js": "application/javascript; charset=utf-8", ".webp": "image/webp", ".svg":"image/svg+xml" };
-const allow = new Set(["/","/index.html","/account.html","/editor.html","/templates.html","/features.html","/pricing.html","/styles.css","/app.js","/editor-workspace.js","/editor-direct.js","/editor-layers.js","/navigation.js","/whats-new.js","/scene-layout.js","/graphic-elements.js","/auth.bundle.js","/assets/anons-logo-approved.webp","/assets/anons-icon-approved.webp","/assets/ui-icons.svg"]);
+const allow = new Set(["/","/index.html","/account.html","/editor.html","/templates.html","/features.html","/pricing.html","/styles.css","/app.js","/editor-workspace.js","/editor-direct.js","/editor-layers.js","/navigation.js","/templates-catalog.js","/whats-new.js","/scene-layout.js","/graphic-elements.js","/auth.bundle.js","/assets/anons-logo-approved.webp","/assets/anons-icon-approved.webp","/assets/ui-icons.svg"]);
 const server = createServer(async (req,res)=>{
   const url = new URL(req.url, "http://localhost");
   const path = url.pathname === "/" ? "/index.html" : url.pathname;
@@ -84,15 +84,15 @@ try {
     // available from the footer without disturbing ordinary page visits.
     const releaseDialog=page.locator("#whats-new-dialog");
     await page.waitForFunction(()=>document.getElementById("whats-new-dialog")?.open);
-    assert.match(await page.locator("#whats-new-title").textContent(),/Профессиональная панель слоёв/);
-    assert.equal(await page.locator(".whats-new-list li").count(),20);
-    assert.equal(await page.locator(".whats-new-item-icon .ui-icon").count(),20,
+    assert.match(await page.locator("#whats-new-title").textContent(),/Расширенный каталог шаблонов/);
+    assert.equal(await page.locator(".whats-new-list li").count(),22);
+    assert.equal(await page.locator(".whats-new-item-icon .ui-icon").count(),22,
       "Announcement has coherent SVG icons instead of character placeholders");
     assert.equal(await page.locator("#whats-new-close").evaluate(el=>el===document.activeElement),true,
       "Announcement initially focuses its accessible close control");
     assert.equal(await page.locator(".whats-new-list:not(.whats-new-list-archive) li").count(),2,
       "Only the latest two changes are expanded by default");
-    assert.equal(await page.locator(".whats-new-list-archive li").count(),18);
+    assert.equal(await page.locator(".whats-new-list-archive li").count(),20);
     assert.equal(await page.locator(".whats-new-history").evaluate(el=>el.open),false);
     await page.locator(".whats-new-history summary").click();
     assert.equal(await page.locator(".whats-new-history").evaluate(el=>el.open),true);
@@ -104,7 +104,7 @@ try {
       assert.ok((await page.locator('.whats-new-list a[href="./'+destination+'"]').count())>=1,
         "Announcement links directly to "+destination);
     }
-    assert.equal(await releaseDialog.getAttribute("data-release"),"2026-11-04-layer-management",
+    assert.equal(await releaseDialog.getAttribute("data-release"),"2026-11-04-template-catalog",
       "Latest announcement version must be recognized");
 
     await page.locator("#whats-new-dismiss").click();
@@ -373,6 +373,19 @@ try {
     assert.equal(await page.locator("[data-template]").count(),0,"Gallery now has its own page");
     await page.goto("http://127.0.0.1:"+port+"/templates.html",{waitUntil:"domcontentloaded"});
     assert.equal(await page.locator("[data-template]").count(),6,"Six working template choices");
+    await page.locator("#catalog-controls:not([hidden])").waitFor();
+    assert.equal(await page.locator(".catalog-item:visible").count(),6,"All templates initially visible");
+    await page.locator("#template-search").fill("Aurora");
+    assert.equal(await page.locator(".catalog-item:visible").count(),1,"Catalogue search narrows the visible templates");
+    await page.locator("#template-search").fill("");
+    await page.locator('[data-catalog-category="news"]').click();
+    assert.equal(await page.locator(".catalog-item:visible").count(),2,"News category matches two existing templates");
+    await page.locator("#template-reset").click();
+    await page.locator(".catalog-favorite").first().click();
+    await page.locator("#template-favorites-toggle").click();
+    assert.equal(await page.locator(".catalog-item:visible").count(),1,"Favorites filter finds the saved template");
+    await page.locator("#template-reset").click();
+    assert.equal(await page.locator(".catalog-item:visible").count(),6,"Reset restores gallery");
     await page.locator("[data-template=editorial]").click();
     await page.waitForFunction(()=>window.AnonsEditor?.getSnapshot().cards[0].template==="editorial");
     assert.equal(new URL(page.url()).pathname,"/editor.html","A gallery choice opens the editor");
