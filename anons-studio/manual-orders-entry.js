@@ -1,4 +1,4 @@
-// Manual Basic order requests. No card charging, no automatic entitlements.
+// Manual paid plan requests. No card charging, no automatic entitlements.
 // All identities, prices, statuses and admin approvals are enforced by database RPCs.
 export function initManualOrders(client) {
   const $=id=>document.getElementById(id);
@@ -8,6 +8,21 @@ export function initManualOrders(client) {
   const adminPanel=$("manual-admin-panel");
   if(!root&&!profile&&!accountOrders&&!adminPanel)return {setUser(){}};
   const button=$("manual-order-create");
+  const planSelect=$("manual-order-plan");
+  const planPrice=$("manual-order-price");
+  const planSummary=$("manual-order-plan-summary");
+  const plans=Object.freeze({
+    basic:{name:"Бизнес",amount:29900},
+    pro:{name:"Про",amount:49900},
+    studio:{name:"Студия",amount:99900}
+  });
+  const selectedPlan=()=>Object.hasOwn(plans,planSelect?.value)?planSelect.value:"basic";
+  function renderPlan(){
+    const plan=plans[selectedPlan()];
+    if(planPrice)planPrice.textContent=(plan.amount/100)+" ₽";
+    if(planSummary)planSummary.textContent=plan.name+" · "+(plan.amount/100)+" ₽ за 30 дней. Без автоматических списаний.";
+    if(button&&!loading)button.textContent="Заказать «"+plan.name+"»";
+  }
   const customerLabel=$("manual-order-customer");
   const message=$("manual-order-status");
   const pricingOrders=$("manual-order-list");
@@ -38,7 +53,9 @@ export function initManualOrders(client) {
     if(code.includes("ORDER_RATE_LIMITED"))return "Слишком много заявок. Попробуйте оформить заказ позже.";
     if(code.includes("ORDER_NOT_ELIGIBLE"))return "Этот заказ уже изменён или не может быть обработан.";
     if(code.includes("ORDER_NOT_REVIEWABLE"))return "Проверьте состояние заказа: его нельзя подтвердить повторно.";
-    if(code.includes("OTHER_PLAN_ACTIVE"))return "У клиента уже другой тариф. Решите вопрос с ним до подтверждения.";
+    if(code.includes("OTHER_PLAN_ACTIVE"))return "Другой действующий тариф нельзя сменить до окончания оплаченного периода. Новый тариф можно заказать после его завершения."; 
+    if(code.includes("ORDER_ALREADY_OPEN_OTHER_PLAN"))return "Уже есть заявка на другой тариф. Сначала отмените её, затем создайте новую."; 
+    if(code.includes("INVALID_PLAN"))return "Выберите доступный тариф.";
     if(code.includes("23505"))return "Заявка уже существует. Обновите список.";
     if(code.includes("ADMIN_REQUIRED"))return "У аккаунта нет доступа к проверке платежей.";
     return "Не удалось связаться с заказами. Проверьте соединение и попробуйте ещё раз.";
@@ -46,12 +63,12 @@ export function initManualOrders(client) {
   function setBusy(value){
     loading=value;
     if(button)button.disabled=value||!own()||customerNo===null;
-    if(button)button.textContent=value?"Обработка…":"Оформить заявку на Basic";
+    if(button)button.textContent=value?"Обработка…":"Заказать «"+plans[selectedPlan()].name+"»";
   }
   function renderProfile(){
-    const label=customerNo===null?"Проверяем ID…":"ID-"+customerNo;
-    if(profile)profile.textContent=own()?label:"Войдите, чтобы получить ID";
-    if(customerLabel)customerLabel.textContent=own()?label:"После входа появится постоянный ID";
+    const label=customerNo===null?"Проверяем номер…":String(customerNo);
+    if(profile)profile.textContent=own()?label:"Войдите, чтобы получить номер";
+    if(customerLabel)customerLabel.textContent=own()?label:"После входа появится постоянный номер";
     if(signedPrompt)signedPrompt.hidden=own();
     if(button)button.disabled=loading||!own()||customerNo===null;
   }
@@ -75,7 +92,7 @@ export function initManualOrders(client) {
     for(const order of orders){
       const card=document.createElement("article");
       card.className="manual-order-item";
-      const heading=addText("strong","Заказ "+number(order.order_no)+" · Basic");
+      const heading=addText("strong","Заказ "+number(order.order_no)+" · "+(plans[order.plan]?.name||"Тариф"));
       const detail=addText("span",renderMoney(order.amount_kopecks)+" / 30 дней · "+(statusLabels[order.status]||"Проверяется"));
       const when=addText("small","Создан "+new Date(order.created_at).toLocaleDateString("ru-RU"));
       card.append(heading,detail,when);
@@ -148,7 +165,7 @@ export function initManualOrders(client) {
     const id=userId,serial=epoch;setBusy(true);
     say(message,"Создаём заявку…");
     try{
-      const {data,error}=await client.rpc("anons_studio_manual_create_order");
+      const {data,error}=await client.rpc("anons_studio_manual_create_order",{p_plan:selectedPlan()});
       if(!live(id,serial))return;
       if(error)throw error;
       await getOrders(id,serial);
@@ -195,7 +212,7 @@ export function initManualOrders(client) {
       const row=document.createElement("article");
       row.className="manual-admin-order";
       row.append(
-        addText("strong",number(order.order_no)+" · ID-"+order.customer_no+" · "+renderMoney(order.amount_kopecks)),
+        addText("strong",number(order.order_no)+" · Клиент № "+order.customer_no+" · "+(plans[order.plan]?.name||order.plan)+" · "+renderMoney(order.amount_kopecks)),
         addText("span",order.contact_email),
         addText("span",statusLabels[order.status]||order.status)
       );
@@ -207,7 +224,7 @@ export function initManualOrders(client) {
           const confirmButton=addText("button","Подтвердить поступление");
           confirmButton.type="button";
           confirmButton.addEventListener("click",()=>{
-            if(window.confirm("Вы лично проверили банковское поступление "+renderMoney(order.amount_kopecks)+" для "+number(order.order_no)+"? Подтвердить и активировать Basic на 30 дней?"))
+            if(window.confirm("Вы лично проверили банковское поступление "+renderMoney(order.amount_kopecks)+" для "+number(order.order_no)+"? Подтвердить и активировать «"+(plans[order.plan]?.name||"тариф")+"» на 30 дней?"))
               void reviewOrder(order.order_no,true);
           });
           controls.append(confirmButton);
@@ -233,7 +250,7 @@ export function initManualOrders(client) {
       if(!live(id,serial))return;
       if(error)throw error;
       say(adminMessage,data==="approved"?
-        "Поступление подтверждено. Доступ Basic активирован на 30 дней.":
+        "Поступление подтверждено. Выбранный тариф активирован на 30 дней.":
         "Заявка отклонена. Подписка не изменена.");
       await Promise.all([getOrders(id,serial),refreshAdmin(id,serial)]);
       if(data==="approved")window.AnonsBilling?.refresh?.();
@@ -251,11 +268,13 @@ export function initManualOrders(client) {
     renderAll();
     if(id)void refresh();
   }
+  planSelect?.addEventListener("change",renderPlan);
   button?.addEventListener("click",()=>{void createOrder();});
   $("manual-order-refresh")?.addEventListener("click",()=>{void refresh();});
   $("manual-account-refresh")?.addEventListener("click",()=>{void refresh();});
   $("manual-admin-refresh")?.addEventListener("click",()=>{void refreshAdmin();});
   window.addEventListener("online",()=>{if(own())void refresh();});
+  renderPlan();
   setUser(null);
   return {setUser,refresh};
 }
