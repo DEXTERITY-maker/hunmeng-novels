@@ -662,3 +662,31 @@ html.whats-new-visible{overflow:hidden}
   .graphic-settings-grid{grid-template-columns:1fr}
   .graphic-element-buttons button{flex:1}
 }
+
+/* Aurora composition and highlight styling — self-contained, responsive. */
+.highlight-design-panel{
+  display:grid;gap:10px;min-width:0;margin:0 0 21px;padding:20px;
+  border:1px solid #e4d9f1;border-radius:15px;
+  background:linear-gradient(165deg,#faf7ff,#fff 88%);
+}
+.highlight-design-panel h5{font-size:14px;letter-spacing:-.025em;font-weight:850;color:#2d2241;margin:0}
+.highlight-design-panel>.field-note{margin:0 0 6px;font-size:11px;line-height:1.7;color:#625a72}
+.highlight-design-panel>label{display:block;font-size:11px;font-weight:800;color:#51465f}
+.highlight-design-panel>select{min-height:43px;width:100%;font-size:12px}
+.highlight-icon-picker{margin:6px 0 0;padding:15px 13px 13px;
+  border:1px solid #e9e2f1;border-radius:12px;background:#fff}
+.highlight-icon-picker legend{padding:0 5px;font-size:11px;font-weight:850;color:#5e448b}
+.highlight-icon-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.highlight-icon-grid label{min-width:0;display:flex;flex-direction:column;gap:8px;
+  font-size:11px;font-weight:750;color:#51475c}
+.highlight-icon-grid select{min-width:0;width:100%;min-height:40px;padding:7px 6px;
+  border:1px solid #dfd4ee;border-radius:9px;background:#fff;color:#28203d;font-size:11px}
+.highlight-design-panel select:focus-visible{outline:3px solid #8660db;outline-offset:2px}
+@media(max-width:760px){
+  .highlight-design-panel{padding:15px 13px;margin-bottom:17px}
+  .highlight-icon-grid{gap:7px}
+}
+@media(max-width:390px){
+  .highlight-icon-grid{grid-template-columns:1fr}
+  .highlight-icon-grid label{display:grid;grid-template-columns:72px minmax(0,1fr);align-items:center}
+}
