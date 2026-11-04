@@ -20,11 +20,12 @@ export function initBilling(client) {
     if(!response.ok)throw Error(data?.error||'BILLING_ERROR');
     return data;
   }
+  const label=plan=>({basic:"Бизнес",pro:"Про",studio:"Студия"})[plan]||String(plan||"Free");
   function renderOrders(data){
     const p=data?.membership;
     const valid=p&&['active','trialing'].includes(p.status)&&Date.parse(p.current_period_end)>Date.now();
     if(status)status.textContent=valid?
-      'Активный тариф '+p.plan.toUpperCase()+' до '+new Date(p.current_period_end).toLocaleDateString('ru-RU'):
+      'Активный тариф '+label(p.plan)+' до '+new Date(p.current_period_end).toLocaleDateString('ru-RU'):
       'Активной платной подписки нет';
     if(history){
       history.replaceChildren();
@@ -32,12 +33,12 @@ export function initBilling(client) {
       if(!list.length){const x=document.createElement('p');x.textContent='Оплаченных заказов пока нет.';history.append(x);}
       else for(const o of list){
         const row=document.createElement('div');row.className='billing-order';
-        const label=document.createElement('strong');label.textContent=o.plan.toUpperCase()+' — '+Math.round(o.amount_kopecks/100)+' ₽';
+        const planLabel=document.createElement('strong');planLabel.textContent=label(o.plan)+' — '+Math.round(o.amount_kopecks/100)+' ₽';
         const partiallyRefunded=o.state==='succeeded'&&o.refunded_kopecks>0&&o.refunded_kopecks<o.amount_kopecks;
         const orderState=partiallyRefunded?'Частичный возврат '+(o.refunded_kopecks/100).toLocaleString('ru-RU')+' ₽':
           ({created:'Создаётся',pending:'Ожидает оплаты',succeeded:'Оплачено',canceled:'Отменено',refunded:'Возврат'}[o.state]||o.state);
         const sub=document.createElement('span');sub.textContent=new Date(o.created_at).toLocaleDateString('ru-RU')+' · '+orderState;
-        row.append(label,sub);history.append(row);
+        row.append(planLabel,sub);history.append(row);
       }
     }
     window.dispatchEvent(new Event('anons:billing-updated'));
