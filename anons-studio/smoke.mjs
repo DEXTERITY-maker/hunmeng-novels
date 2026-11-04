@@ -88,6 +88,13 @@ try {
     assert.equal(await page.locator(".whats-new-list li").count(),16);
     assert.equal(await page.locator(".whats-new-item-icon .ui-icon").count(),16,
       "Announcement has coherent SVG icons instead of character placeholders");
+    assert.equal(await page.locator(".whats-new-list:not(.whats-new-list-archive) li").count(),2,
+      "Only the latest two changes are expanded by default");
+    assert.equal(await page.locator(".whats-new-list-archive li").count(),14);
+    assert.equal(await page.locator(".whats-new-history").evaluate(el=>el.open),false);
+    await page.locator(".whats-new-history summary").click();
+    assert.equal(await page.locator(".whats-new-history").evaluate(el=>el.open),true);
+    await page.locator(".whats-new-history summary").click();
     await page.waitForFunction(()=>document.querySelector(".whats-new-item-icon svg")?.getBBox().width>0);
     assert.equal(await page.evaluate(async()=> (await fetch("/assets/ui-icons.svg")).status),200,
       "The self-hosted icon sprite is available in the built site");
