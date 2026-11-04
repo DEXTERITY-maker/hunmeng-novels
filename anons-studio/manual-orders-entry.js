@@ -242,7 +242,7 @@ export function initManualOrders(client) {
   }
   function setUser(user){
     const id=typeof user?.id==="string"?user.id:null;
-    if(id===userId)return;
+    if(id===userId){renderAll();return;}
     ++epoch;
     userId=id;orders=[];customerNo=null;isAdmin=false;loading=false;
     say(message,id?"Проверяем аккаунт и постоянный ID…":"Для оформления заказа требуется подтверждённый аккаунт.");
