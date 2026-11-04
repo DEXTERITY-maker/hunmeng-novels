@@ -14,6 +14,13 @@
   const formats=Object.freeze({portrait:[1080,1350],square:[1080,1080],story:[1080,1920]});
   const layers=["decoration","photo","brand","title","description","highlights"];
   const presetLabels=Object.freeze({update:"ОБНОВЛЕНИЕ",launch:"ЗАПУСК",event:"СОБЫТИЕ",notice:"ОБЪЯВЛЕНИЕ"});
+  const compositions=Object.freeze(["classic","compact","headline"]);
+  const highlightStyles=Object.freeze(["soft","outline","separated"]);
+  const highlightIconKinds=Object.freeze(["dot","check","star","diamond"]);
+  const safeIcons=value=>Array.from({length:3},(_,i)=>{
+    const choice=Array.isArray(value)?value[i]:null;
+    return highlightIconKinds.includes(choice)?choice:"dot";
+  });
   const decorations=Object.freeze({
     subtle:Object.freeze({grid:.022,glow:.23,rings:.16,disc:.10,spark:.83,centerY:.235,ringRadius:158,ringStep:28,discRadius:125}),
     balanced:Object.freeze({grid:.035,glow:.31,rings:.22,disc:.13,spark:.94,centerY:.255,ringRadius:173,ringStep:32,discRadius:136}),
@@ -38,8 +45,21 @@
     for(const name of layers)enabled[name]=card.layers?.[name]!==false;
     const titleShift=clamp(card.titleShift,-12,12,0);
     const descShift=clamp(card.descriptionShift,-12,12,0);
-    const titleY=Math.round(height*(template==="editorial"?.31:template==="minimal"?.35:template==="bulletin"?.27:height>=1700?.258:height<=1100?.265:.285))+Math.round(height*titleShift/100);
-    const detailsY=Math.round(height*(template==="editorial"?.75:template==="minimal"?.77:template==="bulletin"?.72:height>=1700?.735:height<=1100?.716:.733));
+    const composition=template==="aurora"&&compositions.includes(card.composition)?card.composition:"classic";
+    const baseTitle=template==="editorial"?.31:template==="minimal"?.35:template==="bulletin"?.27:height>=1700?.258:height<=1100?.265:.285;
+    const titleFraction=template==="aurora" && composition!=="classic"
+      ?composition==="compact"?(height<=1100?.238:height>=1700?.225:.243)
+      :(height<=1100?.215:height>=1700?.188:.22):baseTitle;
+    const titleY=Math.round(height*titleFraction)+Math.round(height*titleShift/100);
+    const baseDetails=template==="editorial"?.75:template==="minimal"?.77:template==="bulletin"?.72:height>=1700?.735:height<=1100?.716:.733;
+    const detailFraction=template==="aurora" && composition!=="classic"
+      ?composition==="compact"?.705:(height<=1100?.672:height>=1700?.70:.70):baseDetails;
+    const highlightRowHeight=height<=1100?61:height>=1700?91:76;
+    const footerY=height-74;
+    const detailCap=footerY-77-3*highlightRowHeight;
+    // Aurora's three-row panel stays above the footer, even for 1:1 square images.
+    const detailsY=template==="aurora"?Math.min(Math.round(height*detailFraction),detailCap)
+      :Math.round(height*detailFraction);
     const margin=76,contentWidth=width-2*margin;
     const headingScale=clamp(card.headingScale,80,120,100);
     const descriptionScale=clamp(card.descriptionScale,80,130,100);
@@ -50,15 +70,19 @@
       (["georgia","arial","manrope"].includes(titleFont)?titleFont:"manrope");
     const effectiveWeight=titleFont==="auto"&&(template==="editorial"||template==="minimal")&&titleWeight===800?700:titleWeight;
     const photo={x:width*.52,y:height*.11,width:width*.49,height:Math.min(height*.36,570),radius:140};
-    const footerY=height-74;
     const titleBaseSize=Math.round((height<=1100?83:105)*headingScale/100);
     const descriptionSize=Math.round((height<=1100?29:32)*descriptionScale/100);
-    const highlightRowHeight=height<=1100?61:height>=1700?91:76;
+    const highlightStyle=highlightStyles.includes(card.highlightStyle)?card.highlightStyle:"soft";
+    const highlightIcons=safeIcons(card.highlightIcons);
+    const featuredHighlight=Number.isInteger(card.featuredHighlight)&&card.featuredHighlight>=0&&card.featuredHighlight<=2
+      ?card.featuredHighlight:-1;
     const imageOpacity=clamp(card.photoOpacity,15,85,35)/100;
     const decorationLevel=Object.hasOwn(decorations,card.decorationLevel)?card.decorationLevel:"subtle";
     const textSpacing=["compact","balanced","airy"].includes(card.textSpacing)?card.textSpacing:"balanced";
     return {
-      width,height,format,theme,template,palette,order,enabled,offsets:Object.fromEntries(layers.map(name=>[name,offset(name)])),
+      width,height,format,theme,template,composition,palette,order,enabled,
+      highlightStyle,highlightIcons,featuredHighlight,
+      offsets:Object.fromEntries(layers.map(name=>[name,offset(name)])),
       margin,contentWidth,titleY,detailsY,footerY,photo,imageOpacity,
       titleBaseSize,titleFamily,titleWeight:effectiveWeight,titleTracking,textSpacing,
       decorationLevel,decorationTuning:decorations[decorationLevel],
@@ -70,6 +94,14 @@
       label:presetLabels[card.preset]||"АНОНС",
       project:typeof snapshot.project==="string"?snapshot.project.slice(0,45):"МОЙ ПРОЕКТ"
     };
+  }
+  function highlightGeometry(scene,count){
+    const rows=Math.max(1,Math.min(3,Math.trunc(Number(count)||3)));
+    const rowHeight=scene.highlightRowHeight;
+    return {top:scene.detailsY-27,height:28+rows*rowHeight+21,
+      rowHeight,width:scene.contentWidth,
+      style:scene.highlightStyle,icons:scene.highlightIcons,
+      featured:scene.featuredHighlight};
   }
   // Text position is based on the LAST drawn title baseline rather than
   // the next unused baseline. This prevents an oversized empty gap after
@@ -150,5 +182,5 @@
     }
     return {size:Math.max(42,size),lines};
   }
-  root.AnonsScene=Object.freeze({layout,formats,themes,presetLabels,rgb,textWidth,breakLines,titleLines,descriptionTop,watermarkStamps});
+  root.AnonsScene=Object.freeze({layout,formats,themes,presetLabels,rgb,textWidth,breakLines,titleLines,descriptionTop,watermarkStamps,highlightGeometry});
 })(globalThis);
