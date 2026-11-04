@@ -130,6 +130,11 @@ try {
     await page.locator("#whats-new-try").click();
     await page.waitForURL(/\/editor\.html$/);
     await page.locator("#poster").waitFor({state:"attached"});
+    const editorScreenshotDir=join(dirname(fileURLToPath(import.meta.url)),"test-artifacts");
+    await mkdir(editorScreenshotDir,{recursive:true});
+    await page.locator("#editor-controls").screenshot({
+      path:join(editorScreenshotDir,"editor-settings-"+width+".png"),animations:"disabled"
+    });
     assert.equal(await page.locator(".editor-tool-group").count(),3,
       "Editor tools are grouped into card, content and design sections");
     for(const id of ["editor-group-layout","editor-group-content","editor-group-design"]){
@@ -404,6 +409,11 @@ try {
     const [download] = await Promise.all([page.waitForEvent("download"),page.locator("#export").click()]);
     assert.match(download.suggestedFilename(),/\.png$/);
     assert.ok((await readFile(await download.path())).length>20000,"Downloaded PNG should contain image data");
+    // Capture the normal, unauthenticated preview before simulating paid
+    // export failures so visual review never shows an artificial error toast.
+    await page.locator(".preview-panel").screenshot({
+      path:join(editorScreenshotDir,"preview-"+width+".png"),animations:"disabled"
+    });
     assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+2),"No horizontal overflow");
     assert.deepEqual(errors,[],"No browser JS errors");
     // A forged browser premium flag must not bypass the paid server endpoint.
@@ -429,15 +439,6 @@ try {
     assert.equal(restored.restoredCount,2,"Restored draft keeps multiple cards");
     assert.equal(restored.title,restored.oldTitle,"Restored draft keeps editable text");
     assert.equal(restored.template,"editorial","Restored draft keeps template");
-
-    // Synthetic, unauthenticated screenshots for reviewing text fidelity and
-    // responsive composition after shared layout changes. Never screenshot
-    // private libraries or signed-in account panels.
-    const screenshotDir=join(dirname(fileURLToPath(import.meta.url)),"test-artifacts");
-    await mkdir(screenshotDir,{recursive:true});
-    await page.locator(".preview-panel").screenshot({
-      path:join(screenshotDir,"preview-"+width+".png"),animations:"disabled"
-    });
 
     await context.close();
     console.log("PASS Anons Studio browser preview, editor, storage, PNG and responsive width="+width);
