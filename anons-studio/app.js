@@ -29,9 +29,15 @@
     story: { w: 1080, h: 1920 }
   };
   const businessTemplates=new Set(["business-brief","business-pitch","business-report"]);
-  const templates = new Set(["aurora","editorial","spotlight","pulse","minimal","bulletin",...businessTemplates]);
+  const proTemplates=new Set(["pro-campaign","pro-magazine","pro-impact"]);
+  const templates = new Set(["aurora","editorial","spotlight","pulse","minimal","bulletin",...businessTemplates,...proTemplates]);
   let currentPlan="free";
   const businessAllowed=()=>["basic","pro","studio"].includes(currentPlan);
+  const proAllowed=()=>currentPlan==="pro"||currentPlan==="studio";
+  const canUseTemplate=template=>templates.has(template)
+    &&(!businessTemplates.has(template)||businessAllowed())
+    &&(!proTemplates.has(template)||proAllowed());
+  let pendingPremiumTemplate=null;
   const MAX_CARDS=8;
   const Graphics=window.AnonsGraphics; // Exact allowlisted shapes used by server PNG exports.
   if(!Graphics)throw new Error("GRAPHICS_MODULE_MISSING");
@@ -611,12 +617,15 @@
     syncFields();syncCardAndSave();
   }));
   const themeForTemplate={aurora:"ultraviolet",editorial:"paper",spotlight:"sunset",pulse:"ink",minimal:"paper",bulletin:"emerald",
-    "business-brief":"ink","business-pitch":"sunset","business-report":"paper"};
+    "business-brief":"ink","business-pitch":"sunset","business-report":"paper",
+    "pro-campaign":"ink","pro-magazine":"ink","pro-impact":"sunset"};
   function changeTemplate(next) {
     if(!templates.has(next))return;
-    if(businessTemplates.has(next)&&!businessAllowed()){
+    if(!canUseTemplate(next)){
       syncFields();
-      showToast("Шаблоны «Бизнес» доступны по платной подписке. Откройте тарифы для заказа.");
+      showToast(proTemplates.has(next)
+        ?"Шаблоны «Про» доступны на тарифах «Про» и «Студия»."
+        :"Шаблоны «Бизнес» доступны по платной подписке. Откройте тарифы для заказа.");
       return;
     }
     state.template=next;
@@ -641,6 +650,58 @@
       document.getElementById("editor").scrollIntoView({behavior:"smooth",block:"start"});
     });
   });
+  function createProSeries(){
+    if(!proAllowed()){
+      showToast("Для серии публикаций нужна подписка «Про» или «Студия».");
+      return false;
+    }
+    if(state.cards.length>MAX_CARDS-2){
+      showToast("Для новой серии нужно два свободных места (не более 8 карточек).");
+      return false;
+    }
+    if(!window.confirm("Добавить две карточки к текущей публикации? Существующие карточки не изменятся, действие можно отменить."))return false;
+    snapshotCard();
+    const source=state.cards[state.activeCard];
+    const details=sanitizeCard({
+      ...source,template:"pro-campaign",theme:themeForTemplate["pro-campaign"],
+      accentColor:"",title:"Ключевые моменты",description:source.description,
+      points:source.points
+    });
+    const next=sanitizeCard({
+      ...source,template:"pro-magazine",theme:themeForTemplate["pro-magazine"],
+      accentColor:"",title:"Что дальше",
+      description:"Добавьте планы, сроки и дальнейшие шаги.",
+      points:"Следующий шаг\\nВажные сроки\\nГде узнать подробности"
+    });
+    const firstNew=state.cards.length;
+    state.cards.push(details,next);
+    state.activeCard=firstNew;
+    Object.assign(state,details);
+    selectedGraphicIndex=-1;
+    syncFields();
+    historyKind="";
+    syncCardAndSave();
+    showToast("Серия дополнена двумя карточками. Исходные материалы сохранены.");
+    return true;
+  }
+  function applyProTemplateToAll(){
+    if(!proAllowed())return false;
+    const next=$("pro-series-template")?.value;
+    if(!proTemplates.has(next))return false;
+    if(!window.confirm("Применить дизайн "+next+" ко всем карточкам? Их заголовки, тексты, фото и порядок останутся прежними."))return false;
+    snapshotCard();
+    const theme=themeForTemplate[next];
+    state.cards=state.cards.map(card=>sanitizeCard({...card,template:next,theme,accentColor:""}));
+    Object.assign(state,state.cards[state.activeCard]);
+    selectedGraphicIndex=-1;
+    syncFields();
+    historyKind="";
+    syncCardAndSave();
+    showToast("Дизайн всех карточек обновлён. При необходимости отмените изменение.");
+    return true;
+  }
+  $("pro-series-generate")?.addEventListener("click",createProSeries);
+  $("pro-series-apply")?.addEventListener("click",applyProTemplateToAll);
   $("add-card").addEventListener("click",()=>{
     if(state.cards.length>=MAX_CARDS)return;
     snapshotCard();
@@ -1295,7 +1356,7 @@
       if(Object.hasOwn(payload,key))patch[key]=payload[key];
     }
     if(!Object.keys(patch).length)return false;
-    if(businessTemplates.has(patch.template)&&!businessAllowed())return false;
+    if(patch.template&&!canUseTemplate(patch.template))return false;
     const cleaned=sanitizeCard({...state,...patch});
     selectedGraphicIndex=-1;
     for(const key of personalStyleKeys)state[key]=cleaned[key];
@@ -1348,13 +1409,28 @@
       ?event.detail.plan:"free";
     document.querySelectorAll("#template-select option").forEach(option=>{
       if(businessTemplates.has(option.value))option.disabled=!businessAllowed();
+      if(proTemplates.has(option.value))option.disabled=!proAllowed();
     });
     const selection=document.getElementById("template-select");
-    if(selection)selection.title=businessAllowed()?"Все шаблоны доступны":
-      "Шаблоны Бизнес открываются при действующей подписке";
+    if(selection)selection.title=proAllowed()?"Все шаблоны доступны":
+      businessAllowed()?"Дополнительные композиции «Про» доступны в старших тарифах":
+      "Платные шаблоны открываются при действующей подписке";
+    for(const id of ["pro-series-generate","pro-series-apply","pro-series-template"]){
+      const control=$(id);
+      if(control)control.disabled=!proAllowed();
+    }
+    const notice=$("pro-series-status");
+    if(notice)notice.textContent=proAllowed()
+      ?"Подписка подтверждена. Создавайте серии карточек и меняйте их дизайн вместе."
+      :"Доступно по активной подписке «Про» или «Студия».";
+    if(pendingPremiumTemplate&&canUseTemplate(pendingPremiumTemplate)){
+      const selected=pendingPremiumTemplate;
+      pendingPremiumTemplate=null;
+      changeTemplate(selected);
+    }
   });
   document.querySelectorAll("#template-select option").forEach(option=>{
-    if(businessTemplates.has(option.value))option.disabled=true;
+    if(businessTemplates.has(option.value)||proTemplates.has(option.value))option.disabled=true;
   });
   window.AnonsEditor=Object.freeze({
     getSnapshot,
@@ -1386,7 +1462,10 @@
   const editorUrl=new URL(window.location.href);
   const requestedTemplate=editorUrl.searchParams.get("template");
   if(requestedTemplate && templates.has(requestedTemplate)){
-    changeTemplate(requestedTemplate);
+    if(canUseTemplate(requestedTemplate))changeTemplate(requestedTemplate);
+    else if(businessTemplates.has(requestedTemplate)||proTemplates.has(requestedTemplate)){
+      pendingPremiumTemplate=requestedTemplate;
+    }
     editorUrl.searchParams.delete("template");
   }
   // Homepage examples can initialize an untouched editor, but must never
