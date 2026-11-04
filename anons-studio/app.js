@@ -44,8 +44,19 @@
       return highlightIconKinds.has(v)?v:"dot";
     });
   }
-  const layerAxes={title:["x","y"],description:["x","y"],highlights:["x","y"],photo:["x","y"]};
-  const allowedTextLayers=new Set(["title","description","highlights","photo"]);
+  const baseLayerNames=["decoration","photo","brand","title","description","highlights"];
+  const movableLayers=["photo","brand","title","description","highlights"];
+  const layerAxes={title:["x","y"],description:["x","y"],highlights:["x","y"],
+    photo:["x","y"],brand:["x","y"]};
+  const allowedTextLayers=new Set(movableLayers);
+  function cleanLayerVisibility(raw){
+    const value=raw&&typeof raw==="object"&&!Array.isArray(raw)?raw:{};
+    return Object.fromEntries(baseLayerNames.map(key=>[key,value[key]!==false]));
+  }
+  function cleanLayerOrder(raw){
+    const unique=Array.isArray(raw)?raw.filter(key=>typeof key==="string"&&movableLayers.includes(key)):[];
+    return ["decoration",...new Set([...unique,...movableLayers])];
+  }
   function normalizeLocks(raw,graphics=[]){
     const existing=new Set(Graphics.normalizeElements(graphics).map(item=>item.id));
     if(!Array.isArray(raw))return [];
@@ -62,14 +73,14 @@
     }
     return result;
   }
-  const cardKeys=["title","description","points","preset","template","theme","accentColor","alignment","headingScale","decorations","photoOpacity","titleFont","descriptionScale","layerOffsets","graphicElements","decorationLevel","textSpacing","composition","highlightStyle","highlightIcons","featuredHighlight","lockedLayers"];
+  const cardKeys=["title","description","points","preset","template","theme","accentColor","alignment","headingScale","decorations","photoOpacity","titleFont","descriptionScale","layerOffsets","graphicElements","decorationLevel","textSpacing","composition","highlightStyle","highlightIcons","featuredHighlight","lockedLayers","layers","layerOrder"];
   const limits={project:45,title:85,description:210,points:240};
   const defaults = { preset: "update", theme: "ultraviolet", ratio: "portrait", ...presets.update, imageData: "",
     template:"aurora", headingScale:100, accentColor:"", alignment:"left", decorations:true, photoOpacity:35,
     titleFont:"auto",descriptionScale:100,layerOffsets:normalizeOffsets(null),graphicElements:[],
     decorationLevel:"subtle",textSpacing:"balanced",
     composition:"classic",highlightStyle:"soft",highlightIcons:["dot","dot","dot"],featuredHighlight:-1,
-    lockedLayers:[],
+    lockedLayers:[],layers:cleanLayerVisibility(null),layerOrder:cleanLayerOrder(null),
     activeCard:0, cards:[] };
   let saved = {};
   try { saved = JSON.parse(localStorage.getItem(storageKey) || "{}") || {}; } catch (_) {}
@@ -91,6 +102,8 @@
   state.layerOffsets=normalizeOffsets(saved.layerOffsets);
   state.graphicElements=Graphics.normalizeElements(saved.graphicElements);
   state.lockedLayers=normalizeLocks(saved.lockedLayers,state.graphicElements);
+  state.layers=cleanLayerVisibility(saved.layers);
+  state.layerOrder=cleanLayerOrder(saved.layerOrder);
   if(!decorLevels.has(state.decorationLevel))state.decorationLevel="subtle";
   if(!textSpacings.has(state.textSpacing))state.textSpacing="balanced";
   if(!compositions.has(state.composition))state.composition="classic";
@@ -119,6 +132,8 @@
     out.layerOffsets=normalizeOffsets(original.layerOffsets);
     out.graphicElements=Graphics.normalizeElements(original.graphicElements);
     out.lockedLayers=normalizeLocks(original.lockedLayers,out.graphicElements);
+    out.layers=cleanLayerVisibility(original.layers);
+    out.layerOrder=cleanLayerOrder(original.layerOrder);
     out.decorationLevel=decorLevels.has(original.decorationLevel)?original.decorationLevel:"subtle";
     out.textSpacing=textSpacings.has(original.textSpacing)?original.textSpacing:"balanced";
     out.composition=compositions.has(original.composition)?original.composition:"classic";
@@ -930,7 +945,9 @@
       cards:state.cards.map(card=>({...card,layerOffsets:normalizeOffsets(card.layerOffsets),
         graphicElements:Graphics.normalizeElements(card.graphicElements),
         highlightIcons:cleanIcons(card.highlightIcons),
-        lockedLayers:normalizeLocks(card.lockedLayers,card.graphicElements)})),
+        lockedLayers:normalizeLocks(card.lockedLayers,card.graphicElements),
+        layers:cleanLayerVisibility(card.layers),
+        layerOrder:cleanLayerOrder(card.layerOrder)})),
       imageData:state.imageData,
       accentColor:state.accentColor,alignment:state.alignment,
       headingScale:state.headingScale,photoOpacity:state.photoOpacity,
