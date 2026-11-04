@@ -160,7 +160,7 @@ export function initStudioWorkspace(client) {
   }
   function setUser(user){
     const id=typeof user?.id==="string"?user.id:null;
-    if(id===userId)return;
+    if(id===userId&&serial>0)return;
     ++serial;
     userId=id;plan="free";premium=false;loading=false;projects=[];selected.clear();
     showStyle();
