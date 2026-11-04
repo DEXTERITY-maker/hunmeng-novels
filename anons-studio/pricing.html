@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#111424">
-  <meta name="description" content="Тарифы Anons Studio Free, Basic, Pro и Studio. Реальные платежи временно отключены.">
+  <meta name="description" content="Тарифы Anons Studio Free, Basic, Pro и Studio. Автоматическая оплата временно отключена; доступна заявка на ручной перевод.">
   <title>Тарифы — Anons Studio</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -32,15 +32,35 @@
       </div></header>
     <main class="inner-page-main inner-page-pricing">
       <div class="wrap personal-breadcrumb"><a href="./index.html">Главная</a><span aria-hidden="true">/</span><span aria-current="page">Тарифы</span></div>
-      <section class="inner-page-hero wrap"><span class="kicker">ПЛАНЫ ДЛЯ РАЗНЫХ ЗАДАЧ</span><h1>Тарифы и доступ.</h1><p>Начни бесплатно. Платные возможности отображаются для ознакомления, однако покупка остаётся отключена до завершения подключения платежей.</p></section>
+      <section class="inner-page-hero wrap"><span class="kicker">ПЛАНЫ ДЛЯ РАЗНЫХ ЗАДАЧ</span><h1>Тарифы и доступ.</h1><p>Начни бесплатно. Платные возможности отображаются для ознакомления, однако автоматическая покупка остаётся отключённой; тариф Basic можно заказать вручную.</p></section>
 <section id="pricing" class="pricing wrap" aria-labelledby="pricing-title">
-        <div class="section-heading"><div><div class="kicker">ПРОСТЫЕ УСЛОВИЯ</div><h2 id="pricing-title">Выбери свой<br>формат творчества.</h2></div><p>На Free в PNG остаётся водяной знак. Платный Basic предусматривает чистый серверный экспорт. Подключение реальной оплаты пока не завершено.</p></div>
+        <div class="section-heading"><div><div class="kicker">ПРОСТЫЕ УСЛОВИЯ</div><h2 id="pricing-title">Выбери свой<br>формат творчества.</h2></div><p>На Free в PNG остаётся водяной знак. Платный Basic предусматривает чистый серверный экспорт. Автоматическая оплата пока не подключена, но доступен заказ через ручное подтверждение.</p></div>
         <div class="pricing-grid">
           <article class="plan plan-free"><span class="plan-ui-icon" aria-hidden="true"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="./assets/ui-icons.svg#gift"></use></svg></span><span class="plan-eyebrow">ДЛЯ НАЧАЛА</span><h3>Free</h3><div class="plan-price">0 ₽ <small>/ месяц</small></div><p>Попробовать редактор и создать первые публикации.</p><ul><li>Базовые шаблоны</li><li>Экспорт PNG в трёх форматах</li><li>Водяной знак Anons Studio</li></ul><a href="./editor.html" class="plan-action">Попробовать бесплатно</a></article>
           <article class="plan"><span class="plan-ui-icon" aria-hidden="true"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="./assets/ui-icons.svg#credit-card"></use></svg></span><span class="plan-eyebrow">ДЛЯ АВТОРОВ</span><h3>Basic</h3><div class="plan-price">299 ₽ <small>/ 30 дней</small></div><p>Для тех, кому нужен чистый профессиональный экспорт.</p><ul><li>Всё из Free</li><li><strong>Без водяного знака</strong></li><li>Дополнительные шаблоны — в разработке</li></ul><button disabled id="buy-basic" class="plan-action" type="button">Проверяем оплату…</button></article>
           <article class="plan plan-featured"><span class="plan-ui-icon" aria-hidden="true"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="./assets/ui-icons.svg#crown"></use></svg></span><span class="plan-eyebrow">ПОПУЛЯРНЫЙ ВАРИАНТ</span><h3>Pro</h3><div class="plan-price">499 ₽ <small>/ 30 дней</small></div><p>Для регулярного создания контента.</p><ul><li>Всё из Basic</li><li><strong>Без водяного знака</strong></li><li>Пакетные публикации — в разработке</li></ul><button disabled class="plan-action" type="button">Покупка скоро</button></article>
           <article class="plan"><span class="plan-ui-icon" aria-hidden="true"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="./assets/ui-icons.svg#building"></use></svg></span><span class="plan-eyebrow">ДЛЯ КОМАНД</span><h3>Studio</h3><div class="plan-price">999 ₽ <small>/ 30 дней</small></div><p>Для нескольких проектов и единого фирменного стиля.</p><ul><li>Всё из Pro</li><li><strong>Без водяного знака</strong></li><li>Командные функции — в разработке</li></ul><button disabled class="plan-action" type="button">Покупка скоро</button></article>
         </div>
+        <section id="manual-order-root" class="manual-purchase-panel" aria-labelledby="manual-purchase-title">
+          <div class="manual-purchase-head">
+            <div>
+              <span class="manual-eyebrow">ОПЛАТА ПО ЗАЯВКЕ · БЕЗ АВТОСПИСАНИЙ</span>
+              <h3 id="manual-purchase-title">Заказать Basic вручную</h3>
+              <p>299 ₽ за 30 дней. Создайте заявку, получите персональный номер и согласуйте перевод на карту с владельцем Anons Studio.</p>
+            </div>
+            <span class="manual-order-price">299 ₽</span>
+          </div>
+          <div class="manual-customer-badge"><span>Ваш постоянный ID</span><strong id="manual-order-customer">После входа появится постоянный ID</strong></div>
+          <p class="manual-purchase-steps">1. Войдите по подтверждённой почте. 2. Оформите заявку. 3. Получите реквизиты от владельца и переведите ровно 299 ₽. 4. Сообщите о переводе по номеру заказа. 5. Владелец проверит поступление и вручную активирует подписку.</p>
+          <div class="manual-purchase-actions">
+            <button type="button" id="manual-order-create" disabled>Оформить заявку на Basic</button>
+            <button type="button" id="manual-order-refresh">Обновить статус</button>
+            <a id="manual-order-login" href="./account.html#account">Войти или зарегистрироваться</a>
+          </div>
+          <p id="manual-order-status" role="status" aria-live="polite">Для оформления заказа требуется подтверждённый аккаунт.</p>
+          <div id="manual-order-list" class="manual-orders-list" aria-label="Мои ручные заказы"></div>
+          <p class="manual-purchase-caution">Не переводите деньги, пока владелец лично не подтвердил реквизиты. Не отправляйте номер карты, CVV, пароли и коды из СМС в сообщениях к заказу. Заявка и отметка «Я перевёл» не являются подтверждением оплаты и не дают платный доступ.</p>
+        </section>
         <div class="billing-availability" role="status" aria-live="polite" id="billing-availability">Проверяем возможность оплаты…</div>
         <p class="pricing-disclaimer">Basic — доступ на 30 дней с ручным продлением, без автоматических списаний. Pro и Studio пока в разработке. Кнопки оплаты заработают только после проверки платёжного магазина, чеков и серверного экспорта.</p>
       </section>
