@@ -40,8 +40,29 @@
     "studio-launch":{bg1:"#2b1545",bg2:"#76487f",glow:"#ff88a7",accent:"#ffccbc",text:"#ffffff",sub:"#f6dfe9",dark:true},
     "studio-portfolio":{bg1:"#ecf4f5",bg2:"#cadde1",glow:"#85c5bc",accent:"#125f66",text:"#193940",sub:"#4e7072",dark:false}
   });
+  const agencyBases=Object.freeze({
+    "agency-brand":"editorial",
+    "agency-social":"pulse",
+    "agency-showcase":"spotlight"
+  });
+  const agencyPalettes=Object.freeze({
+    "agency-brand":{bg1:"#092a39",bg2:"#29677c",glow:"#57cfd1",accent:"#a4f5e0",text:"#ffffff",sub:"#d5f5f2",dark:true},
+    "agency-social":{bg1:"#171c38",bg2:"#48528e",glow:"#ff7f97",accent:"#ffc4ad",text:"#ffffff",sub:"#e5e1f8",dark:true},
+    "agency-showcase":{bg1:"#f5eee8",bg2:"#e4d0bf",glow:"#d9aa80",accent:"#9d433c",text:"#402727",sub:"#7b5752",dark:false}
+  });
+  const ultimateBases=Object.freeze({
+    "ultimate-signature":"editorial",
+    "ultimate-cinema":"spotlight",
+    "ultimate-vision":"bulletin"
+  });
+  const ultimatePalettes=Object.freeze({
+    "ultimate-signature":{bg1:"#12151c",bg2:"#32343f",glow:"#e9c379",accent:"#ffdfa1",text:"#ffffff",sub:"#e4dfd3",dark:true},
+    "ultimate-cinema":{bg1:"#0f133e",bg2:"#4b2a82",glow:"#e065c1",accent:"#f3bcff",text:"#ffffff",sub:"#e7d9ff",dark:true},
+    "ultimate-vision":{bg1:"#f0f8f8",bg2:"#bfdde0",glow:"#60b9b9",accent:"#17637c",text:"#173b50",sub:"#51758a",dark:false}
+  });
   const templates=["aurora","editorial","spotlight","pulse","minimal","bulletin",
-    ...Object.keys(businessBases),...Object.keys(proBases),...Object.keys(studioBases)];
+    ...Object.keys(businessBases),...Object.keys(proBases),...Object.keys(studioBases),
+    ...Object.keys(agencyBases),...Object.keys(ultimateBases)];
   const formats=Object.freeze({portrait:[1080,1350],square:[1080,1080],story:[1080,1920]});
   const layers=["decoration","photo","brand","title","description","highlights"];
   const presetLabels=Object.freeze({update:"ОБНОВЛЕНИЕ",launch:"ЗАПУСК",event:"СОБЫТИЕ",notice:"ОБЪЯВЛЕНИЕ"});
@@ -67,13 +88,19 @@
     const businessTemplate=Object.hasOwn(businessBases,selectedTemplate)?selectedTemplate:null;
     const proTemplate=Object.hasOwn(proBases,selectedTemplate)?selectedTemplate:null;
     const studioTemplate=Object.hasOwn(studioBases,selectedTemplate)?selectedTemplate:null;
+    const agencyTemplate=Object.hasOwn(agencyBases,selectedTemplate)?selectedTemplate:null;
+    const ultimateTemplate=Object.hasOwn(ultimateBases,selectedTemplate)?selectedTemplate:null;
     // Every tier uses this exact same geometry and palette in Canvas and Edge.
     const template=businessTemplate?businessBases[selectedTemplate]
       :proTemplate?proBases[selectedTemplate]
-      :studioTemplate?studioBases[selectedTemplate]:selectedTemplate;
+      :studioTemplate?studioBases[selectedTemplate]
+      :agencyTemplate?agencyBases[selectedTemplate]
+      :ultimateTemplate?ultimateBases[selectedTemplate]:selectedTemplate;
     const palette={...(businessTemplate?businessPalettes[businessTemplate]
       :proTemplate?proPalettes[proTemplate]
-      :studioTemplate?studioPalettes[studioTemplate]:themes[theme])};
+      :studioTemplate?studioPalettes[studioTemplate]
+      :agencyTemplate?agencyPalettes[agencyTemplate]
+      :ultimateTemplate?ultimatePalettes[ultimateTemplate]:themes[theme])};
     if(typeof card.accentColor==="string"&&/^#[0-9a-fA-F]{6}$/.test(card.accentColor))palette.accent=card.accentColor.toLowerCase();
     const offset=(name)=>{
       const v=card.layerOffsets?.[name];
@@ -120,7 +147,7 @@
     const decorationLevel=Object.hasOwn(decorations,card.decorationLevel)?card.decorationLevel:"subtle";
     const textSpacing=["compact","balanced","airy"].includes(card.textSpacing)?card.textSpacing:"balanced";
     return {
-      width,height,format,theme,template,businessTemplate,proTemplate,studioTemplate,composition,palette,order,enabled,
+      width,height,format,theme,template,businessTemplate,proTemplate,studioTemplate,agencyTemplate,ultimateTemplate,composition,palette,order,enabled,
       highlightStyle,highlightIcons,featuredHighlight,
       offsets:Object.fromEntries(layers.map(name=>[name,offset(name)])),
       margin,contentWidth,titleY,detailsY,footerY,photo,imageOpacity,
