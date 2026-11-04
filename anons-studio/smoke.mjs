@@ -84,15 +84,15 @@ try {
     // available from the footer without disturbing ordinary page visits.
     const releaseDialog=page.locator("#whats-new-dialog");
     await page.waitForFunction(()=>document.getElementById("whats-new-dialog")?.open);
-    assert.match(await page.locator("#whats-new-title").textContent(),/«Студия»: единый стиль и новые шаблоны/);
-    assert.equal(await page.locator(".whats-new-list li").count(),30);
-    assert.equal(await page.locator(".whats-new-item-icon .ui-icon").count(),30,
+    assert.match(await page.locator("#whats-new-title").textContent(),/Мой тариф и статус заказа/);
+    assert.equal(await page.locator(".whats-new-list li").count(),31);
+    assert.equal(await page.locator(".whats-new-item-icon .ui-icon").count(),31,
       "Announcement has coherent SVG icons instead of character placeholders");
     assert.equal(await page.locator("#whats-new-close").evaluate(el=>el===document.activeElement),true,
       "Announcement initially focuses its accessible close control");
     assert.equal(await page.locator(".whats-new-list:not(.whats-new-list-archive) li").count(),1,
       "Only the latest two changes are expanded by default");
-    assert.equal(await page.locator(".whats-new-list-archive li").count(),29);
+    assert.equal(await page.locator(".whats-new-list-archive li").count(),30);
     assert.equal(await page.locator(".whats-new-history").evaluate(el=>el.open),false);
     await page.locator(".whats-new-history summary").click();
     assert.equal(await page.locator(".whats-new-history").evaluate(el=>el.open),true);
@@ -104,7 +104,7 @@ try {
       assert.ok((await page.locator('.whats-new-list a[href="./'+destination+'"]').count())>=1,
         "Announcement links directly to "+destination);
     }
-    assert.equal(await releaseDialog.getAttribute("data-release"),"2026-11-05-studio-workspace",
+    assert.equal(await releaseDialog.getAttribute("data-release"),"2026-11-05-pricing-current-plan",
       "Latest announcement version must be recognized");
 
     await page.locator("#whats-new-dismiss").click();
@@ -304,7 +304,7 @@ try {
     assert.equal(await pricingPage.locator("#pricing .plan").count(),4);
     assert.equal(await pricingPage.locator("#pricing .plan-ui-icon .ui-icon").count(),4,
       "Each subscription tier has a matching vector icon");
-    await pricingPage.waitForFunction(()=>document.querySelector("#billing-availability")?.textContent?.toLowerCase().includes("покупки"));
+    await pricingPage.waitForFunction(()=>document.querySelector("#billing-availability")?.textContent?.toLowerCase().includes("ручная заявка"));
     assert.ok(await pricingPage.locator("#buy-basic").isDisabled(),"Cannot charge without merchant configuration");
     assert.equal(await pricingPage.locator("#manual-order-root").count(),1,
       "Standalone pricing page shows a manual Basic request flow");
@@ -328,6 +328,42 @@ try {
     assert.equal(await pricingPage.locator("#manual-order-price").textContent(),"999 ₽");
     assert.equal(await pricingPage.locator(".manual-plan-link").count(),3,
       "Every paid plan links to the same manual-order form");
+    assert.equal(await pricingPage.locator("#pricing-personal-status").count(),1,
+      "Pricing displays the user account membership separately from public prices");
+    await pricingPage.evaluate(()=>{
+      window.dispatchEvent(new CustomEvent("anons:access",{
+        detail:{loggedIn:true,verified:true,plan:"free",premium:false}
+      }));
+      window.dispatchEvent(new CustomEvent("anons:manual-orders",{
+        detail:{orders:[{order_no:100001,plan:"basic",status:"payment_reported"}]}
+      }));
+    });
+    assert.equal(await pricingPage.locator("#pricing-current-title").textContent(),
+      "Заказ AS-100001 · Бизнес","Reported transfer is not a verified membership");
+    assert.equal(await pricingPage.locator('[data-plan="basic"].is-current-plan').count(),0);
+    assert.equal(await pricingPage.locator('[data-plan="basic"].is-pending-plan').count(),1);
+    assert.equal(await pricingPage.locator('[data-plan="basic"] .manual-plan-link').isHidden(),true,
+      "Cannot accidentally order a second Business plan during review");
+    await pricingPage.evaluate(()=>{
+      window.dispatchEvent(new CustomEvent("anons:access",{
+        detail:{loggedIn:true,verified:true,plan:"basic",premium:true,
+          expiresAt:"2099-01-01T00:00:00Z"}
+      }));
+    });
+    assert.equal(await pricingPage.locator("#pricing-current-title").textContent(),
+      "Ваш тариф: Бизнес");
+    assert.equal(await pricingPage.locator('[data-plan="basic"].is-current-plan').count(),1);
+    assert.equal(await pricingPage.locator('[data-plan="basic"] .manual-plan-link').isHidden(),true);
+    assert.ok(await pricingPage.locator("#manual-order-create").isDisabled(),
+      "Active subscription must disable duplicate manual order");
+    await pricingPage.evaluate(()=>{
+      window.dispatchEvent(new CustomEvent("anons:access",{
+        detail:{loggedIn:false,verified:true,plan:"free",premium:false}
+      }));
+      window.dispatchEvent(new CustomEvent("anons:manual-orders",{detail:{orders:[]}}));
+    });
+    assert.equal(await pricingPage.locator('[data-plan="basic"].is-current-plan').count(),0,
+      "Signout must clear the former user's tier marker");
     await pricingPage.close();
     assert.equal(await page.locator("#account-form").count(),0,"Account form lives only on account.html");
     assert.equal(await page.locator("#account").count(),0,"Personal space is no longer embedded on home");
