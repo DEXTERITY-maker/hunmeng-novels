@@ -32,7 +32,7 @@ class Element {
 
 function setup() {
   const gallery = new Element("gallery");
-  ["aurora", "editorial", "spotlight", "pulse", "minimal", "bulletin"].forEach((id) => {
+  ["aurora", "editorial", "spotlight", "pulse", "minimal", "bulletin", "business-brief", "business-pitch", "business-report"].forEach((id) => {
     const card = new Element("a");
     card.dataset.template = id;
     card.textContent = id;
@@ -59,23 +59,23 @@ function setup() {
   return { gallery, categories, elements, store };
 }
 
-test("six existing template links remain and filters are progressively enabled", () => {
+test("six free and three new Business templates remain searchable", () => {
   const { gallery, elements } = setup();
-  assert.equal(gallery.children.length, 6);
+  assert.equal(gallery.children.length, 9);
   assert.equal(elements["catalog-controls"].hidden, false);
-  assert.match(elements["template-results-count"].textContent, /6 из 6/);
+  assert.match(elements["template-results-count"].textContent, /9 из 9/);
   assert.ok(gallery.children.every((card) => card.children[0]?.tag === "a"));
 });
 
 test("category, search, reset and favorites work together", () => {
   const { gallery, categories, elements, store } = setup();
   categories[4].fire("click"); // News
-  assert.equal(gallery.children.filter((card) => !card.hidden).length, 2);
+  assert.equal(gallery.children.filter((card) => !card.hidden).length, 4);
   elements["template-search"].value = "отсутствует";
   elements["template-search"].fire("input");
   assert.equal(elements["template-empty"].hidden, false);
   elements["template-reset"].fire("click");
-  assert.equal(gallery.children.filter((card) => !card.hidden).length, 6);
+  assert.equal(gallery.children.filter((card) => !card.hidden).length, 9);
   gallery.children[0].children[1].fire("click");
   assert.equal(JSON.parse(store["anons-studio:favorite-templates:v1"]).length, 1);
   elements["template-favorites-toggle"].fire("click");
@@ -90,7 +90,7 @@ test("sorting alphabetically and restoring original order", () => {
   const initial = ids();
   elements["template-sort"].value = "name";
   elements["template-sort"].fire("change");
-  assert.deepEqual(ids(), ["aurora", "bulletin", "editorial", "minimal", "pulse", "spotlight"]);
+  assert.deepEqual(ids(), ["aurora", "business-brief", "business-pitch", "business-report", "bulletin", "editorial", "minimal", "pulse", "spotlight"]);
   elements["template-sort"].value = "default";
   elements["template-sort"].fire("change");
   assert.deepEqual(ids(), initial);
