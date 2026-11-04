@@ -8,6 +8,7 @@
   const previewAction = document.getElementById("editor-show-preview");
   if (!workspace || !toolbar || buttons.length !== 2 || !previewAction) return;
 
+  document.getElementById("editor")?.classList.add("editor-workspace-ready");
   const mobile = window.matchMedia("(max-width: 760px)");
   function setView(view, fromInsidePanel = false) {
     if (view !== "edit" && view !== "preview") return;
