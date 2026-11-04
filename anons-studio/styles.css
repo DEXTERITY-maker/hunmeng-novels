@@ -1020,3 +1020,35 @@ html.whats-new-visible{overflow:hidden}
  .manual-purchase-actions button,.manual-purchase-actions a{width:100%}
  .manual-order-item-actions button{flex:1 1 auto}
 }
+
+
+/* Stage 8 — three new Business compositions and user-selected manual plans. */
+.template-card-premium{position:relative;border-color:#dbcee8;background:linear-gradient(180deg,#fff,#faf7ff);box-shadow:0 12px 35px #44306c18}
+.template-card-premium .template-info{padding-top:15px}
+.template-card-premium .template-info strong{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.template-card-premium .template-info em{font-style:normal;letter-spacing:.06em;text-transform:uppercase;font-size:9px;background:#3e265d;color:white;border-radius:5px;padding:4px 6px}
+.template-card-premium.template-locked .template-info em{background:#e2d7f3;color:#664e88}
+.preview-business-brief,.preview-business-pitch,.preview-business-report{position:relative;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;overflow:hidden;min-height:190px;padding:20px 23px;isolation:isolate}
+.preview-business-brief{background:linear-gradient(145deg,#071f32,#174f60);color:#f6fffe}
+.preview-business-pitch{background:linear-gradient(135deg,#271836,#684269);color:#fff4e8}
+.preview-business-report{background:linear-gradient(150deg,#f5f8fc,#dce8ef);color:#20374c}
+.preview-business-brief::before,.preview-business-pitch::before,.preview-business-report::before{content:"";position:absolute;pointer-events:none;z-index:-1}
+.preview-business-brief::before{right:-20%;top:14%;width:90%;height:76%;border:1px solid #8af9e26e;transform:rotate(-26deg);border-radius:18px;box-shadow:0 0 0 21px #8af9e210,0 0 0 45px #8af9e20b}
+.preview-business-pitch::before{right:-18%;top:-16%;height:120%;width:71%;border-radius:50%;border:24px solid #ffc57955;box-shadow:0 0 0 25px #ffc57914}
+.preview-business-report::before{right:-15%;bottom:-15%;width:90%;height:68%;background:repeating-linear-gradient(0deg,transparent 0 16px,#195c791a 17px 18px);transform:skewY(-11deg)}
+.template-card-premium .business-preview-eyebrow,.template-card-premium .business-preview-foot{font-size:9px;font-weight:850;letter-spacing:.15em;z-index:1}
+.preview-business-brief .business-preview-eyebrow{color:#8ff6e0}
+.preview-business-pitch .business-preview-eyebrow{color:#ffd59a}
+.preview-business-report .business-preview-eyebrow{color:#326a86}
+.template-card-premium .preview-heading{position:relative!important;font-size:30px!important;font-weight:900;line-height:1.07;letter-spacing:-.045em;z-index:1;margin:21px 0 18px;color:inherit}
+.template-card-premium .business-preview-line{width:70%;height:4px;border-radius:2px;background:currentColor;opacity:.42;margin-bottom:13px}
+.template-card-premium .business-preview-foot{opacity:.7}
+.template-card-premium.template-locked::after{content:"Доступен в Бизнес";position:absolute;top:11px;right:11px;background:#241c39dc;color:#fff;font-size:9px;font-weight:800;padding:7px 9px;border-radius:7px;z-index:3}
+.template-card-premium:not(.template-locked)::after{content:"Доступ открыт";position:absolute;top:11px;right:11px;background:#d5f5e7;color:#15543d;font-size:9px;font-weight:800;padding:7px 9px;border-radius:7px;z-index:3}
+.manual-plan-select{display:grid;gap:8px;margin:19px 0 12px;max-width:470px}
+.manual-plan-select label{font-size:12px;font-weight:850;color:#4d356c}
+.manual-plan-select select{width:100%;min-height:46px;padding:10px 15px;border-radius:12px;border:1px solid #baa6d7;background:white;color:#35234d;font-size:13px;font-weight:750}
+.manual-plan-select p{margin:1px 0 0;font-size:11px;font-weight:700;color:#79658e}
+.manual-plan-link{display:inline-flex;justify-content:center;text-align:center;margin-top:8px;border-color:#d8c5e7!important;background:#f8f3ff!important;color:#6b4390!important}
+.manual-plan-link:hover{background:#ebdcfa!important}
+@media(max-width:520px){.preview-business-brief,.preview-business-pitch,.preview-business-report{min-height:185px}.template-card-premium .preview-heading{font-size:27px!important}.manual-plan-select{max-width:100%}}
