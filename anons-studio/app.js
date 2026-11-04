@@ -30,13 +30,16 @@
   };
   const businessTemplates=new Set(["business-brief","business-pitch","business-report"]);
   const proTemplates=new Set(["pro-campaign","pro-magazine","pro-impact"]);
-  const templates = new Set(["aurora","editorial","spotlight","pulse","minimal","bulletin",...businessTemplates,...proTemplates]);
+  const studioTemplates=new Set(["studio-identity","studio-launch","studio-portfolio"]);
+  const templates = new Set(["aurora","editorial","spotlight","pulse","minimal","bulletin",...businessTemplates,...proTemplates,...studioTemplates]);
   let currentPlan="free";
   const businessAllowed=()=>["basic","pro","studio"].includes(currentPlan);
   const proAllowed=()=>currentPlan==="pro"||currentPlan==="studio";
+  const studioAllowed=()=>currentPlan==="studio";
   const canUseTemplate=template=>templates.has(template)
     &&(!businessTemplates.has(template)||businessAllowed())
-    &&(!proTemplates.has(template)||proAllowed());
+    &&(!proTemplates.has(template)||proAllowed())
+    &&(!studioTemplates.has(template)||studioAllowed());
   let pendingPremiumTemplate=null;
   const MAX_CARDS=8;
   const Graphics=window.AnonsGraphics; // Exact allowlisted shapes used by server PNG exports.
@@ -618,12 +621,15 @@
   }));
   const themeForTemplate={aurora:"ultraviolet",editorial:"paper",spotlight:"sunset",pulse:"ink",minimal:"paper",bulletin:"emerald",
     "business-brief":"ink","business-pitch":"sunset","business-report":"paper",
-    "pro-campaign":"ink","pro-magazine":"ink","pro-impact":"sunset"};
+    "pro-campaign":"ink","pro-magazine":"ink","pro-impact":"sunset",
+    "studio-identity":"ink","studio-launch":"sunset","studio-portfolio":"paper"};
   function changeTemplate(next) {
     if(!templates.has(next))return;
     if(!canUseTemplate(next)){
       syncFields();
-      showToast(proTemplates.has(next)
+      showToast(studioTemplates.has(next)
+        ?"Шаблоны «Студия» доступны только с активной подпиской «Студия»."
+        :proTemplates.has(next)
         ?"Шаблоны «Про» доступны на тарифах «Про» и «Студия»."
         :"Шаблоны «Бизнес» доступны по платной подписке. Откройте тарифы для заказа.");
       return;
@@ -1410,10 +1416,12 @@
     document.querySelectorAll("#template-select option").forEach(option=>{
       if(businessTemplates.has(option.value))option.disabled=!businessAllowed();
       if(proTemplates.has(option.value))option.disabled=!proAllowed();
+      if(studioTemplates.has(option.value))option.disabled=!studioAllowed();
     });
     const selection=document.getElementById("template-select");
-    if(selection)selection.title=proAllowed()?"Все шаблоны доступны":
-      businessAllowed()?"Дополнительные композиции «Про» доступны в старших тарифах":
+    if(selection)selection.title=studioAllowed()?"Все шаблоны доступны":
+      proAllowed()?"Композиции «Студия» доступны только на старшем тарифе":
+      businessAllowed()?"Дополнительные композиции «Про» и «Студия» доступны в старших тарифах":
       "Платные шаблоны открываются при действующей подписке";
     for(const id of ["pro-series-generate","pro-series-apply","pro-series-template"]){
       const control=$(id);
@@ -1430,7 +1438,7 @@
     }
   });
   document.querySelectorAll("#template-select option").forEach(option=>{
-    if(businessTemplates.has(option.value)||proTemplates.has(option.value))option.disabled=true;
+    if(businessTemplates.has(option.value)||proTemplates.has(option.value)||studioTemplates.has(option.value))option.disabled=true;
   });
   window.AnonsEditor=Object.freeze({
     getSnapshot,
@@ -1463,7 +1471,7 @@
   const requestedTemplate=editorUrl.searchParams.get("template");
   if(requestedTemplate && templates.has(requestedTemplate)){
     if(canUseTemplate(requestedTemplate))changeTemplate(requestedTemplate);
-    else if(businessTemplates.has(requestedTemplate)||proTemplates.has(requestedTemplate)){
+    else if(businessTemplates.has(requestedTemplate)||proTemplates.has(requestedTemplate)||studioTemplates.has(requestedTemplate)){
       pendingPremiumTemplate=requestedTemplate;
     }
     editorUrl.searchParams.delete("template");
