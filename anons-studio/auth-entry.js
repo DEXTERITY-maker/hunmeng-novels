@@ -7,7 +7,8 @@ const client=createClient("https://kvgnjsntumofwqhywiea.supabase.co","sb_publish
   auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}
 });
 const byId=id=>document.getElementById(id);
-const library=initLibrary(client);
+const library=document.getElementById("library-guest")
+  ?initLibrary(client):{setUser(){},async flushPending(){return true;}};
 const billing=initBilling(client);
 window.AnonsBilling=billing;
 const guest=byId("account-guest");
@@ -21,6 +22,10 @@ const accountEmail=byId("account-email-signed");
 const accountPlan=byId("account-plan-signed");
 const status=byId("account-status");
 const navAccount=byId("nav-account");
+const accountPage=Boolean(guest&&signed&&recovery);
+const RECOVERY_HANDOFF_KEY="anons-studio:password-recovery-handoff";
+// Keep the previously allowlisted provider return URL and hand off password
+// recovery to account.html after Supabase finishes establishing the session.
 const AUTH_RETURN_URL="https://anons-studio-preview.pages.dev/";
 const SIGNUP_MIN_PASSWORD=10;
 let mode="signup";
@@ -44,10 +49,12 @@ const readableError=err=>{
 };
 const setBusy=(button,value)=>{button.disabled=value;button.setAttribute("aria-busy",String(value));};
 function showMessage(text,isError=false){
+  if(!message)return;
   message.textContent=text;
   message.classList.toggle("error",Boolean(isError));
 }
 function showPanels(user){
+  if(!accountPage)return;
   if(recovering){
     guest.hidden=true;signed.hidden=true;recovery.hidden=false;
   }else{
@@ -55,6 +62,7 @@ function showPanels(user){
   }
 }
 function setMode(next){
+  if(!accountPage)return;
   mode=["signup","login","reset-request"].includes(next)?next:"signup";
   document.querySelectorAll("[data-account-mode]").forEach(b=>{
     const active=b.dataset.accountMode===mode;
@@ -78,28 +86,37 @@ function renderGuest(){
   currentAccountId=null;
   showPanels(null);
   navAccount.textContent="Войти";
-  status.textContent="Гость · Free";
+  if(status)status.textContent="Гость · Free";
   library.setUser(null);
   billing.setUser(null);
 }
 // Clear protected UI immediately when Auth reports that the current user
 // signed out or another user took over. Never wait for membership requests.
+function clearPrivateDraft(){
+  if(window.AnonsEditor?.newDraft){window.AnonsEditor.newDraft();return;}
+  // The editor is not mounted on account.html, so clear any cached draft that
+  // belongs to the previous user before another person opens the editor.
+  try{
+    localStorage.removeItem("anons-studio:mvp-v1");
+    localStorage.removeItem("anons-studio:cloud-active-v05");
+  }catch{}
+}
 function hidePreviousAccount(){
   const hadAccount=Boolean(currentAccountId);
   renderGuest();
   publishEntitlements("free",false);
-  if(hadAccount)window.AnonsEditor?.newDraft?.();
+  if(hadAccount)clearPrivateDraft();
 }
 function renderUser(user,plan){
-  accountEmail.textContent=user.email||"Аккаунт";
+  if(accountEmail)accountEmail.textContent=user.email||"Аккаунт";
   const labels={free:"Free",basic:"Basic",pro:"Pro",studio:"Studio"};
   const label=labels[plan]||"Free";
-  accountPlan.textContent=label;
-  status.textContent="Аккаунт · "+label;
+  if(accountPlan)accountPlan.textContent=label;
+  if(status)status.textContent="Аккаунт · "+label;
   navAccount.textContent="Мой аккаунт";
   showPanels(user);
   // If an account was switched or signed out, private drafts must not leak to the next account.
-  if(currentAccountId&&currentAccountId!==user.id)window.AnonsEditor?.newDraft?.();
+  if(currentAccountId&&currentAccountId!==user.id)clearPrivateDraft();
   currentAccountId=user.id;
   library.setUser(user);
   billing.setUser(user);
@@ -113,7 +130,7 @@ async function refreshAccount(session){
   if(!uid){
     const wasSignedIn=Boolean(currentAccountId);
     renderGuest();
-    if(wasSignedIn)window.AnonsEditor?.newDraft?.();
+    if(wasSignedIn)clearPrivateDraft();
     publishEntitlements("free",false);
     return;
   }
@@ -122,7 +139,7 @@ async function refreshAccount(session){
   if(validationError||!validated?.user||validated.user.id!==uid){
     const wasSignedIn=Boolean(currentAccountId);
     renderGuest();
-    if(wasSignedIn)window.AnonsEditor?.newDraft?.();
+    if(wasSignedIn)clearPrivateDraft();
     publishEntitlements("free",false);
     showMessage("Сеанс больше не действителен. Войди повторно.",true);
     return;
@@ -151,9 +168,10 @@ function checkPasswords(password,confirmPassword){
   if(password!==confirmPassword)return "Пароли не совпадают.";
   return "";
 }
-setMode("signup");
 renderGuest();
 publishEntitlements("free",false);
+if(accountPage){
+setMode("signup");
 document.querySelectorAll("[data-account-mode]").forEach(b=>b.addEventListener("click",()=>setMode(b.dataset.accountMode)));
 byId("account-forgot").addEventListener("click",()=>setMode("reset-request"));
 byId("account-back-login").addEventListener("click",()=>setMode("login"));
@@ -256,6 +274,7 @@ async function signOut(scope){
 }
 byId("account-logout").addEventListener("click",()=>signOut("local"));
 byId("account-logout-all").addEventListener("click",()=>signOut("global"));
+}
 window.addEventListener('anons:billing-updated',()=>{
   client.auth.getSession().then(({data})=>refreshAccount(data.session)).catch(()=>{});
 });
@@ -277,16 +296,31 @@ client.auth.onAuthStateChange((event,session)=>{
         try{owner=JSON.parse(raw)?.userId||null;}catch{}
         if(!incomingId || owner!==incomingId){
           localStorage.removeItem(activeKey);
-          window.AnonsEditor?.newDraft?.();
+          clearPrivateDraft();
         }
       }
     }catch{}
   }
   if(event==="PASSWORD_RECOVERY"){
+    if(!accountPage){
+      try{sessionStorage.setItem(RECOVERY_HANDOFF_KEY,"1");}catch{}
+      window.location.assign("./account.html#account");
+      return;
+    }
     recovering=true;
     showPanels(session?.user||null);
     showMessage("Подтверди новый пароль.");
     window.location.hash="account";
+  }else if(event==="INITIAL_SESSION"&&accountPage&&incomingId){
+    // Auth recovery initially redirects to the existing allowlisted home URL.
+    try{
+      if(sessionStorage.getItem(RECOVERY_HANDOFF_KEY)==="1"){
+        sessionStorage.removeItem(RECOVERY_HANDOFF_KEY);
+        recovering=true;
+        showPanels(session.user);
+        showMessage("Подтверди новый пароль.");
+      }
+    }catch{}
   }else if(event==="SIGNED_OUT"){
     recovering=false;
     setMode("login");
