@@ -468,21 +468,45 @@
     // Structured, legible highlights
     const points=state.points.split(/\r?\n/).map(x=>x.trim()).filter(Boolean).slice(0,3);
     const list=points.length?points:["Важная информация","Следите за новостями"];
-    const rowHeight=scene.highlightRowHeight;
-    const top=detailsY;
+    const h=window.AnonsScene.highlightGeometry(scene,list.length);
+    const top=detailsY,rowHeight=h.rowHeight;
     ctx.save();
     ctx.translate(scene.offsets.highlights.x*W/100,scene.offsets.highlights.y*H/100);
-    ctx.save();roundedRect(margin,top-27,contentWidth,28+list.length*rowHeight+21,23);
-    ctx.fillStyle=rgba(t.text,.085);
-    if(layout==="minimal"||layout==="editorial"){ctx.strokeStyle=rgba(t.text,.3);ctx.lineWidth=2;ctx.stroke();}
-    else ctx.fill();
-    ctx.restore();
+    if(h.style!=="separated"){
+      ctx.save();
+      roundedRect(margin,h.top,h.width,h.height,23);
+      if(h.style==="outline"||layout==="minimal"||layout==="editorial"){
+        ctx.strokeStyle=rgba(t.text,.36);ctx.lineWidth=2;ctx.stroke();
+      }else{
+        ctx.fillStyle=rgba(t.text,.085);ctx.fill();
+      }
+      ctx.restore();
+    }
     list.forEach((p,i)=>{
       const cy=top+i*rowHeight+16;
-      ctx.fillStyle=t.accent;ctx.beginPath();ctx.arc(margin+31,cy+9,11,0,2*Math.PI);ctx.fill();
+      if(h.featured===i){
+        ctx.save();
+        roundedRect(margin+13,h.top+12+i*rowHeight,contentWidth-26,rowHeight-3,12);
+        ctx.fillStyle=rgba(t.accent,.16);ctx.fill();ctx.restore();
+      }
+      if(h.style==="separated"&&i>0){
+        ctx.strokeStyle=rgba(t.text,.22);ctx.lineWidth=2;
+        ctx.beginPath();ctx.moveTo(margin+12,h.top+12+i*rowHeight);
+        ctx.lineTo(margin+contentWidth-12,h.top+12+i*rowHeight);ctx.stroke();
+      }
+      const kind=h.icons[i];
+      ctx.fillStyle=t.accent;
+      if(kind==="dot"){
+        ctx.beginPath();ctx.arc(margin+31,cy+9,11,0,2*Math.PI);ctx.fill();
+      }else{
+        ctx.save();ctx.translate(margin+19,cy-3);
+        ctx.scale(24/100,24/100);ctx.fill(new Path2D(Graphics.paths[kind]));
+        ctx.restore();
+      }
       ctx.fillStyle=t.text;ctx.font="700 "+(H<=1100?27:30)+"px Manrope,sans-serif";
       let short=p;
-      while(window.AnonsScene.textWidth(short,H<=1100?27:30)>contentWidth-112 && short.length>1)short=short.slice(0,-1);
+      while(window.AnonsScene.textWidth(short,H<=1100?27:30)>contentWidth-112&&short.length>1)
+        short=short.slice(0,-1);
       if(short!==p)short=short.slice(0,-1)+"…";
       ctx.fillText(short,margin+63,cy+18);
     });
