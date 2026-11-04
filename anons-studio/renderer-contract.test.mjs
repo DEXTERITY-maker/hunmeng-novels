@@ -23,9 +23,9 @@ test("premium handler imports both versioned rendering contracts",()=>{
   assert.match(handler,/IMAGE_TOO_LARGE/);
 });
 
-test("all six templates render finite geometry in every supported format",()=>{
+test("all twelve templates render finite geometry in every supported format",()=>{
   for(const ratio of ["portrait","square","story"]){
-    for(const template of ["aurora","editorial","spotlight","pulse","minimal","bulletin"]){
+    for(const template of ["aurora","editorial","spotlight","pulse","minimal","bulletin", "business-brief","business-pitch","business-report", "pro-campaign","pro-magazine","pro-impact"]){
       const info=Scene.layout({ratio,project:"Анонс"},{template,theme:"paper",titleShift:12});
       assert.ok(info.width===1080 && info.height>=1080);
       assert.ok(Number.isFinite(info.titleY)&&Number.isFinite(info.detailsY));
@@ -210,4 +210,28 @@ test("Business compositions have independent palettes and share stable server ge
     }
   }
   assert.equal(backgrounds.size,3);
+});
+
+test("Pro template palettes are distinct and shared with the server-side renderer",()=>{
+  const pro=[
+    ["pro-campaign","pulse","#091a2d"],
+    ["pro-magazine","editorial","#131b34"],
+    ["pro-impact","spotlight","#301135"]
+  ];
+  const seen=new Set();
+  for(const ratio of ["portrait","square","story"]){
+    for(const [id,base,color] of pro){
+      const scene=Scene.layout({ratio,project:"ПРОЕКТ"},{template:id,title:"Профессиональная серия"});
+      assert.equal(scene.proTemplate,id);
+      assert.equal(scene.businessTemplate,null);
+      assert.equal(scene.template,base);
+      assert.equal(scene.palette.bg1,color);
+      assert.ok(scene.titleY<scene.detailsY&&scene.detailsY<scene.footerY);
+      seen.add(scene.palette.bg1);
+    }
+  }
+  assert.equal(seen.size,3);
+  assert.match(handler,/PRO_SUBSCRIPTION_REQUIRED/);
+  assert.match(handler,/PRO_TEMPLATES\.has\(requestedTemplate\)/);
+  assert.match(handler,/\['pro','studio'\]\.includes\(member\.plan\)/);
 });
