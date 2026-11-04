@@ -154,17 +154,17 @@
                     <label for="description-scale">Размер описания <output id="description-scale-value" for="description-scale">100%</output></label>
                     <input id="description-scale" type="range" min="80" max="130" step="5" value="100">
                     <label for="title-offset-x">Заголовок: горизонтально <output id="title-offset-x-value" for="title-offset-x">0%</output></label>
-                    <input id="title-offset-x" type="range" min="-15" max="15" step="1" value="0">
+                    <input id="title-offset-x" type="range" min="-30" max="30" step="1" value="0">
                     <label for="title-offset-y">Заголовок: вертикально <output id="title-offset-y-value" for="title-offset-y">0%</output></label>
-                    <input id="title-offset-y" type="range" min="-12" max="12" step="1" value="0">
+                    <input id="title-offset-y" type="range" min="-30" max="30" step="1" value="0">
                     <label for="description-offset-x">Описание: горизонтально <output id="description-offset-x-value" for="description-offset-x">0%</output></label>
                     <input id="description-offset-x" type="range" min="-30" max="30" step="1" value="0">
                     <label for="description-offset-y">Описание: вертикально <output id="description-offset-y-value" for="description-offset-y">0%</output></label>
-                    <input id="description-offset-y" type="range" min="-12" max="12" step="1" value="0">
+                    <input id="description-offset-y" type="range" min="-30" max="30" step="1" value="0">
                     <label for="highlights-offset-x">Детали: горизонтально <output id="highlights-offset-x-value" for="highlights-offset-x">0%</output></label>
                     <input id="highlights-offset-x" type="range" min="-30" max="30" step="1" value="0">
                     <label for="highlights-offset-y">Детали: вертикально <output id="highlights-offset-y-value" for="highlights-offset-y">0%</output></label>
-                    <input id="highlights-offset-y" type="range" min="-12" max="12" step="1" value="0">
+                    <input id="highlights-offset-y" type="range" min="-30" max="30" step="1" value="0">
                     <label for="photo-offset-x">Фото: горизонтально <output id="photo-offset-x-value" for="photo-offset-x">0%</output></label>
                     <input id="photo-offset-x" type="range" min="-30" max="30" step="1" value="0">
                     <label for="photo-offset-y">Фото: вертикально <output id="photo-offset-y-value" for="photo-offset-y">0%</output></label>
@@ -260,8 +260,8 @@
                 <div class="direct-transform-actions" role="group" aria-label="Изменение размера и поворота фигуры">
                   <button type="button" id="direct-smaller" disabled aria-label="Уменьшить фигуру">− Размер</button>
                   <button type="button" id="direct-larger" disabled aria-label="Увеличить фигуру">+ Размер</button>
-                  <button type="button" id="direct-rotate-left" disabled aria-label="Повернуть фигуру влево">↶ 15°</button>
-                  <button type="button" id="direct-rotate-right" disabled aria-label="Повернуть фигуру вправо">↷ 15°</button>
+                  <button type="button" id="direct-rotate-left" disabled aria-label="Повернуть фигуру влево"><svg class="ui-icon" aria-hidden="true"><use href="./assets/ui-icons.svg#rotate-ccw"></use></svg> −15°</button>
+                  <button type="button" id="direct-rotate-right" disabled aria-label="Повернуть фигуру вправо"><svg class="ui-icon" aria-hidden="true"><use href="./assets/ui-icons.svg#redo"></use></svg> +15°</button>
                 </div>
               </div>
               <div class="preview-actions"><button type="button" class="btn btn-primary export-btn" id="export"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="./assets/ui-icons.svg#download"></use></svg> Скачать PNG</button><button type="button" class="btn btn-secondary" id="export-all"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="./assets/ui-icons.svg#download"></use></svg> Все карточки ZIP</button><button type="button" class="btn btn-secondary" id="copy"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="./assets/ui-icons.svg#copy"></use></svg> Скопировать текст <svg class="ui-icon" aria-hidden="true" focusable="false"><use href="./assets/ui-icons.svg#arrow-up-right"></use></svg></button></div>
