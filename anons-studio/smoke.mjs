@@ -10,7 +10,7 @@ const cloudflareHeaders=await readFile(join(root,"_headers"),"utf8");
 assert.match(cloudflareHeaders,/Content-Security-Policy:.*script-src 'self'/);
 assert.match(cloudflareHeaders,/X-Content-Type-Options: nosniff/);
 const types = { ".html": "text/html; charset=utf-8", ".css": "text/css; charset=utf-8", ".js": "application/javascript; charset=utf-8", ".webp": "image/webp" };
-const allow = new Set(["/","/index.html","/account.html","/styles.css","/app.js","/navigation.js","/whats-new.js","/scene-layout.js","/auth.bundle.js","/assets/anons-logo-approved.webp","/assets/anons-icon-approved.webp"]);
+const allow = new Set(["/","/index.html","/account.html","/editor.html","/templates.html","/features.html","/pricing.html","/styles.css","/app.js","/navigation.js","/whats-new.js","/scene-layout.js","/auth.bundle.js","/assets/anons-logo-approved.webp","/assets/anons-icon-approved.webp"]);
 const server = createServer(async (req,res)=>{
   const url = new URL(req.url, "http://localhost");
   const path = url.pathname === "/" ? "/index.html" : url.pathname;
@@ -52,7 +52,12 @@ try {
     const errors=[];
     page.on("pageerror",error=>errors.push(error.message));
     await page.goto("http://127.0.0.1:"+port,{waitUntil:"domcontentloaded"});
-    await page.locator("#poster").waitFor();
+    assert.ok(await page.locator("#hero-title").isVisible(),"Home stays a presentation page");
+    assert.equal(await page.locator("#poster").count(),0,"Editor moved to its own route");
+    for(const path of ["editor.html","templates.html","features.html","pricing.html"]){
+      assert.equal(await page.locator('#primary-navigation a[href="./'+path+'"]').count(),1,
+        "Home navigation links to the standalone "+path+" page");
+    }
     // Native dialog announces new features once per release and stays
     // available from the footer without disturbing ordinary page visits.
     const releaseDialog=page.locator("#whats-new-dialog");
@@ -86,8 +91,10 @@ try {
     assert.equal(await releaseDialog.evaluate(d=>d.open),true,
       "Publishing a new release identifier reopens the announcement");
     await page.locator("#whats-new-try").click();
-    assert.equal(await releaseDialog.evaluate(d=>d.open),false,"CTA closes the modal");
-    assert.equal(new URL(page.url()).hash,"#editor","CTA opens the editor section");
+    await page.waitForURL(/\/editor\.html$/);
+    await page.locator("#poster").waitFor();
+    assert.equal(await releaseDialog.count(),0,"Announcement was left on the home page");
+    assert.equal(new URL(page.url()).pathname,"/editor.html","CTA opens the independent editor");
     assert.ok(await page.locator("#library-guest").isVisible(),"Guests see login invitation for cloud library");
     assert.equal(await page.locator("#library-auth").isVisible(),false,"Guests cannot see private project controls");
     assert.equal(await page.locator("#library-list").count(),1);
@@ -127,9 +134,22 @@ try {
     assert.ok((await page.evaluate(async()=> (await fetch("/assets/anons-icon-approved.webp")).status))===200,"Approved favicon must load");
     assert.equal(await page.evaluate(async()=> (await fetch("/auth.bundle.js")).status),200);
     await page.waitForFunction(()=>document.querySelector(".preview-caption")?.textContent?.includes("Free"));
-    assert.equal(await page.locator("#pricing .plan").count(),4);
-    await page.waitForFunction(()=>document.querySelector("#billing-availability")?.textContent?.toLowerCase().includes("покупки"));
-    assert.ok(await page.locator("#buy-basic").isDisabled(),"Cannot charge without merchant configuration");
+    const pricingPage=await context.newPage();
+    await pricingPage.route("https://fonts.googleapis.com/**",r=>r.abort());
+    await pricingPage.route("https://fonts.gstatic.com/**",r=>r.abort());
+    await pricingPage.route("**/functions/v1/anons-billing?action=config",r=>r.fulfill({
+      status:200,contentType:"application/json",
+      headers:{"access-control-allow-origin":"*","access-control-allow-headers":"*"},
+      body:JSON.stringify({enabled:false,autoRenew:false,periodDays:30,prices:{basic:29900,pro:49900,studio:99900}})
+    }));
+    await pricingPage.goto("http://127.0.0.1:"+port+"/pricing.html",{waitUntil:"domcontentloaded"});
+    assert.ok(await pricingPage.locator(".inner-page-hero h1").isVisible());
+    assert.equal(await pricingPage.locator("#pricing .plan").count(),4);
+    await pricingPage.waitForFunction(()=>document.querySelector("#billing-availability")?.textContent?.toLowerCase().includes("покупки"));
+    assert.ok(await pricingPage.locator("#buy-basic").isDisabled(),"Cannot charge without merchant configuration");
+    assert.equal(await pricingPage.locator("button.plan-action[disabled]").count(),3,
+      "Unavailable tariffs must not accept payment");
+    await pricingPage.close();
     assert.equal(await page.locator("#account-form").count(),0,"Account form lives only on account.html");
     assert.equal(await page.locator("#account").count(),0,"Personal space is no longer embedded on home");
     assert.equal(await page.locator("#nav-account").getAttribute("href"),"./account.html");
@@ -149,7 +169,7 @@ try {
       assert.equal(await mobileMenu.evaluate(el=>document.activeElement===el),true,
         "Escape restores keyboard focus to toggle");
       await mobileMenu.click();
-      await primaryNav.locator('a[href="#editor"]').click();
+      await primaryNav.locator('a[href="./editor.html#library"]').click();
       assert.equal(await primaryNav.isVisible(),false,"Choosing a section closes menu");
       assert.equal(await mobileMenu.getAttribute("aria-expanded"),"false");
       await page.setViewportSize({width:320,height:920});
@@ -187,8 +207,13 @@ try {
     await page.reload({waitUntil:"domcontentloaded"});
     assert.equal(await page.locator("#title").inputValue(),"Новости моего проекта");
     assert.equal(await page.locator("#ratio").inputValue(),"story");
-    assert.equal(await page.locator("[data-template]").count(),6,"Six distinct template choices");
+    assert.equal(await page.locator("[data-template]").count(),0,"Gallery now has its own page");
+    await page.goto("http://127.0.0.1:"+port+"/templates.html",{waitUntil:"domcontentloaded"});
+    assert.equal(await page.locator("[data-template]").count(),6,"Six working template choices");
     await page.locator("[data-template=editorial]").click();
+    await page.waitForFunction(()=>window.AnonsEditor?.getSnapshot().cards[0].template==="editorial");
+    assert.equal(new URL(page.url()).pathname,"/editor.html","A gallery choice opens the editor");
+    assert.equal(new URL(page.url()).search,"","Selected template is applied only once");
     assert.equal(await page.locator("#template-select").inputValue(),"editorial");
     assert.equal(await page.locator("#theme-label").textContent(),"Светлый — мягкий и редакционный");
     await page.locator("#advanced-panel summary").click();
@@ -266,7 +291,7 @@ try {
     assert.equal(await personal.locator("#poster").count(),0,"Account page does not load editor Canvas");
     assert.equal(await personal.locator("#library-auth").count(),0,"Cloud library remains in editor view");
     assert.equal(await personal.locator("#nav-account").getAttribute("href"),"./account.html");
-    assert.equal(await personal.locator('.account-destinations a[href="./index.html#library"]').count(),1);
+    assert.equal(await personal.locator('.account-destinations a[href="./editor.html#library"]').count(),1);
     await personal.locator("[data-account-mode=login]").click();
     assert.match(await personal.locator("#account-submit").textContent(),/Войти/);
     assert.ok(await personal.locator("#account-forgot").isVisible(),"Forgot-password entry point");
@@ -306,7 +331,6 @@ try {
     assert.ok((await readFile(await download.path())).length>20000,"Downloaded PNG should contain image data");
     assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+2),"No horizontal overflow");
     assert.deepEqual(errors,[],"No browser JS errors");
-    assert.equal(await page.locator("button.plan-action[disabled]").count(),3,"No deceptive payment actions");
     // A forged browser premium flag must not bypass the paid server endpoint.
     let unauthorizedDownloads=0;
     const observer=()=>unauthorizedDownloads++;
@@ -350,7 +374,7 @@ try {
     const page=await context.newPage();
     await page.route("https://fonts.googleapis.com/**",r=>r.abort());
     await page.route("https://fonts.gstatic.com/**",r=>r.abort());
-    await page.goto("http://127.0.0.1:"+port,{waitUntil:"domcontentloaded"});
+    await page.goto("http://127.0.0.1:"+port+"/editor.html",{waitUntil:"domcontentloaded"});
     await page.waitForFunction(()=>window.AnonsEditor?.getSnapshot);
     const librarySource=await readFile(join(dirname(fileURLToPath(import.meta.url)),"library-entry.js"),"utf8");
     await page.addScriptTag({content:librarySource.replace("export function initLibrary","window.__testInitLibrary = function initLibrary")});
