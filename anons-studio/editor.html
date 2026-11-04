@@ -16,6 +16,7 @@
   <script src="./graphic-elements.js" defer></script>
   <script src="./app.js" defer></script>
   <script src="./personal-styles.js" defer></script>
+  <script src="./brand-kit.js" defer></script>
   <script src="./editor-workspace.js" defer></script>
   <script src="./editor-direct.js" defer></script>
   <script src="./editor-layers.js" defer></script>
@@ -106,6 +107,42 @@
                 </div>
                 <p class="field-note" id="theme-label">Ультрафиолет — смелый и современный</p>
               </fieldset>
+
+              <section class="brand-kit-panel" id="brand-kit" aria-labelledby="brand-kit-title">
+                <div class="brand-kit-head">
+                  <div><span class="brand-kit-eyebrow">ФИРМЕННЫЙ СТИЛЬ</span><h5 id="brand-kit-title">Бренд-кит</h5></div>
+                  <span id="brand-kit-count" class="brand-kit-count">0 из 12</span>
+                </div>
+                <p class="brand-kit-intro">Сохраните название проекта, фирменный цвет, цветовую тему и шрифт. Один набор можно применить к текущей карточке или ко всему анонсу.</p>
+                <div class="brand-kit-field">
+                  <label for="brand-kit-name">Название набора</label>
+                  <div class="brand-kit-create">
+                    <input id="brand-kit-name" type="text" maxlength="48" autocomplete="off" placeholder="Например, Мой фирменный стиль">
+                    <button id="brand-kit-save" type="button">Сохранить</button>
+                  </div>
+                </div>
+                <div class="brand-kit-field">
+                  <label for="brand-kit-list">Сохранённые бренд-киты</label>
+                  <select id="brand-kit-list"><option value="">Бренд-китов пока нет</option></select>
+                </div>
+                <div id="brand-kit-preview" class="brand-kit-preview" hidden>
+                  <span id="brand-kit-preview-swatch" class="brand-kit-preview-swatch" aria-hidden="true"></span>
+                  <div><strong id="brand-kit-preview-brand"></strong><p id="brand-kit-preview-details"></p></div>
+                </div>
+                <fieldset class="brand-kit-target">
+                  <legend>Область применения</legend>
+                  <label><input type="radio" name="brand-kit-scope" value="active" checked> Только выбранная карточка</label>
+                  <label><input type="radio" name="brand-kit-scope" value="all"> Все карточки анонса</label>
+                </fieldset>
+                <div class="brand-kit-actions">
+                  <button id="brand-kit-apply" type="button" disabled>Применить</button>
+                  <button id="brand-kit-rename" type="button" disabled>Переименовать</button>
+                  <button id="brand-kit-delete" type="button" disabled>Удалить</button>
+                </div>
+                <p class="brand-kit-info">Название проекта обновляется для всего анонса. Цвет и шрифт применяются к выбранным карточкам. Текст, фото, композиция и размер изображения не заменяются. Изменение можно отменить.</p>
+                <p id="brand-kit-identity" class="brand-kit-identity">Коллекция этого браузера · без облачной синхронизации</p>
+                <p id="brand-kit-status" class="brand-kit-status" role="status" aria-live="polite"></p>
+              </section>
 
               <div class="field-group">
                 <label for="ratio">Формат изображения</label>
