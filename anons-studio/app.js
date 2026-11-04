@@ -30,14 +30,30 @@
   };
   const templates = new Set(["aurora","editorial","spotlight","pulse","minimal","bulletin"]);
   const MAX_CARDS=8;
-  const cardKeys=["title","description","points","preset","template","theme","accentColor","alignment","headingScale","decorations","photoOpacity"];
+  const Graphics=window.AnonsGraphics; // Exact allowlisted shapes used by server PNG exports.
+  if(!Graphics)throw new Error("GRAPHICS_MODULE_MISSING");
+  const textFonts=new Set(["auto","manrope","georgia","arial"]);
+  const layerAxes={title:["x","y"],description:["y"],highlights:["y"]};
+  const clamp=(value,min,max,fallback)=>Number.isFinite(Number(value))
+    ?Math.max(min,Math.min(max,Number(value))):fallback;
+  function normalizeOffsets(raw){
+    const values=raw&&typeof raw==="object"&&!Array.isArray(raw)?raw:{};
+    const result={title:{x:0,y:0},description:{x:0,y:0},highlights:{x:0,y:0}};
+    for(const [layer,axes] of Object.entries(layerAxes)){
+      for(const axis of axes)result[layer][axis]=Math.round(clamp(values[layer]?.[axis],-30,30,0));
+    }
+    return result;
+  }
+  const cardKeys=["title","description","points","preset","template","theme","accentColor","alignment","headingScale","decorations","photoOpacity","titleFont","descriptionScale","layerOffsets","graphicElements"];
   const limits={project:45,title:85,description:210,points:240};
   const defaults = { preset: "update", theme: "ultraviolet", ratio: "portrait", ...presets.update, imageData: "",
-    template:"aurora", headingScale:100, accentColor:"", alignment:"left", decorations:true, photoOpacity:35, activeCard:0, cards:[] };
+    template:"aurora", headingScale:100, accentColor:"", alignment:"left", decorations:true, photoOpacity:35,
+    titleFont:"auto",descriptionScale:100,layerOffsets:normalizeOffsets(null),graphicElements:[],
+    activeCard:0, cards:[] };
   let saved = {};
   try { saved = JSON.parse(localStorage.getItem(storageKey) || "{}") || {}; } catch (_) {}
   const state = { ...defaults };
-  for (const key of ["preset", "theme", "ratio", "project", "title", "description", "points", "imageData","template","accentColor","alignment"]) {
+  for (const key of ["preset", "theme", "ratio", "project", "title", "description", "points", "imageData","template","accentColor","alignment","titleFont"]) {
     if (typeof saved[key] === "string") state[key] = saved[key];
   }
   if (!presets[state.preset]) state.preset = "update";
@@ -49,6 +65,10 @@
   state.headingScale = Number.isFinite(saved.headingScale)?Math.max(80,Math.min(120,saved.headingScale)):100;
   state.photoOpacity = Number.isFinite(saved.photoOpacity)?Math.max(15,Math.min(85,saved.photoOpacity)):35;
   state.decorations = typeof saved.decorations === "boolean" ? saved.decorations : true;
+  state.titleFont=textFonts.has(state.titleFont)?state.titleFont:"auto";
+  state.descriptionScale=Math.round(clamp(saved.descriptionScale,80,130,100));
+  state.layerOffsets=normalizeOffsets(saved.layerOffsets);
+  state.graphicElements=Graphics.normalizeElements(saved.graphicElements);
   for (const key of ["project","title","description","points"]) state[key]=state[key].slice(0,limits[key]);
   const sanitizeCard = (v) => {
     const original=(v && typeof v==="object")?v:{};
@@ -63,6 +83,10 @@
     out.headingScale=Number.isFinite(original.headingScale)?Math.max(80,Math.min(120,original.headingScale)):state.headingScale;
     out.decorations=typeof original.decorations==="boolean"?original.decorations:state.decorations;
     out.photoOpacity=Number.isFinite(original.photoOpacity)?Math.max(15,Math.min(85,original.photoOpacity)):state.photoOpacity;
+    out.titleFont=textFonts.has(original.titleFont)?original.titleFont:state.titleFont;
+    out.descriptionScale=Math.round(clamp(original.descriptionScale,80,130,state.descriptionScale));
+    out.layerOffsets=normalizeOffsets(original.layerOffsets);
+    out.graphicElements=Graphics.normalizeElements(original.graphicElements);
     return out;
   };
   // Migration: keep a previously saved single-card project when upgrading v0.2.
@@ -71,6 +95,7 @@
   state.activeCard=Number.isInteger(saved.activeCard)?Math.min(Math.max(0,saved.activeCard),state.cards.length-1):0;
   Object.assign(state,state.cards[state.activeCard]);
   let photo = null;
+  let selectedGraphicIndex=-1;
   const paidAccess = { premium: false, plan: "free" };
   let toastTimer = null;
   let pendingRender = false;
@@ -142,6 +167,7 @@
     if(!Number.isInteger(index)||index<0||index>=state.cards.length)return;
     snapshotCard();
     state.activeCard=index;
+    selectedGraphicIndex=-1;
     Object.assign(state,state.cards[index]);
     syncFields();
     persist();
@@ -165,6 +191,34 @@
     $("current-card-label").textContent="Карточка "+(state.activeCard+1)+" / "+state.cards.length;
     $("add-card").disabled=$("duplicate-card").disabled=state.cards.length>=MAX_CARDS;
     $("remove-card").disabled=state.cards.length<=1;
+  }
+  function renderGraphicControls(){
+    const items=state.graphicElements;
+    if(!Array.isArray(items))return;
+    if(selectedGraphicIndex>=items.length)selectedGraphicIndex=items.length-1;
+    $("graphic-count").textContent=items.length+" из "+Graphics.MAX;
+    $("graphic-add").disabled=items.length>=Graphics.MAX;
+    const list=$("graphic-list");
+    list.replaceChildren();
+    items.forEach((item,index)=>{
+      const button=document.createElement("button");
+      button.type="button";
+      button.className="graphic-list-item"+(index===selectedGraphicIndex?" active":"");
+      button.setAttribute("aria-pressed",String(index===selectedGraphicIndex));
+      button.textContent=(index+1)+". "+Graphics.labels[item.kind];
+      button.addEventListener("click",()=>{selectedGraphicIndex=index;renderGraphicControls();});
+      list.appendChild(button);
+    });
+    const current=items[selectedGraphicIndex];
+    $("graphic-settings").hidden=!current;
+    $("graphic-remove").disabled=!current;
+    if(!current)return;
+    $("graphic-kind").value=current.kind;
+    for(const id of ["x","y","size","rotation","opacity"]){
+      $("graphic-"+id).value=current[id];
+      $("graphic-"+id+"-value").textContent=current[id]+(id==="rotation"?"°":"%");
+    }
+    $("graphic-color").value=current.color;
   }
   function syncCardAndSave() {
     snapshotCard();
@@ -198,6 +252,19 @@
     $("photo-opacity").value=state.photoOpacity;
     $("photo-opacity-value").textContent=state.photoOpacity+"%";
     $("ornaments").checked=state.decorations;
+    $("title-font").value=state.titleFont;
+    $("description-scale").value=state.descriptionScale;
+    $("description-scale-value").textContent=state.descriptionScale+"%";
+    const sliderIds=[
+      ["title-offset-x","title","x"],["title-offset-y","title","y"],
+      ["description-offset-y","description","y"],["highlights-offset-y","highlights","y"]
+    ];
+    for(const [id,layer,axis] of sliderIds){
+      const value=state.layerOffsets?.[layer]?.[axis]||0;
+      $(id).value=value;
+      $(id+"-value").textContent=(value>0?"+":"")+value+"%";
+    }
+    renderGraphicControls();
     renderCardTabs();
     $("clear-image").hidden = !state.imageData;
     $("image-name").textContent = state.imageData ? "Фото добавлено" : "PNG, JPG или WebP";
@@ -425,7 +492,8 @@
   $("duplicate-card").addEventListener("click",()=>{
     if(state.cards.length>=MAX_CARDS)return;
     snapshotCard();
-    state.cards.splice(state.activeCard+1,0,{...state.cards[state.activeCard]});
+    state.cards.splice(state.activeCard+1,0,sanitizeCard(
+      JSON.parse(JSON.stringify(state.cards[state.activeCard]))));
     activateCard(state.activeCard+1);
     showToast("Карточка продублирована.");
   });
@@ -435,6 +503,7 @@
     const index=state.activeCard;
     state.cards.splice(index,1);
     state.activeCard=Math.min(index,state.cards.length-1);
+    selectedGraphicIndex=-1;
     Object.assign(state,state.cards[state.activeCard]);
     syncFields();persist();scheduleRender();
     showToast("Карточка удалена.");
@@ -648,7 +717,8 @@
       schemaVersion:4,project:state.project,ratio:state.ratio,
       theme:state.theme,template:state.template,
       activeCard:state.activeCard,
-      cards:state.cards.map(card=>({...card})),
+      cards:state.cards.map(card=>({...card,layerOffsets:normalizeOffsets(card.layerOffsets),
+        graphicElements:Graphics.normalizeElements(card.graphicElements)})),
       imageData:state.imageData,
       accentColor:state.accentColor,alignment:state.alignment,
       headingScale:state.headingScale,photoOpacity:state.photoOpacity,
@@ -667,6 +737,7 @@
       state.ratio=sizes[raw.ratio]?raw.ratio:"portrait";
       state.cards=nextCards;
       state.activeCard=Number.isInteger(raw.activeCard)?Math.max(0,Math.min(nextCards.length-1,raw.activeCard)):0;
+      selectedGraphicIndex=-1;
       Object.assign(state,nextCards[state.activeCard]);
       state.imageData=data;
       photo=null;
