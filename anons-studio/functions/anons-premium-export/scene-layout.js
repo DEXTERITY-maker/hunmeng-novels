@@ -14,6 +14,11 @@
   const formats=Object.freeze({portrait:[1080,1350],square:[1080,1080],story:[1080,1920]});
   const layers=["decoration","photo","brand","title","description","highlights"];
   const presetLabels=Object.freeze({update:"ОБНОВЛЕНИЕ",launch:"ЗАПУСК",event:"СОБЫТИЕ",notice:"ОБЪЯВЛЕНИЕ"});
+  const decorations=Object.freeze({
+    subtle:Object.freeze({grid:.022,glow:.23,rings:.16,disc:.10,spark:.83,centerY:.235,ringRadius:158,ringStep:28,discRadius:125}),
+    balanced:Object.freeze({grid:.035,glow:.31,rings:.22,disc:.13,spark:.94,centerY:.255,ringRadius:173,ringStep:32,discRadius:136}),
+    expressive:Object.freeze({grid:.055,glow:.40,rings:.29,disc:.18,spark:1,centerY:.285,ringRadius:188,ringStep:37,discRadius:142})
+  });
   const clamp=(n,lo,hi,fallback)=>Number.isFinite(Number(n))?Math.max(lo,Math.min(hi,Number(n))):fallback;
   const rgb=(hex,a=1)=>{const n=Number.parseInt(hex.slice(1),16);return "rgba("+((n>>16)&255)+","+((n>>8)&255)+","+(n&255)+","+a+")";};
   function layout(snapshot={},card={}){
@@ -50,10 +55,13 @@
     const descriptionSize=Math.round((height<=1100?29:32)*descriptionScale/100);
     const highlightRowHeight=height<=1100?61:height>=1700?91:76;
     const imageOpacity=clamp(card.photoOpacity,15,85,35)/100;
+    const decorationLevel=Object.hasOwn(decorations,card.decorationLevel)?card.decorationLevel:"subtle";
+    const textSpacing=["compact","balanced","airy"].includes(card.textSpacing)?card.textSpacing:"balanced";
     return {
       width,height,format,theme,template,palette,order,enabled,offsets:Object.fromEntries(layers.map(name=>[name,offset(name)])),
       margin,contentWidth,titleY,detailsY,footerY,photo,imageOpacity,
-      titleBaseSize,titleFamily,titleWeight:effectiveWeight,titleTracking,
+      titleBaseSize,titleFamily,titleWeight:effectiveWeight,titleTracking,textSpacing,
+      decorationLevel,decorationTuning:decorations[decorationLevel],
       titleMaxHeight:Math.max(195,detailsY-titleY-225),
       descriptionSize,descriptionShift:Math.round(height*descShift/100),
       highlightRowHeight,
@@ -62,6 +70,27 @@
       label:presetLabels[card.preset]||"АНОНС",
       project:typeof snapshot.project==="string"?snapshot.project.slice(0,45):"МОЙ ПРОЕКТ"
     };
+  }
+  // Text position is based on the LAST drawn title baseline rather than
+  // the next unused baseline. This prevents an oversized empty gap after
+  // two-line headings without moving descriptions into the highlight box.
+  function descriptionTop(scene,titleSpec){
+    const count=Math.max(1,titleSpec.lines.length);
+    const lastBaseline=scene.titleY+titleSpec.size*.8+(count-1)*titleSpec.size*1.14;
+    const gap=scene.textSpacing==="compact"?44:scene.textSpacing==="airy"?86:62;
+    const reserved=scene.height<=1100?140:155;
+    return Math.round(Math.min(scene.detailsY-reserved,lastBaseline+gap))+scene.descriptionShift;
+  }
+  // Free exports retain several smaller diagonal watermarks, covering
+  // distinct areas without placing large opaque text across the heading.
+  function watermarkStamps(width,height,dark=true){
+    const scale=width/1080;
+    const marks=[[.28,.20,43,.15],[.72,.43,49,.14],[.34,.69,49,.15],[.73,.86,45,.14]];
+    return marks.map(([x,y,size,alpha])=>Object.freeze({
+      x:Math.round(width*x),y:Math.round(height*y),
+      size:Math.round(size*scale),alpha:dark?alpha:Math.min(.20,alpha+.035),
+      rotation:-.29
+    }));
   }
   // Deterministic line breaking for the preview and the Edge renderer.
   // Uses conservative font-independent width estimates; tests cover long Cyrillic.
@@ -121,5 +150,5 @@
     }
     return {size:Math.max(42,size),lines};
   }
-  root.AnonsScene=Object.freeze({layout,formats,themes,presetLabels,rgb,textWidth,breakLines,titleLines});
+  root.AnonsScene=Object.freeze({layout,formats,themes,presetLabels,rgb,textWidth,breakLines,titleLines,descriptionTop,watermarkStamps});
 })(globalThis);
