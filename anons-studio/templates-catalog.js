@@ -21,7 +21,13 @@
     "pro-impact":{name:"Pro Impact",categories:["launch","event"],keywords:"про акцент событие премьера яркий запуск",premium:true,proOnly:true},
     "studio-identity":{name:"Studio Identity",categories:["universal","update"],keywords:"студия фирменный стиль визуальная идентичность брендинг",premium:true,studioOnly:true},
     "studio-launch":{name:"Studio Launch",categories:["launch","event"],keywords:"студия презентация бренд премьера запуск",premium:true,studioOnly:true},
-    "studio-portfolio":{name:"Studio Portfolio",categories:["universal","news"],keywords:"студия портфолио кейсы проекты работы",premium:true,studioOnly:true}
+    "studio-portfolio":{name:"Studio Portfolio",categories:["universal","news"],keywords:"студия портфолио кейсы проекты работы",premium:true,studioOnly:true},
+    "agency-brand":{name:"Agency Brand",categories:["universal","update"],keywords:"агентство бренд айдентика клиент фирменный",premium:true,agencyOnly:true},
+    "agency-social":{name:"Agency Social",categories:["event","launch","update"],keywords:"агентство соцсети маркетинг публикация кампания контент",premium:true,agencyOnly:true},
+    "agency-showcase":{name:"Agency Showcase",categories:["universal","news"],keywords:"агентство кейсы портфолио достижения результаты",premium:true,agencyOnly:true},
+    "ultimate-signature":{name:"Ultimate Signature",categories:["universal","news"],keywords:"максимум элитный премиальный подпись фирменный",premium:true,ultimateOnly:true},
+    "ultimate-cinema":{name:"Ultimate Cinema",categories:["launch","event"],keywords:"максимум кинематографичный премьера анонс запуск",premium:true,ultimateOnly:true},
+    "ultimate-vision":{name:"Ultimate Vision",categories:["universal","update"],keywords:"максимум идея видение стратегия будущее",premium:true,ultimateOnly:true}
   };
 
   const search = document.getElementById("template-search");
@@ -50,7 +56,17 @@
   let paidAccess = false;
   let proAccess = false;
   let studioAccess = false;
-  const canOpen=info=>!info.premium||(paidAccess&&(!info.proOnly||proAccess)&&(!info.studioOnly||studioAccess));
+  let agencyAccess = false;
+  let ultimateAccess = false;
+  const tierLabel=info=>info.ultimateOnly?"Максимум":info.agencyOnly?"Агентство":
+    info.studioOnly?"Студия":info.proOnly?"Про":"Бизнес";
+  const tierCode=info=>info.ultimateOnly?"ultimate":info.agencyOnly?"agency":
+    info.studioOnly?"studio":info.proOnly?"pro":"basic";
+  const canOpen=info=>!info.premium||(paidAccess
+    &&(!info.proOnly||proAccess)
+    &&(!info.studioOnly||studioAccess)
+    &&(!info.agencyOnly||agencyAccess)
+    &&(!info.ultimateOnly||ultimateAccess));
   const cards = [];
 
   [...gallery.querySelectorAll(":scope > a.template-card")].forEach((link) => {
@@ -71,11 +87,11 @@
     item.append(button);
     if(info.premium){
       link.classList.toggle("template-locked",true);
-      link.setAttribute("aria-label",info.name+" — шаблон тарифа "+(info.studioOnly?"Студия":info.proOnly?"Про":"Бизнес"));
+      link.setAttribute("aria-label",info.name+" — шаблон тарифа "+tierLabel(info));
       link.addEventListener("click",event=>{
         if(!canOpen(info)){
           event.preventDefault();
-          window.location.assign("./pricing.html?plan="+(info.studioOnly?"studio":info.proOnly?"pro":"basic")+"#manual-order-root");
+          window.location.assign("./pricing.html?plan="+tierCode(info)+"#manual-order-root");
         }
       });
     }
@@ -102,8 +118,8 @@
       if(info.premium&&link){
         const allowed=canOpen(info);
         link.classList.toggle("template-locked",!allowed);
-        link.setAttribute("aria-label",info.name+(allowed?" — доступен":" — требуется подписка "+(info.studioOnly?"Студия":info.proOnly?"Про":"Бизнес")));
-        link.title=allowed?"Открыть в редакторе":"Для доступа требуется подписка "+(info.studioOnly?"Студия":info.proOnly?"Про":"Бизнес");
+        link.setAttribute("aria-label",info.name+(allowed?" — доступен":" — требуется подписка "+tierLabel(info)));
+        link.title=allowed?"Открыть в редакторе":"Для доступа требуется подписка "+tierLabel(info);
       }
       const selected = favorites.has(id);
       button.classList.toggle("is-favorite", selected);
@@ -133,9 +149,11 @@
     render();
   }));
   window.addEventListener("anons:access",event=>{
-    paidAccess=event.detail?.premium===true&&["basic","pro","studio"].includes(event.detail?.plan);
-    proAccess=paidAccess&&["pro","studio"].includes(event.detail?.plan);
-    studioAccess=paidAccess&&event.detail?.plan==="studio";
+    paidAccess=event.detail?.premium===true&&["basic","pro","studio","agency","ultimate"].includes(event.detail?.plan);
+    proAccess=paidAccess&&["pro","studio","agency","ultimate"].includes(event.detail?.plan);
+    studioAccess=paidAccess&&["studio","agency","ultimate"].includes(event.detail?.plan);
+    agencyAccess=paidAccess&&["agency","ultimate"].includes(event.detail?.plan);
+    ultimateAccess=paidAccess&&event.detail?.plan==="ultimate";
     render();
   });
   search.addEventListener("input", render);
