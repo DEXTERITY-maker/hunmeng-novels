@@ -11,6 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=Noto+Serif:wght@700;800&display=swap" rel="stylesheet">
   <link rel="icon" type="image/webp" href="./assets/anons-icon-approved.webp">
   <link rel="stylesheet" href="./styles.css">
+  <script src="./navigation.js" defer></script>
   <script src="./scene-layout.js" defer></script>
   <script src="./app.js" defer></script>
   <script src="./auth.bundle.js" defer></script>
@@ -19,7 +20,7 @@
   <div class="site-shell">
     <header class="topbar">
       <a href="#home" class="brand brand-image" aria-label="Anons Studio — главная"><img src="./assets/anons-logo-approved.webp" width="220" height="68" alt="Anons Studio" fetchpriority="high" decoding="async"></a>
-      <nav class="navigation" aria-label="Основная навигация">
+      <nav id="primary-navigation" class="navigation" aria-label="Основная навигация">
         <a href="#how">Как работает</a>
         <a href="#editor">Редактор</a>
         <a href="#templates">Шаблоны</a>
@@ -27,7 +28,10 @@
         <a href="#pricing">Тарифы</a>
         <a href="#library">Моя библиотека</a>
       </nav>
-      <a id="nav-account" class="header-action" href="#account">Войти</a>
+      <div class="topbar-actions">
+        <button type="button" id="mobile-menu-toggle" class="mobile-menu-toggle" aria-controls="primary-navigation" aria-expanded="false" aria-label="Открыть меню"><span class="mobile-menu-icon" aria-hidden="true">☰</span><span class="mobile-menu-label">Меню</span></button>
+        <a id="nav-account" class="header-action" href="#account">Войти</a>
+      </div>
     </header>
 
     <main id="home">
