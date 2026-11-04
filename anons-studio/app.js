@@ -1260,8 +1260,44 @@
     syncCardAndSave();
     return true;
   }
+  // Personal styles contain only visual settings of the active card.
+  // They never include project text, the uploaded photo, plan status, or other cards.
+  const personalStyleKeys=[
+    "template","theme","accentColor","alignment","headingScale","decorations",
+    "photoOpacity","titleFont","descriptionScale","layerOffsets","graphicElements",
+    "decorationLevel","textSpacing","composition","highlightStyle","highlightIcons",
+    "featuredHighlight","lockedLayers","layers","layerOrder"
+  ];
+  function getStyleSnapshot(){
+    snapshotCard();
+    return JSON.parse(JSON.stringify(Object.fromEntries(personalStyleKeys.map(k=>[k,state[k]]))));
+  }
+  function applyStyleSnapshot(raw){
+    if(!raw||typeof raw!=="object"||Array.isArray(raw))return false;
+    // Guard against unexpectedly large/corrupt browser data before sanitizing graphics.
+    let payload;
+    try{
+      const serialized=JSON.stringify(raw);
+      if(!serialized||serialized.length>32000)return false;
+      payload=JSON.parse(serialized);
+    }catch{return false;}
+    const patch={};
+    for(const key of personalStyleKeys){
+      if(Object.hasOwn(payload,key))patch[key]=payload[key];
+    }
+    if(!Object.keys(patch).length)return false;
+    const cleaned=sanitizeCard({...state,...patch});
+    selectedGraphicIndex=-1;
+    for(const key of personalStyleKeys)state[key]=cleaned[key];
+    syncFields();
+    historyKind="";
+    syncCardAndSave(); // preserves existing content/photo and records an undo step.
+    return true;
+  }
   window.AnonsEditor=Object.freeze({
     getSnapshot,
+    getStyleSnapshot,
+    applyStyleSnapshot,
     loadSnapshot,
     newDraft,
     getDirectTargets,
