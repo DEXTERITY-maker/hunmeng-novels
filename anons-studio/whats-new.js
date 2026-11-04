@@ -41,6 +41,7 @@
   dismiss.addEventListener("click", hide);
   close.addEventListener("click", hide);
   tryEditor.addEventListener("click", hide);
+  dialog.addEventListener("click",event=>{if(event.target.closest("a"))hide();});
   dialog.addEventListener("click", event => {
     // Clicking the translucent backdrop closes without requiring a precise tap.
     if (event.target === dialog) hide();
