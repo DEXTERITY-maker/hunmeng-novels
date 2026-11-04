@@ -17,6 +17,7 @@
   <script src="./app.js" defer></script>
   <script src="./editor-workspace.js" defer></script>
   <script src="./editor-direct.js" defer></script>
+  <script src="./editor-layers.js" defer></script>
   <script src="./auth.bundle.js" defer></script>
 </head>
 <body>
@@ -246,6 +247,27 @@
             <div class="preview-panel" id="editor-preview">
               <div class="panel-head preview-head"><div><span class="section-index">02 / ПРЕДПРОСМОТР</span><h3>Твой будущий пост</h3></div><span class="preview-badge" id="current-card-label">Карточка 1 / 1</span></div>
               <div class="preview-stage"><div class="canvas-holder"><canvas id="poster" width="1080" height="1350" role="img" aria-label="Предпросмотр оформленного анонса">Предпросмотр изображения недоступен в этом браузере.</canvas></div></div>
+              <section class="layer-stack-panel" aria-labelledby="layer-stack-title">
+                <div class="layer-stack-head">
+                  <div><span class="section-index">УПРАВЛЕНИЕ ОБЪЕКТАМИ</span><h4 id="layer-stack-title">Панель слоёв</h4></div>
+                  <span id="layer-stack-count">0 объектов</span>
+                </div>
+                <p class="field-note">Выберите слой, измените видимость или порядок. Фигуры можно переименовывать, копировать и объединять в группы.</p>
+                <div class="layer-stack-list" id="layer-stack-list" aria-label="Слои текущей карточки"></div>
+                <div class="layer-stack-actions">
+                  <label for="layer-rename-input">Название выбранной фигуры</label>
+                  <div class="layer-stack-rename">
+                    <input id="layer-rename-input" type="text" maxlength="48" placeholder="Имя элемента" disabled>
+                    <button id="layer-rename-save" type="button" disabled>Переименовать</button>
+                  </div>
+                  <div class="layer-stack-buttons">
+                    <button id="layer-copy" type="button" disabled>Дублировать фигуру</button>
+                    <button id="layer-group" type="button" disabled>Сгруппировать выбранные</button>
+                    <button id="layer-ungroup" type="button" disabled>Разгруппировать</button>
+                  </div>
+                </div>
+                <p id="layer-stack-status" class="layer-stack-status" role="status" aria-live="polite">Выберите объект для работы со слоями.</p>
+              </section>
               <div class="direct-editor-toolbar" aria-label="Прямое редактирование на холсте">
                 <div class="direct-editor-top">
                   <label class="direct-enable-label" for="direct-enable"><input id="direct-enable" type="checkbox"> Редактировать на изображении</label>
