@@ -6,9 +6,11 @@
   const list=$("layer-stack-list"),count=$("layer-stack-count"),status=$("layer-stack-status");
   const input=$("layer-rename-input"),save=$("layer-rename-save"),copy=$("layer-copy");
   const group=$("layer-group"),ungroup=$("layer-ungroup");
+  const search=$("layer-filter-search"),mode=$("layer-filter-mode"),results=$("layer-filter-results");
   if(!editor?.getLayerPanel||!editor?.changeLayerVisibility||
     !editor?.toggleLayerLock||!editor?.moveLayer||!editor?.groupGraphicLayers||
-    !list||!count||!status||!input||!save||!copy||!group||!ungroup)return;
+    !list||!count||!status||!input||!save||!copy||!group||!ungroup
+    ||!search||!mode||!results)return;
 
   let selected="",checked=new Set(),activeCard=-1,queued=false;
   function note(message){status.textContent=message;}
@@ -41,11 +43,19 @@
     const selectedRow=rows.find(row=>row.key===selected);
     list.replaceChildren();
     count.textContent=rows.length+" объектов";
+    // Visual filtering never alters layer visibility, saved order or selection.
+    const query=search.value.trim().toLocaleLowerCase("ru").slice(0,100);
+    const show=mode.value;
+    const matches=row=>(!query||row.label.toLocaleLowerCase("ru").includes(query))
+      &&(show==="all"||(show==="visible"?row.visible:!row.visible));
     const sections=[
-      {name:"Основные слои",rows:data.base},
-      {name:"Графические элементы",rows:[...data.figures].reverse()}
+      {name:"Основные слои",rows:data.base.filter(matches)},
+      {name:"Графические элементы",rows:[...data.figures].reverse().filter(matches)}
     ];
+    const displayed=sections.reduce((sum,section)=>sum+section.rows.length,0);
+    results.textContent="Показано "+displayed+" из "+rows.length;
     for(const section of sections){
+      if(!section.rows.length)continue;
       const heading=document.createElement("p");
       heading.className="layer-stack-group-heading";
       heading.textContent=section.name;
@@ -107,10 +117,12 @@
         list.appendChild(holder);
       }
     }
-    if(!data.figures.length){
+    if(!displayed||(!data.figures.length&&!query&&show==="all")){
       const empty=document.createElement("p");
       empty.className="layer-stack-empty";
-      empty.textContent="Фигуры отсутствуют. Добавьте их в разделе оформления.";
+      empty.textContent=!displayed&& (query||show!=="all")
+        ?"По заданному фильтру слои не найдены."
+        :"Фигуры отсутствуют. Добавьте их в разделе оформления.";
       list.appendChild(empty);
     }
     updateCommands(data,selectedRow);
@@ -155,6 +167,8 @@
     if(editor.ungroupGraphicLayer(selected))note("Группа разделена.");
     refresh();
   });
+  search.addEventListener("input",schedule);
+  mode.addEventListener("change",schedule);
   window.addEventListener("anons:direct-selected",event=>{
     selected=event.detail?.key||"";schedule();
   });

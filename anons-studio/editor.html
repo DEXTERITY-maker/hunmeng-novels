@@ -52,6 +52,7 @@
           <div class="editor-view-switch" role="group" aria-label="Режим работы с публикацией">
             <button type="button" class="editor-view-button is-active" data-workspace-view="edit" aria-pressed="true" aria-controls="editor-controls"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="./assets/ui-icons.svg#sliders"></use></svg> Настройки</button>
             <button type="button" class="editor-view-button" data-workspace-view="preview" aria-pressed="false" aria-controls="editor-preview"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="./assets/ui-icons.svg#file-image"></use></svg> Предпросмотр</button>
+            <button type="button" class="editor-view-download" id="editor-mobile-download" aria-label="Скачать текущую карточку как PNG"><svg class="ui-icon" aria-hidden="true"><use href="./assets/ui-icons.svg#download"></use></svg> PNG</button>
           </div>
           <div class="workspace" data-mobile-view="edit">
             <div class="controls" id="editor-controls">
@@ -63,7 +64,18 @@
               </nav>
               <section id="editor-group-layout" class="editor-tool-group" aria-labelledby="editor-group-layout-title">
                 <div class="editor-tool-group-heading"><span class="editor-group-number">01</span><div><h4 id="editor-group-layout-title">Карточки и тип публикации</h4><p>Выберите композицию и подходящий тип сообщения.</p></div></div>
-              <section class="card-manager" aria-label="Карточки анонса"><div class="card-manager-title"><strong>Карточки публикации</strong><span id="card-count">1 из 8</span></div><div id="card-list" class="card-list" role="tablist" aria-label="Выбор карточки"></div><div class="card-manager-actions"><button type="button" id="add-card"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="./assets/ui-icons.svg#plus"></use></svg> Добавить</button><button type="button" id="duplicate-card"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="./assets/ui-icons.svg#copy"></use></svg> Дублировать</button><button type="button" id="remove-card"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="./assets/ui-icons.svg#trash"></use></svg> Удалить</button></div><p class="field-note">У каждой карточки свой заголовок и шаблон. Экспортируй одну картинку или весь набор ZIP-архивом.</p></section>
+              <section class="card-manager" aria-label="Карточки анонса">
+                <div class="card-manager-title"><strong>Карточки публикации</strong><span id="card-count">1 из 8</span></div>
+                <div id="card-list" class="card-list" role="tablist" aria-label="Выбор карточки"></div>
+                <div class="card-manager-actions">
+                  <button type="button" id="add-card"><svg class="ui-icon" aria-hidden="true"><use href="./assets/ui-icons.svg#plus"></use></svg> Добавить</button>
+                  <button type="button" id="duplicate-card"><svg class="ui-icon" aria-hidden="true"><use href="./assets/ui-icons.svg#copy"></use></svg> Дублировать</button>
+                  <button type="button" id="card-move-left" aria-label="Переместить текущую карточку раньше" title="Поменять порядок публикации" disabled>← Раньше</button>
+                  <button type="button" id="card-move-right" aria-label="Переместить текущую карточку позже" title="Поменять порядок публикации" disabled>Позже →</button>
+                  <button type="button" id="remove-card"><svg class="ui-icon" aria-hidden="true"><use href="./assets/ui-icons.svg#trash"></use></svg> Удалить</button>
+                </div>
+                <p class="field-note">Карточки можно переставлять местами без потери текстов, фотографий и стилей. Порядок учитывается при экспорте ZIP. Действия можно отменить.</p>
+              </section>
 
               <section class="pro-series-panel" id="pro-series" aria-labelledby="pro-series-title">
                 <div class="pro-series-heading"><span class="pro-series-eyebrow">ПРО · ПАКЕТНЫЙ РЕДАКТОР</span><h5 id="pro-series-title">Серия публикаций</h5></div>
@@ -79,7 +91,19 @@
                 <a class="pro-series-link" href="./pricing.html?plan=pro#manual-order-root">Посмотреть тариф «Про»</a>
               </section>
 
-              <div class="field-group"><label for="template-select">Композиция текущей карточки</label><select id="template-select"><option value="aurora">Aurora — атмосферный</option><option value="editorial">Editorial — редакционный</option><option value="spotlight">Spotlight — выразительный</option><option value="pulse">Pulse — динамичный</option><option value="minimal">Minimal — минималистичный</option><option value="bulletin">Bulletin — новостной</option><optgroup label="Бизнес · платная подписка"><option value="business-brief" disabled>Business Brief — деловая сводка</option><option value="business-pitch" disabled>Business Pitch — презентация запуска</option><option value="business-report" disabled>Business Report — отчёт и аналитика</option></optgroup><optgroup label="Про · расширенные композиции"><option value="pro-campaign" disabled>Pro Campaign — рекламная кампания</option><option value="pro-magazine" disabled>Pro Magazine — премиальный журнал</option><option value="pro-impact" disabled>Pro Impact — выразительный запуск</option></optgroup><optgroup label="Студия · бренд и портфолио"><option value="studio-identity" disabled>Studio Identity — фирменный стиль</option><option value="studio-launch" disabled>Studio Launch — презентация студии</option><option value="studio-portfolio" disabled>Studio Portfolio — портфолио</option></optgroup>
+              <div class="field-group"><label for="template-select">Композиция текущей карточки</label>
+                <div class="template-visual-picker" aria-labelledby="template-visual-title">
+                  <div class="template-visual-heading">
+                    <div><strong id="template-visual-title">Выбери оформление</strong><small>Миниатюры для быстрого выбора · результат смотри справа</small></div>
+                    <span id="template-visual-count" aria-live="polite">6 из 21 доступны</span>
+                  </div>
+                  <div id="template-visual-grid" class="template-visual-grid" role="group" aria-label="Быстрый выбор шаблона"></div>
+                  <div class="template-visual-footer">
+                    <button type="button" id="template-visual-more" aria-controls="template-visual-grid" aria-expanded="false">Показать все шаблоны</button>
+                    <a href="./templates.html">Каталог и подробные примеры <svg class="ui-icon" aria-hidden="true"><use href="./assets/ui-icons.svg#arrow-up-right"></use></svg></a>
+                  </div>
+                </div>
+                <select id="template-select"><option value="aurora">Aurora — атмосферный</option><option value="editorial">Editorial — редакционный</option><option value="spotlight">Spotlight — выразительный</option><option value="pulse">Pulse — динамичный</option><option value="minimal">Minimal — минималистичный</option><option value="bulletin">Bulletin — новостной</option><optgroup label="Бизнес · платная подписка"><option value="business-brief" disabled>Business Brief — деловая сводка</option><option value="business-pitch" disabled>Business Pitch — презентация запуска</option><option value="business-report" disabled>Business Report — отчёт и аналитика</option></optgroup><optgroup label="Про · расширенные композиции"><option value="pro-campaign" disabled>Pro Campaign — рекламная кампания</option><option value="pro-magazine" disabled>Pro Magazine — премиальный журнал</option><option value="pro-impact" disabled>Pro Impact — выразительный запуск</option></optgroup><optgroup label="Студия · бренд и портфолио"><option value="studio-identity" disabled>Studio Identity — фирменный стиль</option><option value="studio-launch" disabled>Studio Launch — презентация студии</option><option value="studio-portfolio" disabled>Studio Portfolio — портфолио</option></optgroup>
 <optgroup label="Агентство · маркетинг и бренды">
   <option value="agency-brand" disabled>Agency Brand — фирменный стиль клиента</option>
   <option value="agency-social" disabled>Agency Social — публикация для соцсетей</option>
@@ -355,6 +379,13 @@
                   <span id="layer-stack-count">0 объектов</span>
                 </div>
                 <p class="field-note">Выберите слой, измените видимость или порядок. Фигуры можно переименовывать, копировать и объединять в группы.</p>
+                <div class="layer-filter-controls">
+                  <label for="layer-filter-search">Поиск объектов</label>
+                  <input id="layer-filter-search" type="search" placeholder="Найти текст, слой или фигуру…" autocomplete="off">
+                  <label for="layer-filter-mode">Показать</label>
+                  <select id="layer-filter-mode"><option value="all">Все слои</option><option value="visible">Только видимые</option><option value="hidden">Только скрытые</option></select>
+                </div>
+                <p class="layer-filter-results" id="layer-filter-results" role="status" aria-live="polite"></p>
                 <div class="layer-stack-list" id="layer-stack-list" aria-label="Слои текущей карточки"></div>
                 <div class="layer-stack-actions">
                   <label for="layer-rename-input">Название выбранной фигуры</label>

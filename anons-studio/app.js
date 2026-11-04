@@ -263,6 +263,8 @@
     $("current-card-label").textContent="Карточка "+(state.activeCard+1)+" / "+state.cards.length;
     $("add-card").disabled=$("duplicate-card").disabled=state.cards.length>=MAX_CARDS;
     $("remove-card").disabled=state.cards.length<=1;
+    $("card-move-left").disabled=state.activeCard<=0;
+    $("card-move-right").disabled=state.activeCard>=state.cards.length-1;
   }
   function renderGraphicControls(){
     const items=state.graphicElements;
@@ -736,6 +738,27 @@
     activateCard(state.activeCard+1);
     showToast("Карточка продублирована.");
   });
+  function moveActiveCard(delta){
+    if(delta!==-1&&delta!==1)return false;
+    const source=state.activeCard, target=source+delta;
+    if(target<0||target>=state.cards.length)return false;
+    // Keep the entire card together, including photo, graphic geometry,
+    // layers, per-card styles and history. Only its publication order changes.
+    snapshotCard();
+    const [card]=state.cards.splice(source,1);
+    state.cards.splice(target,0,card);
+    state.activeCard=target;
+    Object.assign(state,card);
+    selectedGraphicIndex=-1;
+    historyKind="";
+    syncFields();
+    persist();
+    scheduleRender();
+    showToast("Порядок карточек обновлён. Изменение можно отменить.");
+    return true;
+  }
+  $("card-move-left").addEventListener("click",()=>moveActiveCard(-1));
+  $("card-move-right").addEventListener("click",()=>moveActiveCard(+1));
   $("remove-card").addEventListener("click",()=>{
     if(state.cards.length<=1)return;
     if(!confirm("Удалить текущую карточку? Её можно восстановить кнопкой «Отменить»."))return;

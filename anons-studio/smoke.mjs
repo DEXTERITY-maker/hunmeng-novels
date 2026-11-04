@@ -177,6 +177,21 @@ try {
     await accountDesignPage.close();
     assert.equal(await page.locator(".editor-tool-group").count(),3,
       "Editor tools are grouped into card, content and design sections");
+    // Quick visual gallery mirrors the actual select and does not grant plans.
+    assert.equal(await page.locator("#template-visual-grid .template-mini-card").count(),21);
+    assert.equal(await page.locator("#template-visual-grid .template-mini-card:visible").count(),6);
+    assert.equal(await page.locator("#template-visual-grid .is-locked").count(),15);
+    assert.equal(await page.locator("#template-visual-count").textContent(),"Доступно 6 из 21");
+    await page.locator("#template-visual-more").click();
+    assert.equal(await page.locator("#template-visual-grid .template-mini-card:visible").count(),21);
+    assert.equal(await page.locator('[data-preview-template="business-brief"]').isDisabled(),true);
+    await page.locator("#template-visual-more").click();
+    await page.locator('[data-preview-template="spotlight"]').click();
+    assert.equal(await page.locator("#template-select").inputValue(),"spotlight",
+      "Visual choice updates the canonical editor select");
+    await page.locator('[data-preview-template="aurora"]').click();
+    assert.equal(await page.locator("#template-select").inputValue(),"aurora");
+    assert.equal(await page.locator("#template-visual-grid .template-mini-card:visible").count(),6);
     assert.equal(await page.locator(".studio-progress a").count(),3,
       "Redesigned editor has three actionable creation steps");
     assert.equal(await page.locator(".studio-hero-details span").count(),3,
@@ -219,6 +234,19 @@ try {
     assert.equal(initialLayers.figures.length,0);
     assert.equal(await page.locator("#layer-stack-list .layer-stack-row").count(),6);
     assert.ok(await page.locator("#layer-stack-panel").count()||await page.locator(".layer-stack-panel").count());
+    const beforeFilter=JSON.stringify(await page.evaluate(()=>window.AnonsEditor.getSnapshot().cards));
+    await page.locator("#layer-filter-search").fill("такого слоя не существует");
+    await page.waitForFunction(()=>document.querySelectorAll("#layer-stack-list .layer-stack-row").length===0);
+    assert.match(await page.locator("#layer-filter-results").textContent(),/Показано 0 из 6/);
+    await page.locator("#layer-filter-search").fill("");
+    await page.locator("#layer-filter-mode").selectOption("hidden");
+    await page.waitForFunction(()=>document.querySelector("#layer-filter-mode")?.value==="hidden");
+    const hiddenRows=await page.locator("#layer-stack-list .layer-stack-row").count();
+    assert.ok(hiddenRows<=6,"Layer filter only narrows the list");
+    await page.locator("#layer-filter-mode").selectOption("all");
+    await page.waitForFunction(()=>document.querySelectorAll("#layer-stack-list .layer-stack-row").length===6);
+    assert.equal(JSON.stringify(await page.evaluate(()=>window.AnonsEditor.getSnapshot().cards)),beforeFilter,
+      "Searching/filtering layers never edits the publication");
     assert.ok(await page.evaluate(()=>typeof window.AnonsScene?.layout==="function"),"Canvas uses the same scene contract as the paid renderer");
     const contract=await page.evaluate(()=>{
       const poster=window.AnonsEditor.getSnapshot();
@@ -721,6 +749,21 @@ try {
     assert.equal(await page.locator("#title").inputValue(),"Новости моего проекта","First card text stays separate");
     await page.locator("#card-list [role=tab]").last().click();
     assert.equal(await page.locator("#title").inputValue(),"Вторая карточка","Second card text persists");
+    // Reordering cards changes ZIP order but keeps the whole card intact and
+    // participates in the same reversible history as other editor operations.
+    assert.equal(await page.locator("#card-move-right").isDisabled(),true);
+    await page.locator("#card-move-left").click();
+    assert.deepEqual(await page.evaluate(()=>window.AnonsEditor.getSnapshot().cards.map(c=>c.title)),
+      ["Вторая карточка","Новости моего проекта"]);
+    assert.equal(await page.locator("#card-move-left").isDisabled(),true);
+    await page.locator("#undo").click();
+    assert.deepEqual(await page.evaluate(()=>window.AnonsEditor.getSnapshot().cards.map(c=>c.title)),
+      ["Новости моего проекта","Вторая карточка"]);
+    await page.locator("#redo").click();
+    assert.deepEqual(await page.evaluate(()=>window.AnonsEditor.getSnapshot().cards.map(c=>c.title)),
+      ["Вторая карточка","Новости моего проекта"]);
+    await page.locator("#undo").click();
+    assert.equal(await page.locator("#title").inputValue(),"Вторая карточка");
     page.once("dialog",dialog=>dialog.accept());
     await page.locator("#remove-card").click();
     assert.equal(await page.locator("#card-list [role=tab]").count(),1,"Card removed");
@@ -762,6 +805,14 @@ try {
         "Returning to settings preserves editor state");
       assert.equal(await page.locator("#editor-controls").isVisible(),true);
       await page.locator('[data-workspace-view="preview"]').click();
+      // Mobile shortcut must invoke the same export handler as the desktop button.
+      assert.equal(await page.locator("#editor-mobile-download").isVisible(),true);
+      const [mobilePng]=await Promise.all([
+        page.waitForEvent("download"),page.locator("#editor-mobile-download").click()
+      ]);
+      assert.match(mobilePng.suggestedFilename(),/\.png$/i);
+      assert.ok((await readFile(await mobilePng.path())).length>10000);
+      assert.equal(await page.locator("#editor-preview").isVisible(),true);
     }
     const [zipDownload]=await Promise.all([page.waitForEvent("download"),page.locator("#export-all").click()]);
     assert.match(zipDownload.suggestedFilename(),/\.zip$/);
@@ -1271,6 +1322,9 @@ try {
   await businessPage.evaluate(()=>{
     window.dispatchEvent(new CustomEvent("anons:access",{detail:{premium:true,plan:"basic"}}));
   });
+  await businessPage.waitForFunction(()=>document.querySelector("#template-visual-count")?.textContent==="Доступно 9 из 21");
+  assert.equal(await businessPage.locator('[data-preview-template="business-brief"]').isDisabled(),false);
+  assert.equal(await businessPage.locator('[data-preview-template="pro-campaign"]').isDisabled(),true);
   for(const [id,background] of [
     ["business-brief","#071f32"],["business-pitch","#271836"],["business-report","#f5f8fc"]
   ]){
