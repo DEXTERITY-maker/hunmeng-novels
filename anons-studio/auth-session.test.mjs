@@ -61,7 +61,8 @@ function harness({dedicated=false}={}){
   const stripped=source.replace(/^import .*;\s*$/gm,"");
   vm.runInNewContext(stripped,{
     document,window,localStorage,CustomEvent,console,setTimeout,clearTimeout,
-    createClient:()=>client,initLibrary:()=>library,initBilling:()=>billing,confirm:()=>confirmation
+    createClient:()=>client,initLibrary:()=>library,initBilling:()=>billing,
+    initManualOrders:()=>({setUser(){}}),confirm:()=>confirmation
   },{timeout:1000,filename:"auth-entry.js"});
   assert.equal(typeof onAuthEvent,"function");
   return {
