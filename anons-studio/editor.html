@@ -16,6 +16,7 @@
   <script src="./graphic-elements.js" defer></script>
   <script src="./app.js" defer></script>
   <script src="./editor-workspace.js" defer></script>
+  <script src="./editor-direct.js" defer></script>
   <script src="./auth.bundle.js" defer></script>
 </head>
 <body>
@@ -156,10 +157,18 @@
                     <input id="title-offset-x" type="range" min="-15" max="15" step="1" value="0">
                     <label for="title-offset-y">Заголовок: вертикально <output id="title-offset-y-value" for="title-offset-y">0%</output></label>
                     <input id="title-offset-y" type="range" min="-12" max="12" step="1" value="0">
+                    <label for="description-offset-x">Описание: горизонтально <output id="description-offset-x-value" for="description-offset-x">0%</output></label>
+                    <input id="description-offset-x" type="range" min="-30" max="30" step="1" value="0">
                     <label for="description-offset-y">Описание: вертикально <output id="description-offset-y-value" for="description-offset-y">0%</output></label>
                     <input id="description-offset-y" type="range" min="-12" max="12" step="1" value="0">
+                    <label for="highlights-offset-x">Детали: горизонтально <output id="highlights-offset-x-value" for="highlights-offset-x">0%</output></label>
+                    <input id="highlights-offset-x" type="range" min="-30" max="30" step="1" value="0">
                     <label for="highlights-offset-y">Детали: вертикально <output id="highlights-offset-y-value" for="highlights-offset-y">0%</output></label>
                     <input id="highlights-offset-y" type="range" min="-12" max="12" step="1" value="0">
+                    <label for="photo-offset-x">Фото: горизонтально <output id="photo-offset-x-value" for="photo-offset-x">0%</output></label>
+                    <input id="photo-offset-x" type="range" min="-30" max="30" step="1" value="0">
+                    <label for="photo-offset-y">Фото: вертикально <output id="photo-offset-y-value" for="photo-offset-y">0%</output></label>
+                    <input id="photo-offset-y" type="range" min="-30" max="30" step="1" value="0">
                     <button type="button" id="reset-layer-positions" class="layer-reset">Сбросить расположение</button>
                   </div>
 
@@ -237,6 +246,24 @@
             <div class="preview-panel" id="editor-preview">
               <div class="panel-head preview-head"><div><span class="section-index">02 / ПРЕДПРОСМОТР</span><h3>Твой будущий пост</h3></div><span class="preview-badge" id="current-card-label">Карточка 1 / 1</span></div>
               <div class="preview-stage"><div class="canvas-holder"><canvas id="poster" width="1080" height="1350" role="img" aria-label="Предпросмотр оформленного анонса">Предпросмотр изображения недоступен в этом браузере.</canvas></div></div>
+              <div class="direct-editor-toolbar" aria-label="Прямое редактирование на холсте">
+                <div class="direct-editor-top">
+                  <label class="direct-enable-label" for="direct-enable"><input id="direct-enable" type="checkbox"> Редактировать на изображении</label>
+                  <label class="direct-snap-label" for="direct-snap"><input id="direct-snap" type="checkbox" checked> Привязка к сетке 5%</label>
+                </div>
+                <p id="direct-help" class="direct-editor-help">Включите режим, затем выберите объект на изображении или в списке. Перемещайте мышью, пальцем или клавишами со стрелками.</p>
+                <div class="direct-editor-actions">
+                  <label for="direct-target">Выбранный объект</label>
+                  <select id="direct-target" aria-label="Объект для редактирования"><option value="">Не выбран</option></select>
+                  <button id="direct-lock" type="button" aria-pressed="false" disabled>Заблокировать</button>
+                </div>
+                <div class="direct-transform-actions" role="group" aria-label="Изменение размера и поворота фигуры">
+                  <button type="button" id="direct-smaller" disabled aria-label="Уменьшить фигуру">− Размер</button>
+                  <button type="button" id="direct-larger" disabled aria-label="Увеличить фигуру">+ Размер</button>
+                  <button type="button" id="direct-rotate-left" disabled aria-label="Повернуть фигуру влево">↶ 15°</button>
+                  <button type="button" id="direct-rotate-right" disabled aria-label="Повернуть фигуру вправо">↷ 15°</button>
+                </div>
+              </div>
               <div class="preview-actions"><button type="button" class="btn btn-primary export-btn" id="export"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="./assets/ui-icons.svg#download"></use></svg> Скачать PNG</button><button type="button" class="btn btn-secondary" id="export-all"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="./assets/ui-icons.svg#download"></use></svg> Все карточки ZIP</button><button type="button" class="btn btn-secondary" id="copy"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="./assets/ui-icons.svg#copy"></use></svg> Скопировать текст <svg class="ui-icon" aria-hidden="true" focusable="false"><use href="./assets/ui-icons.svg#arrow-up-right"></use></svg></button></div>
               <p class="preview-caption">На Free водяной знак сохраняется в предпросмотре и PNG</p>
             </div>
