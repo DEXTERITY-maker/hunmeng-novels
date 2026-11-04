@@ -165,6 +165,43 @@
 
                 </div>
               </details>
+              <section class="highlight-design-panel" aria-labelledby="highlight-design-title">
+                <h5 id="highlight-design-title">Композиция и ключевые изменения</h5>
+                <p class="field-note">Настройки применяются к текущей карточке. Шаблон Aurora поддерживает три варианта расположения.</p>
+                <label for="composition">Композиция Aurora</label>
+                <select id="composition">
+                  <option value="classic">Классическая — исходная</option>
+                  <option value="compact">Компактная — плотнее и выше</option>
+                  <option value="headline">Акцент на заголовке</option>
+                </select>
+                <label for="highlight-style">Оформление списка</label>
+                <select id="highlight-style">
+                  <option value="soft">Полупрозрачная карточка</option>
+                  <option value="outline">Контурная рамка</option>
+                  <option value="separated">С разделителями</option>
+                </select>
+                <label for="featured-highlight">Выделить важный пункт</label>
+                <select id="featured-highlight">
+                  <option value="-1">Без выделения</option>
+                  <option value="0">Первый пункт</option>
+                  <option value="1">Второй пункт</option>
+                  <option value="2">Третий пункт</option>
+                </select>
+                <fieldset class="highlight-icon-picker">
+                  <legend>Значки пунктов</legend>
+                  <div class="highlight-icon-grid">
+                    <label for="highlight-icon-0">Пункт 1
+                      <select id="highlight-icon-0" data-highlight-icon="0"><option value="dot">Точка</option><option value="check">Галочка</option><option value="star">Звезда</option><option value="diamond">Ромб</option></select>
+                    </label>
+                    <label for="highlight-icon-1">Пункт 2
+                      <select id="highlight-icon-1" data-highlight-icon="1"><option value="dot">Точка</option><option value="check">Галочка</option><option value="star">Звезда</option><option value="diamond">Ромб</option></select>
+                    </label>
+                    <label for="highlight-icon-2">Пункт 3
+                      <select id="highlight-icon-2" data-highlight-icon="2"><option value="dot">Точка</option><option value="check">Галочка</option><option value="star">Звезда</option><option value="diamond">Ромб</option></select>
+                    </label>
+                  </div>
+                </fieldset>
+              </section>
               <section class="graphic-element-manager" aria-labelledby="graphic-element-title">
                 <div class="graphic-element-head"><div><h5 id="graphic-element-title">Графические элементы</h5><p>Добавляйте фигуры и настраивайте их положение. До 12 элементов на карточку.</p></div><span id="graphic-count">0 из 12</span></div>
                 <div id="graphic-list" class="graphic-element-list" role="group" aria-label="Элементы текущей карточки"></div>
