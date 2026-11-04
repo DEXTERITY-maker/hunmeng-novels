@@ -116,7 +116,8 @@ test("free-watermark geometry is distributed, restrained and not removable by a 
       assert.ok(mark.alpha>=.12 && mark.alpha<=.22);
       assert.ok(mark.size>=35 && mark.size<=60);
     }
-    assert.deepEqual([...marks.map(m=>m.y)].sort((a,b)=>a-b),marks.map(m=>m.y));
+    const positions=[...marks].map(mark=>mark.y);
+    assert.deepEqual([...positions].sort((a,b)=>a-b),positions);
   }
 });
 
