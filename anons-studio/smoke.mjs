@@ -10,7 +10,7 @@ const cloudflareHeaders=await readFile(join(root,"_headers"),"utf8");
 assert.match(cloudflareHeaders,/Content-Security-Policy:.*script-src 'self'/);
 assert.match(cloudflareHeaders,/X-Content-Type-Options: nosniff/);
 const types = { ".html": "text/html; charset=utf-8", ".css": "text/css; charset=utf-8", ".js": "application/javascript; charset=utf-8", ".webp": "image/webp" };
-const allow = new Set(["/","/index.html","/styles.css","/app.js","/navigation.js","/whats-new.js","/scene-layout.js","/auth.bundle.js","/assets/anons-logo-approved.webp","/assets/anons-icon-approved.webp"]);
+const allow = new Set(["/","/index.html","/account.html","/styles.css","/app.js","/navigation.js","/whats-new.js","/scene-layout.js","/auth.bundle.js","/assets/anons-logo-approved.webp","/assets/anons-icon-approved.webp"]);
 const server = createServer(async (req,res)=>{
   const url = new URL(req.url, "http://localhost");
   const path = url.pathname === "/" ? "/index.html" : url.pathname;
@@ -128,8 +128,9 @@ try {
     assert.equal(await page.locator("#pricing .plan").count(),4);
     await page.waitForFunction(()=>document.querySelector("#billing-availability")?.textContent?.toLowerCase().includes("покупки"));
     assert.ok(await page.locator("#buy-basic").isDisabled(),"Cannot charge without merchant configuration");
-    assert.equal(await page.locator("#account-billing").count(),1,"Private billing history panel exists");
-    assert.ok(await page.locator("#account-form").isVisible());
+    assert.equal(await page.locator("#account-form").count(),0,"Account form lives only on account.html");
+    assert.equal(await page.locator("#account").count(),0,"Personal space is no longer embedded on home");
+    assert.equal(await page.locator("#nav-account").getAttribute("href"),"./account.html");
     assert.ok(await page.locator("#nav-account").isVisible());
     const mobileMenu=page.locator("#mobile-menu-toggle");
     const primaryNav=page.locator("#primary-navigation");
@@ -249,27 +250,55 @@ try {
       await page.locator("#clear-image").click();
       assert.equal(await page.evaluate(()=>window.AnonsEditor.getSnapshot().imageData),"","Removing uploaded photo must clear snapshot");
     }
-    await page.locator("[data-account-mode=login]").click();
-    assert.match(await page.locator("#account-submit").textContent(),/Войти/);
-    assert.ok(await page.locator("#account-forgot").isVisible(),"Forgot-password entry point");
-    await page.locator("#account-forgot").click();
-    assert.equal(await page.locator("#account-password").isVisible(),false,"Password hidden during recovery request");
-    assert.match(await page.locator("#account-submit").textContent(),/Отправить ссылку/);
-    await page.route("**/auth/v1/recover**",route=>{
+    // Personal space is a real independent page. Open it in a fresh tab so
+    // the editor remains intact and both routes share the same origin.
+    const personal=await context.newPage();
+    await personal.route("https://fonts.googleapis.com/**",r=>r.abort());
+    await personal.route("https://fonts.gstatic.com/**",r=>r.abort());
+    const personalErrors=[];
+    personal.on("pageerror",error=>personalErrors.push(error.message));
+    await personal.goto("http://127.0.0.1:"+port+"/account.html",{waitUntil:"domcontentloaded"});
+    assert.equal(await personal.locator("h1, h2#account-title").count(),1);
+    assert.ok(await personal.locator("#account-form").isVisible());
+    assert.ok(await personal.locator("#account-billing").count()===1,"Subscription history belongs to profile page");
+    assert.equal(await personal.locator("#poster").count(),0,"Account page does not load editor Canvas");
+    assert.equal(await personal.locator("#library-auth").count(),0,"Cloud library remains in editor view");
+    assert.equal(await personal.locator("#nav-account").getAttribute("href"),"./account.html");
+    assert.equal(await personal.locator('.account-destinations a[href="./index.html#library"]').count(),1);
+    await personal.locator("[data-account-mode=login]").click();
+    assert.match(await personal.locator("#account-submit").textContent(),/Войти/);
+    assert.ok(await personal.locator("#account-forgot").isVisible(),"Forgot-password entry point");
+    await personal.locator("#account-forgot").click();
+    assert.equal(await personal.locator("#account-password").isVisible(),false,"Password hidden during recovery request");
+    assert.match(await personal.locator("#account-submit").textContent(),/Отправить ссылку/);
+    await personal.route("**/auth/v1/recover**",route=>{
       route.fulfill({status:200,contentType:"application/json",headers:{
         "access-control-allow-origin":"*",
         "access-control-allow-methods":"POST,OPTIONS",
         "access-control-allow-headers":"*"
       },body:"{}"});
     });
-    await page.locator("#account-email").fill("reset-test@example.invalid");
-    await page.locator("#account-submit").click();
-    await page.waitForFunction(()=>document.querySelector("#account-message")?.textContent?.includes("Если аккаунт существует"));
-    assert.match(await page.locator("#account-submit").textContent(),/Войти/);
-    await page.locator("[data-account-mode=signup]").click();
-    assert.equal(await page.locator("#account-password").getAttribute("minlength"),"10");
-    assert.ok(await page.locator("#account-security").count()===1,"Password change controls available for logged-in users");
-    assert.ok(await page.locator("#account-logout-all").count()===1,"Global sign-out control exists");
+    await personal.locator("#account-email").fill("reset-test@example.invalid");
+    await personal.locator("#account-submit").click();
+    await personal.waitForFunction(()=>document.querySelector("#account-message")?.textContent?.includes("Если аккаунт существует"));
+    assert.match(await personal.locator("#account-submit").textContent(),/Войти/);
+    await personal.locator("[data-account-mode=signup]").click();
+    assert.equal(await personal.locator("#account-password").getAttribute("minlength"),"10");
+    assert.ok(await personal.locator("#account-security").count()===1,"Password change controls available");
+    assert.ok(await personal.locator("#account-logout-all").count()===1,"Global sign-out available");
+    if(width<=760){
+      await personal.locator("#mobile-menu-toggle").click();
+      assert.ok(await personal.locator("#primary-navigation").isVisible(),"Account mobile nav opens");
+      await personal.keyboard.press("Escape");
+      assert.equal(await personal.locator("#primary-navigation").isVisible(),false);
+    }
+    assert.ok(await personal.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2),
+      "Personal page has no horizontal overflow");
+    assert.deepEqual(personalErrors,[],"Account route has no JavaScript crashes");
+    // Existing bookmarks should route to the new page, not an absent section.
+    await personal.goto("http://127.0.0.1:"+port+"/#account",{waitUntil:"domcontentloaded"});
+    await personal.waitForURL(/\/account\.html$/);
+    await personal.close();
     const [download] = await Promise.all([page.waitForEvent("download"),page.locator("#export").click()]);
     assert.match(download.suggestedFilename(),/\.png$/);
     assert.ok((await readFile(await download.path())).length>20000,"Downloaded PNG should contain image data");
