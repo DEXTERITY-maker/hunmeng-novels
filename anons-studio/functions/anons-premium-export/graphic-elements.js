@@ -39,7 +39,10 @@
       size:Math.round(clamp(a.size,4,35,12)*10)/10,
       rotation:Math.round(clamp(a.rotation,-180,180,0)),
       opacity:Math.round(clamp(a.opacity,20,100,100)),
-      color:safeColor(a.color)
+      color:safeColor(a.color),
+      hidden:a.hidden===true,
+      label:typeof a.label==="string"?a.label.trim().slice(0,48):"",
+      groupId:typeof a.groupId==="string"&&/^[a-z0-9_-]{1,32}$/.test(a.groupId)?a.groupId:""
     };
   }
   function normalizeElements(values){
