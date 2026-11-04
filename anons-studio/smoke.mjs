@@ -291,7 +291,8 @@ try {
     const librarySource=await readFile(join(dirname(fileURLToPath(import.meta.url)),"library-entry.js"),"utf8");
     await page.addScriptTag({content:librarySource.replace("export function initLibrary","window.__testInitLibrary = function initLibrary")});
     await page.evaluate(()=>{
-      const memory={projects:[],revisions:[],holdNextLoad:false,pendingLoads:[]};
+      const memory={projects:[],revisions:[],holdNextLoad:false,pendingLoads:[],
+        holdNextRpc:false,pendingRpcs:[],currentAuthId:"user-test"};
       window.__mockLibraryDb=memory;
       const clone=o=>JSON.parse(JSON.stringify(o));
       const adapter={
@@ -327,10 +328,17 @@ try {
         },
         async rpc(name,opts){
           if(name!=="anons_studio_save_project")return {data:null,error:{message:"UNKNOWN_RPC"}};
+          const requestOwner=memory.currentAuthId;
+          if(memory.holdNextRpc){
+            memory.holdNextRpc=false;
+            await new Promise(resolve=>memory.pendingRpcs.push(resolve));
+          }
           let row=memory.projects.find(x=>x.id===opts.p_id);
+          if(row && row.owner_id!==requestOwner)return {data:null,error:{code:"42501"}};
+
           if(opts.p_expected_version===0){
             if(row)return {data:null,error:{message:"VERSION_CONFLICT"}};
-            row={id:opts.p_id,owner_id:"user-test",title:opts.p_title,snapshot:clone(opts.p_snapshot),version:1,archived:false,updated_at:new Date().toISOString(),created_at:new Date().toISOString()};
+            row={id:opts.p_id,owner_id:requestOwner,title:opts.p_title,snapshot:clone(opts.p_snapshot),version:1,archived:false,updated_at:new Date().toISOString(),created_at:new Date().toISOString()};
             memory.projects.push(row);
           } else {
             if(!row||row.version!==opts.p_expected_version)return {data:null,error:{message:"VERSION_CONFLICT"}};
@@ -434,7 +442,36 @@ try {
     await page.waitForFunction(()=>window.__mockLibraryDb.projects
       .some(p=>p.title==="Второй проект (копия)"&&p.snapshot.cards[0].title==="Правка во время загрузки"));
 
-    console.log("PASS Cloud library mock: create/edit/checkpoint/load/restore/archive/delete/conflict-copy/offline/stale-read");
+    // A write started in account A must not block account B or make
+    // account A's project visible after a switch.
+    await page.evaluate(()=>{window.__mockLibraryDb.holdNextRpc=true;});
+    await page.locator("#title").fill("Старый аккаунт: ожидание ответа");
+    await page.locator("#library-save").click();
+    await page.waitForFunction(()=>window.__mockLibraryDb.pendingRpcs.length===1);
+    await page.evaluate(()=>{
+      window.__testLibrary.setUser(null);
+      window.__mockLibraryDb.currentAuthId="user-two";
+      window.__testLibrary.setUser({id:"user-two",email:"other@example.invalid"});
+    });
+    await page.waitForFunction(()=>document.querySelector("#library-list .library-entry")===null);
+    assert.equal(await page.locator("#title").inputValue(),"Большое обновление!",
+      "Account switch clears previous user's canvas");
+    assert.equal(await page.locator("#library-guest").isVisible(),false);
+    await page.locator("#title").fill("Публикация второго аккаунта");
+    await page.locator("#library-save").click();
+    await page.waitForFunction(()=>window.__mockLibraryDb.projects
+      .some(p=>p.owner_id==="user-two"&&p.snapshot.cards[0].title==="Публикация второго аккаунта"));
+    assert.equal(await page.locator("#library-list .library-entry").count(),1,
+      "New account sees only its own projects");
+    await page.evaluate(()=>window.__mockLibraryDb.pendingRpcs.shift()());
+    await page.waitForTimeout(50);
+    assert.equal(await page.locator("#title").inputValue(),"Публикация второго аккаунта",
+      "Old in-flight response never replaces the new user's canvas");
+    assert.equal(await page.locator("#library-list .library-entry").count(),1,
+      "Old in-flight response never appends another account's projects");
+    assert.equal(await page.evaluate(()=>JSON.parse(
+      localStorage.getItem("anons-studio:cloud-active-v05")).userId),"user-two");
+    console.log("PASS Cloud library mock: create/edit/checkpoint/load/restore/archive/delete/conflict-copy/offline/stale-read/account-switch");
     await context.close();
   }
 } finally {
