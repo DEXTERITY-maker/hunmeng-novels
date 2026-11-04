@@ -710,6 +710,32 @@
   if(requestedTemplate && templates.has(requestedTemplate)){
     changeTemplate(requestedTemplate);
     editorUrl.searchParams.delete("template");
+  }
+  // Homepage examples can initialize an untouched editor, but must never
+  // replace a local draft or an active cloud project without user action.
+  const requestedPreset=editorUrl.searchParams.get("preset");
+  if(requestedPreset && presets[requestedPreset]){
+    let activeCloudDraft=false;
+    try{activeCloudDraft=Boolean(localStorage.getItem("anons-studio:cloud-active-v05"));}catch{}
+    const hasExistingDraft=Object.keys(saved).length>0 || activeCloudDraft;
+    if(!hasExistingDraft){
+      const example=presets[requestedPreset];
+      state.preset=requestedPreset;
+      for(const key of ["project","title","description","points"])state[key]=example[key];
+      state.cards=[sanitizeCard({...state.cards[0],...example,preset:requestedPreset})];
+      state.activeCard=0;
+      Object.assign(state,state.cards[0]);
+      persist();
+      showToast("Пример публикации загружен. Измените текст и оформление под свой проект.");
+    }else{
+      const selected=document.querySelector('[data-preset="'+requestedPreset+'"]');
+      selected?.classList.add("preset-suggested");
+      showToast("Существующий черновик не изменён. Тип публикации можно выбрать в настройках редактора.");
+      window.setTimeout(()=>selected?.classList.remove("preset-suggested"),10000);
+    }
+    editorUrl.searchParams.delete("preset");
+  }
+  if(editorUrl.href!==window.location.href){
     window.history.replaceState(null,"",editorUrl.pathname+editorUrl.search+editorUrl.hash);
   }
   syncFields();resetHistory();render();if(state.imageData)loadPhoto(state.imageData);
