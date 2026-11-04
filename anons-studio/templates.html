@@ -12,6 +12,7 @@
   <link rel="icon" type="image/webp" href="./assets/anons-icon-approved.webp">
   <link rel="stylesheet" href="./styles.css">
   <script src="./navigation.js" defer></script>
+  <script src="./templates-catalog.js" defer></script>
   <script src="./auth.bundle.js" defer></script>
 </head>
 <body>
@@ -32,9 +33,28 @@
       </div></header>
     <main class="inner-page-main inner-page-templates">
       <div class="wrap personal-breadcrumb"><a href="./index.html">Главная</a><span aria-hidden="true">/</span><span aria-current="page">Шаблоны</span></div>
-      <section class="inner-page-hero wrap"><span class="kicker">ВЫБЕРИ СВОЙ СТИЛЬ</span><h1>Профессиональные шаблоны.</h1><p>Шесть композиций для обновлений, презентаций, запусков и новостей. Начни с готового оформления и сделай его своим.</p></section>
+      <section class="inner-page-hero wrap"><span class="kicker">ВЫБЕРИ СВОЙ СТИЛЬ</span><h1>Профессиональные шаблоны.</h1><p>Подберите подходящую композицию для обновления, запуска, события или новости. Все представленные шаблоны доступны в редакторе.</p></section>
 <section id="templates" class="gallery-section wrap" aria-labelledby="templates-title">
-        <div class="section-heading"><div><div class="kicker">ШЕСТЬ АВТОРСКИХ КОМПОЗИЦИЙ</div><h2 id="templates-title">Шаблон, который<br><em>расскажет твою историю.</em></h2></div><p>Это не просто смена цвета: каждый шаблон по-своему располагает акценты и текст. Выбирай композицию и сразу открывай её в редакторе. Изменить текст, цвет и формат можно после выбора.</p></div>
+        <div class="section-heading"><div><div class="kicker">КАТАЛОГ ШАБЛОНОВ</div><h2 id="templates-title">Шаблон, который<br><em>расскажет твою историю.</em></h2></div><p>Это не просто смена цвета: каждый шаблон по-своему располагает акценты и текст. Выбирай композицию и сразу открывай её в редакторе. Изменить текст, цвет и формат можно после выбора.</p></div>
+        <div id="catalog-controls" class="catalog-controls" hidden>
+          <div class="catalog-controls-top">
+            <div class="catalog-search"><label for="template-search">Поиск шаблона</label><input id="template-search" type="search" placeholder="Название, стиль или назначение" autocomplete="off" aria-describedby="template-results-count"></div>
+            <div class="catalog-sort"><label for="template-sort">Сортировка</label><select id="template-sort"><option value="default">По умолчанию</option><option value="name">По названию</option></select></div>
+          </div>
+          <div class="catalog-filters">
+            <div class="catalog-chips" role="group" aria-label="Категория шаблонов">
+              <button type="button" class="catalog-chip is-active" data-catalog-category="all" aria-pressed="true">Все</button>
+              <button type="button" class="catalog-chip" data-catalog-category="update" aria-pressed="false">Обновления</button>
+              <button type="button" class="catalog-chip" data-catalog-category="launch" aria-pressed="false">Запуски</button>
+              <button type="button" class="catalog-chip" data-catalog-category="event" aria-pressed="false">Мероприятия</button>
+              <button type="button" class="catalog-chip" data-catalog-category="news" aria-pressed="false">Новости</button>
+              <button type="button" class="catalog-chip" data-catalog-category="universal" aria-pressed="false">Универсальные</button>
+            </div>
+            <button id="template-favorites-toggle" type="button" class="catalog-chip catalog-favorites" aria-pressed="false"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" aria-hidden="true"><path d="m12 2.8 2.85 5.78 6.38.93-4.62 4.5 1.09 6.36L12 17.37l-5.7 3 1.09-6.36-4.62-4.5 6.38-.93L12 2.8Z"/></svg> Избранное <span id="template-favorites-count" aria-label="Количество избранных шаблонов">0</span></button>
+          </div>
+          <p class="catalog-storage-note">Избранные шаблоны сохраняются только в текущем браузере.</p>
+        </div>
+        <p id="template-results-count" class="catalog-count" role="status" aria-live="polite" hidden></p>
         <div class="template-gallery" role="group" aria-label="Галерея шаблонов">
           <a class="template-card active" href="./editor.html?template=aurora" data-template="aurora"><span class="template-art preview-aurora"><span class="preview-decoration"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="./assets/ui-icons.svg#sparkles"></use></svg></span><span class="preview-heading">БОЛЬШИЕ<br>ПЕРЕМЕНЫ</span><span class="preview-bars"></span></span><span class="template-info"><strong>Aurora</strong><small>Атмосферные обновления</small></span></a>
           <a class="template-card" href="./editor.html?template=editorial" data-template="editorial"><span class="template-art preview-editorial"><span class="preview-top">THE UPDATE / 2026</span><span class="preview-heading">Новая<br>глава.</span><span class="preview-bars"></span></span><span class="template-info"><strong>Editorial</strong><small>Премиальная типографика</small></span></a>
@@ -42,6 +62,11 @@
           <a class="template-card" href="./editor.html?template=pulse" data-template="pulse"><span class="template-art preview-pulse"><span class="preview-decoration"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="./assets/ui-icons.svg#arrow-up-right"></use></svg></span><span class="preview-heading">ВРЕМЯ<br>ДЕЙСТВОВАТЬ</span><span class="preview-bars"></span></span><span class="template-info"><strong>Pulse</strong><small>События и энергия</small></span></a>
           <a class="template-card" href="./editor.html?template=minimal" data-template="minimal"><span class="template-art preview-minimal"><span class="preview-top">01 / ANNOUNCEMENT</span><span class="preview-heading">Просто.<br>По делу.</span><span class="preview-bars"></span></span><span class="template-info"><strong>Minimal</strong><small>Чистота и пространство</small></span></a>
           <a class="template-card" href="./editor.html?template=bulletin" data-template="bulletin"><span class="template-art preview-bulletin"><span class="preview-top">● NEWSROOM</span><span class="preview-heading">ВАЖНОЕ<br>СЕГОДНЯ</span><span class="preview-bars"></span></span><span class="template-info"><strong>Bulletin</strong><small>Информационные карточки</small></span></a>
+        </div>
+        <div id="template-empty" class="catalog-empty" hidden>
+          <h3>Подходящих шаблонов не найдено</h3>
+          <p>Измените поисковый запрос или выберите другую категорию.</p>
+          <button type="button" id="template-reset">Сбросить фильтры</button>
         </div>
       </section>
     </main>
