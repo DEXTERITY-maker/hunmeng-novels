@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { createServer } from "node:http";
-import { readFile } from "node:fs/promises";
+import { readFile, mkdir } from "node:fs/promises";
 import { resolve, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { chromium } from "@playwright/test";
@@ -239,6 +239,15 @@ try {
     assert.equal(restored.restoredCount,2,"Restored draft keeps multiple cards");
     assert.equal(restored.title,restored.oldTitle,"Restored draft keeps editable text");
     assert.equal(restored.template,"editorial","Restored draft keeps template");
+
+    // Synthetic, unauthenticated screenshots for reviewing text fidelity and
+    // responsive composition after shared layout changes. Never screenshot
+    // private libraries or signed-in account panels.
+    const screenshotDir=join(dirname(fileURLToPath(import.meta.url)),"test-artifacts");
+    await mkdir(screenshotDir,{recursive:true});
+    await page.locator(".preview-panel").screenshot({
+      path:join(screenshotDir,"preview-"+width+".png"),animations:"disabled"
+    });
 
     await context.close();
     console.log("PASS Anons Studio browser preview, editor, storage, PNG and responsive width="+width);
