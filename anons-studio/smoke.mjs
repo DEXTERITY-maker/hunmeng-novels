@@ -552,10 +552,12 @@ try {
     await page.locator('[data-layer-key="'+copyKey+'"] [aria-label="Скрыть Важный символ"]').click();
     assert.equal((await page.evaluate(()=>window.AnonsEditor.getSnapshot().cards[0].graphicElements[1].hidden)),true);
     await page.locator('[data-layer-key="'+copyKey+'"] [aria-label="Показать Важный символ"]').click();
+    if(width<=760)await page.locator('[data-workspace-view="edit"]').click();
     await page.locator("#graphic-list button").last().click();
     await page.locator("#graphic-remove").click();
     assert.equal((await page.evaluate(()=>window.AnonsEditor.getSnapshot().cards[0].graphicElements)).length,1,
       "Deleting duplicated figure preserves the original");
+    if(width<=760)await page.locator('[data-workspace-view="preview"]').click();
     await page.locator(".preview-stage").screenshot({
       path:join(editorScreenshotDir,"direct-canvas-"+width+".png"),animations:"disabled"
     });
