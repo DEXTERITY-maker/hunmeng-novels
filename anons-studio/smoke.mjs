@@ -10,7 +10,7 @@ const cloudflareHeaders=await readFile(join(root,"_headers"),"utf8");
 assert.match(cloudflareHeaders,/Content-Security-Policy:.*script-src 'self'/);
 assert.match(cloudflareHeaders,/X-Content-Type-Options: nosniff/);
 const types = { ".html": "text/html; charset=utf-8", ".css": "text/css; charset=utf-8", ".js": "application/javascript; charset=utf-8", ".webp": "image/webp", ".svg":"image/svg+xml" };
-const allow = new Set(["/","/index.html","/account.html","/editor.html","/templates.html","/features.html","/pricing.html","/styles.css","/app.js","/editor-workspace.js","/editor-direct.js","/navigation.js","/whats-new.js","/scene-layout.js","/graphic-elements.js","/auth.bundle.js","/assets/anons-logo-approved.webp","/assets/anons-icon-approved.webp","/assets/ui-icons.svg"]);
+const allow = new Set(["/","/index.html","/account.html","/editor.html","/templates.html","/features.html","/pricing.html","/styles.css","/app.js","/editor-workspace.js","/editor-direct.js","/editor-layers.js","/navigation.js","/whats-new.js","/scene-layout.js","/graphic-elements.js","/auth.bundle.js","/assets/anons-logo-approved.webp","/assets/anons-icon-approved.webp","/assets/ui-icons.svg"]);
 const server = createServer(async (req,res)=>{
   const url = new URL(req.url, "http://localhost");
   const path = url.pathname === "/" ? "/index.html" : url.pathname;
@@ -173,6 +173,13 @@ try {
       "; scripts: "+JSON.stringify(await page.locator("script[src]").evaluateAll(nodes=>
         nodes.map(n=>n.getAttribute("src"))))+
       "; shared graphic module: "+(await page.evaluate(()=>typeof window.AnonsGraphics)));
+    assert.equal(await page.evaluate(()=>typeof window.AnonsEditor?.getLayerPanel),"function",
+      "Layer panel API is part of the same state manager");
+    const initialLayers=await page.evaluate(()=>window.AnonsEditor.getLayerPanel());
+    assert.equal(initialLayers.base.length,6);
+    assert.equal(initialLayers.figures.length,0);
+    assert.equal(await page.locator("#layer-stack-list .layer-stack-row").count(),6);
+    assert.ok(await page.locator("#layer-stack-panel").count()||await page.locator(".layer-stack-panel").count());
     assert.ok(await page.evaluate(()=>typeof window.AnonsScene?.layout==="function"),"Canvas uses the same scene contract as the paid renderer");
     const contract=await page.evaluate(()=>{
       const poster=window.AnonsEditor.getSnapshot();
@@ -471,6 +478,58 @@ try {
     await page.keyboard.press("ArrowLeft");
     assert.equal(await page.evaluate(()=>window.AnonsEditor.getSnapshot().cards[0].layerOffsets.title.x),
       titleBefore,"Text can be moved back precisely");
+    // Layer tree actions share the editor snapshot, export, and undo model.
+    assert.equal(await page.locator(".layer-stack-row").count(),7,
+      "Five core editable layers plus decoration and the added figure");
+    const titleRow=page.locator('[data-layer-key="title"]');
+    await titleRow.locator('[aria-label="Скрыть Заголовок"]').click();
+    assert.equal(await page.evaluate(()=>window.AnonsEditor.getSnapshot().cards[0].layers.title),false);
+    assert.equal((await page.evaluate(()=>window.AnonsEditor.getDirectTargets().items))
+      .some(item=>item.key==="title"),false,"Hidden text must not be selectable");
+    await titleRow.locator('[aria-label="Показать Заголовок"]').click();
+    assert.equal(await page.evaluate(()=>window.AnonsEditor.getSnapshot().cards[0].layers.title),true);
+    const orderBefore=await page.evaluate(()=>window.AnonsEditor.getSnapshot().cards[0].layerOrder);
+    await page.evaluate(()=>window.AnonsEditor.moveLayer("title",1));
+    const orderAfter=await page.evaluate(()=>window.AnonsEditor.getSnapshot().cards[0].layerOrder);
+    assert.notDeepEqual(orderAfter,orderBefore,"Layer reordering changes the saved scene order");
+    await page.evaluate(()=>window.AnonsEditor.moveLayer("title",-1));
+    assert.deepEqual(await page.evaluate(()=>window.AnonsEditor.getSnapshot().cards[0].layerOrder),orderBefore);
+
+    const originalLayerKey=directKey;
+    await page.locator('[data-layer-key="'+originalLayerKey+'"] .layer-row-name').click();
+    await page.locator("#layer-copy").click();
+    assert.equal(await page.locator(".layer-stack-row").count(),8);
+    const figuresAfterCopy=await page.evaluate(()=>window.AnonsEditor.getSnapshot().cards[0].graphicElements);
+    const copyKey="graphic:"+figuresAfterCopy[1].id;
+    await page.locator('[data-layer-key="'+copyKey+'"] .layer-row-name').click();
+    await page.locator("#layer-rename-input").fill("Важный символ");
+    await page.locator("#layer-rename-save").click();
+    assert.equal((await page.evaluate(()=>window.AnonsEditor.getSnapshot().cards[0].graphicElements[1].label)),
+      "Важный символ");
+    await page.locator('[data-layer-key="'+originalLayerKey+'"] .layer-row-check').check();
+    await page.locator('[data-layer-key="'+copyKey+'"] .layer-row-check').check();
+    await page.locator("#layer-group").click();
+    const groups=await page.evaluate(()=>window.AnonsEditor.getSnapshot().cards[0].graphicElements.map(e=>e.groupId));
+    assert.ok(groups[0]&&groups[0]===groups[1],"Grouped figures share one group ID");
+    await page.locator('[data-layer-key="'+copyKey+'"] .layer-row-name').click();
+    const beforeGroup=await page.evaluate(()=>window.AnonsEditor.getSnapshot().cards[0].graphicElements.map(g=>g.x));
+    await page.evaluate(key=>{
+      const current=window.AnonsEditor.getSnapshot().cards[0].graphicElements.find(g=>"graphic:"+g.id===key);
+      window.AnonsEditor.transformDirect(key,{x:current.x-5},"group-test");
+    },copyKey);
+    const afterGroup=await page.evaluate(()=>window.AnonsEditor.getSnapshot().cards[0].graphicElements.map(g=>g.x));
+    assert.notEqual(beforeGroup[0],afterGroup[0],"Moving grouped figures also moves sibling");
+    assert.notEqual(beforeGroup[1],afterGroup[1]);
+    await page.locator("#layer-ungroup").click();
+    assert.ok((await page.evaluate(()=>window.AnonsEditor.getSnapshot().cards[0].graphicElements))
+      .every(g=>!g.groupId),"Ungroup clears metadata without deleting shapes");
+    await page.locator('[data-layer-key="'+copyKey+'"] [aria-label="Скрыть Важный символ"]').click();
+    assert.equal((await page.evaluate(()=>window.AnonsEditor.getSnapshot().cards[0].graphicElements[1].hidden)),true);
+    await page.locator('[data-layer-key="'+copyKey+'"] [aria-label="Показать Важный символ"]').click();
+    await page.locator("#graphic-list button").last().click();
+    await page.locator("#graphic-remove").click();
+    assert.equal((await page.evaluate(()=>window.AnonsEditor.getSnapshot().cards[0].graphicElements)).length,1,
+      "Deleting duplicated figure preserves the original");
     await page.locator(".preview-stage").screenshot({
       path:join(editorScreenshotDir,"direct-canvas-"+width+".png"),animations:"disabled"
     });
