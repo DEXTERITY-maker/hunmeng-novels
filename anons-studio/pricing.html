@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#111424">
+  <meta name="description" content="Тарифы Anons Studio Free, Basic, Pro и Studio. Реальные платежи временно отключены.">
+  <title>Тарифы — Anons Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=Noto+Serif:wght@700;800&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/webp" href="./assets/anons-icon-approved.webp">
+  <link rel="stylesheet" href="./styles.css">
+  <script src="./navigation.js" defer></script>
+  <script src="./auth.bundle.js" defer></script>
+</head>
+<body>
+  <div class="site-shell">
+    <header class="topbar">
+      <a href="./index.html" class="brand brand-image" aria-label="Anons Studio — главная"><img src="./assets/anons-logo-approved.webp" width="220" height="68" alt="Anons Studio" fetchpriority="high" decoding="async"></a>
+      <nav id="primary-navigation" class="navigation" aria-label="Основная навигация">
+        <a href="./index.html">Главная</a>
+        <a href="./editor.html">Редактор</a>
+        <a href="./templates.html">Шаблоны</a>
+        <a href="./features.html">Возможности</a>
+        <a href="./pricing.html" aria-current="page">Тарифы</a>
+        <a href="./editor.html#library">Моя библиотека</a>
+      </nav>
+      <div class="topbar-actions">
+        <button type="button" id="mobile-menu-toggle" class="mobile-menu-toggle" aria-controls="primary-navigation" aria-expanded="false" aria-label="Открыть меню"><span class="mobile-menu-icon" aria-hidden="true">☰</span><span class="mobile-menu-label">Меню</span></button>
+        <a id="nav-account" class="header-action" href="./account.html">Войти</a>
+      </div></header>
+    <main class="inner-page-main inner-page-pricing">
+      <div class="wrap personal-breadcrumb"><a href="./index.html">Главная</a><span aria-hidden="true">/</span><span aria-current="page">Тарифы</span></div>
+      <section class="inner-page-hero wrap"><span class="kicker">ПЛАНЫ ДЛЯ РАЗНЫХ ЗАДАЧ</span><h1>Тарифы и доступ.</h1><p>Начни бесплатно. Платные возможности отображаются для ознакомления, однако покупка остаётся отключена до завершения подключения платежей.</p></section>
+<section id="pricing" class="pricing wrap" aria-labelledby="pricing-title">
+        <div class="section-heading"><div><div class="kicker">ПРОСТЫЕ УСЛОВИЯ</div><h2 id="pricing-title">Выбери свой<br>формат творчества.</h2></div><p>На Free в PNG остаётся водяной знак. Платный Basic предусматривает чистый серверный экспорт. Подключение реальной оплаты пока не завершено.</p></div>
+        <div class="pricing-grid">
+          <article class="plan plan-free"><span class="plan-eyebrow">ДЛЯ НАЧАЛА</span><h3>Free</h3><div class="plan-price">0 ₽ <small>/ месяц</small></div><p>Попробовать редактор и создать первые публикации.</p><ul><li>Базовые шаблоны</li><li>Экспорт PNG в трёх форматах</li><li>Водяной знак Anons Studio</li></ul><a href="#editor" class="plan-action">Попробовать бесплатно</a></article>
+          <article class="plan"><span class="plan-eyebrow">ДЛЯ АВТОРОВ</span><h3>Basic</h3><div class="plan-price">299 ₽ <small>/ 30 дней</small></div><p>Для тех, кому нужен чистый профессиональный экспорт.</p><ul><li>Всё из Free</li><li><strong>Без водяного знака</strong></li><li>Дополнительные шаблоны — в разработке</li></ul><button disabled id="buy-basic" class="plan-action" type="button">Проверяем оплату…</button></article>
+          <article class="plan plan-featured"><span class="plan-eyebrow">ПОПУЛЯРНЫЙ ВАРИАНТ</span><h3>Pro</h3><div class="plan-price">499 ₽ <small>/ 30 дней</small></div><p>Для регулярного создания контента.</p><ul><li>Всё из Basic</li><li><strong>Без водяного знака</strong></li><li>Пакетные публикации — в разработке</li></ul><button disabled class="plan-action" type="button">Покупка скоро</button></article>
+          <article class="plan"><span class="plan-eyebrow">ДЛЯ КОМАНД</span><h3>Studio</h3><div class="plan-price">999 ₽ <small>/ 30 дней</small></div><p>Для нескольких проектов и единого фирменного стиля.</p><ul><li>Всё из Pro</li><li><strong>Без водяного знака</strong></li><li>Командные функции — в разработке</li></ul><button disabled class="plan-action" type="button">Покупка скоро</button></article>
+        </div>
+        <div class="billing-availability" role="status" aria-live="polite" id="billing-availability">Проверяем возможность оплаты…</div>
+        <p class="pricing-disclaimer">Basic — доступ на 30 дней с ручным продлением, без автоматических списаний. Pro и Studio пока в разработке. Кнопки оплаты заработают только после проверки платёжного магазина, чеков и серверного экспорта.</p>
+      </section>
+<section class="inner-next-step wrap"><div><h2>Начни с бесплатного тарифа.</h2><p>Создай первый графический анонс без покупки подписки.</p></div><a class="btn btn-primary" href="./editor.html">Открыть редактор ↗</a></section>
+    </main>
+    <footer class="footer wrap"><a href="./index.html" aria-label="Anons Studio — главная"><img class="footer-logo" src="./assets/anons-logo-approved.webp" width="220" height="68" alt="Anons Studio" loading="lazy" decoding="async"></a><span>Создано для тех, кому есть что рассказать.</span><a class="site-footer-link" href="./account.html">Личное пространство</a><span>Бета v0.6 · 2026</span></footer>
+    <div id="toast" role="status" aria-live="polite" class="toast" hidden></div>
+  </div>
+</body>
+</html>
