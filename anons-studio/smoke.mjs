@@ -84,15 +84,15 @@ try {
     // available from the footer without disturbing ordinary page visits.
     const releaseDialog=page.locator("#whats-new-dialog");
     await page.waitForFunction(()=>document.getElementById("whats-new-dialog")?.open);
-    assert.match(await page.locator("#whats-new-title").textContent(),/Интерактивное редактирование объектов/);
-    assert.equal(await page.locator(".whats-new-list li").count(),18);
-    assert.equal(await page.locator(".whats-new-item-icon .ui-icon").count(),18,
+    assert.match(await page.locator("#whats-new-title").textContent(),/Профессиональная панель слоёв/);
+    assert.equal(await page.locator(".whats-new-list li").count(),20);
+    assert.equal(await page.locator(".whats-new-item-icon .ui-icon").count(),20,
       "Announcement has coherent SVG icons instead of character placeholders");
     assert.equal(await page.locator("#whats-new-close").evaluate(el=>el===document.activeElement),true,
       "Announcement initially focuses its accessible close control");
     assert.equal(await page.locator(".whats-new-list:not(.whats-new-list-archive) li").count(),2,
       "Only the latest two changes are expanded by default");
-    assert.equal(await page.locator(".whats-new-list-archive li").count(),16);
+    assert.equal(await page.locator(".whats-new-list-archive li").count(),18);
     assert.equal(await page.locator(".whats-new-history").evaluate(el=>el.open),false);
     await page.locator(".whats-new-history summary").click();
     assert.equal(await page.locator(".whats-new-history").evaluate(el=>el.open),true);
@@ -104,7 +104,7 @@ try {
       assert.ok((await page.locator('.whats-new-list a[href="./'+destination+'"]').count())>=1,
         "Announcement links directly to "+destination);
     }
-    assert.equal(await releaseDialog.getAttribute("data-release"),"2026-11-04-interactive-canvas",
+    assert.equal(await releaseDialog.getAttribute("data-release"),"2026-11-04-layer-management",
       "Latest announcement version must be recognized");
 
     await page.locator("#whats-new-dismiss").click();
