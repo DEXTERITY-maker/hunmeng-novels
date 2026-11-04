@@ -23,9 +23,9 @@ test("premium handler imports both versioned rendering contracts",()=>{
   assert.match(handler,/IMAGE_TOO_LARGE/);
 });
 
-test("all twelve templates render finite geometry in every supported format",()=>{
+test("all fifteen templates render finite geometry in every supported format",()=>{
   for(const ratio of ["portrait","square","story"]){
-    for(const template of ["aurora","editorial","spotlight","pulse","minimal","bulletin", "business-brief","business-pitch","business-report", "pro-campaign","pro-magazine","pro-impact"]){
+    for(const template of ["aurora","editorial","spotlight","pulse","minimal","bulletin", "business-brief","business-pitch","business-report", "pro-campaign","pro-magazine","pro-impact","studio-identity","studio-launch","studio-portfolio"]){
       const info=Scene.layout({ratio,project:"Анонс"},{template,theme:"paper",titleShift:12});
       assert.ok(info.width===1080 && info.height>=1080);
       assert.ok(Number.isFinite(info.titleY)&&Number.isFinite(info.detailsY));
@@ -234,4 +234,20 @@ test("Pro template palettes are distinct and shared with the server-side rendere
   assert.match(handler,/PRO_SUBSCRIPTION_REQUIRED/);
   assert.match(handler,/PRO_TEMPLATES\.has\(requestedTemplate\)/);
   assert.match(handler,/\['pro','studio'\]\.includes\(member\.plan\)/);
+});
+
+test("Studio scene variants have independent palettes and explicit server guards",()=>{
+  const suite=[["studio-identity","editorial","#11182d"],["studio-launch","spotlight","#2b1545"],["studio-portfolio","bulletin","#ecf4f5"]];
+  for(const ratio of ["portrait","square","story"]){
+    for(const [id,base,bg] of suite){
+      const scene=Scene.layout({ratio},{template:id,theme:"paper"});
+      assert.equal(scene.studioTemplate,id);
+      assert.equal(scene.template,base);
+      assert.equal(scene.palette.bg1,bg);
+      assert.ok(scene.titleY<scene.detailsY&&scene.detailsY<scene.footerY);
+    }
+  }
+  assert.match(handler,/STUDIO_SUBSCRIPTION_REQUIRED/);
+  assert.match(handler,/STUDIO_TEMPLATES/);
+  assert.match(handler,/member.plan!==/);
 });
