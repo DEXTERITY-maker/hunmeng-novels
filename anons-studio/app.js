@@ -67,7 +67,7 @@
     ?Math.max(min,Math.min(max,Number(value))):fallback;
   function normalizeOffsets(raw){
     const values=raw&&typeof raw==="object"&&!Array.isArray(raw)?raw:{};
-    const result={title:{x:0,y:0},description:{x:0,y:0},highlights:{x:0,y:0}};
+    const result=Object.fromEntries(Object.keys(layerAxes).map(layer=>[layer,{x:0,y:0}]));
     for(const [layer,axes] of Object.entries(layerAxes)){
       for(const axis of axes)result[layer][axis]=Math.round(clamp(values[layer]?.[axis],-30,30,0));
     }
