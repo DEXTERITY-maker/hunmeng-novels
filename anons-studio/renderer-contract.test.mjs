@@ -157,3 +157,34 @@ test("highlight panel variants, icons and featured rows are validated",()=>{
   assert.deepEqual([...safe.icons],["dot","dot","dot"]);
   assert.equal(safe.featured,-1);
 });
+
+test("layer z-order and hidden states are safely normalized for the paid renderer",()=>{
+  const info=Scene.layout({ratio:"portrait"},{
+    layerOrder:["highlights","title","photo","description","brand",
+      "title","<svg onload=alert(1)>","decoration"],
+    layers:{brand:false,title:true,photo:false,highlights:true}});
+  assert.equal(info.order[0],"highlights");
+  assert.equal(info.order.filter(x=>x==="title").length,1);
+  assert.ok(!info.order.includes("<svg onload=alert(1)>"));
+  assert.equal(info.enabled.brand,false);
+  assert.equal(info.enabled.photo,false);
+  assert.equal(info.enabled.title,true);
+  assert.equal(info.order.length,6);
+  assert.equal(Scene.layout({ratio:"portrait"},{}).enabled.photo,true);
+});
+
+test("graphic labels, visibility and grouping metadata remain bounded",()=>{
+  const item=Graphics.normalizeOne({id:"g-1",kind:"star",hidden:true,
+    label:"<img src=x onerror=alert(1)>".repeat(20),
+    groupId:"not valid! <script>",path:"M 0 0",x:50,y:50},0);
+  assert.equal(item.hidden,true);
+  assert.ok(item.label.length<=48);
+  assert.equal(item.groupId,"");
+  assert.equal(Graphics.frame(item,1080,1350).path,Graphics.paths.star);
+  const grouped=Graphics.normalizeElements([{id:"a",groupId:"group-valid_12",label:"Логотип"},
+    {id:"b",groupId:"group-valid_12",hidden:false}]);
+  assert.equal(grouped[0].groupId,grouped[1].groupId);
+  assert.equal(grouped[0].label,"Логотип");
+  assert.equal(grouped[1].hidden,false);
+  assert.match(handler,/if\(item\.hidden\)continue/);
+});
