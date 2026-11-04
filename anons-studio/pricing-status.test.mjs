@@ -24,7 +24,16 @@ function setup(){
     card.note.hidden=true;return card;
   });
   const nodes=Object.fromEntries(["pricing-current-title","pricing-current-description",
-    "pricing-current-indicator"].map(key=>[key,new Element()]));
+    "pricing-current-indicator","pricing-active-summary"].map(key=>[key,new Element()]));
+  nodes["pricing-active-tools"]=new Element();
+  nodes["pricing-active-tools"].hidden=true;
+  nodes["pricing-active-tools"].groups=["basic","pro","studio","agency","ultimate"].map(name=>{
+    const group=new Element();group.dataset.activePlan=name;group.hidden=true;return group;
+  });
+  nodes["pricing-active-tools"].querySelectorAll=selector=>{
+    assert.equal(selector,"[data-active-plan]");
+    return nodes["pricing-active-tools"].groups;
+  };
   const root=new Element();root.querySelectorAll=selector=>{
     assert.equal(selector,".pricing-grid .plan[data-plan]");return cards;
   };
@@ -119,4 +128,25 @@ test("pricing uses verified Supabase session and never upgrades on client order 
   assert.match(auth,/loggedIn:true,verified:!lookupFailed,expiresAt/);
   assert.match(manual,/anons:manual-orders/);
   assert.doesNotMatch(source,/update\(\{\s*plan|insert\(\{\s*plan|client\.rpc/);
+});
+
+test("paid shortcuts appear only on the matching server-verified active tier",()=>{
+  const h=setup();
+  assert.equal(h.nodes["pricing-active-tools"].hidden,true);
+  h.emit("anons:access",login("free",false));
+  assert.equal(h.nodes["pricing-active-tools"].hidden,true);
+  h.emit("anons:access",login("agency",true));
+  assert.equal(h.nodes["pricing-active-tools"].hidden,false);
+  assert.match(h.nodes["pricing-active-summary"].textContent,/шестнадцати проектов/);
+  assert.equal(h.nodes["pricing-active-tools"].groups.filter(x=>!x.hidden).length,1);
+  assert.equal(h.nodes["pricing-active-tools"].groups.find(x=>!x.hidden).dataset.activePlan,"agency");
+  h.emit("anons:access",{loggedIn:true,verified:false,plan:"agency",premium:true});
+  assert.equal(h.nodes["pricing-active-tools"].hidden,true);
+});
+test("pricing shows real workflow examples and links, not fake higher-tier privileges",()=>{
+  for(const plan of ["basic","pro","studio","agency","ultimate"])
+    assert.match(html,new RegExp('data-active-plan="'+plan+'"'));
+  assert.match(html,/id="pricing-active-tools"/);
+  assert.match(html,/одна идея → серия из трёх карточек/);
+  assert.match(html,/до 30 проектов за одну операцию/);
 });

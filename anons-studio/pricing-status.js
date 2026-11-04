@@ -9,6 +9,16 @@
   const indicator=document.getElementById("pricing-current-indicator");
   const names={free:"Free",basic:"Бизнес",pro:"Про",studio:"Студия",agency:"Агентство",ultimate:"Максимум"};
   const cards=[...root.querySelectorAll(".pricing-grid .plan[data-plan]")];
+  const activeTools=document.getElementById("pricing-active-tools");
+  const activeSummary=document.getElementById("pricing-active-summary");
+  const activeActions=activeTools?[...activeTools.querySelectorAll("[data-active-plan]")]:[];
+  const descriptions={
+    basic:"«Бизнес»: девять шаблонов и экспорт PNG без водяного знака.",
+    pro:"«Про»: серии карточек, единое оформление и двенадцать шаблонов.",
+    studio:"«Студия»: пакетные карточки и оформление до восьми облачных проектов.",
+    agency:"«Агентство»: все младшие инструменты и оформление до шестнадцати проектов.",
+    ultimate:"«Максимум»: вся коллекция из 21 шаблона и оформление до тридцати проектов."
+  };
   let resolved=false,loggedIn=false,verified=false,activePlan=null,expiresAt=null,orders=[];
   const openStatus=new Set(["awaiting_instructions","payment_reported"]);
   const formatDate=value=>{
@@ -48,6 +58,11 @@
       indicator.textContent="Free";
     }
     root.dataset.pricingAccess=current?activePlan:pending?"pending":loggedIn?"free":"guest";
+    // Only a verified, active Supabase membership reveals its corresponding shortcuts.
+    // These links never grant capabilities: Editor and Edge still enforce permissions.
+    if(activeTools)activeTools.hidden=!current;
+    if(activeSummary)activeSummary.textContent=current?descriptions[activePlan]:"";
+    activeActions.forEach(group=>{group.hidden=!current||group.dataset.activePlan!==activePlan;});
     cards.forEach(card=>{
       const id=card.dataset.plan;
       const link=card.querySelector(".manual-plan-link");

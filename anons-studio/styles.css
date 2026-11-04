@@ -1205,3 +1205,16 @@ html.whats-new-visible{overflow:hidden}
 @media(max-width:680px){.tariff-compare{padding:16px;margin:24px 0}.tariff-compare-heading h3{font-size:21px}
 .preview-agency-brand,.preview-agency-social,.preview-agency-showcase,
 .preview-ultimate-signature,.preview-ultimate-cinema,.preview-ultimate-vision{min-height:185px}}
+
+/* Clear, useful paid-plan experiences; shortcuts never grant entitlement. */
+.plan-usecase{margin:0 0 16px!important;padding:12px 13px;border-radius:11px;border:1px solid #dfd8ee;background:#f9f7fd;color:#55456d!important;font-size:11px!important;line-height:1.6!important;min-height:0!important}
+.plan-usecase strong{color:#3d2d58}
+.pricing-active-tools{margin:0 0 25px;padding:24px;border:1px solid #a8d2c5;background:linear-gradient(120deg,#f3faf7,#f8f5ff);border-radius:18px}
+.pricing-active-tools[hidden],.pricing-active-actions [hidden]{display:none!important}
+.pricing-active-intro h3{margin:8px 0 6px;font-size:21px;color:#184235;letter-spacing:-.025em}
+.pricing-active-intro p{margin:0;color:#597367;font-size:12px;line-height:1.6}
+.pricing-active-actions>div:not([hidden]){display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+.pricing-active-actions a{display:inline-flex;align-items:center;justify-content:center;min-height:43px;padding:11px 16px;border:1px solid #8fbfaf;border-radius:11px;background:#fff;color:#1b6956;font-size:12px;font-weight:850;text-decoration:none;transition:background .15s ease}
+.pricing-active-actions a:hover,.pricing-active-actions a:focus-visible{background:#e4f4ec}
+.pricing-active-note{margin:13px 0 0;color:#688276;font-size:10px;line-height:1.6}
+@media(max-width:560px){.pricing-active-tools{padding:18px}.pricing-active-actions>div:not([hidden]){display:grid}.pricing-active-actions a{justify-content:flex-start}}
