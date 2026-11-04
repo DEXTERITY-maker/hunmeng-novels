@@ -86,26 +86,28 @@
     <footer class="footer wrap"><img class="footer-logo" src="./assets/anons-logo-approved.webp" width="220" height="68" alt="Anons Studio" loading="lazy" decoding="async"><span>Создано для тех, кому есть что рассказать.</span><button id="whats-new-open" class="whats-new-open" type="button" aria-haspopup="dialog" aria-controls="whats-new-dialog">✦ Что нового</button><span>Бета v0.6 · 2026</span></footer>
     <div id="toast" role="status" aria-live="polite" class="toast" hidden></div>
   </div>
-    <dialog id="whats-new-dialog" class="whats-new-dialog" data-release="2026-11-04-standalone-pages" aria-labelledby="whats-new-title" aria-describedby="whats-new-description">
+    <dialog id="whats-new-dialog" class="whats-new-dialog" data-release="2026-11-04-detailed-navigation-release" aria-labelledby="whats-new-title" aria-describedby="whats-new-description">
       <div class="whats-new-head">
-        <span class="whats-new-eyebrow">✦ ОБНОВЛЕНИЕ ANONS STUDIO · НОЯБРЬ 2026</span>
+        <span class="whats-new-eyebrow">ANONS STUDIO · ОБНОВЛЕНИЕ ОТ 4 НОЯБРЯ 2026 ГОДА</span>
         <button type="button" id="whats-new-close" class="whats-new-close" aria-label="Закрыть окно с нововведениями">×</button>
         <div class="whats-new-mark" aria-hidden="true">✦</div>
-        <h2 id="whats-new-title">В студии стало ещё удобнее.</h2>
-        <p id="whats-new-description">Мы улучшили редактор и защиту ваших проектов. Вот что изменилось.</p>
+        <h2 id="whats-new-title">Обновление структуры сайта</h2>
+        <p id="whats-new-description">Основные разделы Anons Studio перенесены на отдельные страницы. Ниже представлен перечень изменений.</p>
       </div>
       <div class="whats-new-body">
         <ul class="whats-new-list">
-          <li><span class="whats-new-item-icon" aria-hidden="true">☁</span><div><strong>Надёжное сохранение</strong><p>Изменения остаются в браузере без интернета и синхронизируются после восстановления связи.</p></div></li>
-          <li><span class="whats-new-item-icon" aria-hidden="true">🔒</span><div><strong>Защита ваших проектов</strong><p>Улучшена безопасность при выходе, переключении аккаунтов и одновременном редактировании.</p></div></li>
-          <li><span class="whats-new-item-icon" aria-hidden="true">▤</span><div><strong>Разделы стали отдельными страницами</strong><p>Редактор, шаблоны, возможности и тарифы получили собственные страницы с удобной навигацией.</p></div></li>
-          <li><span class="whats-new-item-icon" aria-hidden="true">✧</span><div><strong>Точнее предпросмотр</strong><p>Редактор и серверный экспорт теперь используют общие правила компоновки.</p></div></li>
+          <li><span class="whats-new-item-icon" aria-hidden="true">✎</span><div><strong>Отдельная страница «Редактор»</strong><p>Создание анонсов, предпросмотр, экспорт PNG/ZIP и облачная библиотека собраны в рабочей области.</p><a class="whats-new-item-link" href="./editor.html">Открыть редактор</a></div></li>
+          <li><span class="whats-new-item-icon" aria-hidden="true">▧</span><div><strong>Отдельная страница «Шаблоны»</strong><p>Шесть композиций доступны в галерее. Выбранный шаблон открывается непосредственно в редакторе.</p><a class="whats-new-item-link" href="./templates.html">Просмотреть шаблоны</a></div></li>
+          <li><span class="whats-new-item-icon" aria-hidden="true">✦</span><div><strong>Отдельная страница «Возможности»</strong><p>Инструменты редактора и функции сервиса представлены в самостоятельном разделе.</p><a class="whats-new-item-link" href="./features.html">Посмотреть возможности</a></div></li>
+          <li><span class="whats-new-item-icon" aria-hidden="true">◇</span><div><strong>Отдельная страница «Тарифы»</strong><p>Условия тарифов Free, Basic, Pro и Studio представлены отдельно. Реальная оплата пока недоступна.</p><a class="whats-new-item-link" href="./pricing.html">Посмотреть тарифы</a></div></li>
+          <li><span class="whats-new-item-icon" aria-hidden="true">◎</span><div><strong>«Личное пространство»</strong><p>Вход, регистрация, сведения о подписке и настройки безопасности аккаунта размещены на отдельной странице.</p><a class="whats-new-item-link" href="./account.html">Перейти в личное пространство</a></div></li>
+          <li><span class="whats-new-item-icon" aria-hidden="true">☁</span><div><strong>Сохранение и защита проектов</strong><p>Улучшена работа с черновиками при потере соединения, смене аккаунта и конфликте версий.</p></div></li>
         </ul>
         <div class="whats-new-actions">
           <a id="whats-new-try" class="whats-new-primary" href="./editor.html">Перейти к редактору <span aria-hidden="true">↗</span></a>
-          <button id="whats-new-dismiss" class="whats-new-secondary" type="button">Понятно</button>
+          <button id="whats-new-dismiss" class="whats-new-secondary" type="button">Закрыть</button>
         </div>
-        <p class="whats-new-once">Покажем это окно один раз для каждого нового обновления. Его всегда можно открыть внизу страницы.</p>
+        <p class="whats-new-once">Уведомление отображается один раз для каждого выпуска. Повторно открыть его можно через пункт «Что нового» в нижней части главной страницы.</p>
       </div>
     </dialog>
 </body>
