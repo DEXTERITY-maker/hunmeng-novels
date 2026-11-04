@@ -329,9 +329,9 @@ try {
     assert.equal(await pricingPage.locator(".manual-plan-link").count(),5,
       "Every paid plan links to the same manual-order form");
     await pricingPage.locator("#manual-order-plan").selectOption("agency");
-    assert.match((await pricingPage.locator("#manual-order-price").textContent())?.replace(/\\s/g,"")||"",/1499₽/);
+    assert.match((await pricingPage.locator("#manual-order-price").textContent())?.replace(/\s/g,"")||"",/1499₽/);
     await pricingPage.locator("#manual-order-plan").selectOption("ultimate");
-    assert.match((await pricingPage.locator("#manual-order-price").textContent())?.replace(/\\s/g,"")||"",/2499₽/);
+    assert.match((await pricingPage.locator("#manual-order-price").textContent())?.replace(/\s/g,"")||"",/2499₽/);
     assert.equal(await pricingPage.locator(".tariff-compare table th").count()>=7,true,
       "Six plans have an accessible feature comparison table");
     assert.equal(await pricingPage.locator("#pricing-personal-status").count(),1,
