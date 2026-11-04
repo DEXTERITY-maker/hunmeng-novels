@@ -473,6 +473,7 @@ try {
         },true);
       }
     });
+    await page.locator("#poster").scrollIntoViewIfNeeded();
     const bbox=await page.locator("#poster").boundingBox();
     const handle=await page.locator(".direct-selection-outline").boundingBox();
     assert.ok(bbox?.width>50&&handle?.width>10);
