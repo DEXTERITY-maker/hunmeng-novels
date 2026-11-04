@@ -45,8 +45,9 @@ const THEMES:Record<string,string[]>={ultraviolet:['#1a1636','#4a3486','#c2a1ff'
 const SIZES:Record<string,[number,number]>={portrait:[1080,1350],square:[1080,1080],story:[1080,1920]};
 const LABELS:Record<string,string>={update:'ОБНОВЛЕНИЕ',launch:'ЗАПУСК',event:'СОБЫТИЕ',notice:'ОБЪЯВЛЕНИЕ'};
 const PRO_TEMPLATES=new Set(['pro-campaign','pro-magazine','pro-impact']);
+const STUDIO_TEMPLATES=new Set(['studio-identity','studio-launch','studio-portfolio']);
 const TEMPLATES=new Set(['aurora','editorial','spotlight','pulse','minimal','bulletin',
-  'business-brief','business-pitch','business-report',...PRO_TEMPLATES]);
+  'business-brief','business-pitch','business-report',...PRO_TEMPLATES,...STUDIO_TEMPLATES]);
 function text(v:unknown,max:number,fallback=''){return typeof v==='string'?v.replace(/[\u0000-\u001f]/g,' ').slice(0,max):fallback;}
 function validColor(v:unknown,fallback:string){return typeof v==='string'&&/^#[A-Fa-f0-9]{6}$/.test(v)?v:fallback;}
 function el(tag:any,style:Record<string,unknown>,...children:any[]){return React.createElement(tag,{style},...children);}
@@ -310,6 +311,8 @@ Deno.serve(async(req:Request)=>{
   // A browser-crafted snapshot must never get Pro designs using a Basic membership.
   if(PRO_TEMPLATES.has(requestedTemplate)&&!['pro','studio'].includes(member.plan))
     return respond({error:'PRO_SUBSCRIPTION_REQUIRED'},403);
+  if(STUDIO_TEMPLATES.has(requestedTemplate)&&member.plan!=='studio')
+    return respond({error:'STUDIO_SUBSCRIPTION_REQUIRED'},403);
   // Reject photos we cannot render, rather than silently returning a PNG without them.
   if(snapshot.imageData){
     if(typeof snapshot.imageData!=='string'||!/^data:image\/(png|jpeg|webp);base64,[a-z0-9+/=]+$/i.test(snapshot.imageData))
