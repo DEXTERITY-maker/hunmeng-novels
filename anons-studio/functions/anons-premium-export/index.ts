@@ -259,6 +259,7 @@ function renderPoster(snapshot:any,card:any,width:number,height:number,available
   }
   // Same immutable SVG paths and pixel frames as browser Canvas.
   for(const [i,item] of Graphics.normalizeElements(card.graphicElements).entries()){
+    if(item.hidden)continue;
     const fr=Graphics.frame(item,width,height);
     blocks.push(React.createElement('svg',{
       key:item.id,viewBox:'0 0 100 100',width:fr.size,height:fr.size,
