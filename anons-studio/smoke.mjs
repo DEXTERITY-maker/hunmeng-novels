@@ -291,7 +291,7 @@ try {
     const librarySource=await readFile(join(dirname(fileURLToPath(import.meta.url)),"library-entry.js"),"utf8");
     await page.addScriptTag({content:librarySource.replace("export function initLibrary","window.__testInitLibrary = function initLibrary")});
     await page.evaluate(()=>{
-      const memory={projects:[],revisions:[]};
+      const memory={projects:[],revisions:[],holdNextLoad:false,pendingLoads:[]};
       window.__mockLibraryDb=memory;
       const clone=o=>JSON.parse(JSON.stringify(o));
       const adapter={
@@ -308,6 +308,11 @@ try {
             update(value){op="update";payload=value;return query;},
             delete(){op="delete";return query;},
             async maybeSingle(){
+              if(table==="anons_studio_projects" && op==="select"
+                && filters.some(([key])=>key==="id") && memory.holdNextLoad){
+                memory.holdNextLoad=false;
+                await new Promise(resolve=>memory.pendingLoads.push(resolve));
+              }
               const row=rows()[0];
               if(!row)return {data:null,error:null};
               if(op==="update")Object.assign(row,payload);
@@ -391,7 +396,45 @@ try {
     assert.ok(await page.evaluate(()=>window.__mockLibraryDb.projects.some(p=>p.title==="Второй проект (копия)"&&p.snapshot.cards[0].title==="Мои локальные изменения")),
       "Conflict copy must retain unsaved local text");
     assert.equal(await page.locator("#library-conflict").isVisible(),false);
-    console.log("PASS Cloud library mock: create/edit/checkpoint/load/restore/archive/delete/conflict-copy");
+
+    // A loss of connectivity must not send a mutation or discard the local draft.
+    await context.setOffline(true);
+    await page.evaluate(()=>window.dispatchEvent(new Event("offline")));
+    const savedBeforeOffline=await page.evaluate(()=>window.__mockLibraryDb.projects
+      .find(p=>p.title==="Второй проект (копия)").version);
+    await page.locator("#title").fill("Правки без интернета");
+    assert.match(await page.locator("#library-sync").textContent(),/Офлайн/);
+    await page.locator("#library-save").click();
+    assert.match(await page.locator("#library-error").textContent(),/Нет соединения/);
+    assert.equal(await page.locator("#title").inputValue(),"Правки без интернета");
+    assert.equal(await page.evaluate(()=>window.__mockLibraryDb.projects
+      .find(p=>p.title==="Второй проект (копия)").version),savedBeforeOffline,
+      "An offline save must not call the cloud RPC");
+    assert.match(await page.evaluate(()=>localStorage.getItem("anons-studio:mvp-v1")),/Правки без интернета/);
+    await context.setOffline(false);
+    await page.evaluate(()=>window.dispatchEvent(new Event("online")));
+    await page.waitForFunction(()=>window.__mockLibraryDb.projects
+      .some(p=>p.title==="Второй проект (копия)"&&p.snapshot.cards[0].title==="Правки без интернета"),
+      {timeout:10000});
+    assert.match(await page.locator("#library-sync").textContent(),/Сохранено в облаке|Есть новые изменения/);
+
+    // A response from an old project selection must never overwrite edits
+    // made while that response is awaiting the network.
+    await page.evaluate(()=>{window.__mockLibraryDb.holdNextLoad=true;});
+    await page.locator("#library-list .library-entry").filter({hasText:"Второй проект"}).first().click();
+    await page.waitForFunction(()=>window.__mockLibraryDb.pendingLoads.length===1);
+    await page.locator("#title").fill("Правка во время загрузки");
+    await page.evaluate(()=>window.__mockLibraryDb.pendingLoads.shift()());
+    await page.waitForFunction(()=>document.querySelector("#library-error").textContent
+      .includes("Пока проект загружался"));
+    assert.equal(await page.locator("#title").inputValue(),"Правка во время загрузки");
+    assert.equal(await page.locator("#library-current").textContent(),"Второй проект (копия)",
+      "Late project response must not change the selected project");
+    await page.locator("#library-save").click();
+    await page.waitForFunction(()=>window.__mockLibraryDb.projects
+      .some(p=>p.title==="Второй проект (копия)"&&p.snapshot.cards[0].title==="Правка во время загрузки"));
+
+    console.log("PASS Cloud library mock: create/edit/checkpoint/load/restore/archive/delete/conflict-copy/offline/stale-read");
     await context.close();
   }
 } finally {
