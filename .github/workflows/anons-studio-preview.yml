@@ -38,8 +38,14 @@ jobs:
           test -s anons-studio/styles.css
           test -s anons-studio/dist/auth.bundle.js
           test -s anons-studio/dist/index.html
-          grep -q 'id="poster"' anons-studio/index.html
-          grep -q 'id="export"' anons-studio/index.html
+          test -s anons-studio/dist/editor.html
+          test -s anons-studio/dist/templates.html
+          test -s anons-studio/dist/features.html
+          test -s anons-studio/dist/pricing.html
+          grep -q 'id="poster"' anons-studio/editor.html
+          grep -q 'id="export"' anons-studio/editor.html
+          grep -q 'data-template="aurora"' anons-studio/templates.html
+          grep -q 'id="billing-availability"' anons-studio/pricing.html
           grep -q 'toBlob' anons-studio/app.js
           grep -q 'localStorage' anons-studio/app.js
       - name: Test payment and export authorization boundaries
