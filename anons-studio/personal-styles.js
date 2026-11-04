@@ -268,7 +268,7 @@
     });
   });
   window.addEventListener("online",()=>{if(cloudUser)void refreshCloud();});
-  document.addEventListener("visibilitychange",()=>{
+  document.addEventListener?.("visibilitychange",()=>{
     if(document.visibilityState==="visible"&&cloudUser)void refreshCloud();
   });
   window.AnonsPersonalStyles=Object.freeze({setUser,refresh:refreshCloud});
