@@ -401,6 +401,9 @@ export function initLibrary(client) {
   elements.archive.addEventListener("click",()=>toggleArchive());
   elements.remove.addEventListener("click",()=>removeProject());
   window.addEventListener("anons:editor-reset",()=>{if(user)clearCurrent(editor()?.getSuggestedName?.());});
+  window.addEventListener("anons:studio-projects-changed",()=>{
+    if(user)void refresh().catch(()=>error("Не удалось обновить список после изменения стиля."));
+  });
   window.addEventListener("anons:editor-change",markDirty);
   window.addEventListener("offline",()=>{
     clearPending();
