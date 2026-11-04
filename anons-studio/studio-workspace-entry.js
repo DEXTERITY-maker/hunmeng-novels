@@ -143,8 +143,8 @@ export function initStudioWorkspace(client) {
         throw Error("RESULT_MISMATCH");
       selected.clear();
       projects=[];
+      loading=false;
       render();
-      say("Готово: обновлено проектов — "+data+". Предыдущие версии сохранены в истории.");
       window.dispatchEvent(new Event("anons:studio-projects-changed"));
       await refreshProjects();
       if(live(id,epoch))say("Обновлено "+data+" проектов. Восстановить предыдущие версии можно в библиотеке.");
