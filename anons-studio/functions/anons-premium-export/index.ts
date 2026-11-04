@@ -218,19 +218,41 @@ function renderPoster(snapshot:any,card:any,width:number,height:number,available
   }
   if(plan.enabled.highlights){
     const x=margin+offset('highlights').x,y=plan.detailsY+offset('highlights').y;
-    const heightCard=28+list.length*plan.highlightRowHeight+21;
-    blocks.push(box({left:x,top:y-27,width:plan.contentWidth,height:heightCard,borderRadius:23,
-      background:plan.template==='minimal'||plan.template==='editorial'?'transparent':Scene.rgb(p.text,.085),
-      border:plan.template==='minimal'||plan.template==='editorial'?'2px solid '+Scene.rgb(p.text,.3):'none',
-      zIndex:z('highlights')}));
+    const h=Scene.highlightGeometry(plan,list.length);
+    const top=h.top+offset('highlights').y;
+    if(h.style!=='separated'){
+      const outlined=h.style==='outline'||plan.template==='minimal'||plan.template==='editorial';
+      blocks.push(box({left:x,top,width:h.width,height:h.height,borderRadius:23,
+        background:outlined?'transparent':Scene.rgb(p.text,.085),
+        border:outlined?'2px solid '+Scene.rgb(p.text,.36):'none',
+        zIndex:z('highlights')}));
+    }
     list.forEach((line:string,i:number)=>{
-      const cy=y+i*plan.highlightRowHeight+16;
-      blocks.push(box({left:x+20,top:cy-1,width:22,height:22,borderRadius:999,
-        background:p.accent,zIndex:z('highlights')}));
+      const cy=y+i*h.rowHeight+16;
+      if(h.featured===i)blocks.push(box({
+        left:x+13,top:top+12+i*h.rowHeight,width:h.width-26,height:h.rowHeight-3,
+        borderRadius:12,background:Scene.rgb(p.accent,.16),zIndex:z('highlights')
+      }));
+      if(h.style==='separated'&&i>0)blocks.push(box({
+        left:x+12,top:top+12+i*h.rowHeight,width:h.width-24,height:2,
+        background:Scene.rgb(p.text,.22),zIndex:z('highlights')
+      }));
+      const icon=h.icons[i];
+      if(icon==='dot'){
+        blocks.push(box({left:x+20,top:cy-1,width:22,height:22,borderRadius:999,
+          background:p.accent,zIndex:z('highlights')}));
+      }else{
+        blocks.push(React.createElement('svg',{
+          key:'highlight-icon-'+i,viewBox:'0 0 100 100',width:24,height:24,
+          style:{position:'absolute',left:x+19,top:cy-3,width:24,height:24,
+            zIndex:z('highlights')}
+        },React.createElement('path',{d:Graphics.paths[icon],fill:p.accent})));
+      }
       let short=line;
-      while(Scene.textWidth(short,height<=1100?27:30,0)>plan.contentWidth-112 && short.length>1)short=short.slice(0,-1);
+      while(Scene.textWidth(short,height<=1100?27:30,0)>h.width-112 && short.length>1)
+        short=short.slice(0,-1);
       if(short!==line)short=short.slice(0,-1)+'…';
-      blocks.push(box({left:x+63,top:cy-10,width:plan.contentWidth-94,
+      blocks.push(box({left:x+63,top:cy-10,width:h.width-94,
         fontSize:height<=1100?27:30,fontWeight:700,fontFamily:'Manrope',
         color:p.text,zIndex:z('highlights')},short));
     });
