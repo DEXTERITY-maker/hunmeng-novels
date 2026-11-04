@@ -119,3 +119,40 @@ test("free-watermark geometry is distributed, restrained and not removable by a 
     assert.deepEqual([...marks.map(m=>m.y)].sort((a,b)=>a-b),marks.map(m=>m.y));
   }
 });
+
+test("Aurora composition modes remain inside the available poster geometry",()=>{
+  for(const ratio of ["portrait","square","story"]){
+    const variants=["classic","compact","headline"].map(composition=>
+      Scene.layout({ratio},{template:"aurora",composition}));
+    assert.equal(new Set(variants.map(v=>v.titleY)).size,3,
+      "Each Aurora composition must visibly change the title position");
+    for(const scene of variants){
+      const h=Scene.highlightGeometry(scene,3);
+      assert.equal(h.width,scene.contentWidth);
+      assert.ok(h.top>scene.titleY,"Highlights must follow the heading");
+      assert.ok(h.top+h.height<=scene.footerY-55,
+        "Three highlights must not overlap the footer rule in "+ratio);
+    }
+  }
+  assert.equal(Scene.layout({ratio:"portrait"},{template:"aurora",composition:"<script>"}).composition,"classic");
+  assert.equal(Scene.layout({ratio:"portrait"},{template:"editorial",composition:"headline"}).composition,"classic");
+});
+
+test("highlight panel variants, icons and featured rows are validated",()=>{
+  const scene=Scene.layout({ratio:"square"},{template:"aurora",highlightStyle:"separated",
+    highlightIcons:["check","star","diamond","<svg onload=alert(1)>"],
+    featuredHighlight:2});
+  const h=Scene.highlightGeometry(scene,3);
+  assert.equal(h.style,"separated");
+  assert.equal(h.icons.length,3);
+  assert.deepEqual([...h.icons],["check","star","diamond"]);
+  assert.equal(h.featured,2);
+  assert.equal(Scene.highlightGeometry(scene,99).height,
+    Scene.highlightGeometry(scene,3).height,"Highlight counts cannot exceed 3 rows");
+  const malformed=Scene.layout({ratio:"square"},{highlightStyle:"javascript:alert(1)",
+    highlightIcons:["evil",{},null],featuredHighlight:900});
+  const safe=Scene.highlightGeometry(malformed,3);
+  assert.equal(safe.style,"soft");
+  assert.deepEqual([...safe.icons],["dot","dot","dot"]);
+  assert.equal(safe.featured,-1);
+});
