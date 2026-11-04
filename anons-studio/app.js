@@ -409,10 +409,10 @@
     ctx.fillStyle=glow;ctx.fillRect(0,0,W,H);
     ctx.lineWidth=1.5;
     ctx.strokeStyle=rgba(t.text,aurora?(state.decorations?d.grid:0):.055);
-    if(!aurora||state.decorations){
+    if(scene.enabled.decoration&&(!aurora||state.decorations)){
       for(let i=-H;i<W+H;i+=73){ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i+H,H);ctx.stroke();}
     }
-    if(state.decorations && state.template!=="minimal") {
+    if(scene.enabled.decoration&&state.decorations && state.template!=="minimal") {
       if(state.template==="editorial"){
         ctx.strokeStyle=rgba(t.text,.3);ctx.lineWidth=3;ctx.strokeRect(38,38,W-76,H-76);
         ctx.fillStyle=rgba(t.accent,.28);ctx.fillRect(W-170,95,76,76);
@@ -430,7 +430,6 @@
         for(let x=75;x<W-75;x+=80){ctx.fillStyle=rgba(t.accent,.3);ctx.fillRect(x,H*.19,48,8);}
       }else drawDecoration(W,H,t,scene);
     }
-    drawPhoto(W,H);
   }
   function drawWatermark(W,H,t) {
     // All local exports carry multiple brand stamps, including on paid plans;
@@ -448,13 +447,20 @@
     ctx.restore();
   }
   function draw() {
-    // Shared deterministic layout used by the paid Supabase PNG renderer.
+    // Scene order and visibility are shared with the paid PNG renderer.
+    // Only the footer and the Free watermark are not editable layers.
     const scene=window.AnonsScene.layout({ratio:state.ratio,project:state.project},state);
     const W=scene.width,H=scene.height,t=scene.palette;
     if(canvas.width!==W||canvas.height!==H){canvas.width=W;canvas.height=H;}
     ctx.textBaseline="alphabetic";ctx.textAlign="left";
     drawBackground(W,H,t,scene);
     const margin=scene.margin,contentWidth=scene.contentWidth;
+    const layout=scene.template,titleY=scene.titleY,detailsY=scene.detailsY;
+    const rawTitle=state.title.trim()||"Заголовок публикации";
+    const f=window.AnonsScene.titleLines(rawTitle,scene);
+    const drawBrandLayer=()=>{
+      ctx.save();
+      ctx.translate(scene.offsets.brand.x*W/100,scene.offsets.brand.y*H/100);
     // Topline
     ctx.font="700 27px Manrope, sans-serif"; ctx.fillStyle=t.text;
     const project=scene.project.trim()||"МОЙ ПРОЕКТ";
@@ -464,15 +470,14 @@
     ctx.textAlign="right";ctx.font="700 24px Manrope, sans-serif";ctx.fillStyle=rgba(t.text,.75);
     ctx.fillText("✳ ANONS / STUDIO",W-margin,105);ctx.textAlign="left";
 
-    const layout=scene.template;
-    const titleY=scene.titleY,detailsY=scene.detailsY;
+      ctx.restore();
+    };
+    const drawTitleLayer=()=>{
     ctx.save();
     ctx.translate(scene.offsets.title.x*W/100,scene.offsets.title.y*H/100);
     ctx.fillStyle=t.accent;ctx.font="800 24px Manrope, sans-serif";
     ctx.fillText(scene.label+"  /  2026",margin,titleY-52);
-    const rawTitle=state.title.trim()||"Заголовок публикации";
     const titleFont=scene.titleFamily==="georgia"?"'Noto Serif', Georgia, serif":scene.titleFamily==="arial"?"Arial, sans-serif":"Manrope, sans-serif";
-    const f=window.AnonsScene.titleLines(rawTitle,scene);
     ctx.font=scene.titleWeight+" "+f.size+"px "+titleFont;ctx.fillStyle=t.text;
     const center=scene.center;
     ctx.textAlign=center?"center":"left";
@@ -480,6 +485,8 @@
     let y=titleY+f.size*.8;
     for(const line of f.lines){ctx.fillText(line,tx,y);y+=f.size*1.14;}
     ctx.restore();
+    };
+    const drawDescriptionLayer=()=>{
     const descText=state.description.trim()||"Расскажите коротко, что произошло и почему это важно.";
     const descY=window.AnonsScene.descriptionTop(scene,f);
     const dsize=scene.descriptionSize;
@@ -494,6 +501,8 @@
     ctx.restore();
     ctx.textAlign="left";
 
+    };
+    const drawHighlightsLayer=()=>{
     // Structured, legible highlights
     const points=state.points.split(/\r?\n/).map(x=>x.trim()).filter(Boolean).slice(0,3);
     const list=points.length?points:["Важная информация","Следите за новостями"];
@@ -540,9 +549,21 @@
       ctx.fillText(short,margin+63,cy+18);
     });
     ctx.restore();
+    };
+    const layers={
+      photo:()=>drawPhoto(W,H),
+      brand:drawBrandLayer,title:drawTitleLayer,
+      description:drawDescriptionLayer,highlights:drawHighlightsLayer
+    };
+    for(const name of scene.order){
+      if(name==="decoration"||scene.enabled[name]===false)continue;
+      const action=layers[name];
+      if(action)action();
+    }
     // The same allowlisted SVG paths and normalized geometry are used by
     // the premium server renderer; arbitrary user-supplied paths are rejected.
     for(const graphic of Graphics.normalizeElements(state.graphicElements)){
+      if(graphic.hidden)continue;
       const frame=Graphics.frame(graphic,W,H);
       ctx.save();
       ctx.translate(frame.x,frame.y);
