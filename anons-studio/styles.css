@@ -791,9 +791,8 @@ html.whats-new-visible{overflow:hidden}
 .layer-stack-status{color:#695e79;font-size:11px;line-height:1.65;margin:13px 0 0}
 @media(max-width:760px){
   .layer-stack-panel{padding:13px 10px}
-  .layer-stack-row{gap:4px;grid-template-columns:16px minmax(0,1fr) auto auto}
-  .layer-stack-row .layer-row-action{padding:6px;font-size:9px}
-  .layer-stack-row .layer-row-action:nth-last-child(-n+2){display:none}
+  .layer-stack-row{gap:3px;grid-template-columns:16px minmax(0,1fr) repeat(4,auto)}
+  .layer-stack-row .layer-row-action{padding:5px 4px;font-size:8.5px}
   .layer-stack-list{max-height:300px}
 }
 @media(max-width:390px){
