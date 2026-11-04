@@ -84,15 +84,15 @@ try {
     // available from the footer without disturbing ordinary page visits.
     const releaseDialog=page.locator("#whats-new-dialog");
     await page.waitForFunction(()=>document.getElementById("whats-new-dialog")?.open);
-    assert.match(await page.locator("#whats-new-title").textContent(),/Бизнес-шаблоны и выбор тарифа/);
-    assert.equal(await page.locator(".whats-new-list li").count(),28);
-    assert.equal(await page.locator(".whats-new-item-icon .ui-icon").count(),28,
+    assert.match(await page.locator("#whats-new-title").textContent(),/«Про»: серия карточек и новые шаблоны/);
+    assert.equal(await page.locator(".whats-new-list li").count(),29);
+    assert.equal(await page.locator(".whats-new-item-icon .ui-icon").count(),29,
       "Announcement has coherent SVG icons instead of character placeholders");
     assert.equal(await page.locator("#whats-new-close").evaluate(el=>el===document.activeElement),true,
       "Announcement initially focuses its accessible close control");
     assert.equal(await page.locator(".whats-new-list:not(.whats-new-list-archive) li").count(),1,
       "Only the latest two changes are expanded by default");
-    assert.equal(await page.locator(".whats-new-list-archive li").count(),27);
+    assert.equal(await page.locator(".whats-new-list-archive li").count(),28);
     assert.equal(await page.locator(".whats-new-history").evaluate(el=>el.open),false);
     await page.locator(".whats-new-history summary").click();
     assert.equal(await page.locator(".whats-new-history").evaluate(el=>el.open),true);
@@ -104,7 +104,7 @@ try {
       assert.ok((await page.locator('.whats-new-list a[href="./'+destination+'"]').count())>=1,
         "Announcement links directly to "+destination);
     }
-    assert.equal(await releaseDialog.getAttribute("data-release"),"2026-11-04-business-templates",
+    assert.equal(await releaseDialog.getAttribute("data-release"),"2026-11-04-pro-series",
       "Latest announcement version must be recognized");
 
     await page.locator("#whats-new-dismiss").click();
@@ -392,7 +392,7 @@ try {
     assert.equal(await page.locator("#ratio").inputValue(),"story");
     assert.equal(await page.locator("[data-template]").count(),0,"Gallery now has its own page");
     await page.goto("http://127.0.0.1:"+port+"/templates.html",{waitUntil:"domcontentloaded"});
-    assert.equal(await page.locator("[data-template]").count(),9,"Six free and three Business templates");
+    assert.equal(await page.locator("[data-template]").count(),12,"Six free, three Business and three Pro templates");
     await page.locator("#catalog-controls:not([hidden])").waitFor();
     assert.equal(await page.locator("#assistant-open").getAttribute("href"),"./editor.html?template=aurora&preset=update",
       "Quick-start defaults to a safe, editor-compatible suggestion");
@@ -404,12 +404,12 @@ try {
       "Quick-start recomputes recommendation without navigation");
     assert.equal(await page.locator("#assistant-result-art .template-art").count(),1,
       "Recommended preview reuses a real gallery composition");
-    assert.equal(await page.locator(".catalog-item:visible").count(),9,"All templates initially visible");
+    assert.equal(await page.locator(".catalog-item:visible").count(),12,"All templates initially visible");
     await page.locator("#template-search").fill("Aurora");
     assert.equal(await page.locator(".catalog-item:visible").count(),1,"Catalogue search narrows the visible templates");
     await page.locator("#template-search").fill("");
     await page.locator('[data-catalog-category="news"]').click();
-    assert.equal(await page.locator(".catalog-item:visible").count(),4,"News category includes Business templates");
+    assert.equal(await page.locator(".catalog-item:visible").count(),5,"News category includes Pro Magazine");
     await page.locator("#template-search").fill("нет такого шаблона");
     assert.equal(await page.locator("#template-empty").isVisible(),true,"No results shows reset action");
     await page.locator("#template-reset").click();
@@ -417,7 +417,7 @@ try {
     await page.locator("#template-favorites-toggle").click();
     assert.equal(await page.locator(".catalog-item:visible").count(),1,"Favorites filter finds the saved template");
     await page.locator("#template-favorites-toggle").click();
-    assert.equal(await page.locator(".catalog-item:visible").count(),9,"Switching off favorites restores gallery");
+    assert.equal(await page.locator(".catalog-item:visible").count(),12,"Switching off favorites restores gallery");
     await page.locator("[data-template=editorial]").click();
     await page.waitForFunction(()=>window.AnonsEditor?.getSnapshot().cards[0].template==="editorial");
     assert.equal(new URL(page.url()).pathname,"/editor.html","A gallery choice opens the editor");
@@ -1207,6 +1207,65 @@ try {
   assert.equal(await businessPage.locator('#template-select option[value="business-report"]').isDisabled(),true);
   assert.deepEqual(businessErrors,[],"Business template page errors");
   await businessContext.close();
+
+
+  // Stage 9: Pro templates and batch publication workflows stay locked
+  // on Free/Business and only open on Pro/Studio. Edits are reversible.
+  for(const width of [390,1440]){
+    const proContext=await browser.newContext({viewport:{width,height:960}});
+    const proPage=await proContext.newPage();
+    const proErrors=[];
+    proPage.on("pageerror",error=>proErrors.push(error.message));
+    await proPage.route("https://fonts.googleapis.com/**",r=>r.abort());
+    await proPage.route("https://fonts.gstatic.com/**",r=>r.abort());
+    await proPage.goto("http://127.0.0.1:"+port+"/editor.html",{waitUntil:"domcontentloaded"});
+    const original=await proPage.evaluate(()=>window.AnonsEditor.getSnapshot());
+    for(const id of ["pro-campaign","pro-magazine","pro-impact"]){
+      assert.equal(await proPage.locator('#template-select option[value="'+id+'"]').isDisabled(),true);
+    }
+    assert.ok(await proPage.locator("#pro-series-generate").isDisabled());
+    await proPage.evaluate(()=>window.dispatchEvent(
+      new CustomEvent("anons:access",{detail:{premium:true,plan:"basic"}})));
+    assert.ok(await proPage.locator("#pro-series-generate").isDisabled(),
+      "Business subscription cannot use Pro batch tools");
+    assert.equal(await proPage.locator('#template-select option[value="pro-campaign"]').isDisabled(),true);
+    await proPage.evaluate(()=>window.dispatchEvent(
+      new CustomEvent("anons:access",{detail:{premium:true,plan:"pro"}})));
+    assert.ok(await proPage.locator("#pro-series-generate").isEnabled());
+    assert.equal(await proPage.locator('#template-select option[value="pro-campaign"]').isDisabled(),false);
+    const beforeTitle=original.cards[0].title;
+    proPage.once("dialog",dialog=>dialog.accept());
+    await proPage.locator("#pro-series-generate").click();
+    let snapshot=await proPage.evaluate(()=>window.AnonsEditor.getSnapshot());
+    assert.equal(snapshot.cards.length,3,"Pro batch wizard creates two additional cards");
+    assert.equal(snapshot.cards[0].title,beforeTitle,"Wizard retains original card content");
+    assert.equal(snapshot.cards[1].template,"pro-campaign");
+    assert.equal(snapshot.cards[2].template,"pro-magazine");
+    await proPage.locator("#pro-series-template").selectOption("pro-impact");
+    proPage.once("dialog",dialog=>dialog.accept());
+    await proPage.locator("#pro-series-apply").click();
+    snapshot=await proPage.evaluate(()=>window.AnonsEditor.getSnapshot());
+    assert.equal(snapshot.cards.length,3);
+    assert.ok(snapshot.cards.every(card=>card.template==="pro-impact"),
+      "Pro bulk style applies to every card");
+    assert.equal(snapshot.cards[0].title,beforeTitle,"Pro bulk design does not replace text");
+    await proPage.locator("#undo").click();
+    snapshot=await proPage.evaluate(()=>window.AnonsEditor.getSnapshot());
+    assert.equal(snapshot.cards[1].template,"pro-campaign",
+      "One undo restores the pre-bulk individual templates");
+    await proPage.locator("#undo").click();
+    snapshot=await proPage.evaluate(()=>window.AnonsEditor.getSnapshot());
+    assert.equal(snapshot.cards.length,1,"Second undo restores original card count");
+    assert.equal(snapshot.cards[0].title,beforeTitle);
+    await proPage.locator("#redo").click();
+    snapshot=await proPage.evaluate(()=>window.AnonsEditor.getSnapshot());
+    assert.equal(snapshot.cards.length,3,"Redo restores Pro batch");
+    await proPage.evaluate(()=>window.dispatchEvent(
+      new CustomEvent("anons:access",{detail:{premium:false,plan:"free"}})));
+    assert.ok(await proPage.locator("#pro-series-generate").isDisabled());
+    assert.deepEqual(proErrors,[],"Pro workflow page errors: "+proErrors.join("; "));
+    await proContext.close();
+  }
 
 } finally {
   if(browser) await browser.close();
