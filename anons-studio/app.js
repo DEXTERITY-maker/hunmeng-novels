@@ -44,7 +44,14 @@
       return highlightIconKinds.has(v)?v:"dot";
     });
   }
-  const layerAxes={title:["x","y"],description:["y"],highlights:["y"]};
+  const layerAxes={title:["x","y"],description:["x","y"],highlights:["x","y"],photo:["x","y"]};
+  const allowedTextLayers=new Set(["title","description","highlights","photo"]);
+  function normalizeLocks(raw,graphics=[]){
+    const existing=new Set(Graphics.normalizeElements(graphics).map(item=>item.id));
+    if(!Array.isArray(raw))return [];
+    return [...new Set(raw.filter(value=>typeof value==="string"&&
+      (allowedTextLayers.has(value)||(value.startsWith("graphic:")&&existing.has(value.slice(8))))))].slice(0,16);
+  }
   const clamp=(value,min,max,fallback)=>Number.isFinite(Number(value))
     ?Math.max(min,Math.min(max,Number(value))):fallback;
   function normalizeOffsets(raw){
@@ -55,13 +62,14 @@
     }
     return result;
   }
-  const cardKeys=["title","description","points","preset","template","theme","accentColor","alignment","headingScale","decorations","photoOpacity","titleFont","descriptionScale","layerOffsets","graphicElements","decorationLevel","textSpacing","composition","highlightStyle","highlightIcons","featuredHighlight"];
+  const cardKeys=["title","description","points","preset","template","theme","accentColor","alignment","headingScale","decorations","photoOpacity","titleFont","descriptionScale","layerOffsets","graphicElements","decorationLevel","textSpacing","composition","highlightStyle","highlightIcons","featuredHighlight","lockedLayers"];
   const limits={project:45,title:85,description:210,points:240};
   const defaults = { preset: "update", theme: "ultraviolet", ratio: "portrait", ...presets.update, imageData: "",
     template:"aurora", headingScale:100, accentColor:"", alignment:"left", decorations:true, photoOpacity:35,
     titleFont:"auto",descriptionScale:100,layerOffsets:normalizeOffsets(null),graphicElements:[],
     decorationLevel:"subtle",textSpacing:"balanced",
     composition:"classic",highlightStyle:"soft",highlightIcons:["dot","dot","dot"],featuredHighlight:-1,
+    lockedLayers:[],
     activeCard:0, cards:[] };
   let saved = {};
   try { saved = JSON.parse(localStorage.getItem(storageKey) || "{}") || {}; } catch (_) {}
@@ -82,6 +90,7 @@
   state.descriptionScale=Math.round(clamp(saved.descriptionScale,80,130,100));
   state.layerOffsets=normalizeOffsets(saved.layerOffsets);
   state.graphicElements=Graphics.normalizeElements(saved.graphicElements);
+  state.lockedLayers=normalizeLocks(saved.lockedLayers,state.graphicElements);
   if(!decorLevels.has(state.decorationLevel))state.decorationLevel="subtle";
   if(!textSpacings.has(state.textSpacing))state.textSpacing="balanced";
   if(!compositions.has(state.composition))state.composition="classic";
@@ -109,6 +118,7 @@
     out.descriptionScale=Math.round(clamp(original.descriptionScale,80,130,100));
     out.layerOffsets=normalizeOffsets(original.layerOffsets);
     out.graphicElements=Graphics.normalizeElements(original.graphicElements);
+    out.lockedLayers=normalizeLocks(original.lockedLayers,out.graphicElements);
     out.decorationLevel=decorLevels.has(original.decorationLevel)?original.decorationLevel:"subtle";
     out.textSpacing=textSpacings.has(original.textSpacing)?original.textSpacing:"balanced";
     out.composition=compositions.has(original.composition)?original.composition:"classic";
@@ -292,7 +302,9 @@
     $("description-scale-value").textContent=state.descriptionScale+"%";
     const sliderIds=[
       ["title-offset-x","title","x"],["title-offset-y","title","y"],
-      ["description-offset-y","description","y"],["highlights-offset-y","highlights","y"]
+      ["description-offset-x","description","x"],["description-offset-y","description","y"],
+      ["highlights-offset-x","highlights","x"],["highlights-offset-y","highlights","y"],
+      ["photo-offset-x","photo","x"],["photo-offset-y","photo","y"]
     ];
     for(const [id,layer,axis] of sliderIds){
       const value=state.layerOffsets?.[layer]?.[axis]||0;
@@ -342,7 +354,9 @@
   }
   function drawPhoto(W, H) {
     if (!photo) return;
-    const x = W * 0.52, y = H * 0.11, w = W * 0.49, h = Math.min(H * 0.36, 570);
+    const scene=window.AnonsScene.layout({ratio:state.ratio,project:state.project},state);
+    const f=scene.photo,off=scene.offsets.photo;
+    const x=f.x+off.x*W/100,y=f.y+off.y*H/100,w=f.width,h=f.height;
     ctx.save(); ctx.globalAlpha = state.photoOpacity/100;
     roundedRect(x, y, w, h, 140); ctx.clip();
     const sc = Math.max(w / photo.width, h / photo.height);
@@ -668,7 +682,9 @@
   });
   const positionSliders=[
     ["title-offset-x","title","x"],["title-offset-y","title","y"],
-    ["description-offset-y","description","y"],["highlights-offset-y","highlights","y"]
+    ["description-offset-x","description","x"],["description-offset-y","description","y"],
+      ["highlights-offset-x","highlights","x"],["highlights-offset-y","highlights","y"],
+      ["photo-offset-x","photo","x"],["photo-offset-y","photo","y"]
   ];
   for(const [id,layer,axis] of positionSliders){
     $(id).addEventListener("input",e=>{
@@ -701,6 +717,7 @@
   $("graphic-remove").addEventListener("click",()=>{
     if(selectedGraphicIndex<0 || selectedGraphicIndex>=state.graphicElements.length)return;
     state.graphicElements=state.graphicElements.filter((_,i)=>i!==selectedGraphicIndex);
+    state.lockedLayers=normalizeLocks(state.lockedLayers,state.graphicElements);
     selectedGraphicIndex=Math.min(selectedGraphicIndex,state.graphicElements.length-1);
     renderGraphicControls();
     syncCardAndSave();
@@ -912,7 +929,8 @@
       activeCard:state.activeCard,
       cards:state.cards.map(card=>({...card,layerOffsets:normalizeOffsets(card.layerOffsets),
         graphicElements:Graphics.normalizeElements(card.graphicElements),
-        highlightIcons:cleanIcons(card.highlightIcons)})),
+        highlightIcons:cleanIcons(card.highlightIcons),
+        lockedLayers:normalizeLocks(card.lockedLayers,card.graphicElements)})),
       imageData:state.imageData,
       accentColor:state.accentColor,alignment:state.alignment,
       headingScale:state.headingScale,photoOpacity:state.photoOpacity,
