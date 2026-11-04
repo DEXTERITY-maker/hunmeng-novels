@@ -69,12 +69,22 @@
                   <button type="button" id="pro-series-generate" disabled>Добавить 2 карточки</button>
                   <button type="button" id="pro-series-apply" disabled>Оформить все карточки</button>
                 </div>
-                <p class="pro-series-info" id="pro-series-status" role="status" aria-live="polite">Доступно по активной подписке «Про» или «Студия».</p>
+                <p class="pro-series-info" id="pro-series-status" role="status" aria-live="polite">Доступно по активной подписке «Про» или выше.</p>
                 <p class="pro-series-caution">Добавление карточек ограничено 8 карточками. Изменения можно отменить. Данные текущего заказа и подписки не меняются.</p>
                 <a class="pro-series-link" href="./pricing.html?plan=pro#manual-order-root">Посмотреть тариф «Про»</a>
               </section>
 
-              <div class="field-group"><label for="template-select">Композиция текущей карточки</label><select id="template-select"><option value="aurora">Aurora — атмосферный</option><option value="editorial">Editorial — редакционный</option><option value="spotlight">Spotlight — выразительный</option><option value="pulse">Pulse — динамичный</option><option value="minimal">Minimal — минималистичный</option><option value="bulletin">Bulletin — новостной</option><optgroup label="Бизнес · платная подписка"><option value="business-brief" disabled>Business Brief — деловая сводка</option><option value="business-pitch" disabled>Business Pitch — презентация запуска</option><option value="business-report" disabled>Business Report — отчёт и аналитика</option></optgroup><optgroup label="Про · расширенные композиции"><option value="pro-campaign" disabled>Pro Campaign — рекламная кампания</option><option value="pro-magazine" disabled>Pro Magazine — премиальный журнал</option><option value="pro-impact" disabled>Pro Impact — выразительный запуск</option></optgroup><optgroup label="Студия · бренд и портфолио"><option value="studio-identity" disabled>Studio Identity — фирменный стиль</option><option value="studio-launch" disabled>Studio Launch — презентация студии</option><option value="studio-portfolio" disabled>Studio Portfolio — портфолио</option></optgroup></select><p class="field-note">Деловые шаблоны открываются в «Бизнес», а специальные Pro Campaign, Pro Magazine и Pro Impact — в «Про» и «Студии». Для тарифа «Студия» добавлены Identity, Launch и Portfolio. Содержимое карточек при смене дизайна сохраняется.</p></div>
+              <div class="field-group"><label for="template-select">Композиция текущей карточки</label><select id="template-select"><option value="aurora">Aurora — атмосферный</option><option value="editorial">Editorial — редакционный</option><option value="spotlight">Spotlight — выразительный</option><option value="pulse">Pulse — динамичный</option><option value="minimal">Minimal — минималистичный</option><option value="bulletin">Bulletin — новостной</option><optgroup label="Бизнес · платная подписка"><option value="business-brief" disabled>Business Brief — деловая сводка</option><option value="business-pitch" disabled>Business Pitch — презентация запуска</option><option value="business-report" disabled>Business Report — отчёт и аналитика</option></optgroup><optgroup label="Про · расширенные композиции"><option value="pro-campaign" disabled>Pro Campaign — рекламная кампания</option><option value="pro-magazine" disabled>Pro Magazine — премиальный журнал</option><option value="pro-impact" disabled>Pro Impact — выразительный запуск</option></optgroup><optgroup label="Студия · бренд и портфолио"><option value="studio-identity" disabled>Studio Identity — фирменный стиль</option><option value="studio-launch" disabled>Studio Launch — презентация студии</option><option value="studio-portfolio" disabled>Studio Portfolio — портфолио</option></optgroup>
+<optgroup label="Агентство · маркетинг и бренды">
+  <option value="agency-brand" disabled>Agency Brand — фирменный стиль клиента</option>
+  <option value="agency-social" disabled>Agency Social — публикация для соцсетей</option>
+  <option value="agency-showcase" disabled>Agency Showcase — кейсы и результаты</option>
+</optgroup>
+<optgroup label="Максимум · эксклюзивные серии">
+  <option value="ultimate-signature" disabled>Ultimate Signature — элитная типографика</option>
+  <option value="ultimate-cinema" disabled>Ultimate Cinema — премьера и событие</option>
+  <option value="ultimate-vision" disabled>Ultimate Vision — идеи будущего</option>
+</optgroup></select><p class="field-note">Деловые шаблоны открываются в «Бизнес», а специальные Pro Campaign, Pro Magazine и Pro Impact — в «Про» и «Студии». Для тарифа «Студия» добавлены Identity, Launch и Portfolio; для «Агентства» и «Максимума» — ещё шесть композиций. Содержимое карточек сохраняется.</p></div>
               <fieldset class="field-group">
                 <legend>Что анонсируем?</legend>
                 <div class="preset-grid" role="group" aria-label="Тип публикации">
@@ -445,7 +455,7 @@
               <button id="studio-refresh-style" type="button">Обновить стиль</button>
             </div>
             <div class="studio-workspace-controls">
-              <div><h4>Выберите проекты для оформления</h4><p>От 1 до 8 сохранённых проектов. Открытый сейчас проект исключён, чтобы не перезаписать его несохранённые изменения.</p></div>
+              <div><h4>Выберите проекты для оформления</h4><p>От 1 до <strong id="studio-project-limit">8</strong> сохранённых проектов (Студия — 8, Агентство — 16, Максимум — 30). Открытый проект исключён, чтобы не перезаписать несохранённые изменения.</p></div>
               <button id="studio-projects-refresh" type="button" disabled>Обновить проекты</button>
             </div>
             <div id="studio-project-list" class="studio-project-list" role="group" aria-label="Выбор проектов для массового применения стиля">
@@ -455,7 +465,7 @@
               <p id="studio-selected-count">Выбрано: 0 из 8</p>
               <button id="studio-apply-brand" type="button" disabled>Применить стиль к выбранным проектам</button>
             </div>
-            <p class="studio-workspace-note">Перед обновлением сохраняются версии для восстановления. Если хотя бы один проект изменён в другом месте, операция отменяется целиком. Требуется действующий тариф «Студия».</p>
+            <p class="studio-workspace-note">Перед обновлением сохраняются версии для восстановления. Если хотя бы один проект изменён в другом месте, операция отменяется целиком. Требуется действующий тариф «Студия» или выше.</p>
             <p id="studio-workspace-status" role="status" aria-live="polite">Проверяем доступ к инструментам Студии.</p>
             <a class="studio-workspace-plan" href="./pricing.html?plan=studio#manual-order-root">Подробнее о тарифе «Студия»</a>
           </section>
