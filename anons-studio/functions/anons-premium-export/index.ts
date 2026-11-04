@@ -303,7 +303,8 @@ Deno.serve(async(req:Request)=>{
     ||snapshot.cards.length<1||snapshot.cards.length>8||!Number.isInteger(idx)
     ||idx<0||idx>=snapshot.cards.length||!snapshot.cards[idx]
     ||typeof snapshot.cards[idx]!=='object'||Array.isArray(snapshot.cards[idx]))return respond({error:'INVALID_POSTER'},400);
-  const requestedTemplate=snapshot.cards[idx].template;
+  // Older project snapshots may omit template; preserve their Aurora default.
+  const requestedTemplate=snapshot.cards[idx].template??'aurora';
   if(typeof requestedTemplate!=='string'||!TEMPLATES.has(requestedTemplate))
     return respond({error:'INVALID_TEMPLATE'},400);
   // A browser-crafted snapshot must never get Pro designs using a Basic membership.
