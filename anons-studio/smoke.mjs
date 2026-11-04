@@ -57,6 +57,21 @@ try {
     assert.equal(await page.locator("#library-auth").isVisible(),false,"Guests cannot see private project controls");
     assert.equal(await page.locator("#library-list").count(),1);
     assert.ok(await page.evaluate(()=>typeof window.AnonsEditor?.getSnapshot==="function"),"Editor exposes snapshot API");
+    assert.ok(await page.locator("#undo").isDisabled(),"Undo starts disabled");
+    assert.ok(await page.locator("#redo").isDisabled(),"Redo starts disabled");
+    const originalTitle=await page.locator("#title").inputValue();
+    await page.locator("#title").fill("Черновик для отмены");
+    assert.ok(await page.locator("#undo").isEnabled(),"Text edits create undo history");
+    await page.locator("#undo").click();
+    assert.equal(await page.locator("#title").inputValue(),originalTitle,"Undo restores the previous title");
+    assert.ok(await page.locator("#redo").isEnabled(),"Redo is available after undo");
+    await page.locator("#redo").click();
+    assert.equal(await page.locator("#title").inputValue(),"Черновик для отмены","Redo reapplies the title");
+    await page.locator("#undo").click();
+    await page.locator("#title").fill("Новый независимый вариант");
+    assert.ok(await page.locator("#redo").isDisabled(),"A new edit clears the redo branch");
+    await page.locator("#undo").click();
+    assert.equal(await page.locator("#title").inputValue(),originalTitle);
 
     const brandImage=page.locator(".topbar .brand-image img");
     await brandImage.waitFor();
@@ -116,6 +131,15 @@ try {
     assert.equal(await page.locator("#title").inputValue(),"Новости моего проекта","First card text stays separate");
     await page.locator("#card-list [role=tab]").last().click();
     assert.equal(await page.locator("#title").inputValue(),"Вторая карточка","Second card text persists");
+    page.once("dialog",dialog=>dialog.accept());
+    await page.locator("#remove-card").click();
+    assert.equal(await page.locator("#card-list [role=tab]").count(),1,"Card removed");
+    await page.locator("#undo").click();
+    assert.equal(await page.locator("#card-list [role=tab]").count(),2,"Undo restores removed card");
+    assert.equal(await page.locator("#title").inputValue(),"Вторая карточка","Undo restores removed card content");
+    await page.locator("#redo").click();
+    assert.equal(await page.locator("#card-list [role=tab]").count(),1,"Redo removes card again");
+    await page.locator("#undo").click();
     await page.reload({waitUntil:"domcontentloaded"});
     assert.equal(await page.locator("#card-list [role=tab]").count(),2,"Cards persist after reload");
     assert.equal(await page.locator("#title").inputValue(),"Вторая карточка");
