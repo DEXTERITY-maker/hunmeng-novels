@@ -13,11 +13,13 @@ export function initStudioWorkspace(client) {
   const styleDesc=$("studio-style-description");
   const swatch=$("studio-style-swatch");
   const MAX=8;
+  const limits=Object.freeze({studio:8,agency:16,ultimate:30});
+  const projectLimit=()=>limits[plan]||MAX;
   const themes={ultraviolet:"Ультрафиолет",emerald:"Изумрудный",sunset:"Закат",ink:"Графит",paper:"Светлый"};
   const fonts={auto:"По композиции",manrope:"Manrope",georgia:"Noto Serif",arial:"Arial"};
   const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
   let userId=null,serial=0,plan="free",premium=false,loading=false,projects=[],selected=new Set();
-  const studioAllowed=()=>Boolean(userId&&premium&&plan==="studio");
+  const studioAllowed=()=>Boolean(userId&&premium&&Object.hasOwn(limits,plan));
   const live=(uid,epoch)=>userId===uid&&serial===epoch;
   const say=(message,error=false)=>{
     status.textContent=message;
@@ -47,9 +49,9 @@ export function initStudioWorkspace(client) {
   }
   function updateControls(){
     const count=selected.size;
-    counter.textContent="Выбрано: "+count+" из "+MAX;
+    counter.textContent="Выбрано: "+count+" из "+projectLimit();
     refreshButton.disabled=!studioAllowed()||loading;
-    applyButton.disabled=!studioAllowed()||loading||count<1||count>MAX||!getStyle();
+    applyButton.disabled=!studioAllowed()||loading||count<1||count>projectLimit()||!getStyle();
     styleButton.disabled=loading;
   }
   function render(){
@@ -76,9 +78,9 @@ export function initStudioWorkspace(client) {
         input.setAttribute("aria-label","Выбрать проект "+project.title);
         input.addEventListener("change",()=>{
           if(input.checked){
-            if(selected.size>=MAX){
+            if(selected.size>=projectLimit()){
               input.checked=false;
-              say("Можно выбрать не более 8 проектов.",true);
+              say("Можно выбрать не более "+projectLimit()+" проектов.",true);
               return;
             }
             selected.add(project.id);
@@ -126,7 +128,7 @@ export function initStudioWorkspace(client) {
     const open=activeCloudId();
     const targets=projects.filter(p=>selected.has(p.id)&&p.id!==open)
       .map(({id,version})=>({id,version}));
-    if(targets.length!==selected.size||targets.length>MAX)return;
+    if(targets.length!==selected.size||targets.length>projectLimit())return;
     const names=projects.filter(p=>selected.has(p.id)).map(p=>p.title).join(", ");
     if(!window.confirm("Применить фирменные настройки к "+targets.length+" проектам?\\n"+names+
       "\\nТексты, изображения и названия проектов сохранятся. Перед изменением будет создана версия для восстановления."))return;
@@ -170,12 +172,13 @@ export function initStudioWorkspace(client) {
   window.addEventListener("anons:access",event=>{
     const next=event.detail||{};
     const previously=studioAllowed();
-    plan=["free","basic","pro","studio"].includes(next.plan)?next.plan:"free";
+    plan=["free","basic","pro","studio","agency","ultimate"].includes(next.plan)?next.plan:"free";
     premium=next.premium===true&&plan!=="free";
     if(!studioAllowed()){projects=[];selected.clear();}
     showStyle();render();
     if(studioAllowed()&&!previously)void refreshProjects();
-    else if(!studioAllowed()&&userId)say("Инструменты нескольких проектов доступны с подпиской «Студия».");
+    else if(studioAllowed()&&previously)updateControls();
+    else if(!studioAllowed()&&userId)say("Инструменты нескольких проектов доступны с подпиской «Студия» и выше.");
   });
   refreshButton.addEventListener("click",()=>{void refreshProjects();});
   styleButton.addEventListener("click",()=>{
