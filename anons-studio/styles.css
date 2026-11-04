@@ -294,3 +294,35 @@ button.plan-action[disabled]{cursor:not-allowed;color:#92869f;background:#f6f4f7
   .mobile-menu-toggle{width:44px;padding:6px}
   .header-action{padding:11px 12px}
 }
+
+/* Release notes: accessible native modal, once per published update. */
+.whats-new-open{border:1px solid #ddd2f0;border-radius:999px;padding:9px 14px;background:#f5efff;color:#6242a9;font:800 11px/1.4 'DM Sans',sans-serif;cursor:pointer;white-space:nowrap}
+.whats-new-open:hover{background:#e9ddff;color:#47288d}
+.whats-new-open:focus-visible,.whats-new-close:focus-visible,.whats-new-actions a:focus-visible,.whats-new-actions button:focus-visible{outline:3px solid #8552f0;outline-offset:3px}
+html.whats-new-visible{overflow:hidden}
+.whats-new-dialog{padding:0;border:0;border-radius:24px;width:min(572px,calc(100% - 32px));max-width:calc(100vw - 32px);max-height:calc(100dvh - 32px);margin:auto;color:#272139;background:#fff;box-shadow:0 30px 95px #100c2666;overflow-y:auto;overscroll-behavior:contain}
+.whats-new-dialog::backdrop{background:#151126b8;backdrop-filter:blur(6px)}
+.whats-new-head{position:relative;overflow:hidden;padding:35px 38px 29px;background:linear-gradient(130deg,#21183e,#5541a2 66%,#7c5cd8);color:#fff}
+.whats-new-head:after{content:"";position:absolute;width:280px;height:280px;right:-140px;top:-130px;border-radius:50%;border:35px solid #ffffff13;pointer-events:none}
+.whats-new-eyebrow{display:block;max-width:calc(100% - 48px);font-size:10px;font-weight:850;letter-spacing:.095em;color:#e5d6ff}
+.whats-new-mark{width:54px;height:54px;margin-top:26px;margin-bottom:17px;display:grid;place-items:center;border:1px solid #ffffff62;background:#ffffff24;border-radius:16px;color:#f4d4ff;font-size:28px}
+.whats-new-head h2{position:relative;z-index:1;max-width:425px;margin:0 0 10px;font:800 clamp(26px,5vw,34px)/1.22 'Manrope',sans-serif;letter-spacing:-.045em}
+.whats-new-head p{position:relative;z-index:1;max-width:435px;margin:0;color:#e8e2fa;font-size:13px;line-height:1.72}
+.whats-new-close{position:absolute;right:20px;top:18px;z-index:2;width:40px;height:40px;display:grid;place-items:center;border:1px solid #ffffff55;border-radius:11px;background:#ffffff1c;color:#fff;font-size:27px;line-height:1;cursor:pointer}
+.whats-new-close:hover{background:#ffffff35}
+.whats-new-body{padding:28px 38px 31px}
+.whats-new-list{padding:0;margin:0 0 25px;list-style:none;display:grid;gap:18px}
+.whats-new-list li{display:flex;align-items:flex-start;gap:14px;min-width:0}
+.whats-new-item-icon{display:grid;flex:0 0 42px;place-items:center;width:42px;height:42px;border-radius:12px;background:#f0ebff;color:#6c48c7;font-size:20px}
+.whats-new-list strong{display:block;margin:1px 0 4px;color:#211932;font-size:13px;font-weight:850}
+.whats-new-list p{margin:0;color:#61596e;font-size:12px;line-height:1.6}
+.whats-new-actions{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.whats-new-primary,.whats-new-secondary{display:inline-flex;justify-content:center;align-items:center;gap:11px;min-height:46px;border-radius:12px;padding:11px 19px;font:800 12px/1.2 'Manrope',sans-serif;cursor:pointer;text-decoration:none}
+.whats-new-primary{background:#6f48cf;color:#fff;border:1px solid #6f48cf}
+.whats-new-primary:hover{background:#5833b2;color:#fff}
+.whats-new-secondary{background:#fff;border:1px solid #d9d1e5;color:#4b3b69}
+.whats-new-secondary:hover{background:#f6f2fc}
+.whats-new-once{margin:15px 0 0;font-size:10px;line-height:1.6;color:#777184}
+@media(max-width:760px){.footer{flex-wrap:wrap}.whats-new-dialog{border-radius:18px}.whats-new-head{padding:29px 25px 26px}.whats-new-body{padding:24px 25px 25px}}
+@media(max-width:440px){.whats-new-dialog{width:calc(100% - 24px);max-width:calc(100% - 24px);max-height:calc(100dvh - 24px)}.whats-new-head{padding:25px 20px 23px}.whats-new-body{padding:23px 20px 21px}.whats-new-head h2{font-size:25px}.whats-new-mark{width:46px;height:46px;margin-top:21px;font-size:24px}.whats-new-list{gap:14px}.whats-new-list p{font-size:11px}.whats-new-item-icon{flex-basis:37px;width:37px;height:37px}.whats-new-actions{display:grid;grid-template-columns:1fr}.whats-new-primary,.whats-new-secondary{width:100%}}
+@media(prefers-reduced-motion:reduce){.whats-new-dialog::backdrop{backdrop-filter:none}}
