@@ -971,3 +971,52 @@ html.whats-new-visible{overflow:hidden}
 .brand-kit-status:empty{display:none}
 .brand-kit-status[data-error="true"]{color:#ab3857}
 @media(max-width:520px){.brand-kit-panel{padding:18px 15px}.brand-kit-create{grid-template-columns:minmax(0,1fr)}.brand-kit-create button{width:100%}.brand-kit-actions button{flex:1 1 42%}}
+
+
+/* Manual Basic orders: explicit non-automated checkout and verified customer numbers. */
+.manual-purchase-panel{margin-top:28px;padding:26px;border:1px solid #ded1f2;border-radius:20px;background:linear-gradient(145deg,#faf7ff,#f3edff);box-shadow:0 12px 35px #2212450e;color:#342447;min-width:0}
+.manual-purchase-head{display:flex;justify-content:space-between;gap:18px;align-items:flex-start}
+.manual-eyebrow{font-size:10px;letter-spacing:.12em;color:#8053bd;font-weight:850}
+.manual-purchase-panel h3{font-size:23px;line-height:1.25;margin:9px 0 10px;color:#302045;letter-spacing:-.035em}
+.manual-purchase-head p{font-size:12px;color:#6b5f79;line-height:1.75;margin:0;max-width:660px}
+.manual-order-price{white-space:nowrap;padding:12px 16px;background:#33214f;color:#fff;border-radius:13px;font-weight:850;font-size:21px}
+.manual-customer-badge{display:inline-flex;gap:13px;align-items:center;flex-wrap:wrap;background:#e9e0f6;border:1px solid #dbcaef;border-radius:11px;padding:11px 13px;margin:18px 0 12px}
+.manual-customer-badge span{font-size:11px;color:#715d88}
+.manual-customer-badge strong{font-size:15px;font-weight:850;letter-spacing:.02em;color:#503274}
+.manual-purchase-steps{line-height:1.85;color:#5a4a68;font-size:11.5px;margin:4px 0 17px}
+.manual-purchase-actions{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+.manual-purchase-actions button,.manual-purchase-actions a,.manual-account-section .account-upgrade{border:1px solid #d4c4eb;border-radius:11px;min-height:42px;padding:11px 15px;text-decoration:none;font-size:12px;font-weight:800;background:#fff;color:#5b397e;display:inline-flex;align-items:center;justify-content:center}
+.manual-purchase-actions button:hover:enabled{border-color:#ac8fe0;background:#f2e9ff}
+.manual-purchase-actions #manual-order-create{background:#38224f;color:#fff;border-color:#38224f}
+.manual-purchase-actions #manual-order-create:hover:enabled{background:#60409a}
+.manual-purchase-actions button:disabled{opacity:.5;cursor:not-allowed}
+#manual-order-status{margin:15px 0 10px;font-size:12px;line-height:1.6;font-weight:700;color:#4b6f5c}
+#manual-order-status[data-error="true"],#manual-admin-status[data-error="true"]{color:#a34158}
+.manual-purchase-caution{font-size:11px;color:#766b81;line-height:1.85;margin:18px 0 0}
+.manual-orders-list{display:grid;gap:11px;margin:12px 0}
+.manual-orders-empty{font-size:11px;color:#7a7087;margin:0}
+.manual-order-item,.manual-admin-order{display:grid;gap:6px;padding:15px 16px;border:1px solid #e3d9f0;border-radius:12px;background:#fff;color:#4a3a5b;overflow-wrap:anywhere}
+.manual-order-item strong,.manual-admin-order strong{font-size:13px;font-weight:850;color:#33234a}
+.manual-order-item span,.manual-admin-order span{font-size:11px;color:#655676;line-height:1.6}
+.manual-order-item small{font-size:10px;color:#8b8098}
+.manual-order-item-actions,.manual-admin-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:7px}
+.manual-order-item-actions input{flex:1 1 180px;min-height:40px;border:1px solid #d6c8e5;border-radius:9px;padding:9px 11px;font-size:11px;min-width:0}
+.manual-order-item-actions button,.manual-admin-actions button{border:1px solid #d6c8e5;border-radius:9px;background:#f6f0ff;color:#5b4180;padding:10px 12px;font-size:11px;font-weight:850;min-height:40px;cursor:pointer}
+.manual-order-item-actions button:hover,.manual-admin-actions button:hover{background:#e9dcfb}
+.manual-orders-note{font-size:11px;color:#8c668b;line-height:1.6;margin:4px 0}
+.account-public-id{padding:10px 12px;background:#f4ecff;border:1px solid #e6d8f9;border-radius:10px;margin:12px 0!important;font-size:12px;color:#5b4576}
+.account-public-id strong{color:#4d2e76;letter-spacing:.04em}
+.manual-account-section{margin:14px 0;padding:14px;border:1px solid #e7dff0;background:#fcfaff;border-radius:11px;color:#514361}
+.manual-account-section summary{cursor:pointer;font-size:12px;font-weight:850;color:#5c3e84}
+.manual-account-section>p{font-size:11px;line-height:1.8;color:#77698a}
+.manual-account-section .account-upgrade{margin:8px 0 0}
+.manual-account-section [hidden],.manual-admin-panel[hidden],#manual-order-login[hidden]{display:none!important}
+#manual-admin-status{font-size:11px;color:#4b6f5c}
+@media(max-width:620px){
+ .manual-purchase-panel{padding:18px 15px}
+ .manual-purchase-head{flex-direction:column;gap:12px}
+ .manual-purchase-panel h3{font-size:20px}
+ .manual-order-price{font-size:17px;padding:9px 12px}
+ .manual-purchase-actions button,.manual-purchase-actions a{width:100%}
+ .manual-order-item-actions button{flex:1 1 auto}
+}
