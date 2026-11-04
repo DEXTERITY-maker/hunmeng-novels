@@ -57,12 +57,27 @@
             <div class="account-success"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="./assets/ui-icons.svg#check"></use></svg> Аккаунт подключён</div>
             <div class="account-profile-email" id="account-email-signed"></div>
             <p>Текущий тариф: <strong id="account-plan-signed">Free</strong></p>
+            <p class="account-public-id">Ваш постоянный ID: <strong id="manual-customer-number">Проверяем ID…</strong></p>
             <div class="account-destinations"><a class="account-upgrade" href="./editor.html#library">Моя библиотека <svg class="ui-icon" aria-hidden="true" focusable="false"><use href="./assets/ui-icons.svg#arrow-up-right"></use></svg></a><a class="account-upgrade" href="./pricing.html">Посмотреть тарифы <svg class="ui-icon" aria-hidden="true" focusable="false"><use href="./assets/ui-icons.svg#arrow-up-right"></use></svg></a></div>
             <details class="billing-history-panel" id="account-billing">
               <summary>Подписка и история покупок</summary>
               <div id="billing-member-status" role="status">Проверяем подписку…</div>
               <button id="billing-check" type="button" class="account-link"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="./assets/ui-icons.svg#refresh-cw"></use></svg> Проверить статус оплаты</button>
               <div id="billing-history" class="billing-order-list"></div>
+            </details>
+            <details class="manual-account-section" id="manual-account-orders">
+              <summary>Мои заявки на ручную оплату</summary>
+              <p>Вы можете сверить номер заказа, сообщить о переводе и увидеть результат проверки владельцем. Фактическая подписка отражается в разделе «Подписка и история покупок».</p>
+              <button type="button" id="manual-account-refresh" class="account-link">Обновить заявки</button>
+              <div id="manual-account-order-list" class="manual-orders-list"></div>
+              <a href="./pricing.html#manual-order-root" class="account-upgrade">Заказать Basic вручную</a>
+            </details>
+            <details class="manual-account-section manual-admin-panel" id="manual-admin-panel" hidden>
+              <summary>Управление ручными заказами</summary>
+              <p>Доступно только проверенному администратору. Подтверждайте заказ исключительно после проверки реального банковского поступления.</p>
+              <button id="manual-admin-refresh" type="button" class="account-link">Обновить все заказы</button>
+              <p id="manual-admin-status" role="status" aria-live="polite"></p>
+              <div id="manual-admin-order-list" class="manual-orders-list"></div>
             </details>
             <details class="account-security" id="account-security">
               <summary>Безопасность и пароль</summary>
