@@ -746,3 +746,58 @@ html.whats-new-visible{overflow:hidden}
   .direct-editor-top{align-items:flex-start;gap:10px}
   .direct-editor-top label{width:100%}
 }
+
+/* Studio layer tree: clear groups, accessible controls, tablet/mobile layout. */
+.layer-stack-panel{margin:14px 0 18px;padding:17px;border:1px solid #e2daf0;border-radius:16px;
+  background:linear-gradient(150deg,#fff,#faf7ff);box-shadow:0 6px 20px #2516370a}
+.layer-stack-head{display:flex;align-items:center;justify-content:space-between;gap:9px}
+.layer-stack-head h4{margin:5px 0 0;font-size:17px;letter-spacing:-.04em;color:#2c2141}
+.layer-stack-head #layer-stack-count{padding:7px 10px;background:#eee8fa;border-radius:99px;color:#67439e;
+  flex-shrink:0;font-size:10px;font-weight:850}
+.layer-stack-panel>.field-note{font-size:11px;line-height:1.75;color:#6b6279;margin:12px 0}
+.layer-stack-list{display:flex;flex-direction:column;gap:6px;min-width:0;max-height:355px;
+  overflow-y:auto;overscroll-behavior:contain;padding:5px 3px 8px}
+.layer-stack-group-heading{font-weight:850;font-size:10px;letter-spacing:.07em;text-transform:uppercase;
+  color:#765ba5;margin:10px 0 3px;padding:0 4px}
+.layer-stack-row{display:grid;grid-template-columns:16px minmax(85px,1fr) auto auto auto auto;
+  gap:5px;align-items:center;border:1px solid #ebe5f4;border-radius:9px;background:#fff;padding:7px 6px;min-width:0}
+.layer-stack-row.is-selected{border-color:#9865e9;background:#f4eeff;box-shadow:inset 0 0 0 1px #9865e933}
+.layer-stack-row.is-hidden .layer-row-name{opacity:.55;text-decoration:line-through}
+.layer-row-check{width:15px;height:15px;accent-color:#7553cf}
+.layer-row-spacer{width:15px;height:15px}
+.layer-row-labels{display:flex;flex-direction:column;min-width:0;gap:3px}
+.layer-stack-row .layer-row-name{display:block;min-width:0;max-width:100%;
+  padding:3px 5px;border:0;background:transparent;color:#302740;text-align:left;font-weight:850;font-size:11px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer}
+.layer-stack-row .layer-row-group{padding-left:5px;color:#816f94;font-size:9px}
+.layer-stack-row .layer-row-action{min-height:30px;padding:6px 7px;border-radius:7px;
+  border:1px solid #e1d9e9;background:#fff;color:#5d4b7c;font-weight:750;font-size:9px;cursor:pointer}
+.layer-stack-row .layer-row-visibility{color:#7243b8}
+.layer-stack-row .layer-row-action:hover:not(:disabled){background:#ece5fa;border-color:#c3ade0}
+.layer-stack-row .layer-row-action:disabled{opacity:.32;cursor:not-allowed}
+.layer-stack-row button:focus-visible,.layer-stack-rename input:focus-visible,.layer-stack-buttons button:focus-visible{
+  outline:3px solid #8260d6;outline-offset:2px}
+.layer-stack-empty{font-size:11px;color:#786e88;line-height:1.65;margin:6px}
+.layer-stack-actions{margin-top:13px;border-top:1px solid #e7dff2;padding-top:14px}
+.layer-stack-actions>label{display:block;font-size:11px;font-weight:800;color:#51435f;margin-bottom:8px}
+.layer-stack-rename{display:flex;gap:8px}
+.layer-stack-rename input{min-width:0;flex:1;border:1px solid #ded5ee;border-radius:9px;
+  background:#fff;padding:8px 10px;font-size:12px}
+.layer-stack-rename button,.layer-stack-buttons button{border:1px solid #d8cbe9;background:#fff;
+  color:#613fa8;border-radius:9px;min-height:39px;padding:8px 11px;font-size:10px;font-weight:800;cursor:pointer}
+.layer-stack-buttons{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.layer-stack-buttons button{flex:1 1 120px}
+.layer-stack-actions button:disabled{opacity:.45;cursor:not-allowed}
+.layer-stack-status{color:#695e79;font-size:11px;line-height:1.65;margin:13px 0 0}
+@media(max-width:760px){
+  .layer-stack-panel{padding:13px 10px}
+  .layer-stack-row{gap:4px;grid-template-columns:16px minmax(0,1fr) auto auto}
+  .layer-stack-row .layer-row-action{padding:6px;font-size:9px}
+  .layer-stack-row .layer-row-action:nth-last-child(-n+2){display:none}
+  .layer-stack-list{max-height:300px}
+}
+@media(max-width:390px){
+  .layer-stack-rename{flex-direction:column}
+  .layer-stack-rename button{width:100%}
+  .layer-stack-row .layer-row-visibility{max-width:52px;overflow:hidden}
+}
