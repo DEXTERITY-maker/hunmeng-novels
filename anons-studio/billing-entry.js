@@ -20,7 +20,7 @@ export function initBilling(client) {
     if(!response.ok)throw Error(data?.error||'BILLING_ERROR');
     return data;
   }
-  const label=plan=>({basic:"Бизнес",pro:"Про",studio:"Студия"})[plan]||String(plan||"Free");
+  const label=plan=>({basic:"Бизнес",pro:"Про",studio:"Студия",agency:"Агентство",ultimate:"Максимум"})[plan]||String(plan||"Free");
   function renderOrders(data){
     const p=data?.membership;
     const valid=p&&['active','trialing'].includes(p.status)&&Date.parse(p.current_period_end)>Date.now();
