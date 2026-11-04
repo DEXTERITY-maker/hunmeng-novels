@@ -10,7 +10,7 @@ const cloudflareHeaders=await readFile(join(root,"_headers"),"utf8");
 assert.match(cloudflareHeaders,/Content-Security-Policy:.*script-src 'self'/);
 assert.match(cloudflareHeaders,/X-Content-Type-Options: nosniff/);
 const types = { ".html": "text/html; charset=utf-8", ".css": "text/css; charset=utf-8", ".js": "application/javascript; charset=utf-8", ".webp": "image/webp", ".svg":"image/svg+xml" };
-const allow = new Set(["/","/index.html","/account.html","/editor.html","/templates.html","/features.html","/pricing.html","/styles.css","/app.js","/editor-workspace.js","/editor-direct.js","/editor-layers.js","/navigation.js","/templates-catalog.js","/templates-assistant.js","/personal-styles.js","/whats-new.js","/scene-layout.js","/graphic-elements.js","/auth.bundle.js","/assets/anons-logo-approved.webp","/assets/anons-icon-approved.webp","/assets/ui-icons.svg"]);
+const allow = new Set(["/","/index.html","/account.html","/editor.html","/templates.html","/features.html","/pricing.html","/styles.css","/app.js","/editor-workspace.js","/editor-direct.js","/editor-layers.js","/navigation.js","/templates-catalog.js","/templates-assistant.js","/personal-styles.js","/brand-kit.js","/whats-new.js","/scene-layout.js","/graphic-elements.js","/auth.bundle.js","/assets/anons-logo-approved.webp","/assets/anons-icon-approved.webp","/assets/ui-icons.svg"]);
 const server = createServer(async (req,res)=>{
   const url = new URL(req.url, "http://localhost");
   const path = url.pathname === "/" ? "/index.html" : url.pathname;
@@ -84,15 +84,15 @@ try {
     // available from the footer without disturbing ordinary page visits.
     const releaseDialog=page.locator("#whats-new-dialog");
     await page.waitForFunction(()=>document.getElementById("whats-new-dialog")?.open);
-    assert.match(await page.locator("#whats-new-title").textContent(),/Стили доступны на разных устройствах/);
-    assert.equal(await page.locator(".whats-new-list li").count(),25);
-    assert.equal(await page.locator(".whats-new-item-icon .ui-icon").count(),25,
+    assert.match(await page.locator("#whats-new-title").textContent(),/Оформление бренда — в один клик/);
+    assert.equal(await page.locator(".whats-new-list li").count(),26);
+    assert.equal(await page.locator(".whats-new-item-icon .ui-icon").count(),26,
       "Announcement has coherent SVG icons instead of character placeholders");
     assert.equal(await page.locator("#whats-new-close").evaluate(el=>el===document.activeElement),true,
       "Announcement initially focuses its accessible close control");
     assert.equal(await page.locator(".whats-new-list:not(.whats-new-list-archive) li").count(),1,
       "Only the latest two changes are expanded by default");
-    assert.equal(await page.locator(".whats-new-list-archive li").count(),24);
+    assert.equal(await page.locator(".whats-new-list-archive li").count(),25);
     assert.equal(await page.locator(".whats-new-history").evaluate(el=>el.open),false);
     await page.locator(".whats-new-history summary").click();
     assert.equal(await page.locator(".whats-new-history").evaluate(el=>el.open),true);
@@ -104,7 +104,7 @@ try {
       assert.ok((await page.locator('.whats-new-list a[href="./'+destination+'"]').count())>=1,
         "Announcement links directly to "+destination);
     }
-    assert.equal(await releaseDialog.getAttribute("data-release"),"2026-11-04-cloud-styles",
+    assert.equal(await releaseDialog.getAttribute("data-release"),"2026-11-04-brand-kits",
       "Latest announcement version must be recognized");
 
     await page.locator("#whats-new-dismiss").click();
@@ -1081,6 +1081,63 @@ try {
       "Removing saved preset does not modify the canvas");
     assert.deepEqual(personalErrors,[],"Personal styles page errors: "+personalErrors.join("; "));
     await personalContext.close();
+  }
+
+  // Stage 7: brand kit saves current identity and applies it to all cards as
+  // a single reversible edit. It does not copy any publication text.
+  for(const width of [390,1440]){
+    const brandContext=await browser.newContext({viewport:{width,height:920}});
+    const brandPage=await brandContext.newPage();
+    const errors=[];
+    brandPage.on("pageerror",error=>errors.push(error.message));
+    await brandPage.route("https://fonts.googleapis.com/**",r=>r.abort());
+    await brandPage.route("https://fonts.gstatic.com/**",r=>r.abort());
+    await brandPage.goto("http://127.0.0.1:"+port+"/editor.html",{waitUntil:"domcontentloaded"});
+    assert.equal(await brandPage.locator("#brand-kit").count(),1,"Brand kit is mounted in editor");
+    assert.equal(await brandPage.locator("#brand-kit-identity").textContent(),
+      "Коллекция этого браузера · без облачной синхронизации");
+    const original=await brandPage.evaluate(()=>window.AnonsEditor.getSnapshot());
+    assert.equal(typeof (await brandPage.evaluate(()=>window.AnonsEditor?.getBrandKitSnapshot())),"object");
+    const before=original.cards[0].title;
+    await brandPage.locator("#brand-kit-name").fill("Фирменный тестовый набор");
+    await brandPage.locator("#brand-kit-save").click();
+    assert.equal(await brandPage.locator("#brand-kit-count").textContent(),"1 из 12");
+    const stored=await brandPage.evaluate(()=>JSON.parse(
+      localStorage.getItem("anons-studio:brand-kits:v1:guest")));
+    assert.equal(stored.length,1);
+    assert.equal(stored[0].kit.project,original.project);
+    assert.equal(stored[0].kit.title,undefined,"Brand kits do not capture post text");
+    assert.equal(stored[0].kit.imageData,undefined,"Brand kits never capture uploaded photos");
+    await brandPage.locator("#add-card").click();
+    await brandPage.locator("#title").fill("Вторая карточка сохраняется");
+    await brandPage.locator('[data-theme="sunset"]').click();
+    await brandPage.locator("#project").fill("ДРУГОЙ БРЕНД");
+    assert.equal(await brandPage.locator("#theme-label").textContent(),
+      "Закат — тёплый и выразительный");
+    await brandPage.locator("#brand-kit-list").selectOption(stored[0].id);
+    await brandPage.locator('input[name="brand-kit-scope"][value="all"]').check();
+    await brandPage.locator("#brand-kit-apply").click();
+    let brand=await brandPage.evaluate(()=>window.AnonsEditor.getSnapshot());
+    assert.equal(brand.project,original.project,"Brand name is restored for the publication");
+    assert.equal(brand.cards.length,2);
+    assert.equal(brand.cards[0].theme,"ultraviolet");
+    assert.equal(brand.cards[1].theme,"ultraviolet");
+    assert.equal(brand.cards[0].title,before,"First card content remains intact");
+    assert.equal(brand.cards[1].title,"Вторая карточка сохраняется","Second card content remains intact");
+    assert.ok(await brandPage.locator("#undo").isEnabled());
+    await brandPage.locator("#undo").click();
+    brand=await brandPage.evaluate(()=>window.AnonsEditor.getSnapshot());
+    assert.equal(brand.project,"ДРУГОЙ БРЕНД","Undo restores prior brand identity");
+    assert.equal(brand.cards[1].theme,"sunset","Undo restores individual card theme");
+    await brandPage.locator("#redo").click();
+    brand=await brandPage.evaluate(()=>window.AnonsEditor.getSnapshot());
+    assert.equal(brand.project,original.project,"Redo reapplies brand identity");
+    assert.equal(brand.cards[1].theme,"ultraviolet");
+    await brandPage.reload({waitUntil:"domcontentloaded"});
+    assert.equal(await brandPage.locator("#brand-kit-count").textContent(),"1 из 12",
+      "Saved brand kit survives reload");
+    assert.deepEqual(errors,[],"Brand kit page errors: "+errors.join("; "));
+    await brandContext.close();
   }
 } finally {
   if(browser) await browser.close();
