@@ -10,8 +10,8 @@ class Elem {
   constructor(){this._value="";this.textContent="";this.dataset={};this.children=[];this.disabled=false;this.hidden=false;this.handlers={};}
   set value(v){this._value=String(v);}
   get value(){return this._value;}
-  addEventListener(name,fn){this.handlers[name]=fn;}
-  fire(name="click"){this.handlers[name]?.({target:this});}
+  addEventListener(name,fn){(this.handlers[name]??=[]).push(fn);}
+  fire(name="click"){for(const handler of this.handlers[name]||[])handler({target:this});}
   append(x){this.children.push(x);}
   replaceChildren(){this.children=[];this._value="";}
   focus(){this.focused=true;}
