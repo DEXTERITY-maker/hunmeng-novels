@@ -15,6 +15,7 @@
   <script src="./scene-layout.js" defer></script>
   <script src="./graphic-elements.js" defer></script>
   <script src="./app.js" defer></script>
+  <script src="./personal-styles.js" defer></script>
   <script src="./editor-workspace.js" defer></script>
   <script src="./editor-direct.js" defer></script>
   <script src="./editor-layers.js" defer></script>
@@ -238,6 +239,34 @@
                     <div><label for="graphic-color">Цвет элемента</label><input id="graphic-color" type="color" value="#c2a1ff"></div>
                   </div>
                 </div>
+              </section>
+              <section class="personal-styles" id="personal-styles" aria-labelledby="personal-styles-title">
+                <div class="personal-styles-head">
+                  <div>
+                    <span class="personal-styles-eyebrow">ВАША КОЛЛЕКЦИЯ</span>
+                    <h5 id="personal-styles-title">Мои стили оформления</h5>
+                  </div>
+                  <span id="personal-style-count" class="personal-styles-count">0 из 20</span>
+                </div>
+                <p class="personal-styles-intro">Сохраните цвета, шрифты, композицию и графические элементы текущей карточки, чтобы использовать их в других публикациях.</p>
+                <div class="personal-styles-form">
+                  <label for="personal-style-name">Название стиля</label>
+                  <div class="personal-styles-save-line">
+                    <input id="personal-style-name" type="text" maxlength="48" placeholder="Например, Стиль моих обновлений" autocomplete="off">
+                    <button type="button" id="personal-style-save"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="./assets/ui-icons.svg#bookmark-plus"></use></svg> Сохранить стиль</button>
+                  </div>
+                </div>
+                <div class="personal-styles-picker">
+                  <label for="personal-style-select">Сохранённые стили</label>
+                  <select id="personal-style-select"><option value="">Сохранённых стилей пока нет</option></select>
+                  <div class="personal-styles-actions">
+                    <button type="button" id="personal-style-apply" class="personal-style-apply" disabled><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="./assets/ui-icons.svg#check"></use></svg> Применить</button>
+                    <button type="button" id="personal-style-rename" disabled>Переименовать</button>
+                    <button type="button" id="personal-style-delete" class="personal-style-delete" disabled><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="./assets/ui-icons.svg#trash"></use></svg> Удалить</button>
+                  </div>
+                </div>
+                <p class="personal-styles-note">До 20 стилей, только в этом браузере. Для переименования выберите стиль и введите новое название в поле выше. Применение заменяет оформление и фигуры только выбранной карточки; её текст и фото сохраняются. Сохранённые стили не синхронизируются с аккаунтом.</p>
+                <p id="personal-style-status" class="personal-styles-status" role="status" aria-live="polite"></p>
               </section>
               </section>
               <div class="panel-bottom"><button type="button" id="reset" class="text-button"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="./assets/ui-icons.svg#rotate-ccw"></use></svg> Начать заново</button><div class="history-actions" role="group" aria-label="История действий редактора"><button type="button" id="undo" class="history-button" title="Отменить последнее изменение" disabled><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="./assets/ui-icons.svg#undo"></use></svg> Отменить</button><button type="button" id="redo" class="history-button" title="Повторить изменение" disabled><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="./assets/ui-icons.svg#redo"></use></svg> Повторить</button></div><span class="history-note">Автосохранение в браузере · до 30 шагов назад</span></div>
