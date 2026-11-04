@@ -105,7 +105,7 @@ export function initBilling(client) {
       if(inflightCheckout===attempt)inflightCheckout=null;
     }
   }
-  buy.addEventListener('click',buyBasic);
+  buy?.addEventListener('click',buyBasic);
   check?.addEventListener('click',()=>refresh(true));
   async function exportPremium(snapshot,index){
     const logged=await session();if(!logged)throw Error('LOGIN_REQUIRED');
@@ -128,10 +128,13 @@ export function initBilling(client) {
     accountId=id;++fresh;++accountGeneration;inflightCheckout=null;
     if(status)status.textContent=id?'Проверяем подписку…':'Войдите, чтобы увидеть подписку и покупки';
     if(history)history.replaceChildren();
-    buy.disabled=!id||!enabled||uncertainAccounts.has(id);
-    if(enabled)buy.textContent=uncertainAccounts.has(id)?'Проверьте статус оплаты':id?'Оплатить Basic':'Войти для покупки';
+    if(buy){
+      buy.disabled=!id||!enabled||uncertainAccounts.has(id);
+      if(enabled)buy.textContent=uncertainAccounts.has(id)?'Проверьте статус оплаты':id?'Оплатить Basic':'Войти для покупки';
+    }
     if(id)refresh();
   }
-  loadConfig();setUser(null);
+  if(buy)loadConfig();
+  setUser(null);
   return {setUser,refresh,exportPremium};
 }
