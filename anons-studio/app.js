@@ -384,6 +384,8 @@
 
     const layout=scene.template;
     const titleY=scene.titleY,detailsY=scene.detailsY;
+    ctx.save();
+    ctx.translate(scene.offsets.title.x*W/100,scene.offsets.title.y*H/100);
     ctx.fillStyle=t.accent;ctx.font="800 24px Manrope, sans-serif";
     ctx.fillText(scene.label+"  /  2026",margin,titleY-52);
     const rawTitle=state.title.trim()||"Заголовок публикации";
@@ -395,14 +397,19 @@
     const tx=center?W/2:margin;
     let y=titleY+f.size*.8;
     for(const line of f.lines){ctx.fillText(line,tx,y);y+=f.size*1.14;}
+    ctx.restore();
     const descText=state.description.trim()||"Расскажите коротко, что произошло и почему это важно.";
-    const descY=Math.min(detailsY-130,y+28);
+    const descY=Math.min(detailsY-130,y+28)+scene.descriptionShift;
     const dsize=scene.descriptionSize;
+    ctx.save();
+    ctx.translate(scene.offsets.description.x*W/100,scene.offsets.description.y*H/100);
+    ctx.textAlign=center?"center":"left";
     ctx.font="700 "+dsize+"px Manrope, sans-serif";ctx.fillStyle=t.sub;
     const dlines=window.AnonsScene.breakLines(descText,contentWidth-(H<=1100?10:80),dsize,3);
     // CSS/Satori places the first text baseline within its line box; align
     // the Canvas baseline instead of painting above the server text position.
     for(let i=0;i<dlines.length;i++){ctx.fillText(dlines[i],tx,descY+dsize*.82+i*(dsize*1.5));}
+    ctx.restore();
     ctx.textAlign="left";
 
     // Structured, legible highlights
@@ -410,6 +417,8 @@
     const list=points.length?points:["Важная информация","Следите за новостями"];
     const rowHeight=scene.highlightRowHeight;
     const top=detailsY;
+    ctx.save();
+    ctx.translate(scene.offsets.highlights.x*W/100,scene.offsets.highlights.y*H/100);
     ctx.save();roundedRect(margin,top-27,contentWidth,28+list.length*rowHeight+21,23);
     ctx.fillStyle=rgba(t.text,.085);
     if(layout==="minimal"||layout==="editorial"){ctx.strokeStyle=rgba(t.text,.3);ctx.lineWidth=2;ctx.stroke();}
@@ -424,6 +433,21 @@
       if(short!==p)short=short.slice(0,-1)+"…";
       ctx.fillText(short,margin+63,cy+18);
     });
+    ctx.restore();
+    // The same allowlisted SVG paths and normalized geometry are used by
+    // the premium server renderer; arbitrary user-supplied paths are rejected.
+    for(const graphic of Graphics.normalizeElements(state.graphicElements)){
+      const frame=Graphics.frame(graphic,W,H);
+      ctx.save();
+      ctx.translate(frame.x,frame.y);
+      ctx.rotate(frame.rotation*Math.PI/180);
+      ctx.scale(frame.size/100,frame.size/100);
+      ctx.translate(-50,-50);
+      ctx.globalAlpha=frame.opacity;
+      ctx.fillStyle=frame.color;
+      ctx.fill(new Path2D(frame.path));
+      ctx.restore();
+    }
     const footerY=scene.footerY;
     ctx.strokeStyle=rgba(t.text,.22);ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(margin,footerY-39);ctx.lineTo(W-margin,footerY-39);ctx.stroke();
     ctx.fillStyle=t.sub;ctx.font="800 20px Manrope,sans-serif";ctx.fillText("СОЗДАНО ДЛЯ ВДОХНОВЕНИЯ",margin,footerY);
