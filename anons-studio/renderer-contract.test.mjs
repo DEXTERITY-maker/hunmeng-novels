@@ -188,3 +188,26 @@ test("graphic labels, visibility and grouping metadata remain bounded",()=>{
   assert.equal(grouped[1].hidden,false);
   assert.match(handler,/if\(item\.hidden\)continue/);
 });
+
+test("Business compositions have independent palettes and share stable server geometry",()=>{
+  const business=[
+    ["business-brief","bulletin","#071f32"],
+    ["business-pitch","spotlight","#271836"],
+    ["business-report","editorial","#f5f8fc"]
+  ];
+  const backgrounds=new Set();
+  for(const ratio of ["portrait","square","story"]){
+    for(const [id,base,bg] of business){
+      const scene=Scene.layout({ratio,project:"ПРОЕКТ"},{template:id,title:"Деловой отчёт",theme:"paper"});
+      assert.equal(scene.businessTemplate,id);
+      assert.equal(scene.template,base);
+      assert.equal(scene.palette.bg1,bg);
+      assert.ok(Number.isFinite(scene.titleY));
+      assert.ok(scene.titleY<scene.detailsY);
+      assert.ok(scene.detailsY<scene.footerY);
+      assert.ok(Scene.titleLines("Итоги обновления и дальнейшие планы",scene).lines.length>0);
+      backgrounds.add(scene.palette.bg1);
+    }
+  }
+  assert.equal(backgrounds.size,3);
+});
