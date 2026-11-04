@@ -12,7 +12,10 @@
     spotlight:{ name: "Spotlight",categories: ["launch", "universal"],keywords: "запуск премьера презентация продукт новый проект яркий" },
     pulse:    { name: "Pulse",    categories: ["event", "launch"],    keywords: "мероприятие событие концерт акция энергичный динамичный" },
     minimal:  { name: "Minimal",  categories: ["universal", "news"], keywords: "минимализм минималистичный лаконичный объявление бизнес текст" },
-    bulletin: { name: "Bulletin", categories: ["news", "update"],    keywords: "новости важное информационная карточка уведомление" }
+    bulletin: { name: "Bulletin", categories: ["news", "update"],    keywords: "новости важное информационная карточка уведомление" },
+    "business-brief":{ name:"Business Brief",categories:["news","update","universal"],keywords:"бизнес деловой сводка отчёт руководство бизнес новости",premium:true },
+    "business-pitch":{ name:"Business Pitch",categories:["launch","universal"],keywords:"бизнес деловая презентация запуск продукт стартап питч",premium:true },
+    "business-report":{ name:"Business Report",categories:["news","universal"],keywords:"бизнес аналитика итоги отчёт метрики показатели",premium:true }
   };
 
   const search = document.getElementById("template-search");
@@ -38,6 +41,7 @@
   let favorites = loadFavorites();
   let category = "all";
   let showFavorites = false;
+  let paidAccess = false;
   const cards = [];
 
   [...gallery.querySelectorAll(":scope > a.template-card")].forEach((link) => {
@@ -56,6 +60,16 @@
     button.setAttribute("aria-pressed", "false");
     button.innerHTML = '<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" aria-hidden="true"><path d="m12 2.8 2.85 5.78 6.38.93-4.62 4.5 1.09 6.36L12 17.37l-5.7 3 1.09-6.36-4.62-4.5 6.38-.93L12 2.8Z"/></svg>';
     item.append(button);
+    if(info.premium){
+      link.classList.add("template-locked");
+      link.setAttribute("aria-label",info.name+" — шаблон тарифа Бизнес");
+      link.addEventListener("click",event=>{
+        if(!paidAccess){
+          event.preventDefault();
+          window.location.assign("./pricing.html#manual-order-root");
+        }
+      });
+    }
     const keywords = normalize([info.name, info.keywords, link.textContent].join(" "));
     cards.push({ id, info, item, button, keywords });
     button.addEventListener("click", () => {
@@ -75,6 +89,12 @@
     ordered.forEach((card) => gallery.append(card.item));
 
     cards.forEach(({ id, info, item, button, keywords }) => {
+      const link=item.querySelector?.("a.template-card")||item.children?.[0];
+      if(info.premium&&link){
+        link.classList.toggle("template-locked",!paidAccess);
+        link.setAttribute("aria-label",info.name+(paidAccess?" — доступен":" — требуется подписка Бизнес"));
+        link.title=paidAccess?"Открыть в редакторе":"Для доступа требуется подписка Бизнес";
+      }
       const selected = favorites.has(id);
       button.classList.toggle("is-favorite", selected);
       button.setAttribute("aria-pressed", String(selected));
@@ -102,6 +122,10 @@
     category = chip.dataset.catalogCategory;
     render();
   }));
+  window.addEventListener("anons:access",event=>{
+    paidAccess=event.detail?.premium===true&&["basic","pro","studio"].includes(event.detail?.plan);
+    render();
+  });
   search.addEventListener("input", render);
   sort.addEventListener("change", render);
   favoritesToggle.addEventListener("click", () => {
