@@ -13,21 +13,19 @@
   <link rel="stylesheet" href="./styles.css">
   <script src="./navigation.js" defer></script>
   <script src="./whats-new.js" defer></script>
-  <script src="./scene-layout.js" defer></script>
-  <script src="./app.js" defer></script>
   <script src="./auth.bundle.js" defer></script>
 </head>
 <body>
   <div class="site-shell">
     <header class="topbar">
-      <a href="#home" class="brand brand-image" aria-label="Anons Studio — главная"><img src="./assets/anons-logo-approved.webp" width="220" height="68" alt="Anons Studio" fetchpriority="high" decoding="async"></a>
+      <a href="./index.html" class="brand brand-image" aria-label="Anons Studio — главная"><img src="./assets/anons-logo-approved.webp" width="220" height="68" alt="Anons Studio" fetchpriority="high" decoding="async"></a>
       <nav id="primary-navigation" class="navigation" aria-label="Основная навигация">
-        <a href="#how">Как работает</a>
-        <a href="#editor">Редактор</a>
-        <a href="#templates">Шаблоны</a>
-        <a href="#features">Возможности</a>
-        <a href="#pricing">Тарифы</a>
-        <a href="#library">Моя библиотека</a>
+        <a href="./index.html" aria-current="page">Главная</a>
+        <a href="./editor.html">Редактор</a>
+        <a href="./templates.html">Шаблоны</a>
+        <a href="./features.html">Возможности</a>
+        <a href="./pricing.html">Тарифы</a>
+        <a href="./editor.html#library">Моя библиотека</a>
       </nav>
       <div class="topbar-actions">
         <button type="button" id="mobile-menu-toggle" class="mobile-menu-toggle" aria-controls="primary-navigation" aria-expanded="false" aria-label="Открыть меню"><span class="mobile-menu-icon" aria-hidden="true">☰</span><span class="mobile-menu-label">Меню</span></button>
@@ -41,7 +39,7 @@
           <div class="eyebrow"><span class="eyebrow-spark">✦</span> Новая творческая студия <span class="eyebrow-pill">Бета</span></div>
           <h1 id="hero-title">Твои новости.<br><em>В красивой</em><br>упаковке.</h1>
           <p>Преврати обновление, анонс мероприятия или запуск проекта в профессиональную публикацию. Просто напиши текст, выбери стиль и скачай готовое изображение.</p>
-          <div class="hero-actions"><a href="#editor" class="btn btn-primary">Создать бесплатно <span aria-hidden="true">↗</span></a><a class="btn btn-outline" href="#how">Как это работает <span aria-hidden="true">↓</span></a></div>
+          <div class="hero-actions"><a href="./editor.html" class="btn btn-primary">Создать бесплатно <span aria-hidden="true">↗</span></a><a class="btn btn-outline" href="#how">Как это работает <span aria-hidden="true">↓</span></a></div>
           <div class="hero-foot"><span class="avatar-dot">✦</span><span>Регистрация · Бесплатный тариф с водяным знаком · PNG-экспорт</span></div>
         </div>
         <div class="hero-art" aria-label="Пример оформления анонса">
@@ -73,190 +71,17 @@
       </section>
 
 
-      <section id="templates" class="gallery-section wrap" aria-labelledby="templates-title">
-        <div class="section-heading"><div><div class="kicker">ШЕСТЬ АВТОРСКИХ КОМПОЗИЦИЙ</div><h2 id="templates-title">Шаблон, который<br><em>расскажет твою историю.</em></h2></div><p>Это не просто смена цвета: каждый шаблон по-своему располагает акценты и текст. Нажми на карточку, чтобы открыть её в редакторе.</p></div>
-        <div class="template-gallery" role="group" aria-label="Галерея шаблонов">
-          <button class="template-card active" type="button" data-template="aurora" aria-pressed="true"><span class="template-art preview-aurora"><span class="preview-decoration">✧</span><span class="preview-heading">БОЛЬШИЕ<br>ПЕРЕМЕНЫ</span><span class="preview-bars"></span></span><span class="template-info"><strong>Aurora</strong><small>Атмосферные обновления</small></span></button>
-          <button class="template-card" type="button" data-template="editorial" aria-pressed="false"><span class="template-art preview-editorial"><span class="preview-top">THE UPDATE / 2026</span><span class="preview-heading">Новая<br>глава.</span><span class="preview-bars"></span></span><span class="template-info"><strong>Editorial</strong><small>Премиальная типографика</small></span></button>
-          <button class="template-card" type="button" data-template="spotlight" aria-pressed="false"><span class="template-art preview-spotlight"><span class="preview-decoration">◉</span><span class="preview-heading">ВАШ<br>АНОНС</span><span class="preview-bars"></span></span><span class="template-info"><strong>Spotlight</strong><small>Яркие запуски</small></span></button>
-          <button class="template-card" type="button" data-template="pulse" aria-pressed="false"><span class="template-art preview-pulse"><span class="preview-decoration">↗</span><span class="preview-heading">ВРЕМЯ<br>ДЕЙСТВОВАТЬ</span><span class="preview-bars"></span></span><span class="template-info"><strong>Pulse</strong><small>События и энергия</small></span></button>
-          <button class="template-card" type="button" data-template="minimal" aria-pressed="false"><span class="template-art preview-minimal"><span class="preview-top">01 / ANNOUNCEMENT</span><span class="preview-heading">Просто.<br>По делу.</span><span class="preview-bars"></span></span><span class="template-info"><strong>Minimal</strong><small>Чистота и пространство</small></span></button>
-          <button class="template-card" type="button" data-template="bulletin" aria-pressed="false"><span class="template-art preview-bulletin"><span class="preview-top">● NEWSROOM</span><span class="preview-heading">ВАЖНОЕ<br>СЕГОДНЯ</span><span class="preview-bars"></span></span><span class="template-info"><strong>Bulletin</strong><small>Информационные карточки</small></span></button>
+      <section id="explore" class="home-explore wrap" aria-labelledby="explore-title">
+        <div class="section-heading"><div><div class="kicker">ВЫБЕРИ, С ЧЕГО НАЧАТЬ</div><h2 id="explore-title">Каждой идее<br><em>своё пространство.</em></h2></div><p>Все инструменты Anons Studio теперь на отдельных страницах. Переходи туда, где удобно работать.</p></div>
+        <div class="home-explore-grid">
+          <a class="home-explore-card" href="./editor.html"><span class="home-explore-icon">✎</span><span class="home-explore-index">01 / РЕДАКТОР</span><strong>Создавай анонсы</strong><p>Заголовки, оформление, просмотр и экспорт PNG.</p><span class="home-explore-arrow" aria-hidden="true">↗</span></a>
+          <a class="home-explore-card" href="./templates.html"><span class="home-explore-icon">◈</span><span class="home-explore-index">02 / ШАБЛОНЫ</span><strong>Найди свой стиль</strong><p>Шесть готовых композиций на выбор.</p><span class="home-explore-arrow" aria-hidden="true">↗</span></a>
+          <a class="home-explore-card" href="./features.html"><span class="home-explore-icon">✦</span><span class="home-explore-index">03 / ВОЗМОЖНОСТИ</span><strong>Узнай об инструментах</strong><p>Карточки, версии, настройки, облачные проекты.</p><span class="home-explore-arrow" aria-hidden="true">↗</span></a>
+          <a class="home-explore-card" href="./pricing.html"><span class="home-explore-icon">◇</span><span class="home-explore-index">04 / ТАРИФЫ</span><strong>Выбери доступ</strong><p>Бесплатные и будущие платные возможности.</p><span class="home-explore-arrow" aria-hidden="true">↗</span></a>
         </div>
       </section>
 
-      <section id="editor" class="workspace-section">
-        <div class="wrap">
-          <div class="section-heading editor-intro"><div><div class="kicker">ТВОЯ СТУДИЯ</div><h2>Давай создадим<br><em>что-то классное.</em></h2></div><p>Все изменения сразу видны справа. Сохраняй текущий черновик в браузере или в облачной библиотеке аккаунта.</p></div>
-          <div class="workspace">
-            <div class="controls">
-              <div class="panel-head"><div><span class="section-index">01 / РЕДАКТОР</span><h3>Настрой свой анонс</h3></div><span class="live-tag"><i></i> В реальном времени</span></div>
-              <section class="card-manager" aria-label="Карточки анонса"><div class="card-manager-title"><strong>Карточки публикации</strong><span id="card-count">1 из 8</span></div><div id="card-list" class="card-list" role="tablist" aria-label="Выбор карточки"></div><div class="card-manager-actions"><button type="button" id="add-card">＋ Добавить</button><button type="button" id="duplicate-card">⧉ Дублировать</button><button type="button" id="remove-card">Удалить</button></div><p class="field-note">У каждой карточки свой заголовок и шаблон. Экспортируй одну картинку или весь набор ZIP-архивом.</p></section>
-
-              <div class="field-group"><label for="template-select">Композиция текущей карточки</label><select id="template-select"><option value="aurora">Aurora — атмосферный</option><option value="editorial">Editorial — редакционный</option><option value="spotlight">Spotlight — выразительный</option><option value="pulse">Pulse — динамичный</option><option value="minimal">Minimal — минималистичный</option><option value="bulletin">Bulletin — новостной</option></select></div>
-              <fieldset class="field-group">
-                <legend>Что анонсируем?</legend>
-                <div class="preset-grid" role="group" aria-label="Тип публикации">
-                  <button type="button" class="preset active" data-preset="update" aria-pressed="true"><span class="preset-symbol">✳</span> Обновление</button>
-                  <button type="button" class="preset" data-preset="launch" aria-pressed="false"><span class="preset-symbol">↗</span> Запуск</button>
-                  <button type="button" class="preset" data-preset="event" aria-pressed="false"><span class="preset-symbol">◉</span> Событие</button>
-                  <button type="button" class="preset" data-preset="notice" aria-pressed="false"><span class="preset-symbol">✦</span> Объявление</button>
-                </div>
-              </fieldset>
-
-              <div class="field-group">
-                <label for="project">Название проекта / бренда</label>
-                <input id="project" maxlength="45" value="ANONS STUDIO" autocomplete="off" placeholder="Например, моя студия">
-              </div>
-              <div class="field-group">
-                <label for="title">Главный заголовок <span class="hint">до 85 символов</span></label>
-                <textarea id="title" rows="2" maxlength="85" placeholder="О чём эта публикация?">Большое обновление!</textarea>
-              </div>
-              <div class="field-group">
-                <label for="description">Короткое объяснение <span class="hint">до 210 символов</span></label>
-                <textarea id="description" rows="3" maxlength="210" placeholder="Что произошло и почему это важно?">Мы добавили новые возможности, улучшили оформление и сделали работу ещё удобнее.</textarea>
-              </div>
-              <div class="field-group">
-                <label for="points">Главные детали <span class="hint">каждая с новой строки, до 3</span></label>
-                <textarea id="points" rows="4" maxlength="240" placeholder="Новый дизайн&#10;Удобные функции&#10;Исправленные ошибки">Новый современный дизайн
-Больше полезных функций
-Улучшенная скорость работы</textarea>
-              </div>
-
-              <fieldset class="field-group">
-                <legend>Визуальный стиль</legend>
-                <div class="theme-picker" role="group" aria-label="Выбор цветового оформления">
-                  <button type="button" class="theme-swatch active" data-theme="ultraviolet" title="Ультрафиолет" aria-label="Ультрафиолет" aria-pressed="true"><span class="swatch violet"></span></button>
-                  <button type="button" class="theme-swatch" data-theme="emerald" title="Изумрудный" aria-label="Изумрудный" aria-pressed="false"><span class="swatch emerald"></span></button>
-                  <button type="button" class="theme-swatch" data-theme="sunset" title="Закат" aria-label="Закат" aria-pressed="false"><span class="swatch sunset"></span></button>
-                  <button type="button" class="theme-swatch" data-theme="ink" title="Графит" aria-label="Графит" aria-pressed="false"><span class="swatch ink"></span></button>
-                  <button type="button" class="theme-swatch" data-theme="paper" title="Светлый" aria-label="Светлый" aria-pressed="false"><span class="swatch paper"></span></button>
-                </div>
-                <p class="field-note" id="theme-label">Ультрафиолет — смелый и современный</p>
-              </fieldset>
-
-              <div class="field-group">
-                <label for="ratio">Формат изображения</label>
-                <select id="ratio">
-                  <option value="portrait">Публикация 4:5 — 1080 × 1350</option>
-                  <option value="square">Квадрат 1:1 — 1080 × 1080</option>
-                  <option value="story">История 9:16 — 1080 × 1920</option>
-                </select>
-              </div>
-
-              <div class="field-group">
-                <label for="upload">Своя фотография <span class="hint">необязательно</span></label>
-                <div class="upload-line"><label class="upload-btn" for="upload">＋ Добавить фото</label><input id="upload" type="file" accept="image/png,image/jpeg,image/webp" hidden><button id="clear-image" class="text-button" type="button" hidden>Удалить фото</button><span id="image-name">PNG, JPG или WebP</span></div>
-                <p class="field-note">Фото обрабатывается в браузере. При сохранении проекта в облако или серверном экспорте оно передаётся на сервер.</p>
-              </div>
-
-
-              <details class="advanced-panel" id="advanced-panel">
-                <summary>⚙ Тонкие настройки оформления <span>↓</span></summary>
-                <div class="advanced-content">
-                  <label for="heading-scale">Размер заголовка <output for="heading-scale" id="heading-scale-value">100%</output></label>
-                  <input type="range" id="heading-scale" min="80" max="120" step="5" value="100">
-                  <label for="accent-color">Акцентный цвет</label>
-                  <input type="color" id="accent-color" value="#c2a1ff" aria-label="Акцентный цвет">
-                  <label for="text-align">Расположение текста</label>
-                  <select id="text-align"><option value="left">По левому краю</option><option value="center">По центру</option></select>
-                  <label for="photo-opacity">Выраженность фотографии <output for="photo-opacity" id="photo-opacity-value">35%</output></label>
-                  <input type="range" id="photo-opacity" min="15" max="85" step="5" value="35">
-                  <label class="advanced-toggle"><input type="checkbox" id="ornaments" checked> Декоративные элементы</label>
-                </div>
-              </details>
-              <div class="panel-bottom"><button type="button" id="reset" class="text-button">↺ Начать заново</button><div class="history-actions" role="group" aria-label="История действий редактора"><button type="button" id="undo" class="history-button" title="Отменить последнее изменение" disabled>↶ Отменить</button><button type="button" id="redo" class="history-button" title="Повторить изменение" disabled>↷ Повторить</button></div><span class="history-note">Автосохранение в браузере · до 30 шагов назад</span></div>
-            </div>
-
-            <div class="preview-panel">
-              <div class="panel-head preview-head"><div><span class="section-index">02 / ПРЕДПРОСМОТР</span><h3>Твой будущий пост</h3></div><span class="preview-badge" id="current-card-label">Карточка 1 / 1</span></div>
-              <div class="preview-stage"><div class="canvas-holder"><canvas id="poster" width="1080" height="1350" role="img" aria-label="Предпросмотр оформленного анонса">Предпросмотр изображения недоступен в этом браузере.</canvas></div></div>
-              <div class="preview-actions"><button type="button" class="btn btn-primary export-btn" id="export">⇩ Скачать PNG</button><button type="button" class="btn btn-secondary" id="export-all">⇩ Все карточки ZIP</button><button type="button" class="btn btn-secondary" id="copy">Скопировать текст ↗</button></div>
-              <p class="preview-caption">На Free водяной знак сохраняется в предпросмотре и PNG</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-
-      <section id="library" class="library-section" aria-labelledby="library-title">
-        <div class="wrap">
-          <div class="section-heading library-heading">
-            <div><div class="kicker">ТВОИ ИДЕИ — В ОДНОМ МЕСТЕ</div><h2 id="library-title">Моя библиотека.<br><em>Продолжай с любого устройства.</em></h2></div>
-            <p>Создавай проекты, сохраняй черновики в аккаунте и возвращайся к предыдущим версиям. Войти можно с телефона или компьютера.</p>
-          </div>
-          <div id="library-guest" class="library-guest-panel">
-            <div class="library-guest-symbol">✧</div>
-            <div><h3>Твоя творческая библиотека</h3><p>Войди или зарегистрируйся, чтобы сохранять проекты в облаке. Пока аккаунт не подключён, редактор хранит черновик только в этом браузере.</p></div>
-            <a href="./account.html" class="btn btn-primary">Войти / регистрация ↗</a>
-          </div>
-          <div id="library-auth" class="library-layout" hidden>
-            <div class="library-sidebar">
-              <div class="library-panel-top"><div><span class="section-index">ТВОИ ПРОЕКТЫ</span><h3>Библиотека <span id="library-count">0</span></h3></div><button id="library-refresh" class="library-quiet" type="button" title="Обновить список проектов" aria-label="Обновить список проектов">↻</button></div>
-              <label class="library-input-label" for="library-search">Поиск по названию</label>
-              <input id="library-search" type="search" placeholder="Найти анонс…" autocomplete="off">
-              <label class="library-input-label" for="library-filter">Раздел</label>
-              <select id="library-filter"><option value="active">Мои проекты</option><option value="archived">Архив</option><option value="all">Все проекты</option></select>
-              <div class="library-list" id="library-list" aria-label="Сохранённые проекты"><p class="library-placeholder">Проектов пока нет. Создай первый анонс.</p></div>
-            </div>
-            <div class="library-workspace">
-              <div class="library-status-bar"><div><span class="section-index">ПРОЕКТ В РАБОТЕ</span><h3 id="library-current">Новый черновик</h3></div><span id="library-sync" class="library-sync" role="status" aria-live="polite">Только в браузере</span></div>
-              <label class="library-input-label" for="library-name">Название проекта в библиотеке</label>
-              <input id="library-name" maxlength="100" type="text" placeholder="Например, Обновление игры v2" autocomplete="off" value="Новый анонс">
-              <p class="library-helper">Название для поиска в библиотеке. Оно не меняет заголовок самой картинки.</p>
-              <div class="library-commands">
-                <button id="library-new" type="button" class="btn btn-secondary">＋ Новый черновик</button>
-                <button id="library-save" type="button" class="btn btn-primary">☁ Сохранить в облако</button>
-                <button id="library-checkpoint" type="button" class="btn btn-outline">✧ Сохранить версию</button>
-              </div>
-              <p class="library-helper">После первого сохранения изменения синхронизируются автоматически. История версий создаётся по кнопке «Сохранить версию». До 30 проектов на аккаунт. Очень большие фотографии могут превышать лимит облачного черновика.</p>
-              <div class="library-management">
-                <button id="library-duplicate" type="button" class="library-quiet">⧉ Сохранить копию</button>
-                <button id="library-archive" type="button" class="library-quiet" disabled>В архив</button>
-                <button id="library-delete" type="button" class="library-quiet library-danger" disabled>Удалить проект</button>
-              </div>
-              <div class="library-history">
-                <div class="library-history-heading"><strong>История изменений</strong><span>15 последних версий</span></div>
-                <div id="library-history-list" class="library-history-list"><p class="library-placeholder">Выбери сохранённый проект, чтобы увидеть историю.</p></div>
-              </div>
-              <div id="library-conflict" class="library-conflict" hidden role="alert">
-                <strong>Найдена более новая версия в облаке</strong>
-                <p>Этот проект изменился в другом окне или на другом устройстве. Твой текущий черновик не перезаписан.</p>
-                <div class="library-conflict-actions">
-                  <button id="library-conflict-copy" type="button">⧉ Сохранить как новый проект</button>
-                  <button id="library-load-latest" type="button">↻ Открыть облачную версию</button>
-                </div>
-              </div>
-              <p id="library-error" role="alert" class="library-error" hidden></p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section id="features" class="features wrap">
-        <div class="section-heading"><div><div class="kicker">СДЕЛАНО ДЛЯ ЛЮДЕЙ С ИДЕЯМИ</div><h2>Меньше рутины.<br>Больше творчества.</h2></div></div>
-        <div class="feature-grid">
-          <article class="feature-main"><div class="feature-illustration">✦ <span>create / share / inspire</span></div><h3>Сначала смысл. Потом красота.</h3><p>Помогаем выделять главную мысль, чтобы подписчики сразу понимали, о чём речь.</p></article>
-          <article><div class="feature-icon">▧</div><h3>Три формата</h3><p>Вертикальный пост, квадрат и история. Для разных площадок и задач.</p></article>
-          <article><div class="feature-icon">◈</div><h3>Твой стиль</h3><p>Пять цветовых тем и возможность добавить собственную фотографию.</p></article>
-          <article><div class="feature-icon">⌘</div><h3>Без сложностей</h3><p>Создавай оформление в браузере и регистрируй аккаунт, чтобы видеть свой тариф.</p></article>
-        </div>
-      </section>
-
-
-      <section id="pricing" class="pricing wrap" aria-labelledby="pricing-title">
-        <div class="section-heading"><div><div class="kicker">ПРОСТЫЕ УСЛОВИЯ</div><h2 id="pricing-title">Выбери свой<br>формат творчества.</h2></div><p>На Free в PNG остаётся водяной знак. Платный Basic предусматривает чистый серверный экспорт. Подключение реальной оплаты пока не завершено.</p></div>
-        <div class="pricing-grid">
-          <article class="plan plan-free"><span class="plan-eyebrow">ДЛЯ НАЧАЛА</span><h3>Free</h3><div class="plan-price">0 ₽ <small>/ месяц</small></div><p>Попробовать редактор и создать первые публикации.</p><ul><li>Базовые шаблоны</li><li>Экспорт PNG в трёх форматах</li><li>Водяной знак Anons Studio</li></ul><a href="#editor" class="plan-action">Попробовать бесплатно</a></article>
-          <article class="plan"><span class="plan-eyebrow">ДЛЯ АВТОРОВ</span><h3>Basic</h3><div class="plan-price">299 ₽ <small>/ 30 дней</small></div><p>Для тех, кому нужен чистый профессиональный экспорт.</p><ul><li>Всё из Free</li><li><strong>Без водяного знака</strong></li><li>Дополнительные шаблоны — в разработке</li></ul><button disabled id="buy-basic" class="plan-action" type="button">Проверяем оплату…</button></article>
-          <article class="plan plan-featured"><span class="plan-eyebrow">ПОПУЛЯРНЫЙ ВАРИАНТ</span><h3>Pro</h3><div class="plan-price">499 ₽ <small>/ 30 дней</small></div><p>Для регулярного создания контента.</p><ul><li>Всё из Basic</li><li><strong>Без водяного знака</strong></li><li>Пакетные публикации — в разработке</li></ul><button disabled class="plan-action" type="button">Покупка скоро</button></article>
-          <article class="plan"><span class="plan-eyebrow">ДЛЯ КОМАНД</span><h3>Studio</h3><div class="plan-price">999 ₽ <small>/ 30 дней</small></div><p>Для нескольких проектов и единого фирменного стиля.</p><ul><li>Всё из Pro</li><li><strong>Без водяного знака</strong></li><li>Командные функции — в разработке</li></ul><button disabled class="plan-action" type="button">Покупка скоро</button></article>
-        </div>
-        <div class="billing-availability" role="status" aria-live="polite" id="billing-availability">Проверяем возможность оплаты…</div>
-        <p class="pricing-disclaimer">Basic — доступ на 30 дней с ручным продлением, без автоматических списаний. Pro и Studio пока в разработке. Кнопки оплаты заработают только после проверки платёжного магазина, чеков и серверного экспорта.</p>
-      </section>
-
-      <section class="cta wrap"><div><div class="kicker">НАЧНИ СЕЙЧАС</div><h2>Всё готово.<br><em>Осталось рассказать.</em></h2><p>Попробуй бесплатный редактор с водяным знаком.</p></div><a href="#editor" class="btn btn-light">Открыть редактор ↗</a></section>
+      <section class="cta wrap"><div><div class="kicker">НАЧНИ СЕЙЧАС</div><h2>Всё готово.<br><em>Осталось рассказать.</em></h2><p>Попробуй бесплатный редактор с водяным знаком.</p></div><a href="./editor.html" class="btn btn-light">Открыть редактор ↗</a></section>
     </main>
     <footer class="footer wrap"><img class="footer-logo" src="./assets/anons-logo-approved.webp" width="220" height="68" alt="Anons Studio" loading="lazy" decoding="async"><span>Создано для тех, кому есть что рассказать.</span><button id="whats-new-open" class="whats-new-open" type="button" aria-haspopup="dialog" aria-controls="whats-new-dialog">✦ Что нового</button><span>Бета v0.6 · 2026</span></footer>
     <div id="toast" role="status" aria-live="polite" class="toast" hidden></div>
@@ -277,7 +102,7 @@
           <li><span class="whats-new-item-icon" aria-hidden="true">✧</span><div><strong>Точнее предпросмотр</strong><p>Редактор и серверный экспорт теперь используют общие правила компоновки.</p></div></li>
         </ul>
         <div class="whats-new-actions">
-          <a id="whats-new-try" class="whats-new-primary" href="#editor">Перейти к редактору <span aria-hidden="true">↗</span></a>
+          <a id="whats-new-try" class="whats-new-primary" href="./editor.html">Перейти к редактору <span aria-hidden="true">↗</span></a>
           <button id="whats-new-dismiss" class="whats-new-secondary" type="button">Понятно</button>
         </div>
         <p class="whats-new-once">Покажем это окно один раз для каждого нового обновления. Его всегда можно открыть внизу страницы.</p>
