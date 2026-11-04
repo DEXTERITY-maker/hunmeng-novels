@@ -124,7 +124,7 @@ button.plan-action[disabled]{cursor:not-allowed;color:#92869f;background:#f6f4f7
 .advanced-panel{border:1px solid #e8e2ef;border-radius:13px;background:#fbf9fe;padding:14px 17px;margin:0 0 20px}
 .advanced-panel summary{cursor:pointer;display:flex;justify-content:space-between;align-items:center;color:#513c75;font-size:12px;font-weight:850;list-style:none}
 .advanced-panel summary::-webkit-details-marker{display:none}
-.advanced-panel[open] summary>span{transform:rotate(180deg)}
+.advanced-panel[open] summary>span:last-child{transform:rotate(180deg)}
 .advanced-content{padding-top:17px;display:grid;gap:11px}
 .advanced-content label{color:#474052;font-size:11px;font-weight:750}
 .advanced-content output{float:right;color:#8a61df}
