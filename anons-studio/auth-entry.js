@@ -8,7 +8,17 @@ const client=createClient("https://kvgnjsntumofwqhywiea.supabase.co","sb_publish
 });
 const byId=id=>document.getElementById(id);
 const library=document.getElementById("library-guest")
-  ?initLibrary(client):{setUser(){},async flushPending(){return true;}};
+  ?initLibrary(client):{
+    setUser(){},
+    // On account.html the editor is not mounted, so its unsaved work
+    // cannot safely be pushed to Supabase during sign-out.
+    async flushPending(){
+      try{
+        const active=JSON.parse(localStorage.getItem("anons-studio:cloud-active-v05")||"null");
+        return active?.dirty!==true;
+      }catch{return false;}
+    }
+  };
 const billing=initBilling(client);
 window.AnonsBilling=billing;
 const guest=byId("account-guest");
@@ -261,8 +271,15 @@ async function signOut(scope){
   const button=byId(scope==="global"?"account-logout-all":"account-logout");
   if(scope==="global"&&!confirm("Завершить сеансы на всех устройствах? Другие устройства могут оставаться авторизованными до истечения срока их текущих токенов."))return;
   if(!await library.flushPending()){
-    showMessage("Есть несохранённые изменения. Сначала сохрани проект в облаке или экспортируй его, чтобы не потерять данные.",true);
+    showMessage("Есть несохранённые изменения. Вернись в редактор и сохрани проект в облако или экспортируй его перед выходом.",true);
     return;
+  }
+  if(accountPage){
+    // Signing out from a standalone page clears stale local editor state for
+    // privacy. Require explicit consent if a browser draft still exists.
+    let cached=false;
+    try{cached=Boolean(localStorage.getItem("anons-studio:mvp-v1"));}catch{}
+    if(cached&&!confirm("При выходе локальный черновик этого браузера будет очищен. Убедись, что сохранил проект в облако или скачал файл. Продолжить выход?"))return;
   }
   setBusy(button,true);
   try{
