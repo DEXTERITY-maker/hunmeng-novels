@@ -84,9 +84,9 @@ try {
     // available from the footer without disturbing ordinary page visits.
     const releaseDialog=page.locator("#whats-new-dialog");
     await page.waitForFunction(()=>document.getElementById("whats-new-dialog")?.open);
-    assert.match(await page.locator("#whats-new-title").textContent(),/Обновление оформления шаблона Aurora/);
-    assert.equal(await page.locator(".whats-new-list li").count(),14);
-    assert.equal(await page.locator(".whats-new-item-icon .ui-icon").count(),14,
+    assert.match(await page.locator("#whats-new-title").textContent(),/Дополнительные варианты оформления Aurora/);
+    assert.equal(await page.locator(".whats-new-list li").count(),16);
+    assert.equal(await page.locator(".whats-new-item-icon .ui-icon").count(),16,
       "Announcement has coherent SVG icons instead of character placeholders");
     await page.waitForFunction(()=>document.querySelector(".whats-new-item-icon svg")?.getBBox().width>0);
     assert.equal(await page.evaluate(async()=> (await fetch("/assets/ui-icons.svg")).status),200,
@@ -95,7 +95,7 @@ try {
       assert.ok((await page.locator('.whats-new-list a[href="./'+destination+'"]').count())>=1,
         "Announcement links directly to "+destination);
     }
-    assert.equal(await releaseDialog.getAttribute("data-release"),"2026-11-04-aurora-visual-refresh",
+    assert.equal(await releaseDialog.getAttribute("data-release"),"2026-11-04-aurora-compositions",
       "Latest announcement version must be recognized");
     assert.equal(await page.locator("#whats-new-close").evaluate(el=>el===document.activeElement),true,
       "Announcement initially focuses its accessible close control");
