@@ -64,6 +64,8 @@ try {
     await page.locator("#whats-new-dismiss").click();
     assert.equal(await releaseDialog.evaluate(d=>d.open),false,"Dismiss closes the dialog");
     const firstRelease=await releaseDialog.getAttribute("data-release");
+    await page.waitForFunction(release=>
+      localStorage.getItem("anons-studio:whats-new:seen")===release,firstRelease);
     assert.equal(await page.evaluate(()=>localStorage.getItem("anons-studio:whats-new:seen")),firstRelease);
     await page.locator("#whats-new-open").click();
     assert.equal(await releaseDialog.evaluate(d=>d.open),true,"News can be reopened from footer");
