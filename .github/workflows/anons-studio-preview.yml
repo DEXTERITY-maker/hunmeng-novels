@@ -72,7 +72,7 @@ jobs:
       - name: Test gallery, personal styles and brand kit libraries
         run: node --test anons-studio/templates-catalog.test.mjs anons-studio/templates-assistant.test.mjs anons-studio/personal-styles.test.mjs anons-studio/cloud-styles.test.mjs anons-studio/brand-kit.test.mjs anons-studio/manual-orders.test.mjs anons-studio/manual-orders-security.test.mjs anons-studio/business-templates-and-plans.test.mjs anons-studio/pro-features.test.mjs anons-studio/studio-workspace.test.mjs anons-studio/pricing-status.test.mjs anons-studio/agency-ultimate.test.mjs
       - name: Install Chromium for browser checks
-        run: npx playwright install --with-deps --only-shell chromium
+        run: npx playwright install --only-shell chromium
       - name: Test actual editor, responsive layout and PNG export
         run: node anons-studio/smoke.mjs
       - name: Upload synthetic mobile and desktop editor previews
