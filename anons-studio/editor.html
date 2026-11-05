@@ -228,6 +228,35 @@
                 <div class="upload-line"><label class="upload-btn" for="upload"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="./assets/ui-icons.svg#image-plus"></use></svg> Добавить фото</label><input id="upload" type="file" accept="image/png,image/jpeg,image/webp" hidden><button id="clear-image" class="text-button" type="button" hidden>Удалить фото</button><span id="image-name">PNG, JPG или WebP</span></div>
                 <p class="field-note">Фото обрабатывается в браузере. При сохранении проекта в облако или серверном экспорте оно передаётся на сервер.</p>
               </div>
+              <section class="photo-studio-panel" aria-labelledby="photo-studio-title">
+                <div class="photo-studio-heading">
+                  <div><span class="section-index">РАБОТА С ИЗОБРАЖЕНИЕМ</span><h5 id="photo-studio-title">Кадрирование и фотоэффекты</h5></div>
+                  <button type="button" id="photo-reset" class="photo-reset-btn">Сбросить эффекты</button>
+                </div>
+                <p class="field-note">Увеличивай фото, выбирай область кадра и настраивай оттенок. Исходный файл не изменяется; настройки сохраняются в карточке и доступны для отмены.</p>
+                <div class="photo-preset-list" role="group" aria-label="Быстрый стиль фотографии">
+                  <button type="button" data-photo-preset="natural" aria-pressed="true"><strong>Натуральный</strong><small>Без фильтров</small></button>
+                  <button type="button" data-photo-preset="cinema" aria-pressed="false"><strong>Кино</strong><small>Контраст и холод</small></button>
+                  <button type="button" data-photo-preset="vivid" aria-pressed="false"><strong>Яркий</strong><small>Больше цвета</small></button>
+                </div>
+                <div class="photo-studio-grid">
+                  <label for="photo-zoom">Увеличение кадра <output for="photo-zoom" id="photo-zoom-value">100%</output></label>
+                  <input id="photo-zoom" type="range" min="100" max="250" step="10" value="100">
+                  <label for="photo-focus-x">Фокус по горизонтали <output for="photo-focus-x" id="photo-focus-x-value">50%</output></label>
+                  <input id="photo-focus-x" type="range" min="0" max="100" step="5" value="50">
+                  <label for="photo-focus-y">Фокус по вертикали <output for="photo-focus-y" id="photo-focus-y-value">50%</output></label>
+                  <input id="photo-focus-y" type="range" min="0" max="100" step="5" value="50">
+                  <label for="photo-brightness">Яркость <output for="photo-brightness" id="photo-brightness-value">100%</output></label>
+                  <input id="photo-brightness" type="range" min="60" max="140" step="5" value="100">
+                  <label for="photo-contrast">Контрастность <output for="photo-contrast" id="photo-contrast-value">100%</output></label>
+                  <input id="photo-contrast" type="range" min="60" max="140" step="5" value="100">
+                  <label for="photo-saturation">Насыщенность <output for="photo-saturation" id="photo-saturation-value">100%</output></label>
+                  <input id="photo-saturation" type="range" min="0" max="180" step="10" value="100">
+                  <label for="photo-overlay">Цветовое наложение</label>
+                  <select id="photo-overlay"><option value="none">Без наложения</option><option value="violet">Фиолетовое свечение</option><option value="blue">Холодный синий</option><option value="warm">Тёплый свет</option><option value="dark">Кинематографический графит</option></select>
+                </div>
+                <p class="photo-studio-status" id="photo-studio-status" role="status" aria-live="polite">Добавь фотографию, чтобы увидеть эффекты в предпросмотре.</p>
+              </section>
 
 
               <details class="advanced-panel" id="advanced-panel">

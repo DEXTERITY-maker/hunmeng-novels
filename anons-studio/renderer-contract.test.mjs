@@ -287,3 +287,52 @@ test("poster title typography and decorative frames share a bounded server contr
   assert.match(handler,/plan\.frameStyle!==['"]none['"]/);
   assert.match(handler,/letterSpacing:plan\.titleTracking/);
 });
+
+test("photo crop and color grading are bounded, backward compatible, and shared by both renderers",()=>{
+  for(const ratio of ["portrait","square","story"]){
+    const baseline=Scene.layout({ratio},{});
+    assert.equal(baseline.photo.zoom,1);
+    assert.equal(baseline.photo.focusX,.5);
+    assert.equal(baseline.photo.focusY,.5);
+    assert.equal(baseline.photo.overlay.alpha,0);
+    const scene=Scene.layout({ratio},{
+      photoZoom:190,photoFocusX:25,photoFocusY:85,photoBrightness:125,
+      photoContrast:110,photoSaturation:155,photoOverlay:"violet"
+    });
+    assert.equal(scene.photo.zoom,1.9);
+    assert.equal(scene.photo.focusX,.25);
+    assert.equal(scene.photo.focusY,.85);
+    assert.equal(scene.photo.brightness,125);
+    assert.equal(scene.photo.contrast,110);
+    assert.equal(scene.photo.saturation,155);
+    assert.equal(scene.photo.overlay.color,"#805aff");
+    const portrait=Scene.photoPlacement(scene,600,1000);
+    const landscape=Scene.photoPlacement(scene,1000,500);
+    for(const placed of [portrait,landscape]){
+      assert.ok([placed.x,placed.y,placed.width,placed.height].every(Number.isFinite));
+      assert.ok(placed.x<=scene.photo.x && placed.y<=scene.photo.y);
+      assert.ok(placed.x+placed.width>=scene.photo.x+scene.photo.width);
+      assert.ok(placed.y+placed.height>=scene.photo.y+scene.photo.height);
+    }
+    const centered=Scene.photoPlacement(baseline,600,1000);
+    assert.ok(centered.width>=baseline.photo.width);
+    assert.ok(centered.height>=baseline.photo.height);
+    assert.ok(Number.isFinite(Scene.photoPlacement(scene,Infinity,NaN).width));
+  }
+  const unsafe=Scene.layout({ratio:"portrait"},{
+    photoZoom:1e9,photoFocusX:-1e9,photoFocusY:1e9,
+    photoBrightness:999,photoContrast:-100,photoSaturation:999,
+    photoOverlay:"url(javascript:alert(1))"
+  });
+  assert.equal(unsafe.photo.zoom,2.5);
+  assert.equal(unsafe.photo.focusX,0);
+  assert.equal(unsafe.photo.focusY,1);
+  assert.equal(unsafe.photo.brightness,140);
+  assert.equal(unsafe.photo.contrast,60);
+  assert.equal(unsafe.photo.saturation,180);
+  assert.equal(unsafe.photo.overlay.alpha,0);
+  assert.match(handler,/photo\.zoom/);
+  assert.match(handler,/objectPosition:/);
+  assert.match(handler,/r\.brightness/);
+  assert.match(handler,/r\.overlay\.alpha/);
+});

@@ -1561,6 +1561,100 @@ try {
     await qualityContext.close();
   }
 
+
+  // Stage 5: actual photo pixels, crop, filters, undo, persistence and mobile UI.
+  // Synthetic image only; no user photos are sent to the test runner.
+  for(const width of [390,1440]){
+    const photoContext=await browser.newContext({viewport:{width,height:960},acceptDownloads:true});
+    const photoPage=await photoContext.newPage();
+    const photoErrors=[];
+    photoPage.on("pageerror",e=>photoErrors.push(e.message));
+    await photoPage.route("https://fonts.googleapis.com/**",r=>r.abort());
+    await photoPage.route("https://fonts.gstatic.com/**",r=>r.abort());
+    await photoPage.goto("http://127.0.0.1:"+port+"/editor.html",{waitUntil:"domcontentloaded"});
+    assert.equal(await photoPage.locator("#photo-zoom").count(),1);
+    assert.equal(await photoPage.locator("[data-photo-preset]").count(),3);
+    const data=await photoPage.evaluate(()=>{
+      const canvas=document.createElement("canvas");
+      canvas.width=360;canvas.height=260;
+      const ctx=canvas.getContext("2d");
+      ctx.fillStyle="#fc662f";ctx.fillRect(0,0,180,260);
+      ctx.fillStyle="#176dd9";ctx.fillRect(180,0,180,260);
+      ctx.fillStyle="#f7d13b";ctx.fillRect(75,50,90,160);
+      return canvas.toDataURL("image/png").split(",")[1];
+    });
+    await photoPage.locator("#upload").setInputFiles({
+      name:"synthetic-photo.png",mimeType:"image/png",buffer:Buffer.from(data,"base64")
+    });
+    await photoPage.waitForFunction(()=>window.AnonsEditor.getSnapshot().imageData.startsWith("data:image/"));
+    const source=await photoPage.evaluate(()=>window.AnonsEditor.getSnapshot());
+    const baseImage=await photoPage.locator("#poster").evaluate(el=>el.toDataURL("image/png"));
+    await photoPage.locator("#photo-zoom").evaluate(input=>{
+      input.value="180";input.dispatchEvent(new Event("input",{bubbles:true}));
+    });
+    await photoPage.locator("#photo-focus-x").evaluate(input=>{
+      input.value="15";input.dispatchEvent(new Event("input",{bubbles:true}));
+    });
+    await photoPage.locator("#photo-focus-y").evaluate(input=>{
+      input.value="85";input.dispatchEvent(new Event("input",{bubbles:true}));
+    });
+    await photoPage.locator("[data-photo-preset='vivid']").click();
+    assert.equal(await photoPage.locator("[data-photo-preset='vivid']").getAttribute("aria-pressed"),"true");
+    await photoPage.locator("#photo-zoom").evaluate(input=>{
+      input.value="180";input.dispatchEvent(new Event("input",{bubbles:true}));
+    });
+    await photoPage.locator("#photo-focus-x").evaluate(input=>{
+      input.value="15";input.dispatchEvent(new Event("input",{bubbles:true}));
+    });
+    await photoPage.locator("#photo-focus-y").evaluate(input=>{
+      input.value="85";input.dispatchEvent(new Event("input",{bubbles:true}));
+    });
+    await photoPage.waitForFunction(previous=>document.querySelector("#poster").toDataURL("image/png")!==previous,baseImage);
+    const changed=await photoPage.evaluate(()=>{
+      const snap=window.AnonsEditor.getSnapshot();
+      const card=snap.cards[snap.activeCard];
+      const scene=window.AnonsScene.layout(snap,card);
+      return {card,photo:scene.photo};
+    });
+    assert.equal(changed.card.photoZoom,180);
+    assert.equal(changed.card.photoFocusX,15);
+    assert.equal(changed.card.photoFocusY,85);
+    assert.equal(changed.photo.overlay.color,"#ffb16a");
+    assert.equal(changed.photo.saturation,145);
+    assert.equal(changed.card.title,source.cards[0].title);
+    assert.equal(changed.card.description,source.cards[0].description);
+    assert.equal(await photoPage.locator("#photo-zoom-value").textContent(),"180%");
+    await photoPage.reload({waitUntil:"domcontentloaded"});
+    const saved=await photoPage.evaluate(()=>window.AnonsEditor.getSnapshot());
+    assert.equal(saved.cards[0].photoZoom,180);
+    assert.equal(saved.cards[0].photoFocusX,15);
+    assert.equal(saved.cards[0].photoFocusY,85);
+    assert.equal(saved.cards[0].photoOverlay,"warm");
+    await photoPage.locator("#photo-reset").click();
+    assert.equal((await photoPage.evaluate(()=>window.AnonsEditor.getSnapshot())).cards[0].photoZoom,100);
+    await photoPage.locator("#undo").click();
+    assert.equal((await photoPage.evaluate(()=>window.AnonsEditor.getSnapshot())).cards[0].photoZoom,180);
+    await photoPage.locator("#redo").click();
+    assert.equal((await photoPage.evaluate(()=>window.AnonsEditor.getSnapshot())).cards[0].photoZoom,100);
+    await photoPage.locator("[data-photo-preset='cinema']").click();
+    assert.equal(await photoPage.locator("#photo-overlay").inputValue(),"blue");
+    await photoPage.locator("#photo-contrast").evaluate(input=>{
+      input.value="135";input.dispatchEvent(new Event("input",{bubbles:true}));
+    });
+    assert.equal((await photoPage.evaluate(()=>window.AnonsEditor.getSnapshot())).cards[0].photoContrast,135);
+    const shotDir=join(dirname(fileURLToPath(import.meta.url)),"test-artifacts");
+    await mkdir(shotDir,{recursive:true});
+    await photoPage.locator(".photo-studio-panel").screenshot({
+      path:join(shotDir,"stage5-photo-tools-"+width+".png"),animations:"disabled"
+    });
+    if(width<=760)await photoPage.locator('[data-workspace-view="preview"]').click();
+    await photoPage.locator("#editor-preview").screenshot({
+      path:join(shotDir,"stage5-photo-poster-"+width+".png"),animations:"disabled"
+    });
+    assert.deepEqual(photoErrors,[],"Stage 5 photo editor should not throw");
+    await photoContext.close();
+  }
+
 } finally {
   if(browser) await browser.close();
   await new Promise(r=>server.close(r));

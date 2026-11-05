@@ -69,6 +69,13 @@
   const compositions=Object.freeze(["classic","compact","headline"]);
   const highlightStyles=Object.freeze(["soft","outline","separated"]);
   const frameStyles=Object.freeze(["none","hairline","corners"]);
+  const photoOverlays=Object.freeze({
+    none:Object.freeze({color:"#000000",alpha:0}),
+    violet:Object.freeze({color:"#805aff",alpha:.22}),
+    blue:Object.freeze({color:"#267bd8",alpha:.20}),
+    warm:Object.freeze({color:"#ffb16a",alpha:.20}),
+    dark:Object.freeze({color:"#10162e",alpha:.28})
+  });
   const highlightIconKinds=Object.freeze(["dot","check","star","diamond"]);
   const safeIcons=value=>Array.from({length:3},(_,i)=>{
     const choice=Array.isArray(value)?value[i]:null;
@@ -137,7 +144,14 @@
     const titleFamily=titleFont==="auto"?((template==="editorial"||template==="minimal")?"georgia":"manrope"):
       (["georgia","arial","manrope"].includes(titleFont)?titleFont:"manrope");
     const effectiveWeight=titleFont==="auto"&&(template==="editorial"||template==="minimal")&&titleWeight===800?700:titleWeight;
-    const photo={x:width*.52,y:height*.11,width:width*.49,height:Math.min(height*.36,570),radius:140};
+    const photo={x:width*.52,y:height*.11,width:width*.49,height:Math.min(height*.36,570),radius:140,
+      zoom:Math.round(clamp(card.photoZoom,100,250,100))/100,
+      focusX:Math.round(clamp(card.photoFocusX,0,100,50))/100,
+      focusY:Math.round(clamp(card.photoFocusY,0,100,50))/100,
+      brightness:Math.round(clamp(card.photoBrightness,60,140,100)),
+      contrast:Math.round(clamp(card.photoContrast,60,140,100)),
+      saturation:Math.round(clamp(card.photoSaturation,0,180,100)),
+      overlay:photoOverlays[card.photoOverlay]||photoOverlays.none};
     const titleBaseSize=Math.round((height<=1100?83:105)*headingScale/100);
     const descriptionSize=Math.round((height<=1100?29:32)*descriptionScale/100);
     const highlightStyle=highlightStyles.includes(card.highlightStyle)?card.highlightStyle:"soft";
@@ -163,6 +177,16 @@
       label:presetLabels[card.preset]||"АНОНС",
       project:typeof snapshot.project==="string"?snapshot.project.slice(0,45):"МОЙ ПРОЕКТ"
     };
+  }
+  // Image focal position and cover-scale math shared by Canvas and Edge CSS.
+  function photoPlacement(scene,imageWidth,imageHeight){
+    const photo=scene.photo,iw=clamp(imageWidth,1,20000,1),
+      ih=clamp(imageHeight,1,20000,1);
+    const scale=Math.max(photo.width/iw,photo.height/ih)*photo.zoom;
+    const drawnWidth=iw*scale,drawnHeight=ih*scale;
+    return {x:photo.x+(photo.width-drawnWidth)*photo.focusX,
+      y:photo.y+(photo.height-drawnHeight)*photo.focusY,
+      width:drawnWidth,height:drawnHeight};
   }
   // Bounded vector geometry shared by preview Canvas and paid SVG export.
   // These accents never contain user-supplied coordinates or SVG markup.
@@ -266,5 +290,5 @@
     }
     return {size:Math.max(42,size),lines};
   }
-  root.AnonsScene=Object.freeze({layout,formats,themes,presetLabels,rgb,textWidth,breakLines,titleLines,descriptionTop,watermarkStamps,highlightGeometry,frameGeometry});
+  root.AnonsScene=Object.freeze({layout,formats,themes,presetLabels,rgb,textWidth,breakLines,titleLines,descriptionTop,watermarkStamps,highlightGeometry,frameGeometry,photoPlacement});
 })(globalThis);

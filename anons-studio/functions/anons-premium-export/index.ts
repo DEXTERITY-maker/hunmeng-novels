@@ -205,10 +205,27 @@ function renderPoster(snapshot:any,card:any,width:number,height:number,available
   if(plan.enabled.photo && typeof snapshot.imageData==='string' && snapshot.imageData.length<600000
     && /^data:image\/(png|jpeg|webp);base64,[a-z0-9+/=]+$/i.test(snapshot.imageData)){
     const r=plan.photo,off=offset('photo');
-    blocks.push(React.createElement('img',{key:'photo',src:snapshot.imageData,style:{
-      position:'absolute',left:r.x+off.x,top:r.y+off.y,width:r.width,height:r.height,
-      borderRadius:r.radius,objectFit:'cover',opacity:plan.imageOpacity,zIndex:z('photo')
-    }}));
+    const layerX=r.x+off.x*width/100, layerY=r.y+off.y*height/100;
+    const zoomWidth=r.width*r.zoom,zoomHeight=r.height*r.zoom;
+    const filter='brightness('+r.brightness+'%) contrast('+r.contrast+
+      '%) saturate('+r.saturation+'%)';
+    const image=React.createElement('img',{key:'photo-bitmap',src:snapshot.imageData,style:{
+      position:'absolute',left:(r.width-zoomWidth)*r.focusX,
+      top:(r.height-zoomHeight)*r.focusY,width:zoomWidth,height:zoomHeight,
+      objectFit:'cover',objectPosition:(r.focusX*100)+'% '+(r.focusY*100)+'%',filter
+    }});
+    const layers=[image];
+    if(r.overlay.alpha){
+      layers.push(React.createElement('div',{key:'photo-tint',style:{
+        position:'absolute',left:0,top:0,width:r.width,height:r.height,
+        background:Scene.rgb(r.overlay.color,r.overlay.alpha)
+      }}));
+    }
+    blocks.push(React.createElement('div',{key:'photo',style:{
+      display:'flex',position:'absolute',left:layerX,top:layerY,
+      width:r.width,height:r.height,borderRadius:r.radius,
+      overflow:'hidden',opacity:plan.imageOpacity,zIndex:z('photo')
+    }},...layers));
   }
   if(plan.enabled.brand){
     const p0=layerShift('brand',margin,72);

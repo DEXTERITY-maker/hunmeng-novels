@@ -1871,3 +1871,37 @@ body{background:#f2f3fe;color:#12172f}
     font-size:10px;line-height:1.4;overflow-wrap:anywhere;padding:0}
   .type-sample>span{margin-top:7px}
 }
+
+/* Stage 5 · interactive photo cropping and color treatment. */
+.inner-page-editor .photo-studio-panel{padding:21px 20px 19px;margin:16px 0 24px;background:radial-gradient(circle at 94% 9%,#d9cbff78,transparent 46%),linear-gradient(155deg,#fff,#f5f3ff);border:1px solid #dddafa;border-radius:18px;box-shadow:0 13px 27px #37346c12}
+.photo-studio-heading{display:flex;align-items:start;gap:13px;justify-content:space-between}
+.photo-studio-heading>div{min-width:0}
+.photo-studio-heading .section-index{color:#7054ce;font-size:9px;letter-spacing:.11em}
+.photo-studio-heading h5{color:#25224a;font-size:18px;letter-spacing:-.03em;line-height:1.3;margin:7px 0 0}
+.photo-reset-btn{flex:0 0 auto;border:1px solid #d2caf0;background:#fff;border-radius:10px;padding:10px 12px;min-height:39px;color:#6153ae;font-size:10px;font-weight:850}
+.photo-reset-btn:hover{background:#e9e4ff}
+.photo-studio-panel>.field-note{font-size:11px;line-height:1.7;color:#6b7290;margin:13px 0 15px}
+.photo-preset-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-bottom:18px}
+.photo-preset-list button{min-width:0;text-align:left;display:grid;gap:3px;border:2px solid #e0dff7;border-radius:13px;background:#fff;padding:10px 11px;cursor:pointer;transition:transform .18s,border-color .18s}
+.photo-preset-list button:hover{transform:translateY(-2px);border-color:#b5a0f5}
+.photo-preset-list button.is-active{border-color:#7e61df;background:#f3efff;box-shadow:0 0 0 3px #7358d615}
+.photo-preset-list strong{font-size:11px;font-weight:850;color:#2c2851}
+.photo-preset-list small{font-size:9px;color:#777998;line-height:1.4}
+.photo-studio-grid{display:grid;grid-template-columns:1fr;gap:7px}
+.photo-studio-grid label{display:flex;align-items:center;justify-content:space-between;gap:11px;margin-top:6px;font-size:11px;color:#55567b;font-weight:750}
+.photo-studio-grid output{font-size:10px;color:#6f4cce;font-weight:850}
+.photo-studio-grid input[type=range]{width:100%;accent-color:#7858da;cursor:pointer;margin:0 0 4px}
+.photo-studio-grid select{width:100%;min-height:42px;border-radius:10px;border:1px solid #d7d6ef;background:#fff;color:#292950;font-size:11px;padding:8px 10px}
+.photo-studio-grid input:focus-visible,.photo-studio-grid select:focus-visible,.photo-reset-btn:focus-visible,.photo-preset-list button:focus-visible{outline:3px solid #8165e8;outline-offset:2px}
+.photo-studio-status{font-size:10px;line-height:1.6;color:#766a9c;margin:13px 0 0;padding:10px 12px;background:#ebe8fe;border:1px solid #dcd7f9;border-radius:9px}
+@media(max-width:620px){
+  .inner-page-editor .photo-studio-panel{padding:16px 13px}
+  .photo-studio-heading{flex-wrap:wrap;gap:9px}
+  .photo-studio-heading h5{font-size:16px}
+  .photo-reset-btn{font-size:10px;min-height:35px}
+  .photo-preset-list{gap:6px}
+  .photo-preset-list button{padding:9px 6px}
+  .photo-preset-list strong{font-size:10px}
+  .photo-preset-list small{font-size:9px}
+}
+@media(prefers-reduced-motion:reduce){.photo-preset-list button{transition:none}}

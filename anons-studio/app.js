@@ -54,6 +54,15 @@
   const decorLevels=new Set(["subtle","balanced","expressive"]);
   const textSpacings=new Set(["compact","balanced","airy"]);
   const frameStyles=new Set(["none","hairline","corners"]);
+  const photoOverlays=new Set(["none","violet","blue","warm","dark"]);
+  const photoPresets=Object.freeze({
+    natural:Object.freeze({photoZoom:100,photoFocusX:50,photoFocusY:50,
+      photoBrightness:100,photoContrast:100,photoSaturation:100,photoOverlay:"none"}),
+    cinema:Object.freeze({photoZoom:120,photoFocusX:50,photoFocusY:50,
+      photoBrightness:90,photoContrast:125,photoSaturation:85,photoOverlay:"blue"}),
+    vivid:Object.freeze({photoZoom:110,photoFocusX:50,photoFocusY:50,
+      photoBrightness:110,photoContrast:110,photoSaturation:145,photoOverlay:"warm"})
+  });
   const compositions=new Set(["classic","compact","headline"]);
   const highlightStyles=new Set(["soft","outline","separated"]);
   const highlightIconKinds=new Set(["dot","check","star","diamond"]);
@@ -92,10 +101,11 @@
     }
     return result;
   }
-  const cardKeys=["title","description","points","preset","template","theme","accentColor","alignment","headingScale","decorations","photoOpacity","titleFont","titleWeight","titleTracking","frameStyle","descriptionScale","layerOffsets","graphicElements","decorationLevel","textSpacing","composition","highlightStyle","highlightIcons","featuredHighlight","lockedLayers","layers","layerOrder"];
+  const cardKeys=["title","description","points","preset","template","theme","accentColor","alignment","headingScale","decorations","photoOpacity","photoZoom","photoFocusX","photoFocusY","photoBrightness","photoContrast","photoSaturation","photoOverlay","titleFont","titleWeight","titleTracking","frameStyle","descriptionScale","layerOffsets","graphicElements","decorationLevel","textSpacing","composition","highlightStyle","highlightIcons","featuredHighlight","lockedLayers","layers","layerOrder"];
   const limits={project:45,title:85,description:210,points:240};
   const defaults = { preset: "update", theme: "ultraviolet", ratio: "portrait", ...presets.update, imageData: "",
     template:"aurora", headingScale:100, accentColor:"", alignment:"left", decorations:true, photoOpacity:35,
+    ...photoPresets.natural,
     titleFont:"auto",titleWeight:800,titleTracking:0,frameStyle:"none",
     descriptionScale:100,layerOffsets:normalizeOffsets(null),graphicElements:[],
     decorationLevel:"subtle",textSpacing:"balanced",
@@ -116,6 +126,13 @@
   state.accentColor = /^#[0-9a-fA-F]{6}$/.test(state.accentColor)?state.accentColor:"";
   state.headingScale = Number.isFinite(saved.headingScale)?Math.max(80,Math.min(120,saved.headingScale)):100;
   state.photoOpacity = Number.isFinite(saved.photoOpacity)?Math.max(15,Math.min(85,saved.photoOpacity)):35;
+  state.photoZoom=Math.round(clamp(saved.photoZoom,100,250,100));
+  state.photoFocusX=Math.round(clamp(saved.photoFocusX,0,100,50));
+  state.photoFocusY=Math.round(clamp(saved.photoFocusY,0,100,50));
+  state.photoBrightness=Math.round(clamp(saved.photoBrightness,60,140,100));
+  state.photoContrast=Math.round(clamp(saved.photoContrast,60,140,100));
+  state.photoSaturation=Math.round(clamp(saved.photoSaturation,0,180,100));
+  state.photoOverlay=photoOverlays.has(saved.photoOverlay)?saved.photoOverlay:"none";
   state.decorations = typeof saved.decorations === "boolean" ? saved.decorations : true;
   state.titleFont=textFonts.has(state.titleFont)?state.titleFont:"auto";
   state.titleWeight=[700,800,900].includes(saved.titleWeight)?saved.titleWeight:800;
@@ -148,6 +165,13 @@
     out.headingScale=Number.isFinite(original.headingScale)?Math.max(80,Math.min(120,original.headingScale)):state.headingScale;
     out.decorations=typeof original.decorations==="boolean"?original.decorations:state.decorations;
     out.photoOpacity=Number.isFinite(original.photoOpacity)?Math.max(15,Math.min(85,original.photoOpacity)):state.photoOpacity;
+    out.photoZoom=Math.round(clamp(original.photoZoom,100,250,100));
+    out.photoFocusX=Math.round(clamp(original.photoFocusX,0,100,50));
+    out.photoFocusY=Math.round(clamp(original.photoFocusY,0,100,50));
+    out.photoBrightness=Math.round(clamp(original.photoBrightness,60,140,100));
+    out.photoContrast=Math.round(clamp(original.photoContrast,60,140,100));
+    out.photoSaturation=Math.round(clamp(original.photoSaturation,0,180,100));
+    out.photoOverlay=photoOverlays.has(original.photoOverlay)?original.photoOverlay:"none";
     // Old project snapshots must not accidentally inherit the currently
     // active card's typography when those fields did not yet exist.
     out.titleFont=textFonts.has(original.titleFont)?original.titleFont:"auto";
@@ -361,6 +385,25 @@
     ];
     for(const message of messages){const li=document.createElement("li");li.textContent=message;list.appendChild(li);}
   }
+  function updatePhotoControls(){
+    const settings=["zoom","focus-x","focus-y","brightness","contrast","saturation"];
+    for(const name of settings){
+      const field="photo"+name.split("-").map(s=>s[0].toUpperCase()+s.slice(1)).join("");
+      const input=$("photo-"+name);
+      input.value=String(state[field]);
+      $("photo-"+name+"-value").textContent=state[field]+"%";
+    }
+    $("photo-overlay").value=state.photoOverlay;
+    for(const button of document.querySelectorAll("[data-photo-preset]")){
+      const preset=photoPresets[button.dataset.photoPreset];
+      const active=Boolean(preset&&Object.entries(preset).every(([name,value])=>state[name]===value));
+      button.setAttribute("aria-pressed",String(active));
+      button.classList.toggle("is-active",active);
+    }
+    $("photo-studio-status").textContent=state.imageData
+      ?"Фото добавлено: настройки действуют на текущую карточку. Исходник не изменяется."
+      :"Добавь фотографию, чтобы увидеть эффекты в предпросмотре.";
+  }
   function syncFields() {
     for (const k of ["project", "title", "description", "points", "ratio"]) $(k).value = state[k];
     document.querySelectorAll("[data-preset]").forEach((b) => {
@@ -386,6 +429,7 @@
     $("text-align").value=state.alignment;
     $("photo-opacity").value=state.photoOpacity;
     $("photo-opacity-value").textContent=state.photoOpacity+"%";
+    updatePhotoControls();
     $("ornaments").checked=state.decorations;
     $("decoration-level").value=state.decorationLevel;
     $("text-spacing").value=state.textSpacing;
@@ -460,11 +504,19 @@
     const scene=window.AnonsScene.layout({ratio:state.ratio,project:state.project},state);
     const f=scene.photo,off=scene.offsets.photo;
     const x=f.x+off.x*W/100,y=f.y+off.y*H/100,w=f.width,h=f.height;
-    ctx.save(); ctx.globalAlpha = state.photoOpacity/100;
-    roundedRect(x, y, w, h, 140); ctx.clip();
-    const sc = Math.max(w / photo.width, h / photo.height);
-    const dw = photo.width * sc, dh = photo.height * sc;
-    ctx.drawImage(photo, x + (w - dw) / 2, y + (h - dh) / 2, dw, dh);
+    const placement=window.AnonsScene.photoPlacement(scene,photo.width,photo.height);
+    ctx.save();
+    ctx.globalAlpha=scene.imageOpacity;
+    roundedRect(x,y,w,h,f.radius);ctx.clip();
+    ctx.filter="brightness("+f.brightness+"%) contrast("+f.contrast+
+      "%) saturate("+f.saturation+"%)";
+    ctx.drawImage(photo,placement.x+off.x*W/100,placement.y+off.y*H/100,
+      placement.width,placement.height);
+    ctx.filter="none";
+    if(f.overlay.alpha){
+      ctx.fillStyle=rgba(f.overlay.color,f.overlay.alpha);
+      ctx.fillRect(x,y,w,h);
+    }
     ctx.restore();
   }
   function drawDecoration(W,H,t,scene) {
@@ -894,6 +946,37 @@
   });
   $("text-align").addEventListener("change",e=>{
     state.alignment=e.target.value==="center"?"center":"left";syncCardAndSave();
+  });
+  const photoFields=[
+    ["zoom",100,250],["focus-x",0,100],["focus-y",0,100],
+    ["brightness",60,140],["contrast",60,140],["saturation",0,180]
+  ];
+  for(const [name,min,max] of photoFields){
+    const key="photo"+name.split("-").map(s=>s[0].toUpperCase()+s.slice(1)).join("");
+    $("photo-"+name).addEventListener("input",event=>{
+      historyKind="photo:"+name;
+      state[key]=Math.round(clamp(event.target.value,min,max,photoPresets.natural[key]));
+      $("photo-"+name+"-value").textContent=state[key]+"%";
+      syncCardAndSave();updatePhotoControls();
+    });
+  }
+  $("photo-overlay").addEventListener("change",event=>{
+    state.photoOverlay=photoOverlays.has(event.target.value)?event.target.value:"none";
+    syncCardAndSave();updatePhotoControls();
+  });
+  for(const button of document.querySelectorAll("[data-photo-preset]")){
+    button.addEventListener("click",()=>{
+      const settings=photoPresets[button.dataset.photoPreset];
+      if(!settings)return;
+      historyKind="";
+      Object.assign(state,settings);
+      syncCardAndSave();updatePhotoControls();
+    });
+  }
+  $("photo-reset").addEventListener("click",()=>{
+    historyKind="";
+    Object.assign(state,photoPresets.natural);
+    syncCardAndSave();updatePhotoControls();
   });
   $("photo-opacity").addEventListener("input",e=>{
     historyKind="slider:photo";
@@ -1487,7 +1570,7 @@
   // They never include project text, the uploaded photo, plan status, or other cards.
   const personalStyleKeys=[
     "template","theme","accentColor","alignment","headingScale","decorations",
-    "photoOpacity","titleFont","titleWeight","titleTracking","frameStyle","descriptionScale","layerOffsets","graphicElements",
+    "photoOpacity","photoZoom","photoFocusX","photoFocusY","photoBrightness","photoContrast","photoSaturation","photoOverlay","titleFont","titleWeight","titleTracking","frameStyle","descriptionScale","layerOffsets","graphicElements",
     "decorationLevel","textSpacing","composition","highlightStyle","highlightIcons",
     "featuredHighlight","lockedLayers","layers","layerOrder"
   ];
