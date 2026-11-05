@@ -45,6 +45,7 @@ jobs:
       - name: Check self-contained frontend
         run: |
           node --check anons-studio/app.js
+          node --check anons-studio/export-profiles.js
           node --check anons-studio/personal-styles.js
           node --check anons-studio/brand-kit.js
           node --check anons-studio/manual-orders-entry.js
@@ -56,6 +57,7 @@ jobs:
           test -s anons-studio/dist/auth.bundle.js
           test -s anons-studio/dist/index.html
           test -s anons-studio/dist/editor.html
+          test -s anons-studio/dist/export-profiles.js
           test -s anons-studio/dist/templates.html
           test -s anons-studio/dist/features.html
           test -s anons-studio/dist/pricing.html
@@ -97,6 +99,7 @@ jobs:
             anons-studio/test-artifacts/stage8-safe-panel-*.png
             anons-studio/test-artifacts/stage8-safe-overlay-*.png
             anons-studio/test-artifacts/stage9-export-kit-*.png
+            anons-studio/test-artifacts/stage10-export-profiles-*.png
           if-no-files-found: warn
           retention-days: 14
       - name: Publish standalone preview (never existing production)

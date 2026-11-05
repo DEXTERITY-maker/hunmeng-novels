@@ -1987,6 +1987,145 @@ try {
     await context9.close();
   }
 
+
+  // Stage 10: platform format presets and named export profiles persist only
+  // format/scope in the local browser. Test creation, update, reload, deletion,
+  // stored-string sanitization and a real ZIP from a multi-card saved profile.
+  for(const width of [390,1440]){
+    const c10=await browser.newContext({viewport:{width,height:1000},acceptDownloads:true});
+    const p10=await c10.newPage();
+    const failures=[],dialogs=[];
+    p10.on("pageerror",error=>failures.push(error.message));
+    p10.on("dialog",dialog=>{dialogs.push(dialog.message());dialog.dismiss();});
+    await p10.route("https://fonts.googleapis.com/**",r=>r.abort());
+    await p10.route("https://fonts.gstatic.com/**",r=>r.abort());
+    await p10.goto("http://127.0.0.1:"+port+"/editor.html",{waitUntil:"domcontentloaded"});
+    if(width<=760)await p10.locator("#editor-show-preview").click();
+    assert.equal(await p10.locator("[data-export-profile-preset]").count(),4);
+    assert.equal(await p10.locator("#export-profile-limit").textContent(),"0 / 8");
+    const projectBefore=JSON.stringify(await p10.evaluate(()=>window.AnonsEditor.getSnapshot()));
+    await p10.locator('[data-export-profile-preset="instagram"]').click();
+    assert.equal(await p10.locator("#export-kit-portrait").isChecked(),true);
+    assert.equal(await p10.locator("#export-kit-square").isChecked(),false);
+    assert.equal(await p10.locator("#export-kit-story").isChecked(),true);
+    assert.equal(await p10.locator("#export-kit-scope").inputValue(),"all");
+    assert.equal(await p10.locator("#export-kit-count").textContent(),"2 изображения");
+    assert.equal(await p10.locator('[data-export-profile-preset="instagram"]')
+      .getAttribute("aria-pressed"),"true");
+    await p10.locator("#export-profile-name").fill("Новости игры");
+    await p10.locator("#export-profile-save").click();
+    assert.equal(await p10.locator("#export-profile-limit").textContent(),"1 / 8");
+    assert.equal(await p10.locator("#export-profile-select option").count(),2);
+    assert.equal(JSON.stringify(await p10.evaluate(()=>window.AnonsEditor.getSnapshot())),
+      projectBefore,"Saving a format profile must not modify publication data");
+    const stored=await p10.evaluate(()=>JSON.parse(
+      localStorage.getItem("anons-studio:export-profiles:v1")));
+    assert.equal(stored.length,1);
+    assert.deepEqual(stored[0].formats,["portrait","story"]);
+    assert.equal(stored[0].scope,"all");
+    assert.equal(stored[0].name,"Новости игры");
+    assert.equal("cards" in stored[0],false,"Stored profiles must not include any project data");
+    // A saved name is always textContent, never parsed as executable markup.
+    await p10.locator('[data-export-profile-preset="vk"]').click();
+    await p10.locator("#export-profile-name").fill("Анонс <img src=x onerror=alert(1)>");
+    await p10.locator("#export-profile-save").click();
+    assert.equal(await p10.locator("#export-profile-limit").textContent(),"2 / 8");
+    assert.equal(await p10.locator("#export-profile-select img").count(),0);
+    assert.deepEqual(dialogs,[],"Saved profile names must never execute markup");
+    const first=stored[0].id;
+    await p10.locator("#export-profile-select").selectOption(String(first));
+    await p10.locator("#export-profile-load").click();
+    assert.equal(await p10.locator("#export-kit-square").isChecked(),false);
+    assert.equal(await p10.locator("#export-kit-story").isChecked(),true);
+    await p10.reload({waitUntil:"domcontentloaded"});
+    if(width<=760)await p10.locator("#editor-show-preview").click();
+    assert.equal(await p10.locator("#export-profile-limit").textContent(),"2 / 8",
+      "Stored export profiles must survive reloading the editor");
+    await p10.locator("#export-profile-select").selectOption(String(first));
+    await p10.locator("#export-profile-load").click();
+    assert.equal(await p10.locator("#export-kit-count").textContent(),"2 изображения");
+    assert.equal(await p10.locator("#export-kit-scope").inputValue(),"all");
+
+    // Same-name save updates an existing entry instead of duplicating it.
+    await p10.locator("#export-kit-square").check();
+    await p10.locator("#export-kit-story").uncheck();
+    await p10.locator("#export-profile-name").fill("НОВОСТИ ИГРЫ");
+    await p10.locator("#export-profile-save").click();
+    assert.equal(await p10.locator("#export-profile-limit").textContent(),"2 / 8");
+    const updated=await p10.evaluate(()=>JSON.parse(
+      localStorage.getItem("anons-studio:export-profiles:v1")));
+    assert.deepEqual(updated.find(p=>p.id===first).formats,["portrait","square"]);
+    await p10.locator("#export-profile-select").selectOption(String(first));
+    await p10.locator("#export-profile-delete").click();
+    assert.equal(await p10.locator("#export-profile-limit").textContent(),"1 / 8");
+    assert.equal(await p10.locator("#export-kit-square").isChecked(),true,
+      "Deleting a saved profile does not reset current export settings");
+    await p10.locator("#export-profile-name").fill("");
+    await p10.locator("#export-profile-save").click();
+    assert.match(await p10.locator("#export-profile-status").textContent(),/Введи название/);
+    await p10.locator("#export-kit-portrait").uncheck();
+    await p10.locator("#export-kit-square").uncheck();
+    await p10.locator("#export-profile-name").fill("Пустой");
+    await p10.locator("#export-profile-save").click();
+    assert.match(await p10.locator("#export-profile-status").textContent(),/хотя бы один формат/);
+    assert.equal(await p10.locator("#export-profile-limit").textContent(),"1 / 8");
+    // Check the eight-profile storage cap and in-place updates.
+    await p10.locator('[data-export-profile-preset="universal"]').click();
+    for(let n=0;n<7;n++){
+      await p10.locator("#export-profile-name").fill("Набор "+n);
+      await p10.locator("#export-profile-save").click();
+    }
+    assert.equal(await p10.locator("#export-profile-limit").textContent(),"8 / 8");
+    await p10.locator("#export-profile-name").fill("Девятый набор");
+    assert.equal(await p10.locator("#export-profile-save").isDisabled(),true);
+    await p10.locator("#export-profile-name").fill("Набор 0");
+    assert.equal(await p10.locator("#export-profile-save").isEnabled(),true);
+    const screenshotDir=join(dirname(fileURLToPath(import.meta.url)),"test-artifacts");
+    await mkdir(screenshotDir,{recursive:true});
+    await p10.locator(".export-profile-panel").screenshot({
+      path:join(screenshotDir,"stage10-export-profiles-"+width+".png"),
+      animations:"disabled"
+    });
+    if(width===1440){
+      // Saved brand profile + two cards => four real multi-format PNGs.
+      await p10.locator("#export-profile-select").selectOption(String(first+1));
+      await p10.locator("#export-profile-load").click();
+      assert.equal(await p10.locator("#export-kit-portrait").isChecked(),true);
+      assert.equal(await p10.locator("#export-kit-square").isChecked(),true);
+      assert.equal(await p10.locator("#export-kit-story").isChecked(),false);
+      assert.equal(await p10.locator("#export-kit-scope").inputValue(),"all");
+      await p10.locator("#add-card").click();
+      assert.equal(await p10.locator("#export-kit-count").textContent(),"4 изображения");
+      const [download]=await Promise.all([
+        p10.waitForEvent("download"),
+        p10.locator("#export-kit-download").click()
+      ]);
+      const zip=await readFile(await download.path());
+      assert.equal(zip.readUInt32LE(0),0x04034b50);
+      const entries=[];
+      let pos=0;
+      while(pos+30<=zip.length&&zip.readUInt32LE(pos)===0x04034b50){
+        const len=zip.readUInt16LE(pos+26),extra=zip.readUInt16LE(pos+28);
+        const size=zip.readUInt32LE(pos+18);
+        const name=zip.subarray(pos+30,pos+30+len).toString("utf8");
+        const bytes=zip.subarray(pos+30+len+extra,pos+30+len+extra+size);
+        entries.push({name,bytes});
+        pos+=30+len+extra+size;
+      }
+      assert.equal(entries.length,5,"Two cards and two formats plus README");
+      for(const entry of entries.filter(item=>item.name.endsWith(".png"))){
+        assert.equal(entry.bytes.subarray(1,4).toString(),"PNG");
+        assert.equal(entry.bytes.readUInt32BE(16),1080);
+        assert.ok([1080,1350].includes(entry.bytes.readUInt32BE(20)));
+      }
+      assert.equal(entries.filter(item=>item.name.endsWith(".png")).length,4);
+      assert.match(entries.find(item=>item.name==="README.txt").bytes.toString("utf8"),
+        /Free.*водяной знак/);
+    }
+    assert.deepEqual(failures,[],"No Stage 10 browser exceptions expected");
+    await c10.close();
+  }
+
 } finally {
   if(browser) await browser.close();
   await new Promise(r=>server.close(r));

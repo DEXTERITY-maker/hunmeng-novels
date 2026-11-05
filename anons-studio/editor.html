@@ -18,6 +18,7 @@
   <script src="./personal-styles.js" defer></script>
   <script src="./brand-kit.js" defer></script>
   <script src="./editor-workspace.js" defer></script>
+  <script src="./export-profiles.js" defer></script>
   <script src="./editor-direct.js" defer></script>
   <script src="./editor-layers.js" defer></script>
   <script src="./auth.bundle.js" defer></script>
@@ -533,6 +534,37 @@
                   <span class="export-kit-label">PNG · ZIP</span>
                 </div>
                 <p>Собери публикации сразу для нескольких форматов. Каждый вариант пересчитывается по размеру холста, а не растягивается из одного изображения.</p>
+                <section class="export-profile-panel" aria-labelledby="export-profile-title">
+                  <div class="export-profile-heading">
+                    <div><strong id="export-profile-title">Быстрые наборы</strong><small>Выбирай тип публикации, затем уточняй форматы ниже</small></div>
+                    <span>1 нажатие</span>
+                  </div>
+                  <div class="export-profile-presets" role="group" aria-label="Готовые наборы экспорта">
+                    <button type="button" data-export-profile-preset="instagram" aria-pressed="false"><strong>Instagram</strong><small>Лента + истории</small></button>
+                    <button type="button" data-export-profile-preset="vk" aria-pressed="false"><strong>ВКонтакте</strong><small>Квадрат + пост</small></button>
+                    <button type="button" data-export-profile-preset="stories" aria-pressed="false"><strong>Истории</strong><small>Вертикальный 9:16</small></button>
+                    <button type="button" data-export-profile-preset="universal" aria-pressed="false"><strong>Универсальный</strong><small>Все 3 формата</small></button>
+                  </div>
+                  <p class="export-profile-note">Это удобные стартовые наборы, не официальные шаблоны площадок. Перед публикацией проверь обрезку и безопасные зоны.</p>
+                  <div class="export-profile-divider"></div>
+                  <div class="export-profile-heading">
+                    <div><strong>Мои настройки экспорта</strong><small>Сохрани форматы и выбор карточек для повторного использования</small></div>
+                    <span id="export-profile-limit">0 / 8</span>
+                  </div>
+                  <div class="export-profile-save-row">
+                    <label for="export-profile-name">Название набора</label>
+                    <div><input type="text" id="export-profile-name" maxlength="36" autocomplete="off" placeholder="Например, Новости игры"><button type="button" id="export-profile-save">Сохранить</button></div>
+                  </div>
+                  <div class="export-profile-manage-row">
+                    <label for="export-profile-select">Сохранённые наборы на этом устройстве</label>
+                    <select id="export-profile-select" aria-label="Сохранённые наборы экспорта"><option value="">Нет сохранённых наборов</option></select>
+                    <div class="export-profile-manage-actions">
+                      <button type="button" id="export-profile-load" disabled>Применить</button>
+                      <button type="button" id="export-profile-delete" disabled>Удалить</button>
+                    </div>
+                  </div>
+                  <p class="export-profile-status" id="export-profile-status" role="status" aria-live="polite">Сохранённые наборы доступны только в этом браузере. Проект и облачная библиотека не изменяются.</p>
+                </section>
                 <div class="export-kit-formats" role="group" aria-label="Форматы экспортного комплекта">
                   <label><input type="checkbox" id="export-kit-portrait" value="portrait" checked><span><strong>Публикация · 4:5</strong><small>1080 × 1350 пикселей</small></span></label>
                   <label><input type="checkbox" id="export-kit-square" value="square"><span><strong>Квадрат · 1:1</strong><small>1080 × 1080 пикселей</small></span></label>
