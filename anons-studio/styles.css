@@ -1856,3 +1856,18 @@ body{background:#f2f3fe;color:#12172f}
   .design-audit-head{flex-wrap:wrap}
 }
 @media(prefers-reduced-motion:reduce){.type-preset-grid button{transition:none}}
+
+/* Stage 4 mobile visual QA: full typography labels instead of 3 clipped columns. */
+@media(max-width:520px){
+  .type-preset-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:9px}
+  .type-preset-grid button{min-width:0;display:grid;grid-template-columns:92px minmax(0,1fr);
+    grid-template-rows:auto auto;column-gap:13px;row-gap:4px;align-items:center;
+    min-height:84px;padding:8px;border-radius:12px;text-align:left}
+  .type-preset-grid .type-sample{grid-column:1;grid-row:1 / 3;width:92px;height:66px;
+    font-size:25px;padding:8px 9px;margin:0}
+  .type-preset-grid button strong{grid-column:2;grid-row:1;min-width:0;
+    font-size:12px;line-height:1.35;overflow-wrap:anywhere;padding:0}
+  .type-preset-grid button small{grid-column:2;grid-row:2;min-width:0;
+    font-size:10px;line-height:1.4;overflow-wrap:anywhere;padding:0}
+  .type-sample>span{margin-top:7px}
+}
