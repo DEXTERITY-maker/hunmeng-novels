@@ -78,6 +78,28 @@
                 <p class="field-note">Карточки можно переставлять местами без потери текстов, фотографий и стилей. Порядок учитывается при экспорте ZIP. Действия можно отменить.</p>
               </section>
 
+              <section class="series-planner" aria-labelledby="series-planner-title">
+                <div class="series-planner-heading">
+                  <div><span class="section-index">РЕДАКЦИОННЫЙ КАЛЕНДАРЬ</span><h5 id="series-planner-title">План выпусков</h5></div>
+                  <span class="series-planner-tag">До 8 выпусков</span>
+                </div>
+                <p class="series-planner-intro">Организуй обновления по датам, дай каждому выпуску название и отмечай готовность. Даты — только план: сайт не публикует материалы автоматически.</p>
+                <div class="series-planner-fields">
+                  <label for="series-name">Название рубрики или серии</label>
+                  <input id="series-name" type="text" maxlength="52" autocomplete="off" placeholder="Например, Новости Gravity Dash">
+                  <label for="issue-name">Название текущего выпуска</label>
+                  <input id="issue-name" type="text" maxlength="52" autocomplete="off" placeholder="Например, Выпуск 04 · Новые уровни">
+                  <div class="series-planner-detail-row">
+                    <div><label for="issue-date">Плановая дата</label><input id="issue-date" type="date"></div>
+                    <label class="series-ready-label" for="issue-ready"><input id="issue-ready" type="checkbox"> Готов к публикации</label>
+                  </div>
+                </div>
+                <button id="series-next-issue" class="series-next-issue" type="button">Создать следующий выпуск по оформлению текущего</button>
+                <div class="series-board-head"><strong>Порядок и готовность</strong><span id="series-board-summary" role="status" aria-live="polite">1 выпуск · 0 готово</span></div>
+                <div id="series-board-list" class="series-board-list" role="list" aria-label="План выпусков в порядке экспорта"></div>
+                <p class="series-planner-note" id="series-planner-status" role="status" aria-live="polite">Стрелки меняют порядок выпуска в ZIP. Изменения сохраняются вместе с проектом и доступны для отмены.</p>
+              </section>
+
               <section class="pro-series-panel" id="pro-series" aria-labelledby="pro-series-title">
                 <div class="pro-series-heading"><span class="pro-series-eyebrow">ПРО · ПАКЕТНЫЙ РЕДАКТОР</span><h5 id="pro-series-title">Серия публикаций</h5></div>
                 <p>Создайте связанную серию из трёх карточек или оформите все имеющиеся карточки одной профессиональной композицией, не меняя публикацию и фотографии.</p>

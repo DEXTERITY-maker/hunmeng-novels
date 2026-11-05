@@ -2137,6 +2137,105 @@ try {
     await c10.close();
   }
 
+
+  // Stage 11: series metadata, one-click next-issue planning, per-row reorder,
+  // persistence and ZIP manifest. Dates never schedule automatic publication.
+  for(const width of [390,1440]){
+    const c11=await browser.newContext({viewport:{width,height:1000},acceptDownloads:true});
+    const p11=await c11.newPage(),errors=[];
+    p11.on("pageerror",e=>errors.push(e.message));
+    await p11.route("https://fonts.googleapis.com/**",route=>route.abort());
+    await p11.route("https://fonts.gstatic.com/**",route=>route.abort());
+    await p11.goto("http://127.0.0.1:"+port+"/editor.html",{waitUntil:"domcontentloaded"});
+    assert.equal(await p11.locator("#series-board-list .series-board-row").count(),1);
+    const previewBefore=await p11.locator("#poster").evaluate(c=>c.toDataURL("image/png"));
+    await p11.locator("#series-name").fill("Новости Gravity Dash");
+    await p11.locator("#issue-name").fill("Выпуск 09");
+    await p11.locator("#issue-date").fill("2026-11-07");
+    await p11.locator("#issue-ready").check();
+    let plan=await p11.evaluate(()=>window.AnonsEditor.getSnapshot());
+    assert.equal(plan.seriesName,"Новости Gravity Dash");
+    assert.equal(plan.cards[0].issueName,"Выпуск 09");
+    assert.equal(plan.cards[0].issueDate,"2026-11-07");
+    assert.equal(plan.cards[0].issueReady,true);
+    assert.equal(await p11.locator("#poster").evaluate(c=>c.toDataURL("image/png")),
+      previewBefore,"Planning metadata cannot change artwork or watermarks");
+    assert.match(await p11.locator("#series-board-summary").textContent(),/1 выпуск · 1 готово/);
+    await p11.locator("#series-next-issue").click();
+    plan=await p11.evaluate(()=>window.AnonsEditor.getSnapshot());
+    assert.equal(plan.cards.length,2);
+    assert.equal(plan.activeCard,1);
+    assert.equal(plan.cards[0].issueName,"Выпуск 09");
+    assert.equal(plan.cards[0].issueReady,true);
+    assert.equal(plan.cards[1].issueName,"Выпуск 10");
+    assert.equal(plan.cards[1].issueDate,"2026-11-14");
+    assert.equal(plan.cards[1].issueReady,false);
+    assert.notEqual(plan.cards[1].title,plan.cards[0].title,
+      "New issue has fresh placeholder copy, not previously published text");
+    assert.equal(plan.cards[1].template,plan.cards[0].template);
+    assert.equal(plan.cards[1].theme,plan.cards[0].theme);
+    assert.equal(await p11.locator("#series-board-list .series-board-row").count(),2);
+    assert.equal(await p11.locator("#series-next-issue").isEnabled(),true);
+    await p11.locator(".series-board-row").nth(1).getByRole("button",
+      {name:"Переместить выпуск 2 раньше"}).click();
+    let ordered=await p11.evaluate(()=>window.AnonsEditor.getSnapshot());
+    assert.deepEqual(ordered.cards.map(card=>card.issueName),["Выпуск 10","Выпуск 09"]);
+    assert.equal(ordered.activeCard,0,"Active issue follows the moved card");
+    await p11.locator("#undo").evaluate(node=>node.click());
+    ordered=await p11.evaluate(()=>window.AnonsEditor.getSnapshot());
+    assert.deepEqual(ordered.cards.map(card=>card.issueName),["Выпуск 09","Выпуск 10"],
+      "Single undo restores whole issue order with metadata");
+    await p11.locator("#redo").evaluate(node=>node.click());
+    ordered=await p11.evaluate(()=>window.AnonsEditor.getSnapshot());
+    assert.deepEqual(ordered.cards.map(card=>card.issueName),["Выпуск 10","Выпуск 09"]);
+    await p11.reload({waitUntil:"domcontentloaded"});
+    ordered=await p11.evaluate(()=>window.AnonsEditor.getSnapshot());
+    assert.equal(ordered.seriesName,"Новости Gravity Dash");
+    assert.deepEqual(ordered.cards.map(card=>card.issueName),["Выпуск 10","Выпуск 09"]);
+    assert.deepEqual(ordered.cards.map(card=>card.issueDate),["2026-11-14","2026-11-07"]);
+    assert.deepEqual(ordered.cards.map(card=>card.issueReady),[false,true]);
+    assert.equal(await p11.locator("#issue-name").inputValue(),"Выпуск 10");
+    await p11.locator("#issue-name").fill("<img src=x onerror=alert(1)>");
+    assert.equal(await p11.locator(".series-board-list img").count(),0,
+      "Series names must render as text, not injected HTML");
+    await p11.locator("#issue-name").fill("Выпуск 10");
+    const screenDir=join(dirname(fileURLToPath(import.meta.url)),"test-artifacts");
+    await mkdir(screenDir,{recursive:true});
+    await p11.locator(".series-planner").screenshot({
+      path:join(screenDir,"stage11-series-planner-"+width+".png"),animations:"disabled"
+    });
+    if(width===1440){
+      await p11.locator("#export-kit-square").check();
+      await p11.locator("#export-kit-scope").selectOption("all");
+      assert.equal(await p11.locator("#export-kit-count").textContent(),"4 изображения");
+      const [download]=await Promise.all([
+        p11.waitForEvent("download"),p11.locator("#export-kit-download").click()
+      ]);
+      const zip=await readFile(await download.path());
+      const entries=new Map();let cursor=0;
+      while(cursor+30<=zip.length&&zip.readUInt32LE(cursor)===0x04034b50){
+        const size=zip.readUInt32LE(cursor+18),len=zip.readUInt16LE(cursor+26);
+        const extra=zip.readUInt16LE(cursor+28);
+        const name=zip.subarray(cursor+30,cursor+30+len).toString("utf8");
+        const begin=cursor+30+len+extra;
+        entries.set(name,zip.subarray(begin,begin+size));
+        cursor=begin+size;
+      }
+      assert.equal(entries.size,5,"Four PNGs plus one issue manifest");
+      const manifest=entries.get("README.txt").toString("utf8");
+      assert.match(manifest,/Серия: Новости Gravity Dash/);
+      assert.match(manifest,/Карточка 1: Выпуск 10 · 2026-11-14 · черновик/);
+      assert.match(manifest,/Карточка 2: Выпуск 09 · 2026-11-07 · готов/);
+      assert.ok(manifest.indexOf("Карточка 1: Выпуск 10")
+        <manifest.indexOf("Карточка 2: Выпуск 09"),
+        "README preserves chosen publication order");
+      assert.match(manifest,/Free.*водяной знак/);
+      assert.equal(entries.get("anons-card-01-portrait-1080x1350.png").readUInt32BE(20),1350);
+    }
+    assert.deepEqual(errors,[],"Stage 11 planning must not throw browser errors");
+    await c11.close();
+  }
+
 } finally {
   if(browser) await browser.close();
   await new Promise(r=>server.close(r));

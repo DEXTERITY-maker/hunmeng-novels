@@ -101,8 +101,24 @@
     }
     return result;
   }
-  const cardKeys=["title","description","points","preset","template","theme","accentColor","alignment","headingScale","decorations","photoOpacity","photoZoom","photoFocusX","photoFocusY","photoBrightness","photoContrast","photoSaturation","photoOverlay","titleFont","titleWeight","titleTracking","frameStyle","descriptionScale","layerOffsets","graphicElements","decorationLevel","textSpacing","composition","highlightStyle","highlightIcons","featuredHighlight","lockedLayers","layers","layerOrder"];
-  const limits={project:45,title:85,description:210,points:240};
+  const cardKeys=["issueName","issueDate","issueReady","title","description","points","preset","template","theme","accentColor","alignment","headingScale","decorations","photoOpacity","photoZoom","photoFocusX","photoFocusY","photoBrightness","photoContrast","photoSaturation","photoOverlay","titleFont","titleWeight","titleTracking","frameStyle","descriptionScale","layerOffsets","graphicElements","decorationLevel","textSpacing","composition","highlightStyle","highlightIcons","featuredHighlight","lockedLayers","layers","layerOrder"];
+  const limits={project:45,title:85,description:210,points:240,seriesName:52,issueName:52};
+  // Dates are optional planning metadata, never an automated publishing trigger.
+  function validIssueDate(input){
+    if(typeof input!=="string"||!/^\d{4}-\d{2}-\d{2}$/.test(input))return false;
+    const date=new Date(input+"T00:00:00Z");
+    return !Number.isNaN(date.getTime())&&date.toISOString().slice(0,10)===input;
+  }
+  function cleanIssueName(value){
+    return typeof value==="string"?value.slice(0,limits.issueName):"";
+  }
+  function issueDatePlusWeek(value){
+    if(!validIssueDate(value))return "";
+    const date=new Date(value+"T00:00:00Z");
+    date.setUTCDate(date.getUTCDate()+7);
+    return Number.isNaN(date.getTime())||date.getUTCFullYear()>9999
+      ?"":date.toISOString().slice(0,10);
+  }
   const defaults = { preset: "update", theme: "ultraviolet", ratio: "portrait", ...presets.update, imageData: "",
     template:"aurora", headingScale:100, accentColor:"", alignment:"left", decorations:true, photoOpacity:35,
     ...photoPresets.natural,
@@ -111,10 +127,13 @@
     decorationLevel:"subtle",textSpacing:"balanced",
     composition:"classic",highlightStyle:"soft",highlightIcons:["dot","dot","dot"],featuredHighlight:-1,
     lockedLayers:[],layers:cleanLayerVisibility(null),layerOrder:cleanLayerOrder(null),
+    seriesName:"",issueName:"",issueDate:"",issueReady:false,
     activeCard:0, cards:[] };
   let saved = {};
   try { saved = JSON.parse(localStorage.getItem(storageKey) || "{}") || {}; } catch (_) {}
   const state = { ...defaults };
+  state.seriesName=typeof saved.seriesName==="string"
+    ?saved.seriesName.slice(0,limits.seriesName):"";
   for (const key of ["preset", "theme", "ratio", "project", "title", "description", "points", "imageData","template","accentColor","alignment","titleFont","decorationLevel","textSpacing","composition","highlightStyle"]) {
     if (typeof saved[key] === "string") state[key] = saved[key];
   }
@@ -155,6 +174,9 @@
   const sanitizeCard = (v) => {
     const original=(v && typeof v==="object")?v:{};
     const out={};
+    out.issueName=cleanIssueName(original.issueName);
+    out.issueDate=validIssueDate(original.issueDate)?original.issueDate:"";
+    out.issueReady=original.issueReady===true;
     for(const key of ["title","description","points"]) out[key]=(typeof original[key]==="string"?original[key]:(state[key]||"")).slice(0,limits[key]);
     out.preset=presets[original.preset]?original.preset:state.preset;
     out.template=templates.has(original.template)?original.template:state.template;
@@ -286,17 +308,66 @@
       b.className="card-tab"+(i===state.activeCard?" active":"");
       b.setAttribute("role","tab");
       b.setAttribute("aria-selected",String(i===state.activeCard));
-      b.setAttribute("aria-label","Карточка "+(i+1)+": "+(card.title||"Без названия"));
+      b.setAttribute("aria-label","Карточка "+(i+1)+": "+(card.issueName||card.title||"Без названия"));
       b.textContent=String(i+1).padStart(2,"0");
       b.addEventListener("click",()=>activateCard(i));
       holder.append(b);
     });
     $("card-count").textContent=state.cards.length+" из "+MAX_CARDS;
     $("current-card-label").textContent="Карточка "+(state.activeCard+1)+" / "+state.cards.length;
+    renderSeriesBoard();
     $("add-card").disabled=$("duplicate-card").disabled=state.cards.length>=MAX_CARDS;
     $("remove-card").disabled=state.cards.length<=1;
     $("card-move-left").disabled=state.activeCard<=0;
     $("card-move-right").disabled=state.activeCard>=state.cards.length-1;
+  }
+  function renderSeriesBoard(){
+    const holder=$("series-board-list");
+    if(!holder)return;
+    holder.replaceChildren();
+    const readyCount=state.cards.filter(card=>card.issueReady).length;
+    $("series-board-summary").textContent=state.cards.length+
+      (state.cards.length===1?" выпуск · ":" выпусков · ")+readyCount+" готово";
+    $("series-next-issue").disabled=state.cards.length>=MAX_CARDS;
+    state.cards.forEach((card,index)=>{
+      const row=document.createElement("div");
+      row.className="series-board-row"+(index===state.activeCard?" is-selected":"");
+      row.setAttribute("role","listitem");
+      const primary=document.createElement("button");
+      primary.type="button";primary.className="series-board-pick";
+      primary.setAttribute("aria-label","Открыть выпуск "+(index+1));
+      primary.setAttribute("aria-current",index===state.activeCard?"true":"false");
+      const number=document.createElement("span");
+      number.className="series-board-number";
+      number.textContent=String(index+1).padStart(2,"0");
+      const content=document.createElement("span");
+      content.className="series-board-copy";
+      const title=document.createElement("strong");
+      title.textContent=card.issueName.trim()||card.title.trim()||"Без названия";
+      const meta=document.createElement("small");
+      meta.textContent=(card.issueDate?card.issueDate.split("-").reverse().join("."):"Без даты")
+        +" · "+(card.issueReady?"Готов":"Черновик");
+      content.append(title,meta);
+      primary.append(number,content);
+      primary.addEventListener("click",()=>activateCard(index));
+      const controls=document.createElement("span");
+      controls.className="series-board-move";
+      for(const [dir,label,glyph] of [[-1,"Раньше","↑"],[1,"Позже","↓"]]){
+        const btn=document.createElement("button");
+        btn.type="button";
+        btn.textContent=glyph;
+        btn.title="Переместить выпуск "+label.toLowerCase();
+        btn.setAttribute("aria-label","Переместить выпуск "+(index+1)+" "+label.toLowerCase());
+        btn.disabled=index+dir<0||index+dir>=state.cards.length;
+        btn.addEventListener("click",()=>moveCardAt(index,dir));
+        controls.append(btn);
+      }
+      const status=document.createElement("span");
+      status.className="series-board-status"+(card.issueReady?" is-ready":"");
+      status.textContent=card.issueReady?"Готов":"Черновик";
+      row.append(primary,status,controls);
+      holder.append(row);
+    });
   }
   function renderGraphicControls(){
     const items=state.graphicElements;
@@ -406,6 +477,10 @@
   }
   function syncFields() {
     for (const k of ["project", "title", "description", "points", "ratio"]) $(k).value = state[k];
+    $("series-name").value=state.seriesName;
+    $("issue-name").value=state.issueName;
+    $("issue-date").value=state.issueDate;
+    $("issue-ready").checked=state.issueReady;
     document.querySelectorAll("[data-preset]").forEach((b) => {
       const active = b.dataset.preset === state.preset;
       b.classList.toggle("active", active);
@@ -875,27 +950,71 @@
     activateCard(state.activeCard+1);
     showToast("Карточка продублирована.");
   });
-  function moveActiveCard(delta){
-    if(delta!==-1&&delta!==1)return false;
-    const source=state.activeCard, target=source+delta;
-    if(target<0||target>=state.cards.length)return false;
-    // Keep the entire card together, including photo, graphic geometry,
-    // layers, per-card styles and history. Only its publication order changes.
+  function moveCardAt(source,delta){
+    if(!Number.isInteger(source)||(delta!==-1&&delta!==1))return false;
+    const target=source+delta;
+    if(source<0||source>=state.cards.length||target<0||target>=state.cards.length)return false;
+    // Entire card moves, preserving both publication metadata and artwork.
     snapshotCard();
+    const previous=state.activeCard;
     const [card]=state.cards.splice(source,1);
     state.cards.splice(target,0,card);
-    state.activeCard=target;
-    Object.assign(state,card);
+    state.activeCard=previous===source?target:
+      previous===target?source:previous;
+    Object.assign(state,state.cards[state.activeCard]);
     selectedGraphicIndex=-1;
     historyKind="";
-    syncFields();
-    persist();
-    scheduleRender();
+    syncFields();persist();scheduleRender();
+    $("series-planner-status").textContent="Порядок выпуска обновлён. ZIP сохранит новый порядок. Ctrl+Z — отмена.";
     showToast("Порядок карточек обновлён. Изменение можно отменить.");
     return true;
   }
+  function moveActiveCard(delta){return moveCardAt(state.activeCard,delta);}
   $("card-move-left").addEventListener("click",()=>moveActiveCard(-1));
   $("card-move-right").addEventListener("click",()=>moveActiveCard(+1));
+  $("series-name").addEventListener("input",event=>{
+    historyKind="text:series-name";
+    state.seriesName=event.target.value.slice(0,limits.seriesName);
+    persist();
+  });
+  $("issue-name").addEventListener("input",event=>{
+    historyKind="text:issue-name";
+    state.issueName=cleanIssueName(event.target.value);
+    syncCardAndSave();
+  });
+  $("issue-date").addEventListener("change",event=>{
+    historyKind="";
+    state.issueDate=validIssueDate(event.target.value)?event.target.value:"";
+    event.target.value=state.issueDate;
+    syncCardAndSave();
+  });
+  $("issue-ready").addEventListener("change",event=>{
+    historyKind="";
+    state.issueReady=event.target.checked;
+    syncCardAndSave();
+  });
+  $("series-next-issue").addEventListener("click",()=>{
+    if(state.cards.length>=MAX_CARDS)return;
+    snapshotCard();
+    const base=state.cards[state.activeCard];
+    const previousName=base.issueName.trim();
+    const match=previousName.match(/^(.*?)(\d{1,4})\s*$/);
+    const nextName=match
+      ?(match[1]+String(Math.min(9999,Number(match[2])+1)).padStart(match[2].length,"0")).slice(0,limits.issueName)
+      :("Выпуск "+(state.cards.length+1)).slice(0,limits.issueName);
+    const fresh=sanitizeCard({...base,issueName:nextName,
+      issueDate:issueDatePlusWeek(base.issueDate),issueReady:false,
+      title:"Новое обновление",description:"Добавь главную новость этого выпуска.",
+      points:"Что изменилось\nПочему это важно\nЧто дальше"});
+    state.cards.splice(state.activeCard+1,0,fresh);
+    state.activeCard+=1;
+    selectedGraphicIndex=-1;
+    Object.assign(state,fresh);
+    historyKind="";
+    syncFields();persist();scheduleRender();
+    $("series-planner-status").textContent="Создан новый выпуск с оформлением текущего. Заголовок и текст заменены заготовками.";
+    showToast("Следующий выпуск добавлен. Замени текст-заготовку актуальной новостью.");
+  });
   $("remove-card").addEventListener("click",()=>{
     if(state.cards.length<=1)return;
     if(!confirm("Удалить текущую карточку? Её можно восстановить кнопкой «Отменить»."))return;
@@ -1342,6 +1461,7 @@
         "ANONS STUDIO · ЭКСПОРТНЫЙ КОМПЛЕКТ",
         "",
         "Проект: "+source.project,
+        "Серия: "+(source.seriesName||"Без названия"),
         "Карточек: "+settings.indices.length,
         "Форматов: "+settings.formats.map(key=>
           exportKitLabels[key]+" ("+sizes[key].w+"×"+sizes[key].h+")").join(", "),
@@ -1349,6 +1469,13 @@
         "Режим экспорта: "+(paidAccess.premium
           ?"серверная проверка действующего тарифа для каждого PNG"
           :"Free · каждый PNG содержит водяной знак"),
+        "",
+        "План выпусков (даты — напоминание для автора, не автопубликация):",
+        ...settings.indices.map(index=>{
+          const card=source.cards[index];
+          return "Карточка "+(index+1)+": "+(card.issueName||card.title||"Без названия")+
+            " · "+(card.issueDate||"без даты")+" · "+(card.issueReady?"готов":"черновик");
+        }),
         "",
         "Файлы:",...output.map(f=>f.name),
         "",
@@ -1400,7 +1527,7 @@
   function getSnapshot() {
     snapshotCard();
     const copy={
-      schemaVersion:4,project:state.project,ratio:state.ratio,
+      schemaVersion:4,project:state.project,seriesName:state.seriesName,ratio:state.ratio,
       theme:state.theme,template:state.template,
       activeCard:state.activeCard,
       cards:state.cards.map(card=>({...card,layerOffsets:normalizeOffsets(card.layerOffsets),
@@ -1424,6 +1551,8 @@
     suppressEditorSignal=true;
     try{
       state.project=typeof raw.project==="string"?raw.project.slice(0,45):"МОЙ ПРОЕКТ";
+      state.seriesName=typeof raw.seriesName==="string"
+        ?raw.seriesName.slice(0,limits.seriesName):"";
       state.ratio=sizes[raw.ratio]?raw.ratio:"portrait";
       state.cards=nextCards;
       state.activeCard=Number.isInteger(raw.activeCard)?Math.max(0,Math.min(nextCards.length-1,raw.activeCard)):0;
