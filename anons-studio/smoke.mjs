@@ -235,6 +235,7 @@ try {
     assert.equal(await page.locator("#layer-stack-list .layer-stack-row").count(),6);
     assert.ok(await page.locator("#layer-stack-panel").count()||await page.locator(".layer-stack-panel").count());
     const beforeFilter=JSON.stringify(await page.evaluate(()=>window.AnonsEditor.getSnapshot().cards));
+    if(width<=760)await page.locator('[data-workspace-view="preview"]').click();
     await page.locator("#layer-filter-search").fill("такого слоя не существует");
     await page.waitForFunction(()=>document.querySelectorAll("#layer-stack-list .layer-stack-row").length===0);
     assert.match(await page.locator("#layer-filter-results").textContent(),/Показано 0 из 6/);
@@ -247,6 +248,7 @@ try {
     await page.waitForFunction(()=>document.querySelectorAll("#layer-stack-list .layer-stack-row").length===6);
     assert.equal(JSON.stringify(await page.evaluate(()=>window.AnonsEditor.getSnapshot().cards)),beforeFilter,
       "Searching/filtering layers never edits the publication");
+    if(width<=760)await page.locator('[data-workspace-view="edit"]').click();
     assert.ok(await page.evaluate(()=>typeof window.AnonsScene?.layout==="function"),"Canvas uses the same scene contract as the paid renderer");
     const contract=await page.evaluate(()=>{
       const poster=window.AnonsEditor.getSnapshot();
