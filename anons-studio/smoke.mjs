@@ -2005,6 +2005,14 @@ try {
     await p10.goto("http://127.0.0.1:"+port+"/editor.html",{waitUntil:"domcontentloaded"});
     if(width<=760)await p10.locator("#editor-show-preview").click();
     assert.equal(await p10.locator("[data-export-profile-preset]").count(),4);
+    const fitWithinGrid=await p10.locator(".export-profile-presets").evaluate(container=>{
+      const bounds=container.getBoundingClientRect();
+      return [...container.querySelectorAll("button")].every(button=>{
+        const rect=button.getBoundingClientRect();
+        return rect.left>=bounds.left-1&&rect.right<=bounds.right+1;
+      });
+    });
+    assert.equal(fitWithinGrid,true,"Every platform preset fits the desktop/mobile side panel");
     assert.equal(await p10.locator("#export-profile-limit").textContent(),"0 / 8");
     const projectBefore=JSON.stringify(await p10.evaluate(()=>window.AnonsEditor.getSnapshot()));
     await p10.locator('[data-export-profile-preset="instagram"]').click();
