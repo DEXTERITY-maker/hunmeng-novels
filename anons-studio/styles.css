@@ -1905,3 +1905,39 @@ body{background:#f2f3fe;color:#12172f}
   .photo-preset-list small{font-size:9px}
 }
 @media(prefers-reduced-motion:reduce){.photo-preset-list button{transition:none}}
+
+/* Stage 6 · editable composition workspace: alignment guides, focal snapping,
+   zoom and touch-accessible resize handle. These elements are DOM-only. */
+.inner-page-editor .direct-editor-toolbar{border:1px solid #dcd7f6;background:radial-gradient(circle at 93% 13%,#d6ccf888,transparent 42%),linear-gradient(150deg,#fdfcff,#f2efff);box-shadow:0 9px 24px #2f27690e;padding:19px}
+.inner-page-editor .direct-editor-top{gap:10px 19px}
+.inner-page-editor .direct-editor-top label{font-size:11px;color:#4a4784;font-weight:800}
+.inner-page-editor .direct-editor-top input{accent-color:#7961e0}
+.direct-view-controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;border-top:1px solid #e8e4fb;padding-top:12px}
+.direct-view-controls>label{font-size:11px;font-weight:850;color:#4b4779}
+.direct-view-controls>select{min-height:38px;border-radius:10px;padding:7px 13px;border:1px solid #d2caeb;background:#fff;color:#5544a0;font-weight:850;font-size:11px}
+.direct-view-controls>span{flex:1 1 190px;text-align:right;color:#747698;font-size:10px;line-height:1.55}
+.inner-page-editor .direct-editor-help{color:#68658a;font-size:11px;line-height:1.75}
+.inner-page-editor .direct-editor-actions button,.inner-page-editor .direct-transform-actions button{border:1px solid #d8d0f1;background:#fff;color:#5542a2}
+.inner-page-editor .direct-transform-actions button:hover:not(:disabled){border-color:#9f89f2;background:#eeebff}
+.inner-page-editor .canvas-holder{width:min(100%,calc(358px * var(--direct-zoom, 1)));max-width:none;flex:0 0 auto;margin-inline:auto}
+.inner-page-editor .canvas-holder.direct-zoom-enlarged{width:calc(358px * var(--direct-zoom, 1))}
+.inner-page-editor .preview-stage:has(.direct-zoom-enlarged){overflow:auto;justify-content:flex-start;align-items:flex-start}
+.inner-page-editor .direct-selection-outline{z-index:4;border:2px dashed #c2a2ff;background:#a98aff11;box-shadow:0 0 0 2px #1613419c;pointer-events:none}
+.inner-page-editor .direct-selection-outline.is-locked{border-color:#fe9ca5;background:#ff79770c}
+.direct-alignment-guides{position:absolute;inset:0;z-index:3;pointer-events:none}
+.direct-alignment-guides[hidden],.direct-resize-handle[hidden]{display:none!important}
+.direct-alignment-line{display:block;position:absolute;pointer-events:none;opacity:.52;transition:background-color .1s,opacity .1s}
+.direct-alignment-line.direct-alignment-x{top:0;bottom:0;width:1px;background:#e4d6ff7a;border-left:1px dashed #d1b9ff70}
+.direct-alignment-line.direct-alignment-y{left:0;right:0;height:1px;background:#e4d6ff7a;border-top:1px dashed #d1b9ff70}
+.direct-alignment-line[data-position="50"]{opacity:.76}
+.direct-alignment-line.is-snapped{opacity:1!important;background:#fff7c3!important;box-shadow:0 0 11px 2px #f5e487b0;border-color:#ffefb5!important}
+.direct-resize-handle{position:absolute;z-index:5;box-sizing:border-box;width:24px;height:24px;min-width:24px;min-height:24px;transform:translate(-50%,-50%);border:2px solid #fff;border-radius:8px;background:linear-gradient(135deg,#785deb,#b18aff);box-shadow:0 0 0 2px #4a358a,0 4px 13px #1e0f4eb0;cursor:nwse-resize;touch-action:none;padding:0}
+.direct-resize-handle:after{content:"";position:absolute;inset:6px;border-right:2px solid white;border-bottom:2px solid white;pointer-events:none}
+.direct-resize-handle:focus-visible{outline:3px solid #ffda79;outline-offset:3px}
+@media(max-width:760px){
+  .inner-page-editor .direct-editor-toolbar{padding:15px 12px}
+  .direct-view-controls{display:grid;grid-template-columns:1fr auto;gap:8px 10px}
+  .direct-view-controls>span{grid-column:1 / -1;text-align:left;font-size:10px}
+  .direct-resize-handle{width:28px;height:28px;min-width:28px;min-height:28px}
+}
+@media(prefers-reduced-motion:reduce){.direct-alignment-line{transition:none}}

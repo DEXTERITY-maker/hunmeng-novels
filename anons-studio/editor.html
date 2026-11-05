@@ -457,8 +457,18 @@
                 <div class="direct-editor-top">
                   <label class="direct-enable-label" for="direct-enable"><input id="direct-enable" type="checkbox"> Редактировать на изображении</label>
                   <label class="direct-snap-label" for="direct-snap"><input id="direct-snap" type="checkbox" checked> Привязка к сетке 5%</label>
+                  <label class="direct-guides-label" for="direct-guides"><input id="direct-guides" type="checkbox" checked> Направляющие</label>
+                  <label class="direct-smart-label" for="direct-smart-snap"><input id="direct-smart-snap" type="checkbox" checked> Умная привязка</label>
                 </div>
-                <p id="direct-help" class="direct-editor-help">Включите режим, затем выберите объект на изображении или в списке. Перемещайте мышью, пальцем или клавишами со стрелками.</p>
+                <div class="direct-view-controls">
+                  <label for="direct-preview-zoom">Масштаб предпросмотра</label>
+                  <select id="direct-preview-zoom" aria-label="Масштаб предпросмотра">
+                    <option value="75">75%</option><option value="100" selected>100%</option>
+                    <option value="125">125%</option><option value="150">150%</option>
+                  </select>
+                  <span id="direct-guide-status" role="status" aria-live="polite">Включи редактирование, чтобы видеть линии выравнивания.</span>
+                </div>
+                <p id="direct-help" class="direct-editor-help">Включи режим и выбери объект на изображении или в списке. Перемещай мышью, пальцем или стрелками. Потяни нижний правый маркер фигуры, чтобы изменить размер. Направляющие помогают выровнять объекты по центру и третям.</p>
                 <div class="direct-editor-actions">
                   <label for="direct-target">Выбранный объект</label>
                   <select id="direct-target" aria-label="Объект для редактирования"><option value="">Не выбран</option></select>

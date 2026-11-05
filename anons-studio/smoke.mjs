@@ -1655,6 +1655,100 @@ try {
     await photoContext.close();
   }
 
+
+  // Stage 6: on-canvas object resizing, alignment guides and zoom do not
+  // mutate export pixels. Browser-test both touch-sized and desktop layouts.
+  for(const width of [390,1440]){
+    const stage6Context=await browser.newContext({
+      viewport:{width,height:1000},acceptDownloads:true
+    });
+    const stage6Page=await stage6Context.newPage();
+    const directErrors=[];
+    stage6Page.on("pageerror",error=>directErrors.push(error.message));
+    await stage6Page.route("https://fonts.googleapis.com/**",route=>route.abort());
+    await stage6Page.route("https://fonts.gstatic.com/**",route=>route.abort());
+    await stage6Page.goto("http://127.0.0.1:"+port+"/editor.html",
+      {waitUntil:"domcontentloaded"});
+    assert.equal(await stage6Page.locator("#direct-guides").count(),1);
+    assert.equal(await stage6Page.locator("#direct-smart-snap").count(),1);
+    assert.equal(await stage6Page.locator("#direct-preview-zoom").count(),1);
+    await stage6Page.locator("#graphic-add").click();
+    for(const [name,value] of [["graphic-x","46"],["graphic-y","43"],["graphic-size","12"]]){
+      await stage6Page.locator("#"+name).evaluate((el,v)=>{
+        el.value=v;el.dispatchEvent(new Event("input",{bubbles:true}));
+      },value);
+    }
+    if(width<=760)await stage6Page.locator("#editor-show-preview").click();
+    await stage6Page.locator("#direct-enable").check();
+    assert.equal(await stage6Page.locator(".direct-alignment-line").count(),6);
+    assert.equal(await stage6Page.locator(".direct-alignment-guides").isVisible(),true);
+    const graphicKey=await stage6Page.evaluate(()=>{
+      const s=window.AnonsEditor.getSnapshot();
+      return "graphic:"+s.cards[s.activeCard].graphicElements[0].id;
+    });
+    await stage6Page.locator("#direct-target").selectOption(graphicKey);
+    assert.equal(await stage6Page.locator(".direct-resize-handle").isVisible(),true);
+    const before=await stage6Page.locator("#poster").evaluate(c=>c.toDataURL("image/png"));
+    await stage6Page.locator("#direct-preview-zoom").selectOption("125");
+    assert.equal(await stage6Page.locator(".canvas-holder").evaluate(
+      e=>e.classList.contains("direct-zoom-enlarged")),true);
+    assert.equal(await stage6Page.locator("#poster").evaluate(c=>c.toDataURL("image/png")),
+      before,"Changing preview zoom cannot alter the exported Canvas");
+    await stage6Page.locator("#direct-preview-zoom").selectOption("100");
+    await stage6Page.locator(".direct-resize-handle").scrollIntoViewIfNeeded();
+    const sizeBefore=await stage6Page.evaluate(()=>window.AnonsEditor.getSnapshot()
+      .cards[0].graphicElements[0].size);
+    const resizeBounds=await stage6Page.locator(".direct-resize-handle").boundingBox();
+    assert.ok(resizeBounds?.width>=20);
+    await stage6Page.mouse.move(resizeBounds.x+resizeBounds.width/2,
+      resizeBounds.y+resizeBounds.height/2);
+    await stage6Page.mouse.down();
+    await stage6Page.mouse.move(resizeBounds.x+resizeBounds.width/2+36,
+      resizeBounds.y+resizeBounds.height/2+36,{steps:5});
+    await stage6Page.mouse.up();
+    const sizeAfter=await stage6Page.evaluate(()=>window.AnonsEditor.getSnapshot()
+      .cards[0].graphicElements[0].size);
+    assert.ok(sizeAfter>sizeBefore,
+      "Dragging on-Canvas resize handle increases the figure size");
+    await stage6Page.locator("#undo").evaluate(el=>el.click());
+    assert.equal(await stage6Page.evaluate(()=>window.AnonsEditor.getSnapshot()
+      .cards[0].graphicElements[0].size),sizeBefore);
+    await stage6Page.locator("#redo").evaluate(el=>el.click());
+    assert.equal(await stage6Page.evaluate(()=>window.AnonsEditor.getSnapshot()
+      .cards[0].graphicElements[0].size),sizeAfter);
+    await stage6Page.locator("#poster").scrollIntoViewIfNeeded();
+    const actual=await stage6Page.locator("#poster").boundingBox();
+    const shape=await stage6Page.locator(".direct-selection-outline").boundingBox();
+    assert.ok(actual?.width>60&&shape?.width>5);
+    const shapeStartX=shape.x+shape.width/2,shapeStartY=shape.y+shape.height/2;
+    await stage6Page.mouse.move(shapeStartX,shapeStartY);
+    await stage6Page.mouse.down();
+    await stage6Page.mouse.move(shapeStartX+actual.width*.04,
+      shapeStartY+actual.height*.07,{steps:6});
+    assert.ok(await stage6Page.locator(".direct-alignment-line.is-snapped").count()>0,
+      "Alignment guides highlight when the selection reaches the center");
+    await stage6Page.mouse.up();
+    const aligned=await stage6Page.evaluate(()=>window.AnonsEditor.getSnapshot()
+      .cards[0].graphicElements[0]);
+    assert.equal(aligned.x,50);
+    assert.equal(aligned.y,50);
+    await stage6Page.locator("#direct-guides").uncheck();
+    assert.equal(await stage6Page.locator(".direct-alignment-guides").isVisible(),false);
+    await stage6Page.locator("#direct-enable").uncheck();
+    assert.equal(await stage6Page.locator(".direct-resize-handle").isVisible(),false);
+    const shotDir=join(dirname(fileURLToPath(import.meta.url)),"test-artifacts");
+    await mkdir(shotDir,{recursive:true});
+    await stage6Page.locator(".direct-editor-toolbar").screenshot({
+      path:join(shotDir,"stage6-direct-controls-"+width+".png"),animations:"disabled"
+    });
+    await stage6Page.locator("#editor-preview").screenshot({
+      path:join(shotDir,"stage6-composition-"+width+".png"),animations:"disabled"
+    });
+    assert.deepEqual(directErrors,[],
+      "Direct manipulation should not throw: "+directErrors.join("; "));
+    await stage6Context.close();
+  }
+
 } finally {
   if(browser) await browser.close();
   await new Promise(r=>server.close(r));
