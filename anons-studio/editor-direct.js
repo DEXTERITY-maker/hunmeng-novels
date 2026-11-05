@@ -367,7 +367,9 @@
     safeFeedback=success
       ?"Выделение перемещено внутрь выбранных полей. Действие можно отменить."
       :"Не удалось переместить выделение. Проверь размер объектов, блокировки и группировку.";
-    scheduleRefresh();
+    // Update button state immediately; the editor-change render frame is
+    // asynchronous and should not leave a stale "Fit" action clickable.
+    refresh();
   });
 
   enable.addEventListener("change",()=>{
