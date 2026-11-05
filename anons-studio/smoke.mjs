@@ -186,12 +186,6 @@ try {
     assert.equal(await page.locator("#template-visual-grid .template-mini-card:visible").count(),21);
     assert.equal(await page.locator('[data-preview-template="business-brief"]').isDisabled(),true);
     await page.locator("#template-visual-more").click();
-    await page.locator('[data-preview-template="spotlight"]').click();
-    assert.equal(await page.locator("#template-select").inputValue(),"spotlight",
-      "Visual choice updates the canonical editor select");
-    await page.locator('[data-preview-template="aurora"]').click();
-    assert.equal(await page.locator("#template-select").inputValue(),"aurora");
-    assert.equal(await page.locator("#template-visual-grid .template-mini-card:visible").count(),6);
     assert.equal(await page.locator(".studio-progress a").count(),3,
       "Redesigned editor has three actionable creation steps");
     assert.equal(await page.locator(".studio-hero-details span").count(),3,
@@ -298,6 +292,14 @@ try {
     assert.ok(await page.locator("#redo").isDisabled(),"A new edit clears the redo branch");
     await page.locator("#undo").click();
     assert.equal(await page.locator("#title").inputValue(),originalTitle);
+
+    // Test changing the visual template only after initial undo/redo invariants.
+    await page.locator('[data-preview-template="spotlight"]').click();
+    assert.equal(await page.locator("#template-select").inputValue(),"spotlight",
+      "Visual choice updates the canonical editor select");
+    await page.locator('[data-preview-template="aurora"]').click();
+    assert.equal(await page.locator("#template-select").inputValue(),"aurora");
+    assert.equal(await page.locator("#template-visual-grid .template-mini-card:visible").count(),6);
 
     // Visual tuning is per card, changes Canvas, and is included in project saves.
     const originalCanvas=await page.locator("#poster").evaluate(c=>c.toDataURL("image/png"));
