@@ -68,6 +68,7 @@
   const presetLabels=Object.freeze({update:"ОБНОВЛЕНИЕ",launch:"ЗАПУСК",event:"СОБЫТИЕ",notice:"ОБЪЯВЛЕНИЕ"});
   const compositions=Object.freeze(["classic","compact","headline"]);
   const highlightStyles=Object.freeze(["soft","outline","separated"]);
+  const frameStyles=Object.freeze(["none","hairline","corners"]);
   const highlightIconKinds=Object.freeze(["dot","check","star","diamond"]);
   const safeIcons=value=>Array.from({length:3},(_,i)=>{
     const choice=Array.isArray(value)?value[i]:null;
@@ -146,12 +147,13 @@
     const imageOpacity=clamp(card.photoOpacity,15,85,35)/100;
     const decorationLevel=Object.hasOwn(decorations,card.decorationLevel)?card.decorationLevel:"subtle";
     const textSpacing=["compact","balanced","airy"].includes(card.textSpacing)?card.textSpacing:"balanced";
+    const frameStyle=frameStyles.includes(card.frameStyle)?card.frameStyle:"none";
     return {
       width,height,format,theme,template,businessTemplate,proTemplate,studioTemplate,agencyTemplate,ultimateTemplate,composition,palette,order,enabled,
       highlightStyle,highlightIcons,featuredHighlight,
       offsets:Object.fromEntries(layers.map(name=>[name,offset(name)])),
       margin,contentWidth,titleY,detailsY,footerY,photo,imageOpacity,
-      titleBaseSize,titleFamily,titleWeight:effectiveWeight,titleTracking,textSpacing,
+      titleBaseSize,titleFamily,titleWeight:effectiveWeight,titleTracking,textSpacing,frameStyle,
       decorationLevel,decorationTuning:decorations[decorationLevel],
       titleMaxHeight:Math.max(195,detailsY-titleY-225),
       descriptionSize,descriptionShift:Math.round(height*descShift/100),
@@ -161,6 +163,21 @@
       label:presetLabels[card.preset]||"АНОНС",
       project:typeof snapshot.project==="string"?snapshot.project.slice(0,45):"МОЙ ПРОЕКТ"
     };
+  }
+  // Bounded vector geometry shared by preview Canvas and paid SVG export.
+  // These accents never contain user-supplied coordinates or SVG markup.
+  function frameGeometry(scene){
+    const style=frameStyles.includes(scene.frameStyle)?scene.frameStyle:"none";
+    const inset=54,corner=76,outerX=scene.width-inset,outerY=scene.height-inset;
+    const segments=style!=="corners"?[]:[
+      [inset,inset,inset+corner,inset],[inset,inset,inset,inset+corner],
+      [outerX-corner,inset,outerX,inset],[outerX,inset,outerX,inset+corner],
+      [inset,outerY-corner,inset,outerY],[inset,outerY,inset+corner,outerY],
+      [outerX-corner,outerY,outerX,outerY],[outerX,outerY-corner,outerX,outerY]
+    ];
+    return {style,x:inset,y:inset,width:scene.width-inset*2,
+      height:scene.height-inset*2,segments,
+      lineWidth:style==="corners"?4:2.5,alpha:style==="corners"?.52:.27};
   }
   function highlightGeometry(scene,count){
     const rows=Math.max(1,Math.min(3,Math.trunc(Number(count)||3)));
@@ -249,5 +266,5 @@
     }
     return {size:Math.max(42,size),lines};
   }
-  root.AnonsScene=Object.freeze({layout,formats,themes,presetLabels,rgb,textWidth,breakLines,titleLines,descriptionTop,watermarkStamps,highlightGeometry});
+  root.AnonsScene=Object.freeze({layout,formats,themes,presetLabels,rgb,textWidth,breakLines,titleLines,descriptionTop,watermarkStamps,highlightGeometry,frameGeometry});
 })(globalThis);

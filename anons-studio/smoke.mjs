@@ -1474,6 +1474,91 @@ try {
       "Fake plan event without Auth cannot grant bulk project writes");
     assert.deepEqual(errors,[],"Studio browser errors: "+errors.join("; "));
     await studioContext.close();
+
+  }
+
+  // Stage 4: confirm poster-quality presets, bounded typography, and vector
+  // frames really modify the Canvas while retaining publication content.
+  for(const width of [390,1440]){
+    const qualityContext=await browser.newContext({
+      viewport:{width,height:960},acceptDownloads:true
+    });
+    const qualityPage=await qualityContext.newPage();
+    const stage4Errors=[];
+    qualityPage.on("pageerror",e=>stage4Errors.push(e.message));
+    await qualityPage.route("https://fonts.googleapis.com/**",r=>r.abort());
+    await qualityPage.route("https://fonts.gstatic.com/**",r=>r.abort());
+    await qualityPage.goto("http://127.0.0.1:"+port+"/editor.html",{waitUntil:"domcontentloaded"});
+    assert.equal(await qualityPage.locator(".type-preset-grid button").count(),3);
+    assert.equal(await qualityPage.locator("#design-audit-badge").count(),1);
+    assert.equal(await qualityPage.locator("#frame-style option").count(),3);
+    const source=await qualityPage.evaluate(()=>window.AnonsEditor.getSnapshot());
+    const originalImage=await qualityPage.locator("#poster").evaluate(c=>c.toDataURL("image/png"));
+    await qualityPage.locator('[data-type-style="editorial"]').click();
+    const afterStyle=await qualityPage.evaluate(()=>window.AnonsEditor.getSnapshot());
+    assert.equal(afterStyle.cards[0].titleFont,"georgia");
+    assert.equal(afterStyle.cards[0].titleWeight,700);
+    assert.equal(afterStyle.cards[0].titleTracking,1);
+    assert.equal(afterStyle.cards[0].frameStyle,"hairline");
+    assert.equal(afterStyle.cards[0].title,source.cards[0].title);
+    assert.equal(afterStyle.cards[0].description,source.cards[0].description);
+    assert.equal(afterStyle.cards[0].points,source.cards[0].points);
+    assert.equal(afterStyle.imageData,source.imageData);
+    await qualityPage.waitForFunction(previous=>
+      document.querySelector("#poster").toDataURL("image/png")!==previous,originalImage);
+    assert.equal(await qualityPage.locator('[data-type-style="editorial"]').getAttribute("aria-pressed"),"true");
+    await qualityPage.locator("#advanced-panel").evaluate(el=>el.open=true);
+    await qualityPage.locator("#title-weight").selectOption("900");
+    await qualityPage.locator("#title-tracking").evaluate(el=>{
+      el.value="3";el.dispatchEvent(new Event("input",{bubbles:true}));
+    });
+    await qualityPage.locator("#frame-style").selectOption("corners");
+    let styled=await qualityPage.evaluate(()=>{
+      const snapshot=window.AnonsEditor.getSnapshot();
+      const card=snapshot.cards[snapshot.activeCard];
+      const scene=window.AnonsScene.layout(snapshot,card);
+      return {card,plan:{titleWeight:scene.titleWeight,titleTracking:scene.titleTracking,
+        frameStyle:scene.frameStyle},frame:window.AnonsScene.frameGeometry(scene)};
+    });
+    assert.equal(styled.plan.titleWeight,900);
+    assert.equal(styled.plan.titleTracking,3);
+    assert.equal(styled.plan.frameStyle,"corners");
+    assert.equal(styled.frame.segments.length,8);
+    await qualityPage.locator("#undo").click();
+    assert.equal((await qualityPage.evaluate(()=>window.AnonsEditor.getSnapshot())).cards[0].frameStyle,"hairline",
+      "Decorative effect is undoable");
+    await qualityPage.locator("#redo").click();
+    await qualityPage.reload({waitUntil:"domcontentloaded"});
+    styled=await qualityPage.evaluate(()=>{
+      const snapshot=window.AnonsEditor.getSnapshot();
+      const card=snapshot.cards[snapshot.activeCard];
+      return {title:card.title,weight:card.titleWeight,tracking:card.titleTracking,frame:card.frameStyle};
+    });
+    assert.equal(styled.weight,900);
+    assert.equal(styled.tracking,3);
+    assert.equal(styled.frame,"corners");
+    assert.equal(styled.title,source.cards[0].title);
+    // Explicitly exceed the three-row limit to trigger a useful warning
+    // without deleting or silently replacing any of the user's text.
+    await qualityPage.locator("#points").fill("Первое изменение\\nВторое изменение\\nТретье изменение\\nЧетвёртое изменение".replaceAll("\\n","\n"));
+    assert.equal(await qualityPage.locator("#design-audit-badge").getAttribute("data-state"),"warning");
+    assert.match(await qualityPage.locator("#design-audit-list").textContent(),/только первые три пункта/);
+    const newAudit=await qualityPage.evaluate(()=>window.AnonsEditor.getSnapshot());
+    assert.equal(newAudit.cards[0].points.split("\n").length,4,"Audit warns without deleting fourth point");
+    await qualityPage.locator("#points").fill("Первое изменение\\nВторое изменение".replaceAll("\\n","\n"));
+    assert.equal(await qualityPage.locator("#design-audit-badge").getAttribute("data-state"),"ok");
+    const shotsDir=join(dirname(fileURLToPath(import.meta.url)),"test-artifacts");
+    await mkdir(shotsDir,{recursive:true});
+    if(width<=760)await qualityPage.locator('[data-workspace-view="preview"]').click();
+    await qualityPage.locator("#editor-preview").screenshot({
+      path:join(shotsDir,"stage4-poster-"+width+".png"),animations:"disabled"
+    });
+    if(width<=760)await qualityPage.locator('[data-workspace-view="edit"]').click();
+    await qualityPage.locator(".type-studio-panel").screenshot({
+      path:join(shotsDir,"stage4-typography-"+width+".png"),animations:"disabled"
+    });
+    assert.deepEqual(stage4Errors,[],"Stage 4 browser errors "+stage4Errors.join("; "));
+    await qualityContext.close();
   }
 
 } finally {

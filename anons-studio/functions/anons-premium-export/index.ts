@@ -181,6 +181,27 @@ function renderPoster(snapshot:any,card:any,width:number,height:number,available
         position:'absolute',left:pos.x,top:pos.y,width,height,zIndex:z('decoration')
       }},...deco));
   }
+  // The same bounded decorative frames as the editor Canvas preview.
+  // An SVG accent is image-only and cannot change membership/export rights.
+  if(plan.enabled.decoration && plan.frameStyle!=='none'){
+    const frame=Scene.frameGeometry(plan);
+    const graphics:any[]=[];
+    if(frame.style==='hairline'){
+      graphics.push(React.createElement('rect',{key:'hairline',x:frame.x,y:frame.y,
+        width:frame.width,height:frame.height,fill:'none',
+        stroke:Scene.rgb(p.accent,frame.alpha),strokeWidth:frame.lineWidth}));
+    }else{
+      for(const [i,segment] of frame.segments.entries()){
+        graphics.push(React.createElement('line',{key:'corner-'+i,
+          x1:segment[0],y1:segment[1],x2:segment[2],y2:segment[3],
+          stroke:Scene.rgb(p.accent,frame.alpha),strokeWidth:frame.lineWidth,
+          strokeLinecap:'round'}));
+      }
+    }
+    blocks.push(React.createElement('svg',{key:'decorative-frame',width,height,
+      viewBox:'0 0 '+width+' '+height,
+      style:{position:'absolute',left:0,top:0,width,height,zIndex:z('decoration')}},...graphics));
+  }
   if(plan.enabled.photo && typeof snapshot.imageData==='string' && snapshot.imageData.length<600000
     && /^data:image\/(png|jpeg|webp);base64,[a-z0-9+/=]+$/i.test(snapshot.imageData)){
     const r=plan.photo,off=offset('photo');

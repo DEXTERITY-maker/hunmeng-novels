@@ -161,6 +161,23 @@
                 <p class="field-note" id="theme-label">Ультрафиолет — смелый и современный</p>
               </fieldset>
 
+              <section class="type-studio-panel" aria-labelledby="type-studio-title">
+                <div class="type-studio-head"><div><span class="section-index">ПРОФЕССИОНАЛЬНАЯ ПОДАЧА</span><h5 id="type-studio-title">Типографические стили</h5></div><span class="type-studio-tag">3 варианта</span></div>
+                <p>Применяй готовое сочетание шрифта, масштаба, интервалов и оформления к выбранной карточке. Текст, фотографии и доступный тариф не меняются.</p>
+                <div class="type-preset-grid" role="group" aria-label="Готовые типографические стили">
+                  <button type="button" data-type-style="impact" aria-pressed="false"><span class="type-sample type-sample-impact" aria-hidden="true">Аа<span>НОВОСТИ</span></span><strong>Выразительный</strong><small>Крупный акцент</small></button>
+                  <button type="button" data-type-style="editorial" aria-pressed="false"><span class="type-sample type-sample-editorial" aria-hidden="true">Аа<span>ЖУРНАЛ</span></span><strong>Редакционный</strong><small>Контраст и воздух</small></button>
+                  <button type="button" data-type-style="minimal" aria-pressed="false"><span class="type-sample type-sample-minimal" aria-hidden="true">Аа<span>СУТЬ</span></span><strong>Минимализм</strong><small>Чистая композиция</small></button>
+                </div>
+                <p class="type-studio-status" id="type-studio-status" role="status" aria-live="polite">Выбери стиль. Все изменения можно отменить.</p>
+              </section>
+              <section class="design-audit" aria-labelledby="design-audit-title">
+                <div class="design-audit-head"><div><span class="section-index">ПРОВЕРКА ПЕРЕД ПУБЛИКАЦИЕЙ</span><h5 id="design-audit-title">Читаемость анонса</h5></div><span id="design-audit-badge" class="design-audit-badge">Проверяем</span></div>
+                <p id="design-audit-summary">Проверяем, помещаются ли тексты в выбранный формат.</p>
+                <ul id="design-audit-list" aria-live="polite"></ul>
+                <small>Проверка приблизительная. Окончательно оцени изображение в предпросмотре и после экспорта.</small>
+              </section>
+
               <section class="brand-kit-panel" id="brand-kit" aria-labelledby="brand-kit-title">
                 <div class="brand-kit-head">
                   <div><span class="brand-kit-eyebrow">ФИРМЕННЫЙ СТИЛЬ</span><h5 id="brand-kit-title">Бренд-кит</h5></div>
@@ -237,6 +254,12 @@
                     <p class="field-note">Настройки применяются только к выбранной карточке и сохраняются вместе с проектом.</p>
                     <label for="title-font">Шрифт заголовка</label>
                     <select id="title-font"><option value="auto">По шаблону</option><option value="manrope">Manrope — современный</option><option value="georgia">Noto Serif — редакционный</option><option value="arial">Arial — нейтральный</option></select>
+                    <label for="title-weight">Насыщенность заголовка</label>
+                    <select id="title-weight"><option value="700">Полужирный · 700</option><option value="800" selected>Плотный · 800</option><option value="900">Максимальный · 900</option></select>
+                    <label for="title-tracking">Расстояние между буквами <output for="title-tracking" id="title-tracking-value">0 px</output></label>
+                    <input type="range" id="title-tracking" min="-2" max="6" step="1" value="0">
+                    <label for="frame-style">Декоративная рамка</label>
+                    <select id="frame-style"><option value="none">Без дополнительной рамки</option><option value="hairline">Тонкий контур</option><option value="corners">Акцентные углы</option></select>
                     <label for="text-spacing">Расстояние между заголовком и описанием</label>
                     <select id="text-spacing">
                       <option value="compact">Компактное</option>

@@ -53,6 +53,7 @@
   const textFonts=new Set(["auto","manrope","georgia","arial"]);
   const decorLevels=new Set(["subtle","balanced","expressive"]);
   const textSpacings=new Set(["compact","balanced","airy"]);
+  const frameStyles=new Set(["none","hairline","corners"]);
   const compositions=new Set(["classic","compact","headline"]);
   const highlightStyles=new Set(["soft","outline","separated"]);
   const highlightIconKinds=new Set(["dot","check","star","diamond"]);
@@ -91,11 +92,12 @@
     }
     return result;
   }
-  const cardKeys=["title","description","points","preset","template","theme","accentColor","alignment","headingScale","decorations","photoOpacity","titleFont","descriptionScale","layerOffsets","graphicElements","decorationLevel","textSpacing","composition","highlightStyle","highlightIcons","featuredHighlight","lockedLayers","layers","layerOrder"];
+  const cardKeys=["title","description","points","preset","template","theme","accentColor","alignment","headingScale","decorations","photoOpacity","titleFont","titleWeight","titleTracking","frameStyle","descriptionScale","layerOffsets","graphicElements","decorationLevel","textSpacing","composition","highlightStyle","highlightIcons","featuredHighlight","lockedLayers","layers","layerOrder"];
   const limits={project:45,title:85,description:210,points:240};
   const defaults = { preset: "update", theme: "ultraviolet", ratio: "portrait", ...presets.update, imageData: "",
     template:"aurora", headingScale:100, accentColor:"", alignment:"left", decorations:true, photoOpacity:35,
-    titleFont:"auto",descriptionScale:100,layerOffsets:normalizeOffsets(null),graphicElements:[],
+    titleFont:"auto",titleWeight:800,titleTracking:0,frameStyle:"none",
+    descriptionScale:100,layerOffsets:normalizeOffsets(null),graphicElements:[],
     decorationLevel:"subtle",textSpacing:"balanced",
     composition:"classic",highlightStyle:"soft",highlightIcons:["dot","dot","dot"],featuredHighlight:-1,
     lockedLayers:[],layers:cleanLayerVisibility(null),layerOrder:cleanLayerOrder(null),
@@ -116,6 +118,9 @@
   state.photoOpacity = Number.isFinite(saved.photoOpacity)?Math.max(15,Math.min(85,saved.photoOpacity)):35;
   state.decorations = typeof saved.decorations === "boolean" ? saved.decorations : true;
   state.titleFont=textFonts.has(state.titleFont)?state.titleFont:"auto";
+  state.titleWeight=[700,800,900].includes(saved.titleWeight)?saved.titleWeight:800;
+  state.titleTracking=Math.round(clamp(saved.titleTracking,-2,6,0));
+  state.frameStyle=frameStyles.has(saved.frameStyle)?saved.frameStyle:"none";
   state.descriptionScale=Math.round(clamp(saved.descriptionScale,80,130,100));
   state.layerOffsets=normalizeOffsets(saved.layerOffsets);
   state.graphicElements=Graphics.normalizeElements(saved.graphicElements);
@@ -146,6 +151,9 @@
     // Old project snapshots must not accidentally inherit the currently
     // active card's typography when those fields did not yet exist.
     out.titleFont=textFonts.has(original.titleFont)?original.titleFont:"auto";
+    out.titleWeight=[700,800,900].includes(original.titleWeight)?original.titleWeight:800;
+    out.titleTracking=Math.round(clamp(original.titleTracking,-2,6,0));
+    out.frameStyle=frameStyles.has(original.frameStyle)?original.frameStyle:"none";
     out.descriptionScale=Math.round(clamp(original.descriptionScale,80,130,100));
     out.layerOffsets=normalizeOffsets(original.layerOffsets);
     out.graphicElements=Graphics.normalizeElements(original.graphicElements);
@@ -300,6 +308,59 @@
     persist();
     scheduleRender();
   }
+  // Three curated, reversible compositions reuse the same trusted scene
+  // contract and never replace copy, images, graphics or subscription state.
+  const typeStyles=Object.freeze({
+    impact:Object.freeze({titleFont:"manrope",titleWeight:900,titleTracking:-1,
+      headingScale:115,descriptionScale:95,textSpacing:"compact",
+      decorationLevel:"balanced",highlightStyle:"soft",frameStyle:"corners",alignment:"left"}),
+    editorial:Object.freeze({titleFont:"georgia",titleWeight:700,titleTracking:1,
+      headingScale:100,descriptionScale:100,textSpacing:"airy",
+      decorationLevel:"subtle",highlightStyle:"separated",frameStyle:"hairline",alignment:"left"}),
+    minimal:Object.freeze({titleFont:"manrope",titleWeight:700,titleTracking:2,
+      headingScale:95,descriptionScale:105,textSpacing:"balanced",
+      decorationLevel:"subtle",highlightStyle:"outline",frameStyle:"none",alignment:"left"})
+  });
+  function updateTypeStyleButtons(){
+    for(const b of document.querySelectorAll("[data-type-style]")){
+      const preset=typeStyles[b.dataset.typeStyle];
+      const active=Boolean(preset&&Object.entries(preset).every(([key,value])=>state[key]===value));
+      b.classList.toggle("is-active",active);
+      b.setAttribute("aria-pressed",String(active));
+    }
+  }
+  function updateDesignAudit(){
+    const badge=$("design-audit-badge"),summary=$("design-audit-summary"),list=$("design-audit-list");
+    if(!badge||!summary||!list)return;
+    const Scene=window.AnonsScene;
+    if(!Scene?.layout)return;
+    const scene=Scene.layout({ratio:state.ratio,project:state.project},state);
+    const title=Scene.titleLines(state.title.trim()||"Заголовок публикации",scene);
+    const description=Scene.breakLines(state.description.trim()||
+      "Расскажите коротко, что произошло и почему это важно.",
+      scene.contentWidth-(scene.height<=1100?10:80),scene.descriptionSize,3);
+    const points=String(state.points||"").split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
+    const notices=[];
+    if(title.lines.some(line=>line.endsWith("…")))
+      notices.push("Заголовок может обрезаться. Сократи его или уменьши размер.");
+    if(description.some(line=>line.endsWith("…")))
+      notices.push("Описание может не поместиться. Сократи его или уменьши шрифт.");
+    if(points.length>3)
+      notices.push("Публикация покажет только первые три пункта списка.");
+    if(points.slice(0,3).some(text=>Scene.textWidth(text,scene.height<=1100?27:30)>scene.contentWidth-112))
+      notices.push("Некоторые пункты слишком длинные и могут обрезаться.");
+    badge.textContent=notices.length?"Проверить · "+notices.length:"Текст помещается";
+    badge.dataset.state=notices.length?"warning":"ok";
+    summary.textContent=notices.length
+      ?"Возможные проблемы с размещением текста:"
+      :"Автоматическая проверка не обнаружила переполнения текстовых блоков.";
+    list.replaceChildren();
+    const messages=notices.length?notices:[
+      "Заголовок и описание прошли предварительную проверку.",
+      "Для окончательной оценки посмотри готовый PNG."
+    ];
+    for(const message of messages){const li=document.createElement("li");li.textContent=message;list.appendChild(li);}
+  }
   function syncFields() {
     for (const k of ["project", "title", "description", "points", "ratio"]) $(k).value = state[k];
     document.querySelectorAll("[data-preset]").forEach((b) => {
@@ -333,6 +394,10 @@
     $("featured-highlight").value=String(state.featuredHighlight);
     for(let i=0;i<3;i++)$("highlight-icon-"+i).value=state.highlightIcons[i];
     $("title-font").value=state.titleFont;
+    $("title-weight").value=String(state.titleWeight);
+    $("title-tracking").value=state.titleTracking;
+    $("title-tracking-value").textContent=(state.titleTracking>0?"+":"")+state.titleTracking+" px";
+    $("frame-style").value=state.frameStyle;
     $("description-scale").value=state.descriptionScale;
     $("description-scale-value").textContent=state.descriptionScale+"%";
     const sliderIds=[
@@ -350,6 +415,8 @@
     renderCardTabs();
     $("clear-image").hidden = !state.imageData;
     $("image-name").textContent = state.imageData ? "Фото добавлено" : "PNG, JPG или WebP";
+    updateTypeStyleButtons();
+    updateDesignAudit();
   }
 
   function persist() {
@@ -370,6 +437,7 @@
     toastTimer = setTimeout(() => { toast.hidden = true; }, 4200);
   }
   function scheduleRender() {
+    updateDesignAudit();
     if (pendingRender) return;
     pendingRender = true;
     requestAnimationFrame(() => { pendingRender = false; render(); });
@@ -450,6 +518,21 @@
         for(let x=75;x<W-75;x+=80){ctx.fillStyle=rgba(t.accent,.3);ctx.fillRect(x,H*.19,48,8);}
       }else drawDecoration(W,H,t,scene);
     }
+    if(scene.enabled.decoration && scene.frameStyle!=="none"){
+      const frame=window.AnonsScene.frameGeometry(scene);
+      ctx.save();
+      ctx.lineWidth=frame.lineWidth;
+      ctx.lineCap="round";
+      ctx.strokeStyle=rgba(t.accent,frame.alpha);
+      if(frame.style==="hairline"){
+        ctx.strokeRect(frame.x,frame.y,frame.width,frame.height);
+      }else{
+        for(const [x1,y1,x2,y2] of frame.segments){
+          ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
+        }
+      }
+      ctx.restore();
+    }
   }
   function drawWatermark(W,H,t) {
     // All local exports carry multiple brand stamps, including on paid plans;
@@ -501,6 +584,8 @@
     ctx.fillText(scene.label+"  /  2026",margin,titleY-52);
     const titleFont=scene.titleFamily==="georgia"?"'Noto Serif', Georgia, serif":scene.titleFamily==="arial"?"Arial, sans-serif":"Manrope, sans-serif";
     ctx.font=scene.titleWeight+" "+f.size+"px "+titleFont;ctx.fillStyle=t.text;
+    // This same bounded tracking is used by titleLines and paid SVG export.
+    if("letterSpacing" in ctx)ctx.letterSpacing=scene.titleTracking+"px";
     ctx.textAlign=center?"center":"left";
     let y=titleY+f.size*.8;
     for(const line of f.lines){ctx.fillText(line,tx,y);y+=f.size*1.14;}
@@ -770,10 +855,37 @@
     syncFields();persist();scheduleRender();
     showToast("Карточка удалена.");
   });
+  document.querySelectorAll("[data-type-style]").forEach(button=>{
+    button.addEventListener("click",()=>{
+      const style=typeStyles[button.dataset.typeStyle];
+      if(!style)return;
+      Object.assign(state,style);
+      historyKind="";
+      syncFields();
+      syncCardAndSave();
+      $("type-studio-status").textContent="Стиль «"+button.querySelector("strong").textContent+
+        "» применён. Тексты, фото и слои сохранены. Отменить: Ctrl+Z.";
+    });
+  });
+  $("title-weight").addEventListener("change",event=>{
+    const weight=Number(event.target.value);
+    state.titleWeight=[700,800,900].includes(weight)?weight:800;
+    syncFields();syncCardAndSave();
+  });
+  $("title-tracking").addEventListener("input",event=>{
+    historyKind="slider:tracking";
+    state.titleTracking=Math.round(clamp(event.target.value,-2,6,0));
+    $("title-tracking-value").textContent=(state.titleTracking>0?"+":"")+state.titleTracking+" px";
+    syncCardAndSave();updateTypeStyleButtons();
+  });
+  $("frame-style").addEventListener("change",event=>{
+    state.frameStyle=frameStyles.has(event.target.value)?event.target.value:"none";
+    syncCardAndSave();updateTypeStyleButtons();
+  });
   $("heading-scale").addEventListener("input",e=>{
     historyKind="slider:heading";
     state.headingScale=Math.max(80,Math.min(120,Number(e.target.value)||100));
-    $("heading-scale-value").textContent=state.headingScale+"%";syncCardAndSave();
+    $("heading-scale-value").textContent=state.headingScale+"%";syncCardAndSave();updateTypeStyleButtons();
   });
   $("accent-color").addEventListener("input",e=>{
     if(!/^#[0-9a-fA-F]{6}$/.test(e.target.value))return;
@@ -1375,7 +1487,7 @@
   // They never include project text, the uploaded photo, plan status, or other cards.
   const personalStyleKeys=[
     "template","theme","accentColor","alignment","headingScale","decorations",
-    "photoOpacity","titleFont","descriptionScale","layerOffsets","graphicElements",
+    "photoOpacity","titleFont","titleWeight","titleTracking","frameStyle","descriptionScale","layerOffsets","graphicElements",
     "decorationLevel","textSpacing","composition","highlightStyle","highlightIcons",
     "featuredHighlight","lockedLayers","layers","layerOrder"
   ];

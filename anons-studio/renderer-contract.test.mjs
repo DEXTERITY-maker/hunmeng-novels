@@ -251,3 +251,39 @@ test("Studio scene variants have independent palettes and explicit server guards
   assert.match(handler,/STUDIO_TEMPLATES/);
   assert.match(handler,/member.plan!==/);
 });
+
+
+test("poster title typography and decorative frames share a bounded server contract",()=>{
+  for(const ratio of ["portrait","square","story"]){
+    for(const template of ["aurora","editorial","spotlight","pulse","minimal","bulletin","pro-impact"]){
+      const decorated=Scene.layout({ratio},{
+        template,titleWeight:900,titleTracking:4,frameStyle:"corners",
+        title:"Новая эпоха креативных публикаций"});
+      assert.equal(decorated.titleWeight,900);
+      assert.equal(decorated.titleTracking,4);
+      assert.equal(decorated.frameStyle,"corners");
+      const geometry=Scene.frameGeometry(decorated);
+      assert.equal(geometry.segments.length,8);
+      assert.equal(geometry.style,"corners");
+      assert.ok(geometry.x>=50&&geometry.y>=50);
+      assert.ok(geometry.width<decorated.width);
+      assert.ok(geometry.height<decorated.height);
+      for(const [x1,y1,x2,y2] of geometry.segments)
+        assert.ok([x1,y1,x2,y2].every((n,i)=>Number.isFinite(n)&&n>=0&&n<=(i%2?decorated.height:decorated.width)));
+      assert.ok(Scene.titleLines("Креативные изменения и важные обновления",decorated).lines.length>0);
+      const hairline=Scene.frameGeometry(Scene.layout({ratio},{template,frameStyle:"hairline"}));
+      assert.equal(hairline.style,"hairline");
+      assert.equal(hairline.segments.length,0);
+      assert.ok(hairline.lineWidth>0);
+    }
+  }
+  const rejected=Scene.layout({ratio:"portrait"},{
+    titleWeight:Infinity,titleTracking:999,frameStyle:"<svg onload=alert(1)>"});
+  assert.equal(rejected.titleWeight,800);
+  assert.equal(rejected.titleTracking,6);
+  assert.equal(rejected.frameStyle,"none");
+  assert.equal(Scene.frameGeometry(rejected).style,"none");
+  assert.match(handler,/Scene\.frameGeometry\(plan\)/);
+  assert.match(handler,/plan\.frameStyle!==['"]none['"]/);
+  assert.match(handler,/letterSpacing:plan\.titleTracking/);
+});
