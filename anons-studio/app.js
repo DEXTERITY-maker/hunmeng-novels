@@ -1542,6 +1542,54 @@
     if(success){historyKind="";lastHistoryKind="";}
     return success;
   }
+  // Stage 8: move a complete selection into a publication-safe inset
+  // without scaling or changing content. Read-only validation runs first;
+  // one atomic transform is committed only when every object can fit.
+  function fitDirectSelection(keys,inset){
+    if(!Array.isArray(keys)||keys.length<1||keys.length>18
+      ||![5,10,15].includes(inset))return false;
+    const unique=[...new Set(keys)];
+    if(unique.length!==keys.length||unique.some(key=>typeof key!=="string"))return false;
+    const scene=getDirectTargets(),byKey=new Map(scene.items.map(item=>[item.key,item]));
+    const items=unique.map(key=>byKey.get(key));
+    if(items.some(item=>!item||item.locked||item.type==="photo"))return false;
+    const chosen=new Set(unique);
+    // Linked graphic groups may only be translated as a complete unit.
+    for(const item of items){
+      if(item.type!=="graphic")continue;
+      const source=state.graphicElements.find(g=>"graphic:"+g.id===item.key);
+      if(source?.groupId&&state.graphicElements.some(g=>g.groupId===source.groupId
+        &&!chosen.has("graphic:"+g.id)))return false;
+    }
+    const left=Math.min(...items.map(item=>item.rect.x));
+    const top=Math.min(...items.map(item=>item.rect.y));
+    const right=Math.max(...items.map(item=>item.rect.x+item.rect.w));
+    const bottom=Math.max(...items.map(item=>item.rect.y+item.rect.h));
+    const boundX=scene.width*inset/100,boundY=scene.height*inset/100;
+    const rightLimit=scene.width-boundX,bottomLimit=scene.height-boundY;
+    if(right-left>rightLimit-boundX||bottom-top>bottomLimit-boundY)return false;
+    const dx=left<boundX?boundX-left:right>rightLimit?rightLimit-right:0;
+    const dy=top<boundY?boundY-top:bottom>bottomLimit?bottomLimit-bottom:0;
+    if(Math.abs(dx)<.001&&Math.abs(dy)<.001)return false;
+    const offsets=normalizeOffsets(state.layerOffsets);
+    const changes=[];
+    for(const item of items){
+      const source=item.type==="graphic"
+        ?state.graphicElements.find(g=>"graphic:"+g.id===item.key)
+        :offsets[item.key];
+      if(!source)return false;
+      const x=Math.round((source.x+dx/scene.width*100)*10)/10;
+      const y=Math.round((source.y+dy/scene.height*100)*10)/10;
+      const min=item.type==="graphic"?0:-30,max=item.type==="graphic"?100:30;
+      if(x<min||x>max||y<min||y>max)return false;
+      changes.push({key:item.key,x,y});
+    }
+    const success=changes.length===1
+      ?transformDirect(changes[0].key,changes[0],"safe-area")
+      :transformDirectSelection(changes,"safe-area");
+    if(success){historyKind="";lastHistoryKind="";}
+    return success;
+  }
   function toggleDirectLock(key){
     const target=getDirectTargets().items.find(item=>item.key===key);
     if(!target)return false;
@@ -1799,6 +1847,7 @@
     transformDirect,
     transformDirectSelection,
     alignDirectSelection,
+    fitDirectSelection,
     toggleDirectLock,
     getLayerPanel,
     changeLayerVisibility,

@@ -1996,3 +1996,59 @@ body{background:#f2f3fe;color:#12172f}
 @media(prefers-reduced-motion:reduce){
   .direct-multi-shortcuts button,.direct-align-grid button,.direct-multi-group{transition:none}
 }
+
+/* Stage 8 · layout quality control. Safe margins are UI-only overlays:
+   never painted onto the bitmap or passed to the premium renderer. */
+.inner-page-editor .direct-safe-panel{padding:18px 19px;display:grid;gap:12px;
+  border-radius:16px;border:1px solid #d8dff6;
+  background:radial-gradient(circle at 90% 6%,#d7eaff7c,transparent 36%),
+    linear-gradient(155deg,#fdfdff,#f1f5ff)}
+.direct-safe-heading{display:flex;justify-content:space-between;align-items:center;gap:11px}
+.direct-safe-heading .section-index{color:#7172cc;font-size:9px;letter-spacing:.12em;font-weight:850}
+.direct-safe-heading h5{margin:5px 0 0;font-size:17px;line-height:1.3;
+  letter-spacing:-.035em;color:#242a54}
+.direct-safe-badge{flex:0 0 auto;border-radius:100px;padding:8px 11px;
+  font-size:9px;font-weight:850;border:1px solid #dbe0ef;background:#f1f4ff;color:#6b769e}
+.direct-safe-badge[data-state="ok"]{background:#e8f8f1;border-color:#c4e6d8;color:#1b7457}
+.direct-safe-badge[data-state="warning"]{background:#fff4e4;border-color:#f2dcbb;color:#985f28}
+.direct-safe-controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.direct-safe-controls>label[for="direct-safe-margin"]{font-size:11px;font-weight:850;color:#515779}
+.direct-safe-controls>select{min-width:155px;min-height:40px;border-radius:10px;
+  border:1px solid #cfd8ef;background:#fff;padding:8px 11px;
+  color:#514c9f;font-size:11px;font-weight:750}
+.direct-safe-toggle{display:flex;align-items:center;gap:8px;cursor:pointer;color:#596082;
+  font-size:11px;font-weight:750}
+.direct-safe-toggle input{width:17px;height:17px;accent-color:#7770e3}
+.direct-safe-summary{margin:0;color:#5c6588;font-size:11px;line-height:1.7}
+.direct-safe-list{list-style:none;margin:0;padding:0;display:grid;gap:7px}
+.direct-safe-list:empty{display:none}
+.direct-safe-list li{position:relative;background:#fff;border:1px solid #e2e7f6;
+  border-radius:9px;padding:9px 11px 9px 26px;color:#626c8a;font-size:10px;line-height:1.5}
+.direct-safe-list li:before{content:"!";position:absolute;left:10px;top:8px;
+  color:#b37736;font-weight:950}
+#direct-safe-fit{min-height:43px;border:0;border-radius:11px;padding:10px 15px;
+  background:linear-gradient(110deg,#6266e6,#9471ea);color:#fff;
+  font-size:11px;font-weight:850;cursor:pointer;box-shadow:0 9px 18px #554de329}
+#direct-safe-fit:hover:not(:disabled){background:linear-gradient(110deg,#535cd7,#8357dc)}
+#direct-safe-fit:disabled{background:#e6e9f4;color:#8790a8;box-shadow:none;cursor:not-allowed}
+#direct-safe-fit:focus-visible,.direct-safe-controls select:focus-visible,
+.direct-safe-toggle input:focus-visible{outline:3px solid #8e77ee;outline-offset:2px}
+.direct-safe-note{margin:0;font-size:10px;line-height:1.65;color:#8289a5}
+.direct-safe-frame{position:absolute;z-index:2;border:2px dashed #f5e9b8;
+  background:linear-gradient(to right,#ffe7a50d,#ffe7a508);border-radius:2px;
+  box-shadow:0 0 0 1px #35284e7a,0 0 11px 2px #ecdb9c3b;
+  pointer-events:none}
+.direct-safe-frame:after{content:"SAFE";position:absolute;left:7px;top:5px;
+  font-size:8px;font-weight:900;letter-spacing:.12em;color:#fff5c5;
+  text-shadow:0 1px 5px #18162bc0}
+.direct-safe-frame[hidden]{display:none!important}
+@media(max-width:760px){
+  .inner-page-editor .direct-safe-panel{padding:15px 12px;gap:10px}
+  .direct-safe-controls{display:grid;grid-template-columns:1fr auto;gap:9px}
+  .direct-safe-controls .direct-safe-toggle{grid-column:1 / -1}
+}
+@media(max-width:390px){
+  .direct-safe-heading{flex-wrap:wrap}
+  .direct-safe-controls{grid-template-columns:1fr}
+  .direct-safe-controls>select{width:100%}
+}

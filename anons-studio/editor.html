@@ -468,6 +468,25 @@
                   </select>
                   <span id="direct-guide-status" role="status" aria-live="polite">Включи редактирование, чтобы видеть линии выравнивания.</span>
                 </div>
+                <section class="direct-safe-panel" aria-labelledby="direct-safe-title">
+                  <div class="direct-safe-heading">
+                    <div><span class="section-index">КОНТРОЛЬ КОМПОЗИЦИИ</span><h5 id="direct-safe-title">Безопасные поля</h5></div>
+                    <span class="direct-safe-badge" id="direct-safe-badge" role="status">Проверяем</span>
+                  </div>
+                  <div class="direct-safe-controls">
+                    <label for="direct-safe-margin">Внутренний отступ</label>
+                    <select id="direct-safe-margin">
+                      <option value="5" selected>5% · компактный</option>
+                      <option value="10">10% · стандартный</option>
+                      <option value="15">15% · расширенный</option>
+                    </select>
+                    <label class="direct-safe-toggle" for="direct-safe-show"><input type="checkbox" id="direct-safe-show"> Показывать границу на холсте</label>
+                  </div>
+                  <p id="direct-safe-summary" class="direct-safe-summary">Проверяем расположение основных объектов.</p>
+                  <ul id="direct-safe-list" class="direct-safe-list" aria-live="polite"></ul>
+                  <button type="button" id="direct-safe-fit" disabled>Поместить выделенное в безопасные поля</button>
+                  <p class="direct-safe-note" id="direct-safe-note" role="status" aria-live="polite">Поля являются визуальной подсказкой. У разных площадок зоны перекрытия и обрезки отличаются. Фотографии могут выходить за поле намеренно.</p>
+                </section>
                 <p id="direct-help" class="direct-editor-help">Включи режим и выбери объект на изображении или в списке. Перемещай мышью, пальцем или стрелками. Потяни нижний правый маркер фигуры, чтобы изменить размер. Направляющие помогают выровнять объекты по центру и третям.</p>
                 <div class="direct-editor-actions">
                   <label for="direct-target">Выбранный объект</label>

@@ -11,6 +11,10 @@
   const guidesToggle=$("direct-guides"),smartSnap=$("direct-smart-snap");
   const zoom=$("direct-preview-zoom"),guideStatus=$("direct-guide-status");
   const lock=$("direct-lock");
+  const safeMargin=$("direct-safe-margin"),safeShow=$("direct-safe-show");
+  const safeBadge=$("direct-safe-badge"),safeSummary=$("direct-safe-summary");
+  const safeList=$("direct-safe-list"),safeFit=$("direct-safe-fit");
+  const safeNote=$("direct-safe-note");
   const multiList=$("direct-multi-list"),multiCount=$("direct-multi-count");
   const multiAll=$("direct-multi-all"),multiClear=$("direct-multi-clear");
   const multiGroup=$("direct-multi-group"),multiStatus=$("direct-multi-status");
@@ -21,7 +25,8 @@
     ||!canvas||!holder||!enable||!snap||!target||!lock
     ||!guidesToggle||!smartSnap||!zoom||!guideStatus
     ||!multiList||!multiCount||!multiAll||!multiClear||!multiGroup||!multiStatus
-    ||!editor.transformDirectSelection||!editor.alignDirectSelection
+    ||!editor.transformDirectSelection||!editor.alignDirectSelection||!editor.fitDirectSelection
+    ||!safeMargin||!safeShow||!safeBadge||!safeSummary||!safeList||!safeFit||!safeNote
     ||alignButtons.length!==8
     ||Object.values(actionButtons).some(button=>!button))return;
 
@@ -54,6 +59,66 @@
   resizeHandle.title="Потяни, чтобы изменить размер фигуры";
   resizeHandle.hidden=true;
   holder.appendChild(resizeHandle);
+  const safeFrame=document.createElement("div");
+  safeFrame.className="direct-safe-frame";
+  safeFrame.setAttribute("aria-hidden","true");
+  safeFrame.hidden=true;
+  holder.appendChild(safeFrame);
+  let safeFeedback="";
+  function safeMarginValue(){
+    const value=Number(safeMargin.value);
+    return [5,10,15].includes(value)?value:5;
+  }
+  function renderSafeArea(data,active){
+    const margin=safeMarginValue(),x=data.width*margin/100,y=data.height*margin/100;
+    safeFrame.hidden=!safeShow.checked;
+    safeFrame.style.inset=margin+"%";
+    const checkable=data.items.filter(item=>item.type!=="photo");
+    const unsafe=checkable.filter(item=>
+      item.rect.x<x-.5||item.rect.y<y-.5||
+      item.rect.x+item.rect.w>data.width-x+.5||
+      item.rect.y+item.rect.h>data.height-y+.5);
+    const warningCount=unsafe.length;
+    safeBadge.dataset.state=warningCount?"warning":"ok";
+    safeBadge.textContent=warningCount?"Проверить · "+warningCount:"В границах";
+    safeSummary.textContent=warningCount
+      ?"Рядом с краем: "+warningCount+" из "+checkable.length+
+        " объектов. При публикации важные части могут перекрываться."
+      :"Основные видимые элементы находятся внутри поля "+margin+"%.";
+    safeList.replaceChildren();
+    for(const item of unsafe.slice(0,5)){
+      const li=document.createElement("li");
+      li.textContent=item.label;
+      safeList.appendChild(li);
+    }
+    if(unsafe.length>5){
+      const li=document.createElement("li");
+      li.textContent="И ещё "+(unsafe.length-5)+" объектов";
+      safeList.appendChild(li);
+    }
+    const chosen=data.items.filter(item=>selectedSet.has(item.key));
+    const valid=active&&chosen.length>0&&chosen.length===selectedSet.size
+      &&chosen.every(item=>!item.locked&&item.type!=="photo");
+    const left=chosen.length?Math.min(...chosen.map(item=>item.rect.x)):0;
+    const top=chosen.length?Math.min(...chosen.map(item=>item.rect.y)):0;
+    const right=chosen.length?Math.max(...chosen.map(item=>item.rect.x+item.rect.w)):0;
+    const bottom=chosen.length?Math.max(...chosen.map(item=>item.rect.y+item.rect.h)):0;
+    const tooWide=right-left>data.width-2*x||bottom-top>data.height-2*y;
+    const outside=chosen.some(item=>item.rect.x<x-.5||item.rect.y<y-.5
+      ||item.rect.x+item.rect.w>data.width-x+.5
+      ||item.rect.y+item.rect.h>data.height-y+.5);
+    const card=editor.getSnapshot().cards[editor.getSnapshot().activeCard];
+    const keys=new Set(chosen.map(item=>item.key));
+    const partialGroup=chosen.some(item=>item.type==="graphic"&&
+      card.graphicElements.some(g=>"graphic:"+g.id===item.key&&g.groupId
+        &&card.graphicElements.some(peer=>peer.groupId===g.groupId&&!keys.has("graphic:"+peer.id))));
+    safeFit.disabled=!valid||tooWide||partialGroup||!outside;
+    safeNote.textContent=safeFeedback||
+      (tooWide&&chosen.length
+        ?"Выделение шире выбранной безопасной зоны. Уменьши объекты или выбери более узкое поле."
+        :partialGroup?"Для переноса группы выдели все связанные фигуры."
+        :"Поля — визуальная подсказка, а не гарантия для каждой площадки. Фото может намеренно выходить за поля.");
+  }
   let selected="",drag=null,resizeDrag=null,refreshQueued=false;
   const selectedSet=new Set(),extraOutlines=new Map();
   let lastCard=-1,multiSignature="",multiMessage="",gestureId=0;
@@ -182,6 +247,7 @@
     const chosen=items.find(item=>item.key===selected);
     const active=enable.checked;
     updateMulti(items,active);
+    renderSafeArea(snapshot,active);
     guideLayer.hidden=!active||!guidesToggle.checked;
     if(guideLayer.hidden)clearGuideSnap();
     canvas.classList.toggle("direct-canvas-active",active);
@@ -218,6 +284,7 @@
     requestAnimationFrame(refresh);
   }
   function choose(key,focusCanvas=false,preserve=false){
+    safeFeedback="";
     selected=key;
     if(!preserve)selectedSet.clear();
     if(key)selectedSet.add(key);
@@ -289,6 +356,19 @@
     reportSnap(null,null);refresh();
   });
   smartSnap.addEventListener("change",()=>reportSnap(null,null));
+  safeMargin.addEventListener("change",()=>{
+    safeFeedback="";refresh();
+  });
+  safeShow.addEventListener("change",()=>refresh());
+  safeFit.addEventListener("click",()=>{
+    if(!enable.checked||safeFit.disabled)return;
+    const keys=[...selectedSet];
+    const success=editor.fitDirectSelection(keys,safeMarginValue());
+    safeFeedback=success
+      ?"Выделение перемещено внутрь выбранных полей. Действие можно отменить."
+      :"Не удалось переместить выделение. Проверь размер объектов, блокировки и группировку.";
+    scheduleRefresh();
+  });
 
   enable.addEventListener("change",()=>{
     drag=null;

@@ -1844,6 +1844,85 @@ try {
     await context7.close();
   }
 
+
+  // Stage 8: visual-only safe margins and atomic inset correction.
+  for(const width of [390,1440]){
+    const context8=await browser.newContext({viewport:{width,height:1050},acceptDownloads:true});
+    const p8=await context8.newPage();
+    const errors8=[];
+    p8.on("pageerror",error=>errors8.push(error.message));
+    await p8.route("https://fonts.googleapis.com/**",route=>route.abort());
+    await p8.route("https://fonts.gstatic.com/**",route=>route.abort());
+    await p8.goto("http://127.0.0.1:"+port+"/editor.html",{waitUntil:"domcontentloaded"});
+    assert.deepEqual(await p8.locator("#direct-safe-margin option").evaluateAll(
+      nodes=>nodes.map(n=>n.value)),["5","10","15"]);
+    assert.equal(await p8.locator(".direct-safe-frame").count(),1);
+    await p8.locator("#graphic-add").click();
+    for(const [id,value] of [["graphic-x","6"],["graphic-y","9"],["graphic-size","12"]]){
+      await p8.locator("#"+id).evaluate((node,value)=>{
+        node.value=value;node.dispatchEvent(new Event("input",{bubbles:true}));
+      },value);
+    }
+    if(width<=760)await p8.locator("#editor-show-preview").click();
+    await p8.locator("#direct-safe-margin").selectOption("15");
+    const posterBefore=await p8.locator("#poster").evaluate(c=>c.toDataURL("image/png"));
+    await p8.locator("#direct-safe-show").check();
+    assert.equal(await p8.locator(".direct-safe-frame").isVisible(),true);
+    assert.equal(await p8.locator(".direct-safe-frame").evaluate(el=>el.style.inset),"15%");
+    assert.equal(await p8.locator("#poster").evaluate(c=>c.toDataURL("image/png")),
+      posterBefore,"Safe guides are DOM overlays only and never appear in PNG");
+    assert.match(await p8.locator("#direct-safe-badge").textContent(),/Проверить/);
+    await p8.locator("#direct-enable").check();
+    const key=await p8.evaluate(()=>{
+      const s=window.AnonsEditor.getSnapshot();
+      return "graphic:"+s.cards[s.activeCard].graphicElements[0].id;
+    });
+    await p8.locator("#direct-target").selectOption(key);
+    assert.equal(await p8.locator("#direct-safe-fit").isEnabled(),true);
+    const original=await p8.evaluate(()=>window.AnonsEditor.getSnapshot().cards[0].graphicElements[0]);
+    const oldPosition={x:original.x,y:original.y};
+    await p8.locator("#direct-safe-fit").click();
+    await p8.waitForFunction(old=>window.AnonsEditor.getSnapshot()
+      .cards[0].graphicElements[0].x>old,oldPosition.x);
+    const fitted=await p8.evaluate(key=>{
+      const scene=window.AnonsEditor.getDirectTargets();
+      const item=scene.items.find(i=>i.key===key);
+      const state=window.AnonsEditor.getSnapshot().cards[0].graphicElements[0];
+      return {state,scene,item};
+    },key);
+    assert.ok(fitted.item.rect.x>=fitted.scene.width*.15-2);
+    assert.ok(fitted.item.rect.y>=fitted.scene.height*.15-2);
+    assert.ok(fitted.state.x>oldPosition.x&&fitted.state.y>oldPosition.y);
+    assert.equal(await p8.locator("#direct-safe-fit").isDisabled(),true,
+      "Fit action is disabled for a selection already inside the inset");
+    await p8.locator("#undo").evaluate(el=>el.click());
+    assert.deepEqual(await p8.evaluate(()=>({
+      x:window.AnonsEditor.getSnapshot().cards[0].graphicElements[0].x,
+      y:window.AnonsEditor.getSnapshot().cards[0].graphicElements[0].y
+    })),oldPosition,"One undo restores both axes");
+    await p8.locator("#redo").evaluate(el=>el.click());
+    assert.equal((await p8.evaluate(()=>window.AnonsEditor.getSnapshot()
+      .cards[0].graphicElements[0].x)),fitted.state.x);
+    const protectedState=JSON.stringify(await p8.evaluate(()=>window.AnonsEditor.getSnapshot().cards));
+    assert.equal(await p8.evaluate(()=>window.AnonsEditor.fitDirectSelection(["does-not-exist"],15)),false);
+    assert.equal(await p8.evaluate(()=>window.AnonsEditor.fitDirectSelection(["title"],2)),false);
+    assert.equal(JSON.stringify(await p8.evaluate(()=>window.AnonsEditor.getSnapshot().cards)),
+      protectedState,"Invalid safe-area requests cannot modify a project");
+    await p8.locator("#direct-safe-show").uncheck();
+    assert.equal(await p8.locator(".direct-safe-frame").isVisible(),false);
+    await p8.locator("#direct-safe-show").check();
+    const art=join(dirname(fileURLToPath(import.meta.url)),"test-artifacts");
+    await mkdir(art,{recursive:true});
+    await p8.locator(".direct-safe-panel").screenshot({
+      path:join(art,"stage8-safe-panel-"+width+".png"),animations:"disabled"
+    });
+    await p8.locator(".preview-stage").screenshot({
+      path:join(art,"stage8-safe-overlay-"+width+".png"),animations:"disabled"
+    });
+    assert.deepEqual(errors8,[],"Safe-area feature should not throw browser errors");
+    await context8.close();
+  }
+
 } finally {
   if(browser) await browser.close();
   await new Promise(r=>server.close(r));
