@@ -10,7 +10,7 @@ const cloudflareHeaders=await readFile(join(root,"_headers"),"utf8");
 assert.match(cloudflareHeaders,/Content-Security-Policy:.*script-src 'self'/);
 assert.match(cloudflareHeaders,/X-Content-Type-Options: nosniff/);
 const types = { ".html": "text/html; charset=utf-8", ".css": "text/css; charset=utf-8", ".js": "application/javascript; charset=utf-8", ".webp": "image/webp", ".svg":"image/svg+xml" };
-const allow = new Set(["/","/index.html","/account.html","/editor.html","/templates.html","/features.html","/pricing.html","/styles.css","/app.js","/editor-workspace.js","/export-profiles.js","/editor-direct.js","/editor-layers.js","/navigation.js","/templates-catalog.js","/templates-assistant.js","/pricing-status.js","/personal-styles.js","/brand-kit.js","/whats-new.js","/scene-layout.js","/graphic-elements.js","/auth.bundle.js","/assets/anons-logo-approved.webp","/assets/anons-icon-approved.webp","/assets/ui-icons.svg"]);
+const allow = new Set(["/","/index.html","/account.html","/editor.html","/templates.html","/features.html","/pricing.html","/styles.css","/app.js","/editor-workspace.js","/export-profiles.js","/series-quality.js","/editor-direct.js","/editor-layers.js","/navigation.js","/templates-catalog.js","/templates-assistant.js","/pricing-status.js","/personal-styles.js","/brand-kit.js","/whats-new.js","/scene-layout.js","/graphic-elements.js","/auth.bundle.js","/assets/anons-logo-approved.webp","/assets/anons-icon-approved.webp","/assets/ui-icons.svg"]);
 assert.match(await readFile(join(root,"export-profiles.js"),"utf8"),
   /anons-studio:export-profiles:v1/,
   "Local export profile controller is bundled in the isolated site");
@@ -2234,6 +2234,45 @@ try {
     }
     assert.deepEqual(errors,[],"Stage 11 planning must not throw browser errors");
     await c11.close();
+  }
+
+
+  // Stage 12: read-only preflight tracks publication edits, supports mobile
+  // navigation, and cannot change the stored publication or export permissions.
+  for(const width of [390,1440]){
+    const c12=await browser.newContext({viewport:{width,height:920}});
+    const p12=await c12.newPage(),errors=[];
+    p12.on("pageerror",e=>errors.push(e.message));
+    await p12.goto("http://127.0.0.1:"+port+"/editor.html",{waitUntil:"domcontentloaded"});
+    assert.equal(await p12.locator("#series-quality-score").textContent(),"0 / 1");
+    assert.ok((await p12.locator("#series-quality-list li").allTextContents())
+      .includes("Назови выпуск"));
+    const before=JSON.stringify(await p12.evaluate(()=>window.AnonsEditor.getSnapshot()));
+    await p12.locator('[data-series-quality-filter="issues"]').click();
+    assert.equal(await p12.locator("#series-quality-list .series-quality-item").count(),1);
+    assert.equal(JSON.stringify(await p12.evaluate(()=>window.AnonsEditor.getSnapshot())),before,
+      "Read-only checklist filters must not change the project");
+    await p12.locator("#issue-name").fill("Выпуск 01");
+    await p12.locator("#issue-date").fill("2026-11-12");
+    await p12.locator("#title").fill("Новая карта");
+    await p12.locator("#description").fill("Обновление уже опубликовано");
+    await p12.locator("#points").fill("Первое улучшение");
+    await p12.locator("#issue-ready").check();
+    assert.equal(await p12.locator("#series-quality-score").textContent(),"1 / 1");
+    assert.equal(await p12.locator("#series-quality-list .series-quality-item").count(),0);
+    assert.match(await p12.locator("#series-quality-summary").textContent(),/Все выпуски/);
+    await p12.locator('[data-series-quality-filter="all"]').click();
+    assert.equal(await p12.locator("#series-quality-list .series-quality-item.is-ready").count(),1);
+    await p12.locator("#add-card").click();
+    assert.equal(await p12.locator("#series-quality-score").textContent(),"1 / 2");
+    await p12.locator("#series-quality-list .series-quality-item").first()
+      .locator("button").click();
+    assert.equal(await p12.locator("#issue-name").inputValue(),"Выпуск 01");
+    if(width<=760)assert.equal(await p12.locator(".workspace").getAttribute("data-mobile-view"),"edit");
+    await p12.locator("#undo").click();
+    assert.equal(await p12.locator("#series-quality-score").textContent(),"1 / 1");
+    assert.deepEqual(errors,[]);
+    await c12.close();
   }
 
 } finally {

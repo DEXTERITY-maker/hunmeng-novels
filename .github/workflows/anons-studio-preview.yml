@@ -46,6 +46,7 @@ jobs:
         run: |
           node --check anons-studio/app.js
           node --check anons-studio/export-profiles.js
+          node --check anons-studio/series-quality.js
           node --check anons-studio/personal-styles.js
           node --check anons-studio/brand-kit.js
           node --check anons-studio/manual-orders-entry.js
@@ -58,6 +59,7 @@ jobs:
           test -s anons-studio/dist/index.html
           test -s anons-studio/dist/editor.html
           test -s anons-studio/dist/export-profiles.js
+          test -s anons-studio/dist/series-quality.js
           test -s anons-studio/dist/templates.html
           test -s anons-studio/dist/features.html
           test -s anons-studio/dist/pricing.html

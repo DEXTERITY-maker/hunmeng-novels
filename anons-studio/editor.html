@@ -19,6 +19,7 @@
   <script src="./brand-kit.js" defer></script>
   <script src="./editor-workspace.js" defer></script>
   <script src="./export-profiles.js" defer></script>
+  <script src="./series-quality.js" defer></script>
   <script src="./editor-direct.js" defer></script>
   <script src="./editor-layers.js" defer></script>
   <script src="./auth.bundle.js" defer></script>
@@ -98,6 +99,18 @@
                 <div class="series-board-head"><strong>Порядок и готовность</strong><span id="series-board-summary" role="status" aria-live="polite">1 выпуск · 0 готово</span></div>
                 <div id="series-board-list" class="series-board-list" role="list" aria-label="План выпусков в порядке экспорта"></div>
                 <p class="series-planner-note" id="series-planner-status" role="status" aria-live="polite">Стрелки меняют порядок выпуска в ZIP. Изменения сохраняются вместе с проектом и доступны для отмены.</p>
+              </section>
+
+              <section class="series-quality" id="series-quality" aria-labelledby="series-quality-title">
+                <div class="series-quality-head"><div><span class="section-index">ПРОВЕРКА ПЕРЕД ПУБЛИКАЦИЕЙ</span><h5 id="series-quality-title">Готовность серии</h5></div><strong id="series-quality-score">—</strong></div>
+                <p>Проверь каждый выпуск перед скачиванием. Отчёт не меняет проект и не блокирует экспорт.</p>
+                <div class="series-quality-progress" role="progressbar" aria-label="Готовность выпусков" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="series-quality-bar"></span></div>
+                <div class="series-quality-filters" role="group" aria-label="Фильтр проверки выпусков">
+                  <button type="button" data-series-quality-filter="all" aria-pressed="true">Все</button>
+                  <button type="button" data-series-quality-filter="issues" aria-pressed="false">Нужно проверить</button>
+                </div>
+                <div id="series-quality-list" class="series-quality-list" role="list" aria-label="Результаты проверки выпусков"></div>
+                <p id="series-quality-summary" class="series-quality-summary" role="status" aria-live="polite">Проверяем публикации…</p>
               </section>
 
               <section class="pro-series-panel" id="pro-series" aria-labelledby="pro-series-title">
