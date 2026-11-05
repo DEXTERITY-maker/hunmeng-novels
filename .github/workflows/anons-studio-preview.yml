@@ -96,6 +96,7 @@ jobs:
             anons-studio/test-artifacts/stage7-composition-*.png
             anons-studio/test-artifacts/stage8-safe-panel-*.png
             anons-studio/test-artifacts/stage8-safe-overlay-*.png
+            anons-studio/test-artifacts/stage9-export-kit-*.png
           if-no-files-found: warn
           retention-days: 14
       - name: Publish standalone preview (never existing production)

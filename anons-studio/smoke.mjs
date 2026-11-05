@@ -1923,6 +1923,70 @@ try {
     await context8.close();
   }
 
+  // Stage 9: test multi-format ZIP signature, real PNG dimensions,
+  // watermarked Free parity and preservation of the active canvas.
+  for(const width of [390,1440]){
+    const context9=await browser.newContext({viewport:{width,height:1050},acceptDownloads:true});
+    const p9=await context9.newPage(),errors=[];
+    p9.on("pageerror",err=>errors.push(err.message));
+    await p9.route("https://fonts.googleapis.com/**",r=>r.abort());
+    await p9.route("https://fonts.gstatic.com/**",r=>r.abort());
+    await p9.goto("http://127.0.0.1:"+port+"/editor.html",{waitUntil:"domcontentloaded"});
+    const title=await p9.locator("#title").inputValue();
+    await p9.locator("#points").fill("Первый\\nВторой\\nТретий\\nЧетвёртый".replaceAll("\\n","\n"));
+    assert.match(await p9.locator("#export-kit-report").textContent(),/проверить текст/i);
+    assert.equal((await p9.locator("#points").inputValue()).split("\n").length,4);
+    await p9.locator("#points").fill("Первый\\nВторой\\nТретий".replaceAll("\\n","\n"));
+    if(width<=760)await p9.locator("#editor-show-preview").click();
+    assert.equal(await p9.locator("#export-kit-count").textContent(),"1 изображение");
+    await p9.locator("#export-kit-portrait").uncheck();
+    assert.equal(await p9.locator("#export-kit-download").isDisabled(),true);
+    for(const ratio of ["portrait","square","story"])await p9.locator("#export-kit-"+ratio).check();
+    assert.equal(await p9.locator("#export-kit-count").textContent(),"3 изображения");
+    const initial=await p9.locator("#poster").evaluate(c=>
+      ({width:c.width,height:c.height,bitmap:c.toDataURL("image/png")}));
+    const ratioBefore=await p9.evaluate(()=>window.AnonsEditor.getSnapshot().ratio);
+    const [single]=await Promise.all([p9.waitForEvent("download"),p9.locator("#export").click()]);
+    const singleBytes=await readFile(await single.path());
+    const [download]=await Promise.all([p9.waitForEvent("download"),p9.locator("#export-kit-download").click()]);
+    assert.match(download.suggestedFilename(),/export-kit-3-png\.zip$/);
+    const zip=await readFile(await download.path());
+    assert.equal(zip.readUInt32LE(0),0x04034b50);
+    const files=new Map();
+    let pos=0;
+    while(pos+30<=zip.length&&zip.readUInt32LE(pos)===0x04034b50){
+      const size=zip.readUInt32LE(pos+18),len=zip.readUInt16LE(pos+26);
+      const extra=zip.readUInt16LE(pos+28);
+      const name=zip.subarray(pos+30,pos+30+len).toString("utf8");
+      const begin=pos+30+len+extra;
+      assert.ok(begin+size<=zip.length);
+      files.set(name,zip.subarray(begin,begin+size));pos=begin+size;
+    }
+    assert.equal(files.size,4,"3 images and one README");
+    assert.match(files.get("README.txt").toString("utf8"),/Free.*водяной знак/);
+    for(const [ratio,w,h] of [["portrait",1080,1350],["square",1080,1080],["story",1080,1920]]){
+      const name="anons-card-01-"+ratio+"-"+w+"x"+h+".png";
+      const png=files.get(name);
+      assert.ok(png?.length>10000,name+" missing");
+      assert.equal(png.subarray(1,4).toString(),"PNG");
+      assert.equal(png.readUInt32BE(16),w);
+      assert.equal(png.readUInt32BE(20),h);
+    }
+    assert.deepEqual(files.get("anons-card-01-portrait-1080x1350.png"),singleBytes,
+      "Free kit uses the same watermarked PNG output as the existing single export");
+    assert.equal(await p9.evaluate(()=>window.AnonsEditor.getSnapshot().ratio),ratioBefore);
+    assert.deepEqual(await p9.locator("#poster").evaluate(c=>
+      ({width:c.width,height:c.height,bitmap:c.toDataURL("image/png")})),initial);
+    assert.equal(await p9.locator("#title").inputValue(),title);
+    const dir=join(dirname(fileURLToPath(import.meta.url)),"test-artifacts");
+    await mkdir(dir,{recursive:true});
+    await p9.locator(".export-kit-panel").screenshot({
+      path:join(dir,"stage9-export-kit-"+width+".png"),animations:"disabled"
+    });
+    assert.deepEqual(errors,[],"Export pack should not cause browser errors");
+    await context9.close();
+  }
+
 } finally {
   if(browser) await browser.close();
   await new Promise(r=>server.close(r));

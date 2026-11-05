@@ -527,6 +527,29 @@
                   <button type="button" id="direct-rotate-right" disabled aria-label="Повернуть фигуру вправо"><svg class="ui-icon" aria-hidden="true"><use href="./assets/ui-icons.svg#redo"></use></svg> +15°</button>
                 </div>
               </div>
+              <section class="export-kit-panel" aria-labelledby="export-kit-title">
+                <div class="export-kit-head">
+                  <div><span class="section-index">ПОДГОТОВКА К ПУБЛИКАЦИИ</span><h5 id="export-kit-title">Экспортный комплект</h5></div>
+                  <span class="export-kit-label">PNG · ZIP</span>
+                </div>
+                <p>Собери публикации сразу для нескольких форматов. Каждый вариант пересчитывается по размеру холста, а не растягивается из одного изображения.</p>
+                <div class="export-kit-formats" role="group" aria-label="Форматы экспортного комплекта">
+                  <label><input type="checkbox" id="export-kit-portrait" value="portrait" checked><span><strong>Публикация · 4:5</strong><small>1080 × 1350 пикселей</small></span></label>
+                  <label><input type="checkbox" id="export-kit-square" value="square"><span><strong>Квадрат · 1:1</strong><small>1080 × 1080 пикселей</small></span></label>
+                  <label><input type="checkbox" id="export-kit-story" value="story"><span><strong>История · 9:16</strong><small>1080 × 1920 пикселей</small></span></label>
+                </div>
+                <div class="export-kit-scope">
+                  <label for="export-kit-scope">Какие карточки включить?</label>
+                  <select id="export-kit-scope"><option value="current">Только текущую карточку</option><option value="all">Все карточки проекта</option></select>
+                </div>
+                <div class="export-kit-check">
+                  <div class="export-kit-check-head"><strong>Проверка перед экспортом</strong><span id="export-kit-count" role="status" aria-live="polite">1 изображение</span></div>
+                  <ul id="export-kit-report" aria-live="polite"></ul>
+                  <small>Проверка выявляет возможное обрезание текста, но не заменяет просмотр каждой готовой картинки.</small>
+                </div>
+                <button id="export-kit-download" type="button" class="export-kit-download"><svg class="ui-icon" aria-hidden="true"><use href="./assets/ui-icons.svg#download"></use></svg> Скачать комплект ZIP</button>
+                <p class="export-kit-status" id="export-kit-status" role="status" aria-live="polite">Комплект сохраняет действующие права подписки: в Free каждый PNG содержит водяной знак.</p>
+              </section>
               <div class="preview-actions"><button type="button" class="btn btn-primary export-btn" id="export"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="./assets/ui-icons.svg#download"></use></svg> Скачать PNG</button><button type="button" class="btn btn-secondary" id="export-all"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="./assets/ui-icons.svg#download"></use></svg> Все карточки ZIP</button><button type="button" class="btn btn-secondary" id="copy"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="./assets/ui-icons.svg#copy"></use></svg> Скопировать текст <svg class="ui-icon" aria-hidden="true" focusable="false"><use href="./assets/ui-icons.svg#arrow-up-right"></use></svg></button></div>
               <p class="preview-caption">На Free водяной знак сохраняется в предпросмотре и PNG</p>
             </div>

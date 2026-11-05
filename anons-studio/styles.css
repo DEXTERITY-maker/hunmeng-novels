@@ -2052,3 +2052,66 @@ body{background:#f2f3fe;color:#12172f}
   .direct-safe-controls{grid-template-columns:1fr}
   .direct-safe-controls>select{width:100%}
 }
+
+/* Stage 9 · publication-ready multi-format export kit. The ZIP uses the
+   existing PNG renderers and never changes subscription entitlements. */
+.inner-page-editor .export-kit-panel{margin:22px 0 19px;padding:21px;border-radius:19px;
+  border:1px solid #d7d5f2;box-shadow:0 17px 32px #392d8417;
+  background:radial-gradient(circle at 91% 5%,#d5c5ff96,transparent 40%),
+    linear-gradient(150deg,#fff,#f5f3ff)}
+.export-kit-head{display:flex;align-items:center;justify-content:space-between;gap:14px}
+.export-kit-head .section-index{font-size:9px;letter-spacing:.12em;color:#735aca}
+.export-kit-head h5{margin:7px 0 0;font-size:19px;letter-spacing:-.045em;
+  line-height:1.24;color:#27234f}
+.export-kit-label{white-space:nowrap;flex:0 0 auto;background:#eee9ff;color:#634ac0;
+  border:1px solid #d7cef9;border-radius:100px;padding:8px 11px;font-size:10px;font-weight:850}
+.export-kit-panel>p:not(.export-kit-status){font-size:11px;line-height:1.75;color:#717694;margin:13px 0 16px}
+.export-kit-formats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.export-kit-formats label{cursor:pointer;display:flex;align-items:flex-start;gap:8px;padding:12px 9px;
+  border:2px solid #dfdcf6;border-radius:12px;background:#fff;min-width:0}
+.export-kit-formats label:has(input:checked){border-color:#8063df;background:#f0ebff;
+  box-shadow:0 0 0 3px #7e5de41a}
+.export-kit-formats label input{flex:0 0 16px;width:16px;height:16px;accent-color:#7856e8;margin:1px 0 0}
+.export-kit-formats label span{display:grid;gap:4px;min-width:0}
+.export-kit-formats label strong{font-size:10px;font-weight:850;color:#37325f;line-height:1.35}
+.export-kit-formats label small{font-size:9px;color:#8085a1;line-height:1.5}
+.export-kit-scope{margin:17px 0;display:flex;align-items:center;justify-content:space-between;gap:13px}
+.export-kit-scope label{font-size:11px;font-weight:850;color:#54507c}
+.export-kit-scope select{border:1px solid #d6d0f1;border-radius:10px;background:#fff;
+  color:#5644a3;min-height:41px;font-size:11px;font-weight:800;padding:9px 11px;max-width:100%}
+.export-kit-check{border:1px solid #dedcf1;background:#fafaff;border-radius:13px;
+  padding:14px 13px;margin:0 0 17px}
+.export-kit-check-head{display:flex;justify-content:space-between;gap:9px;align-items:center}
+.export-kit-check-head strong{font-size:11px;font-weight:850;color:#35315e}
+.export-kit-check-head span{flex:0 0 auto;border-radius:100px;background:#e9e5ff;
+  color:#6753bc;padding:6px 10px;font-size:9px;font-weight:850}
+.export-kit-check ul{margin:12px 0 10px;padding:0;list-style:none;display:grid;gap:7px}
+.export-kit-check li{font-size:10px;line-height:1.55;position:relative;padding:9px 10px 9px 28px;
+  border-radius:8px;border:1px solid #e7e7f4;background:#fff;color:#525779}
+.export-kit-check li:before{content:"✓";color:#23956c;position:absolute;top:8px;left:10px;font-weight:900}
+.export-kit-check li.is-warning:before{content:"!";color:#c07930}
+.export-kit-check li.is-warning{background:#fffaf1;border-color:#f0e1c7}
+.export-kit-check>small{display:block;color:#888da8;font-size:9px;line-height:1.6}
+.export-kit-download{width:100%;display:flex;align-items:center;justify-content:center;gap:8px;
+  min-height:49px;border:0;border-radius:12px;background:linear-gradient(110deg,#655ce8,#9863f1);
+  color:#fff;font-size:12px;font-weight:850;box-shadow:0 10px 23px #6a5cd43b}
+.export-kit-download:hover:not(:disabled){background:linear-gradient(110deg,#5750d6,#8453db)}
+.export-kit-download:disabled{cursor:not-allowed;opacity:.5;box-shadow:none}
+.export-kit-download .ui-icon{width:18px;height:18px}
+.export-kit-status{margin:12px 0 0;color:#66638d;font-size:10px;line-height:1.65}
+.export-kit-panel input:focus-visible,.export-kit-panel select:focus-visible,.export-kit-download:focus-visible{
+  outline:3px solid #8466e9;outline-offset:3px}
+@media(max-width:920px){
+  .export-kit-formats{grid-template-columns:1fr}
+  .export-kit-formats label{align-items:center}
+  .export-kit-formats label strong{font-size:11px}
+}
+@media(max-width:760px){
+  .inner-page-editor .export-kit-panel{padding:16px 13px;border-radius:16px}
+  .export-kit-head h5{font-size:17px}
+  .export-kit-scope{align-items:stretch;flex-direction:column}
+  .export-kit-scope select{width:100%}
+  .export-kit-formats{grid-template-columns:1fr}
+  .export-kit-formats label{padding:11px 12px}
+  .export-kit-check{padding:12px}
+}

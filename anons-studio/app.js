@@ -1242,6 +1242,140 @@
       btn.disabled=false;btn.innerHTML=idleButtonMarkup;
     }
   });
+  // Stage 9 · export kit. Every format is rendered using its own scene
+  // geometry. Free PNGs are always produced through the watermarked canvas;
+  // paid PNGs always use the existing verified server export endpoint.
+  const exportKitFormats=Object.freeze(["portrait","square","story"]);
+  const exportKitLabels=Object.freeze({
+    portrait:"Публикация 4:5",square:"Квадрат 1:1",story:"История 9:16"
+  });
+  let exportKitBusy=false;
+  function exportKitSettings(){
+    const formats=exportKitFormats.filter(key=>$("export-kit-"+key).checked);
+    const scope=$("export-kit-scope").value==="all"?"all":"current";
+    const indices=scope==="all"
+      ?state.cards.map((_,i)=>i):[state.activeCard];
+    return {formats,indices,count:formats.length*indices.length,scope};
+  }
+  function exportKitQuality(card,format){
+    const scene=window.AnonsScene.layout({ratio:format,project:state.project},card);
+    const title=window.AnonsScene.titleLines(card.title?.trim()||"Заголовок публикации",scene);
+    const description=window.AnonsScene.breakLines(
+      card.description?.trim()||"Расскажите коротко, что произошло и почему это важно.",
+      scene.contentWidth-(scene.height<=1100?10:80),scene.descriptionSize,3);
+    const points=String(card.points||"").split(/\r?\n/).filter(x=>x.trim());
+    const warnings=[];
+    if(title.lines.some(line=>line.endsWith("…")))
+      warnings.push("заголовок может обрезаться");
+    if(description.some(line=>line.endsWith("…")))
+      warnings.push("описание может обрезаться");
+    if(points.length>3)
+      warnings.push("показаны только первые 3 пункта");
+    if(points.slice(0,3).some(line=>window.AnonsScene.textWidth(
+      line,scene.height<=1100?27:30)>scene.contentWidth-112))
+      warnings.push("проверь длину пунктов");
+    return warnings;
+  }
+  function refreshExportKit(){
+    const {formats,indices,count}=exportKitSettings();
+    const button=$("export-kit-download"),status=$("export-kit-count");
+    status.textContent=count+" "+(count===1?"изображение":count>=2&&count<=4?"изображения":"изображений");
+    const list=$("export-kit-report");
+    list.replaceChildren();
+    button.disabled=exportKitBusy||!count;
+    const report=[];
+    if(!formats.length){
+      report.push({text:"Выбери хотя бы один формат.",warning:true});
+    }else{
+      for(const format of formats){
+        const cards=indices.map(index=>({
+          index,notes:exportKitQuality(state.cards[index]||state,format)
+        }));
+        const countWarn=cards.reduce((n,c)=>n+c.notes.length,0);
+        report.push({text:exportKitLabels[format]+" · "+sizes[format].w+" × "+sizes[format].h+
+          (countWarn?" · проверить текст в "+cards.filter(c=>c.notes.length).length+" карточках"
+            :" · без предупреждений по тексту"),warning:countWarn>0});
+      }
+    }
+    for(const item of report){
+      const li=document.createElement("li");
+      li.className=item.warning?"is-warning":"is-ok";
+      li.textContent=item.text;list.appendChild(li);
+    }
+  }
+  for(const key of exportKitFormats){
+    $("export-kit-"+key).addEventListener("change",refreshExportKit);
+  }
+  $("export-kit-scope").addEventListener("change",refreshExportKit);
+  $("ratio").addEventListener("change",refreshExportKit);
+  window.addEventListener("anons:editor-change",refreshExportKit);
+  window.addEventListener("anons:editor-reset",refreshExportKit);
+  $("export-kit-download").addEventListener("click",async()=>{
+    if(exportKitBusy)return;
+    const settings=exportKitSettings();
+    if(!settings.count){refreshExportKit();return;}
+    const btn=$("export-kit-download"),status=$("export-kit-status");
+    const oldLabel=btn.innerHTML;
+    const oldRatio=state.ratio,oldIndex=state.activeCard;
+    const source=getSnapshot();
+    exportKitBusy=true;refreshExportKit();
+    const output=[];
+    try{
+      let number=0;
+      for(const index of settings.indices){
+        for(const ratio of settings.formats){
+          const label="anons-card-"+String(index+1).padStart(2,"0")+"-"+ratio+"-"+
+            sizes[ratio].w+"x"+sizes[ratio].h+".png";
+          status.textContent="Подготавливается "+(++number)+" из "+settings.count+
+            " · "+exportKitLabels[ratio]+" · карточка "+(index+1);
+          state.activeCard=index;
+          state.ratio=ratio;
+          Object.assign(state,source.cards[index]);
+          const blob=paidAccess.premium
+            ?await window.AnonsBilling?.exportPremium({...source,ratio,activeCard:index},index)
+            :await localWatermarkedPng();
+          if(!(blob instanceof Blob)||!blob.size)throw new Error("KIT_EXPORT_UNAVAILABLE");
+          output.push({name:label,blob});
+        }
+      }
+      const manifest=[
+        "ANONS STUDIO · ЭКСПОРТНЫЙ КОМПЛЕКТ",
+        "",
+        "Проект: "+source.project,
+        "Карточек: "+settings.indices.length,
+        "Форматов: "+settings.formats.map(key=>
+          exportKitLabels[key]+" ("+sizes[key].w+"×"+sizes[key].h+")").join(", "),
+        "Всего изображений: "+output.length,
+        "Режим экспорта: "+(paidAccess.premium
+          ?"серверная проверка действующего тарифа для каждого PNG"
+          :"Free · каждый PNG содержит водяной знак"),
+        "",
+        "Файлы:",...output.map(f=>f.name),
+        "",
+        "Проверь полученные изображения перед публикацией.",
+        "Расположение текста и безопасные зоны разных платформ могут отличаться."
+      ].join("\r\n");
+      output.push({name:"README.txt",blob:new Blob([manifest],{type:"text/plain;charset=utf-8"})});
+      const zip=await packZip(output);
+      triggerDownload(zip,"anons-studio-export-kit-"+settings.count+"-png.zip");
+      status.textContent="Готово: "+settings.count+" PNG и README.txt. "+
+        (paidAccess.premium?"Проверенный серверный экспорт.":"В каждом PNG есть водяной знак Free.");
+    }catch(error){
+      console.warn("Export kit failed",error?.message||"unknown");
+      status.textContent="Не удалось собрать комплект. Проверь подключение, размер фото и права тарифа. "+
+        "Можно скачать изображения по одному.";
+    }finally{
+      state.ratio=oldRatio;
+      state.activeCard=oldIndex;
+      Object.assign(state,source.cards[oldIndex]);
+      syncFields();
+      render();
+      exportKitBusy=false;
+      btn.innerHTML=oldLabel;
+      refreshExportKit();
+    }
+  });
+
   $("copy").addEventListener("click",async()=>{
     const points=state.points.split(/\r?\n/).map(s=>s.trim()).filter(Boolean).slice(0,3);
     const text=[state.title.trim(),state.description.trim(),points.length?"\n"+points.map(p=>"• "+p).join("\n"):""].filter(Boolean).join("\n\n");
@@ -1901,6 +2035,6 @@
   if(editorUrl.href!==window.location.href){
     window.history.replaceState(null,"",editorUrl.pathname+editorUrl.search+editorUrl.hash);
   }
-  syncFields();resetHistory();render();if(state.imageData)loadPhoto(state.imageData);
+  syncFields();resetHistory();render();refreshExportKit();if(state.imageData)loadPhoto(state.imageData);
   if(document.fonts?.ready)document.fonts.ready.then(scheduleRender).catch(()=>{});
 })();
