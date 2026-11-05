@@ -1749,6 +1749,99 @@ try {
     await stage6Context.close();
   }
 
+
+  // Stage 7: atomic multi-select, alignment and distribution via actual UI.
+  for(const width of [390,1440]){
+    const context7=await browser.newContext({viewport:{width,height:1050},acceptDownloads:true});
+    const p7=await context7.newPage();
+    const errors7=[];
+    p7.on("pageerror",error=>errors7.push(error.message));
+    await p7.route("https://fonts.googleapis.com/**",route=>route.abort());
+    await p7.route("https://fonts.gstatic.com/**",route=>route.abort());
+    await p7.goto("http://127.0.0.1:"+port+"/editor.html",{waitUntil:"domcontentloaded"});
+    assert.equal(await p7.locator("[data-direct-align]").count(),8);
+    const figures=[
+      {x:20,y:24,size:12},
+      {x:48,y:42,size:12},
+      {x:78,y:78,size:12}
+    ];
+    for(const figure of figures){
+      await p7.locator("#graphic-add").click();
+      for(const [id,value] of [["graphic-x",figure.x],["graphic-y",figure.y],
+        ["graphic-size",figure.size]]){
+        await p7.locator("#"+id).evaluate((node,value)=>{
+          node.value=String(value);node.dispatchEvent(new Event("input",{bubbles:true}));
+        },value);
+      }
+    }
+    if(width<=760)await p7.locator("#editor-show-preview").click();
+    await p7.locator("#direct-enable").check();
+    await p7.locator(".direct-multi-list-wrap").evaluate(node=>node.open=true);
+    const keys=await p7.evaluate(()=>{
+      const snapshot=window.AnonsEditor.getSnapshot();
+      return snapshot.cards[snapshot.activeCard].graphicElements.map(g=>"graphic:"+g.id);
+    });
+    assert.equal(keys.length,3);
+    const pixelsBeforeSelection=await p7.locator("#poster").evaluate(el=>el.toDataURL("image/png"));
+    for(const key of keys){
+      await p7.locator('#direct-multi-list input[value="'+key+'"]').check();
+    }
+    assert.equal(await p7.locator("#direct-multi-count").textContent(),"3 выделено");
+    assert.equal(await p7.locator(".direct-selection-extra").count(),2);
+    assert.equal(await p7.locator('[data-direct-align="left"]').isEnabled(),true);
+    assert.equal(await p7.locator("#poster").evaluate(el=>el.toDataURL("image/png")),
+      pixelsBeforeSelection,"Multi selection overlays must never contaminate saved PNG");
+    const positions=async()=>p7.evaluate(()=>{
+      return window.AnonsEditor.getSnapshot().cards[0].graphicElements.map(g=>({
+        x:g.x,y:g.y,group:g.groupId
+      }));
+    });
+    const originalPositions=await positions();
+    await p7.locator('[data-direct-align="left"]').click();
+    let aligned=await positions();
+    assert.deepEqual(aligned.map(g=>g.x),[20,20,20],
+      "Left alignment moves three different figures as one transaction");
+    await p7.locator("#undo").evaluate(node=>node.click());
+    assert.deepEqual((await positions()).map(g=>g.x),originalPositions.map(g=>g.x),
+      "One undo restores all previously independent positions");
+    await p7.locator("#redo").evaluate(node=>node.click());
+    assert.deepEqual((await positions()).map(g=>g.x),[20,20,20]);
+    await p7.locator('[data-direct-align="space-y"]').click();
+    aligned=await positions();
+    assert.deepEqual(aligned.map(g=>g.y),[24,51,78],
+      "Distribute Y spaces three object centers evenly");
+    await p7.locator("#poster").focus();
+    await p7.keyboard.press("ArrowRight");
+    assert.deepEqual((await positions()).map(g=>g.x),[25,25,25],
+      "Keyboard adjustment moves selected objects together");
+    await p7.locator("#undo").evaluate(node=>node.click());
+    assert.deepEqual((await positions()).map(g=>g.x),[20,20,20],
+      "Group nudge is one undo step");
+    await p7.locator("#direct-multi-group").click();
+    const groupIds=(await positions()).map(g=>g.group);
+    assert.ok(groupIds[0]&&groupIds.every(id=>id===groupIds[0]),
+      "Grouping chosen graphics creates shared group IDs");
+    assert.equal(await p7.locator('[data-direct-align="left"]').isDisabled(),true,
+      "Locked linked group geometry cannot be silently distorted");
+    await p7.locator("#direct-multi-clear").click();
+    assert.equal(await p7.locator("#direct-multi-count").textContent(),"0 выделено");
+    await p7.locator("#direct-multi-all").click();
+    const allCount=Number((await p7.locator("#direct-multi-count").textContent()).split(" ")[0]);
+    assert.ok(allCount>=7,"Selectable list also includes title, description and other base objects");
+    await p7.locator("#direct-multi-clear").click();
+    assert.equal(await p7.locator(".direct-selection-extra").count(),0);
+    const artifactsDir=join(dirname(fileURLToPath(import.meta.url)),"test-artifacts");
+    await mkdir(artifactsDir,{recursive:true});
+    await p7.locator(".direct-multi-panel").screenshot({
+      path:join(artifactsDir,"stage7-multiselect-"+width+".png"),animations:"disabled"
+    });
+    await p7.locator(".preview-stage").screenshot({
+      path:join(artifactsDir,"stage7-composition-"+width+".png"),animations:"disabled"
+    });
+    assert.deepEqual(errors7,[],"Multi-object composition emitted no browser errors");
+    await context7.close();
+  }
+
 } finally {
   if(browser) await browser.close();
   await new Promise(r=>server.close(r));

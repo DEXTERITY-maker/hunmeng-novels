@@ -11,11 +11,18 @@
   const guidesToggle=$("direct-guides"),smartSnap=$("direct-smart-snap");
   const zoom=$("direct-preview-zoom"),guideStatus=$("direct-guide-status");
   const lock=$("direct-lock");
+  const multiList=$("direct-multi-list"),multiCount=$("direct-multi-count");
+  const multiAll=$("direct-multi-all"),multiClear=$("direct-multi-clear");
+  const multiGroup=$("direct-multi-group"),multiStatus=$("direct-multi-status");
+  const alignButtons=[...document.querySelectorAll("[data-direct-align]")];
   const actionNames=["smaller","larger","rotate-left","rotate-right"];
   const actionButtons=Object.fromEntries(actionNames.map(name=>[name,$("direct-"+name)]));
   if(!editor?.getDirectTargets||!editor?.transformDirect||!editor?.toggleDirectLock
     ||!canvas||!holder||!enable||!snap||!target||!lock
     ||!guidesToggle||!smartSnap||!zoom||!guideStatus
+    ||!multiList||!multiCount||!multiAll||!multiClear||!multiGroup||!multiStatus
+    ||!editor.transformDirectSelection||!editor.alignDirectSelection
+    ||alignButtons.length!==8
     ||Object.values(actionButtons).some(button=>!button))return;
 
   const outline=document.createElement("div");
@@ -48,6 +55,85 @@
   resizeHandle.hidden=true;
   holder.appendChild(resizeHandle);
   let selected="",drag=null,resizeDrag=null,refreshQueued=false;
+  const selectedSet=new Set(),extraOutlines=new Map();
+  let lastCard=-1,multiSignature="",multiMessage="",gestureId=0;
+  function updateMulti(items,active){
+    const map=new Map(items.map(item=>[item.key,item]));
+    for(const key of selectedSet){
+      if(!map.has(key)||map.get(key).locked)selectedSet.delete(key);
+    }
+    const activeItems=items.filter(item=>selectedSet.has(item.key)&&!item.locked);
+    const signatures=items.map(item=>[item.key,item.label,item.locked].join("~")).join("|");
+    if(signatures!==multiSignature){
+      multiSignature=signatures;
+      multiList.replaceChildren();
+      for(const item of items){
+        const label=document.createElement("label");
+        label.className="direct-multi-option";
+        const input=document.createElement("input");
+        input.type="checkbox";input.value=item.key;
+        input.checked=selectedSet.has(item.key);
+        input.disabled=item.locked;
+        input.setAttribute("aria-label","Выбрать объект: "+item.label);
+        input.addEventListener("change",()=>{
+          multiMessage="";
+          if(input.checked){selectedSet.add(item.key);choose(item.key,false,true);}
+          else{
+            selectedSet.delete(item.key);
+            if(selected===item.key)choose([...selectedSet][0]||"",false,true);
+            else refresh();
+          }
+        });
+        const caption=document.createElement("span");
+        caption.textContent=item.label+(item.locked?" · заблокирован":"");
+        label.append(input,caption);
+        multiList.append(label);
+      }
+    }else{
+      for(const input of multiList.querySelectorAll("input")){
+        input.checked=selectedSet.has(input.value);
+        input.disabled=Boolean(map.get(input.value)?.locked);
+      }
+    }
+    multiCount.textContent=activeItems.length+" выделено";
+    multiAll.disabled=!active||items.every(item=>item.locked);
+    multiClear.disabled=!active||!selectedSet.size;
+    const card=editor.getSnapshot().cards[editor.getSnapshot().activeCard];
+    const hasLinked=activeItems.some(item=>item.type==="graphic"&&
+      card.graphicElements.some(g=>"graphic:"+g.id===item.key&&g.groupId));
+    for(const button of alignButtons){
+      const required=button.dataset.directAlign.startsWith("space-")?3:2;
+      button.disabled=!active||activeItems.length<required||hasLinked;
+    }
+    multiGroup.disabled=!active||activeItems.length<2||
+      activeItems.some(item=>item.type!=="graphic")||hasLinked;
+    multiStatus.textContent=multiMessage||
+      (hasLinked?"Для отдельного выравнивания сначала разгруппируй выбранные фигуры.":
+        activeItems.length>1?"Выбрано "+activeItems.length+" объекта. Перетаскивай их вместе или используй выравнивание.":
+        "Выдели минимум два видимых незаблокированных объекта. Можно одновременно передвигать их по холсту.");
+    for(const [key,node] of extraOutlines){
+      if(!active||!selectedSet.has(key)||key===selected||!map.has(key)){
+        node.remove();extraOutlines.delete(key);
+      }
+    }
+    if(!active)return;
+    const data=current();
+    for(const item of activeItems){
+      if(item.key===selected)continue;
+      let node=extraOutlines.get(item.key);
+      if(!node){
+        node=document.createElement("div");
+        node.className="direct-selection-outline direct-selection-extra";
+        node.setAttribute("aria-hidden","true");
+        holder.appendChild(node);
+        extraOutlines.set(item.key,node);
+      }
+      const x=item.rect.x/data.width*100,y=item.rect.y/data.height*100;
+      node.style.left=x+"%";node.style.top=y+"%";
+      node.style.width=item.rect.w/data.width*100+"%";
+      node.style.height=item.rect.h/data.height*100+"%";
+    }
+  }
   function clearGuideSnap(){
     for(const g of guides)g.line.classList.remove("is-snapped");
   }
@@ -72,6 +158,10 @@
     refreshQueued=false;
     const snapshot=current();
     const items=snapshot.items;
+    const activeCard=editor.getSnapshot().activeCard;
+    if(activeCard!==lastCard){
+      lastCard=activeCard;selected="";selectedSet.clear();multiMessage="";
+    }
     if(!items.some(item=>item.key===selected))selected="";
     const options=[{key:"",label:"Не выбран"},...items.map(item=>({
       key:item.key,label:item.label+(item.locked?" · заблокирован":"")
@@ -91,6 +181,7 @@
     target.value=selected;
     const chosen=items.find(item=>item.key===selected);
     const active=enable.checked;
+    updateMulti(items,active);
     guideLayer.hidden=!active||!guidesToggle.checked;
     if(guideLayer.hidden)clearGuideSnap();
     canvas.classList.toggle("direct-canvas-active",active);
@@ -126,8 +217,11 @@
     refreshQueued=true;
     requestAnimationFrame(refresh);
   }
-  function choose(key,focusCanvas=false){
+  function choose(key,focusCanvas=false,preserve=false){
     selected=key;
+    if(!preserve)selectedSet.clear();
+    if(key)selectedSet.add(key);
+    multiMessage="";
     refresh();
     window.dispatchEvent(new CustomEvent("anons:direct-selected",{detail:{key:selected}}));
     if(focusCanvas&&enable.checked)canvas.focus({preventScroll:true});
@@ -203,6 +297,30 @@
     refresh();
   });
   target.addEventListener("change",()=>choose(target.value));
+  multiAll.addEventListener("click",()=>{
+    if(!enable.checked)return;
+    selectedSet.clear();
+    for(const item of current().items){
+      if(!item.locked)selectedSet.add(item.key);
+    }
+    choose([...selectedSet][0]||"",false,true);
+  });
+  multiClear.addEventListener("click",()=>choose(""));
+  for(const button of alignButtons){
+    button.addEventListener("click",()=>{
+      const keys=[...selectedSet];
+      const success=enable.checked&&editor.alignDirectSelection(keys,button.dataset.directAlign);
+      multiMessage=success?"Объекты выровнены. Одно действие можно отменить.":"Не удалось выровнять объекты: проверь блокировки и границы холста.";
+      scheduleRefresh();
+    });
+  }
+  multiGroup.addEventListener("click",()=>{
+    const keys=[...selectedSet];
+    const id=enable.checked?editor.groupGraphicLayers(keys):"";
+    multiMessage=id?"Фигуры объединены: дальнейшее перемещение одной сдвигает всю группу.":
+      "Группировка доступна для двух и более незаблокированных фигур.";
+    scheduleRefresh();
+  });
   lock.addEventListener("click",()=>{
     if(!selected)return;
     editor.toggleDirectLock(selected);
@@ -211,19 +329,27 @@
   canvas.addEventListener("pointerdown",event=>{
     if(!enable.checked || (event.pointerType==="mouse"&&event.button!==0))return;
     const found=chooseUnderPointer(event);
-    if(!found){
-      choose("");
+    if(event.shiftKey||event.ctrlKey||event.metaKey){
+      if(!found||found.locked)return;
+      if(selectedSet.has(found.key))selectedSet.delete(found.key);
+      else selectedSet.add(found.key);
+      choose(selectedSet.has(found.key)?found.key:([ ...selectedSet ][0]||""),false,true);
+      event.preventDefault();
       return;
     }
-    choose(found.key,true);
+    if(!found){choose("");return;}
+    const preserve=selectedSet.size>1&&selectedSet.has(found.key);
+    choose(found.key,true,preserve);
     if(found.locked)return;
     const initial=coordinateOrigin(found.key);
     if(!initial)return;
     const data=current();
+    const originals=[...selectedSet].map(key=>({key,origin:coordinateOrigin(key)}))
+      .filter(entry=>entry.origin);
     drag={pointerId:event.pointerId,key:found.key,
-      startX:event.clientX,startY:event.clientY,
+      startX:event.clientX,startY:event.clientY,originals,
       initial,item:found,sceneWidth:data.width,sceneHeight:data.height,
-      rect:canvas.getBoundingClientRect()};
+      rect:canvas.getBoundingClientRect(),group:"pointer-"+(++gestureId)};
     canvas.setPointerCapture(event.pointerId);
     event.preventDefault();
   });
@@ -235,7 +361,16 @@
     const x=snapCoordinate(drag.initial.x+dx,"x",drag);
     const y=snapCoordinate(drag.initial.y+dy,"y",drag);
     reportSnap(x.guide,y.guide);
-    adjust({x:x.value,y:y.value},"pointer");
+    if(drag.originals.length>1){
+      const ddx=x.value-drag.initial.x,ddy=y.value-drag.initial.y;
+      const changes=drag.originals.map(({key,origin})=>({
+        key,x:Math.round((origin.x+ddx)*10)/10,
+        y:Math.round((origin.y+ddy)*10)/10
+      }));
+      if(editor.transformDirectSelection(changes,drag.group))scheduleRefresh();
+    }else{
+      adjust({x:x.value,y:y.value},"pointer");
+    }
   });
   function releasePointer(event){
     if(!drag||drag.pointerId!==event.pointerId)return;
@@ -298,7 +433,15 @@
     const initial=coordinateOrigin(selected);
     if(!initial)return;
     const step=snap.checked||event.shiftKey?5:1;
-    adjust({x:initial.x+delta[0]*step,y:initial.y+delta[1]*step},"keyboard");
+    if(selectedSet.size>1){
+      const changes=[...selectedSet].map(key=>{
+        const origin=coordinateOrigin(key);
+        return origin&&{key,x:origin.x+delta[0]*step,y:origin.y+delta[1]*step};
+      }).filter(Boolean);
+      if(editor.transformDirectSelection(changes,"keyboard-"+(++gestureId)))scheduleRefresh();
+    }else{
+      adjust({x:initial.x+delta[0]*step,y:initial.y+delta[1]*step},"keyboard");
+    }
   });
   const actions={
     smaller:{size:-2},larger:{size:2},
@@ -313,7 +456,9 @@
     });
   }
   window.addEventListener("anons:editor-change",scheduleRefresh);
-  window.addEventListener("anons:editor-reset",()=>{selected="";scheduleRefresh();});
+  window.addEventListener("anons:editor-reset",()=>{
+    selected="";selectedSet.clear();multiMessage="";scheduleRefresh();
+  });
   window.addEventListener("resize",scheduleRefresh);
   if(typeof ResizeObserver!=="undefined")new ResizeObserver(scheduleRefresh).observe(canvas);
   applyZoom();

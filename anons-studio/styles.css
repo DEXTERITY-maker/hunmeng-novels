@@ -1941,3 +1941,58 @@ body{background:#f2f3fe;color:#12172f}
   .direct-resize-handle{width:28px;height:28px;min-width:28px;min-height:28px}
 }
 @media(prefers-reduced-motion:reduce){.direct-alignment-line{transition:none}}
+
+/* Stage 7 · multi-selection and atomic precision alignment.
+   All markers are DOM-only and never included in exported images. */
+.inner-page-editor .direct-multi-panel{display:grid;gap:13px;border:1px solid #dcd8f4;
+  border-radius:16px;padding:17px;background:linear-gradient(150deg,#fff,#f6f3ff)}
+.direct-multi-heading{display:flex;justify-content:space-between;align-items:start;gap:12px}
+.direct-multi-heading>div{display:grid;gap:4px;min-width:0}
+.direct-multi-heading strong{font-size:15px;line-height:1.3;color:#26214e;font-weight:850;letter-spacing:-.03em}
+.direct-multi-heading small{font-size:10px;line-height:1.5;color:#74739c}
+.direct-multi-heading>span{flex:0 0 auto;background:#e9e3ff;color:#6b48c8;
+  font-size:9px;font-weight:850;border-radius:100px;padding:7px 10px}
+.direct-multi-shortcuts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.direct-multi-shortcuts button,.direct-align-grid button,.direct-multi-group{
+  min-height:40px;border-radius:10px;border:1px solid #dcd7f2;background:#fff;
+  color:#5a4b9f;font-size:10px;font-weight:850;cursor:pointer;padding:9px 10px;
+  transition:border-color .18s ease,background .18s ease,transform .18s ease}
+.direct-multi-shortcuts button:hover:not(:disabled),.direct-align-grid button:hover:not(:disabled),
+.direct-multi-group:hover:not(:disabled){border-color:#a58def;background:#f0eaff;transform:translateY(-1px)}
+.direct-multi-shortcuts button:disabled,.direct-align-grid button:disabled,.direct-multi-group:disabled{
+  opacity:.42;cursor:not-allowed}
+.direct-multi-panel button:focus-visible,.direct-multi-list-wrap summary:focus-visible,
+.direct-multi-option input:focus-visible{outline:3px solid #825ef1;outline-offset:2px}
+.direct-multi-list-wrap{border:1px solid #e5e0f7;background:#fff;border-radius:11px}
+.direct-multi-list-wrap summary{cursor:pointer;padding:12px 13px;font-size:11px;font-weight:800;color:#4d4581}
+.direct-multi-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;
+  padding:5px 10px 12px;max-height:205px;overflow-y:auto}
+.direct-multi-option{display:flex;align-items:center;gap:8px;min-width:0;
+  padding:9px 8px;background:#f8f7ff;border-radius:8px;color:#373357;font-size:10px;
+  line-height:1.45;cursor:pointer}
+.direct-multi-option:has(input:checked){background:#eae4ff;color:#5238ae}
+.direct-multi-option:has(input:disabled){opacity:.45;cursor:not-allowed}
+.direct-multi-option input{margin:0;flex:0 0 16px;width:16px;height:16px;accent-color:#7955e4}
+.direct-multi-option span{overflow-wrap:anywhere;min-width:0}
+.direct-align-label{color:#48417f;font-weight:850;font-size:11px}
+.direct-align-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.direct-align-grid button{padding:9px 5px;line-height:1.4;min-width:0}
+.direct-align-grid button[data-direct-align^="space"]{background:#f2edff;border-color:#d5c9f6}
+.direct-multi-group{width:100%;background:linear-gradient(115deg,#f2f0ff,#e9e3ff);border-color:#d6c9f7}
+.direct-multi-status{font-size:10px;color:#787397;line-height:1.65;margin:0}
+.inner-page-editor .direct-selection-extra{border-color:#91c7ff;background:#569eff14;z-index:4}
+.inner-page-editor .direct-selection-extra:before{display:none}
+.inner-page-editor .canvas-holder:has(.direct-selection-extra){box-shadow:0 24px 48px #060b2790,0 0 0 3px #9794ff38}
+@media(max-width:760px){
+  .inner-page-editor .direct-multi-panel{padding:14px 11px;gap:11px}
+  .direct-align-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .direct-multi-list{grid-template-columns:1fr}
+  .direct-multi-option{min-height:42px;font-size:11px}
+}
+@media(max-width:390px){
+  .direct-multi-heading{flex-wrap:wrap}
+  .direct-multi-shortcuts{grid-template-columns:1fr}
+}
+@media(prefers-reduced-motion:reduce){
+  .direct-multi-shortcuts button,.direct-align-grid button,.direct-multi-group{transition:none}
+}

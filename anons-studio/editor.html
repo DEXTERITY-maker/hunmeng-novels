@@ -474,6 +474,33 @@
                   <select id="direct-target" aria-label="Объект для редактирования"><option value="">Не выбран</option></select>
                   <button id="direct-lock" type="button" aria-pressed="false" disabled>Заблокировать</button>
                 </div>
+                <section class="direct-multi-panel" aria-labelledby="direct-multi-title">
+                  <div class="direct-multi-heading">
+                    <div><strong id="direct-multi-title">Групповое выделение</strong><small>Shift + щелчок на холсте или флажки ниже</small></div>
+                    <span id="direct-multi-count" aria-live="polite">0 объектов</span>
+                  </div>
+                  <div class="direct-multi-shortcuts">
+                    <button type="button" id="direct-multi-all" disabled>Выделить доступные</button>
+                    <button type="button" id="direct-multi-clear" disabled>Снять выделение</button>
+                  </div>
+                  <details class="direct-multi-list-wrap">
+                    <summary>Выбрать слои вручную</summary>
+                    <div id="direct-multi-list" class="direct-multi-list" role="group" aria-label="Выбор нескольких объектов"></div>
+                  </details>
+                  <div class="direct-align-label">Выравнивание выбранных объектов</div>
+                  <div class="direct-align-grid" role="group" aria-label="Групповое выравнивание">
+                    <button type="button" data-direct-align="left" disabled>По левому</button>
+                    <button type="button" data-direct-align="center" disabled>По центру X</button>
+                    <button type="button" data-direct-align="right" disabled>По правому</button>
+                    <button type="button" data-direct-align="top" disabled>По верхнему</button>
+                    <button type="button" data-direct-align="middle" disabled>По центру Y</button>
+                    <button type="button" data-direct-align="bottom" disabled>По нижнему</button>
+                    <button type="button" data-direct-align="space-x" disabled>Распределить X</button>
+                    <button type="button" data-direct-align="space-y" disabled>Распределить Y</button>
+                  </div>
+                  <button type="button" id="direct-multi-group" class="direct-multi-group" disabled>Объединить выбранные фигуры в группу</button>
+                  <p id="direct-multi-status" role="status" aria-live="polite">Выдели минимум два видимых незаблокированных объекта. Можно одновременно передвигать их по холсту.</p>
+                </section>
                 <div class="direct-transform-actions" role="group" aria-label="Изменение размера и поворота фигуры">
                   <button type="button" id="direct-smaller" disabled aria-label="Уменьшить фигуру">− Размер</button>
                   <button type="button" id="direct-larger" disabled aria-label="Увеличить фигуру">+ Размер</button>

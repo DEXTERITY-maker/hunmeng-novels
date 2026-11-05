@@ -92,6 +92,8 @@ jobs:
             anons-studio/test-artifacts/stage5-photo-poster-*.png
             anons-studio/test-artifacts/stage6-direct-controls-*.png
             anons-studio/test-artifacts/stage6-composition-*.png
+            anons-studio/test-artifacts/stage7-multiselect-*.png
+            anons-studio/test-artifacts/stage7-composition-*.png
           if-no-files-found: warn
           retention-days: 14
       - name: Publish standalone preview (never existing production)

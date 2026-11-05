@@ -1429,6 +1429,119 @@
     syncCardAndSave();
     return true;
   }
+  // Stage 7: atomic, validated multi-object movements. All mutations run
+  // through the same editor history / persistence path as individual drags.
+  function transformDirectSelection(changes,group="multi"){
+    if(!Array.isArray(changes)||changes.length<2||changes.length>18)return false;
+    const targets=new Map(getDirectTargets().items.map(item=>[item.key,item]));
+    const unique=new Set(),patches=[];
+    for(const change of changes){
+      if(!change||typeof change!=="object"||typeof change.key!=="string"
+        ||unique.has(change.key))return false;
+      const item=targets.get(change.key);
+      if(!item||item.locked)return false;
+      unique.add(change.key);
+      const axes={};
+      for(const axis of ["x","y"]){
+        if(Object.hasOwn(change,axis)){
+          if(!Number.isFinite(change[axis]))return false;
+          axes[axis]=change[axis];
+        }
+      }
+      if(!Object.keys(axes).length)return false;
+      patches.push({item,axes});
+    }
+    // A pre-existing group is an indivisible unit while multi-dragging.
+    // It must either be fully selected or remain untouched.
+    for(const {item} of patches){
+      if(item.type!=="graphic")continue;
+      const source=state.graphicElements.find(g=>"graphic:"+g.id===item.key);
+      if(source?.groupId&&state.graphicElements.some(g=>g.groupId===source.groupId
+        &&!unique.has("graphic:"+g.id)))return false;
+    }
+    const figures=[...state.graphicElements],offsets=normalizeOffsets(state.layerOffsets);
+    let changed=false;
+    for(const {item,axes} of patches){
+      if(item.type==="graphic"){
+        const idx=figures.findIndex(g=>"graphic:"+g.id===item.key);
+        if(idx<0)return false;
+        const old=figures[idx],newValue=Graphics.normalizeOne({...old,...axes},idx);
+        if(newValue.x!==old.x||newValue.y!==old.y)changed=true;
+        figures[idx]=newValue;
+      }else{
+        if(!Object.hasOwn(offsets,item.key))return false;
+        const old=offsets[item.key],next={...old};
+        for(const axis of ["x","y"]){
+          if(Object.hasOwn(axes,axis))
+            next[axis]=Math.round(clamp(axes[axis],-30,30,0)*10)/10;
+        }
+        if(next.x!==old.x||next.y!==old.y)changed=true;
+        offsets[item.key]=next;
+      }
+    }
+    if(!changed)return false;
+    state.graphicElements=figures;
+    state.layerOffsets=offsets;
+    renderGraphicControls();
+    for(const key of ["title","description","highlights","brand","photo"]){
+      for(const axis of ["x","y"]){
+        const node=$(key+"-offset-"+axis);
+        if(node){
+          node.value=state.layerOffsets[key][axis];
+          $(node.id+"-value").textContent=(Number(node.value)>0?"+":"")+node.value+"%";
+        }
+      }
+    }
+    historyKind="multi:"+group;
+    syncCardAndSave(); // Exactly one history checkpoint per gesture/command.
+    return true;
+  }
+  function alignDirectSelection(keys,mode){
+    const valid=new Set(["left","center","right","top","middle","bottom","space-x","space-y"]);
+    if(!valid.has(mode)||!Array.isArray(keys))return false;
+    const unique=[...new Set(keys)];
+    if(unique.length<2||unique.length>18||unique.some(k=>typeof k!=="string"))return false;
+    const targets=new Map(getDirectTargets().items.map(item=>[item.key,item]));
+    const items=unique.map(key=>targets.get(key));
+    if(items.some(item=>!item||item.locked))return false;
+    // Explicit group alignment is offered after ungrouping so that
+    // alignment cannot silently deform a linked graphic group.
+    if(items.some(item=>item.type==="graphic"&&
+      state.graphicElements.some(g=>"graphic:"+g.id===item.key&&g.groupId)))return false;
+    const axis=["left","center","right","space-x"].includes(mode)?"x":"y";
+    const scene=getDirectTargets(),extent=axis==="x"?scene.width:scene.height;
+    const start=item=>axis==="x"?item.rect.x:item.rect.y;
+    const size=item=>axis==="x"?item.rect.w:item.rect.h;
+    const middle=item=>start(item)+size(item)/2;
+    const low=Math.min(...items.map(start));
+    const high=Math.max(...items.map(item=>start(item)+size(item)));
+    const destination=new Map();
+    if(mode==="space-x"||mode==="space-y"){
+      if(items.length<3)return false;
+      const sorted=[...items].sort((a,b)=>middle(a)-middle(b));
+      const first=middle(sorted[0]),last=middle(sorted[sorted.length-1]);
+      if(last-first<1)return false;
+      sorted.forEach((item,i)=>destination.set(item.key,first+
+        (last-first)*i/(sorted.length-1)));
+    }else{
+      const goal=(mode==="left"||mode==="top")?low:
+        (mode==="right"||mode==="bottom")?high:(low+high)/2;
+      for(const item of items)destination.set(item.key,goal);
+    }
+    const changes=items.map(item=>{
+      const before=mode==="left"||mode==="top"?start(item):
+        mode==="right"||mode==="bottom"?start(item)+size(item):middle(item);
+      const delta=(destination.get(item.key)-before)/extent*100;
+      const source=item.type==="graphic"
+        ?state.graphicElements.find(g=>"graphic:"+g.id===item.key)
+        :normalizeOffsets(state.layerOffsets)[item.key];
+      return {key:item.key,[axis]:(source?.[axis]||0)+delta};
+    });
+    // Alignment uses a fresh undo checkpoint and never alters text or artwork.
+    const success=transformDirectSelection(changes,"align:"+mode);
+    if(success){historyKind="";lastHistoryKind="";}
+    return success;
+  }
   function toggleDirectLock(key){
     const target=getDirectTargets().items.find(item=>item.key===key);
     if(!target)return false;
@@ -1684,6 +1797,8 @@
     newDraft,
     getDirectTargets,
     transformDirect,
+    transformDirectSelection,
+    alignDirectSelection,
     toggleDirectLock,
     getLayerPanel,
     changeLayerVisibility,
