@@ -1821,8 +1821,10 @@ try {
     const groupIds=(await positions()).map(g=>g.group);
     assert.ok(groupIds[0]&&groupIds.every(id=>id===groupIds[0]),
       "Grouping chosen graphics creates shared group IDs");
+    await p7.waitForFunction(()=>
+      document.querySelector('[data-direct-align="left"]')?.disabled===true);
     assert.equal(await p7.locator('[data-direct-align="left"]').isDisabled(),true,
-      "Locked linked group geometry cannot be silently distorted");
+      "Linked group geometry cannot be silently distorted");
     await p7.locator("#direct-multi-clear").click();
     assert.equal(await p7.locator("#direct-multi-count").textContent(),"0 выделено");
     await p7.locator("#direct-multi-all").click();
