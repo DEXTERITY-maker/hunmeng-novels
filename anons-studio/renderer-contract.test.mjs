@@ -331,7 +331,7 @@ test("photo crop and color grading are bounded, backward compatible, and shared 
   assert.equal(unsafe.photo.contrast,60);
   assert.equal(unsafe.photo.saturation,180);
   assert.equal(unsafe.photo.overlay.alpha,0);
-  assert.match(handler,/photo\.zoom/);
+  assert.match(handler,/r\.zoom/);
   assert.match(handler,/objectPosition:/);
   assert.match(handler,/r\.brightness/);
   assert.match(handler,/r\.overlay\.alpha/);
