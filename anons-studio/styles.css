@@ -2171,7 +2171,7 @@ body{background:#f2f3fe;color:#12172f}
 .export-profile-status[data-state="ok"]{background:#eeefff;color:#554ba0}
 .export-profile-panel button:focus-visible,.export-profile-panel input:focus-visible,
 .export-profile-panel select:focus-visible{outline:3px solid #916fea;outline-offset:2px}
-@media(min-width:1440px){.export-profile-presets{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(min-width:1440px){.export-profile-presets{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:760px){
   .export-profile-panel{padding:15px 11px}
   .export-profile-presets{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
