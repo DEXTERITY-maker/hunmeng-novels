@@ -23,6 +23,31 @@ coverFit: emblem
 - **New-chapter notifications.** The app checks for newly published chapters every few hours. Tapping an alert opens the relevant chapter directly in the app.
 - **In-app updates.** When a new version is released, the app offers to download and install the update.
 
+### Inside the Android app
+
+These screenshots show the Hunmeng home screen, the account menu and the reader profile. Select any image to view the full screenshot.
+
+<div class="android-app-gallery" aria-label="Hunmeng Novel Android app screenshots">
+  <figure class="android-app-gallery-card">
+    <a class="android-app-gallery-frame" href="/images/news/hunmeng-android-home.webp" target="_blank" rel="noopener noreferrer" aria-label="View full Android app home screen">
+      <img src="/images/news/hunmeng-android-home.webp" width="124" height="1536" alt="Hunmeng Novel Android app homepage with featured books, search controls and novel cards" loading="lazy" decoding="async" />
+    </a>
+    <figcaption><strong>Discover stories</strong><span>Browse and search the Hunmeng library.</span></figcaption>
+  </figure>
+  <figure class="android-app-gallery-card">
+    <a class="android-app-gallery-frame" href="/images/news/hunmeng-android-menu.webp" target="_blank" rel="noopener noreferrer" aria-label="View full Android app account menu">
+      <img src="/images/news/hunmeng-android-menu.webp" width="694" height="1536" alt="Hunmeng Novel Android app account menu showing profile, reading settings, library and theme options" loading="lazy" decoding="async" />
+    </a>
+    <figcaption><strong>Personalize reading</strong><span>Access your library, profile and appearance settings.</span></figcaption>
+  </figure>
+  <figure class="android-app-gallery-card">
+    <a class="android-app-gallery-frame" href="/images/news/hunmeng-android-profile.webp" target="_blank" rel="noopener noreferrer" aria-label="View full Android app reader profile">
+      <img src="/images/news/hunmeng-android-profile.webp" width="221" height="1536" alt="Hunmeng Novel Android app reader profile showing rank, emblems, reading progress and rewards" loading="lazy" decoding="async" />
+    </a>
+    <figcaption><strong>Keep your progress</strong><span>Find your reader ranks, achievements and next chapters.</span></figcaption>
+  </figure>
+</div>
+
 ### How to install
 
 1. On an Android 7.0 or newer phone, select **Get the Android app** below to download the latest APK.

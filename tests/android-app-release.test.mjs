@@ -26,4 +26,13 @@ test('the release post includes approved icon art, installation guidance, and ca
   assert.match(news, /install apps from the browser or file manager/);
   assert.ok(existsSync(new URL('../public/icon-512.png', import.meta.url)));
   assert.ok(existsSync(new URL('../public/images/hunmeng-emblem.png', import.meta.url)));
+  for (const name of ['home', 'menu', 'profile']) {
+    const path = '/images/news/hunmeng-android-' + name + '.webp';
+    assert.ok(news.includes('src="' + path + '"'), 'post embeds screenshot ' + name);
+    assert.ok(news.includes('href="' + path + '"'), 'full screenshot is viewable: ' + name);
+    const bytes = readFileSync(new URL('../public' + path, import.meta.url));
+    assert.equal(bytes.subarray(0,4).toString(), 'RIFF');
+    assert.equal(bytes.subarray(8,12).toString(), 'WEBP');
+    assert.ok(bytes.length < 100_000, 'compressed screenshot ' + name);
+  }
 });

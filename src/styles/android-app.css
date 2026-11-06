@@ -93,3 +93,86 @@
   .android-app-link { transition: none; }
   .android-app-link:hover { transform: none; }
 }
+
+/* Release screenshots use a compact, swipeable editorial gallery. The original
+   WebP images keep their natural aspect ratios and open in full on selection. */
+.news-article-body .android-app-gallery {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(190px, 1fr);
+  gap: 14px;
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+  padding: 6px 3px 16px;
+  margin: 18px 0 28px;
+}
+.news-article-body .android-app-gallery-card {
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  scroll-snap-align: start;
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  background: var(--surface);
+  color: var(--ink);
+}
+.news-article-body .android-app-gallery-frame {
+  display: block;
+  position: relative;
+  height: 355px;
+  overflow: hidden;
+  background: var(--soft);
+  text-decoration: none;
+}
+.news-article-body .android-app-gallery-frame img {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 0;
+  object-fit: contain;
+}
+.news-article-body .android-app-gallery-frame::after {
+  content: 'View full image ↗';
+  position: absolute;
+  inset: auto 9px 9px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--surface) 94%, transparent);
+  color: var(--ink);
+  font: 700 .73rem/1.25 'Manrope Variable', sans-serif;
+  text-align: center;
+  pointer-events: none;
+}
+.news-article-body .android-app-gallery-frame:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: -4px;
+}
+.news-article-body .android-app-gallery-card figcaption {
+  display: grid;
+  gap: 5px;
+  min-height: 89px;
+  padding: 13px 11px;
+  font: 400 .8rem/1.5 'Manrope Variable', sans-serif;
+  color: var(--muted);
+}
+.news-article-body .android-app-gallery-card figcaption strong {
+  font-size: .87rem;
+  color: var(--ink);
+}
+.hm-editorial-site .news-article-shell .android-app-gallery-card {
+  border-color: #e5dac6;
+  background: #fffdf6;
+}
+.hm-editorial-site .news-article-shell .android-app-gallery-card figcaption { color: #496354; }
+.hm-editorial-site .news-article-shell .android-app-gallery-card figcaption strong { color: #234334; }
+.hm-editorial-site .news-article-shell .android-app-gallery-frame { background: #f4eedf; }
+.hm-editorial-site .news-article-shell .android-app-gallery-frame::after {
+  background: #fffdf6ed;
+  color: #234334;
+}
+@media (max-width: 760px) {
+  .news-article-body .android-app-gallery { grid-auto-columns: minmax(185px, 73%); }
+  .news-article-body .android-app-gallery-frame { height: 345px; }
+}
