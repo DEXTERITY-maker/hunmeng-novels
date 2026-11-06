@@ -27,7 +27,7 @@
     if(!raw||typeof raw!=="object")return null;
     const chosen=formats.filter(f=>Array.isArray(raw.formats)&&raw.formats.includes(f));
     if(!chosen.length)return null;
-    return {formats:chosen,scope:raw.scope==="all"?"all":"current"};
+    return {formats:chosen,scope:["all","ready"].includes(raw.scope)?raw.scope:"current"};
   }
   function cleanProfile(raw){
     const name=cleanName(raw?.name),settings=cleanSettings(raw);
@@ -64,7 +64,7 @@
   }
   function current(){
     return {formats:formats.filter(f=>$("export-kit-"+f).checked),
-      scope:scope.value==="all"?"all":"current"};
+      scope:["all","ready"].includes(scope.value)?scope.value:"current"};
   }
   function equals(a,b){
     return a.scope===b.scope
@@ -101,7 +101,8 @@
       const option=document.createElement("option");
       option.value=String(profile.id);
       option.textContent=profile.name+" · "+profile.formats.length+
-        " форм. · "+(profile.scope==="all"?"все карточки":"одна карточка");
+        " форм. · "+(profile.scope==="all"?"все карточки":
+          profile.scope==="ready"?"отмеченные готовыми":"одна карточка");
       select.appendChild(option);
     }
     select.value=profiles.some(p=>String(p.id)===String(chosen))?String(chosen):"";

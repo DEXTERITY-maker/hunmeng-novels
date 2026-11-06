@@ -2298,3 +2298,25 @@ body{background:#f2f3fe;color:#12172f}
 .series-quality button:focus-visible{outline:3px solid #9377e7;outline-offset:2px}
 @media(max-width:760px){.series-quality{padding:13px}.series-quality-head h5{font-size:15px}}
 @media(prefers-reduced-motion:reduce){.series-quality-progress>span{transition:none}}
+
+/* Stage 13 · ready-only publication kits and date-ordered preflight views. */
+.series-quality-toolbar{display:flex;align-items:center;justify-content:space-between;gap:9px;
+  margin:12px 0;font-size:10px;color:#69648b;font-weight:800}
+.series-quality-toolbar select{min-height:38px;min-width:0;max-width:63%;border:1px solid #d9d2ef;
+  background:#fff;border-radius:9px;padding:8px;color:#53478d;font-weight:800;font-size:10px}
+.series-quality-prepare{width:100%;min-height:44px;margin-top:13px;padding:10px 12px;
+  display:flex;align-items:center;justify-content:center;text-align:center;
+  border:1px solid #6958cd;border-radius:11px;background:linear-gradient(110deg,#6554cb,#906be0);
+  color:#fff;font-size:11px;font-weight:850;cursor:pointer;box-shadow:0 8px 18px #6856cb27}
+.series-quality-prepare:hover:not(:disabled){filter:brightness(1.06)}
+.series-quality-prepare:disabled{cursor:not-allowed;opacity:.5;box-shadow:none}
+.series-quality-hint{margin-top:9px!important;color:#817b9b;font-size:10px!important;line-height:1.7}
+.export-kit-scope-summary{border:1px solid #e0d9f7;border-radius:9px;background:#f6f2ff;
+  padding:9px 11px;margin:0 0 14px;color:#66578f;font-size:10px;line-height:1.6}
+.series-quality-toolbar select:focus-visible,.series-quality-prepare:focus-visible{
+  outline:3px solid #896aea;outline-offset:2px}
+@media(max-width:760px){
+  .series-quality-toolbar{align-items:stretch;flex-direction:column}
+  .series-quality-toolbar select{max-width:none;width:100%}
+  .series-quality-prepare{min-height:46px}
+}

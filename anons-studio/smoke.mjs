@@ -2283,6 +2283,125 @@ try {
     await c12.close();
   }
 
+
+  // Stage 13: issue-preflight date sorting is visual-only. Ready-only ZIP
+  // contains precisely the marked issues, retains original card numbers,
+  // preserves the Free watermark and can be recalled as a local export preset.
+  for(const width of [390,1440]){
+    const c13=await browser.newContext({viewport:{width,height:980},acceptDownloads:true});
+    const p13=await c13.newPage(),errors=[];
+    p13.on("pageerror",e=>errors.push(e.message));
+    await p13.route("https://fonts.googleapis.com/**",route=>route.abort());
+    await p13.route("https://fonts.gstatic.com/**",route=>route.abort());
+    await p13.goto("http://127.0.0.1:"+port+"/editor.html",{waitUntil:"domcontentloaded"});
+    assert.equal(await p13.locator("[data-series-quality-filter]").count(),3);
+    assert.equal(await p13.locator("#series-quality-prepare").isDisabled(),true);
+    // Scope can be changed while the mobile preview panel is hidden; this
+    // simulates the persisted preference without switching layout sections.
+    await p13.locator("#export-kit-scope").evaluate(el=>{
+      el.value="ready";el.dispatchEvent(new Event("change",{bubbles:true}));
+    });
+    assert.equal(await p13.locator("#export-kit-count").textContent(),"0 изображений");
+    assert.equal(await p13.locator("#export-kit-download").isDisabled(),true);
+    assert.match(await p13.locator("#export-kit-report").textContent(),/Нет карточек/);
+
+    await p13.locator("#issue-name").fill("Выпуск 01");
+    await p13.locator("#issue-date").fill("2026-11-20");
+    await p13.locator("#issue-ready").check();
+    await p13.locator("#add-card").click();
+    await p13.locator("#issue-name").fill("Черновик 02");
+    await p13.locator("#issue-date").fill("2026-11-12");
+    await p13.locator("#add-card").click();
+    await p13.locator("#issue-name").fill("Выпуск 03");
+    await p13.locator("#issue-date").fill("2026-11-08");
+    await p13.locator("#issue-ready").check();
+
+    assert.equal(await p13.locator("#series-quality-prepare").isEnabled(),true);
+    await p13.locator('[data-series-quality-filter="ready"]').click();
+    assert.equal(await p13.locator(".series-quality-item").count(),2,
+      "Ready filter shows marked issues, regardless of advisory content notices");
+    await p13.locator("#series-quality-sort").selectOption("date");
+    const arranged=await p13.locator(".series-quality-item-head strong").allTextContents();
+    assert.match(arranged[0],/Выпуск 03/);
+    assert.match(arranged[1],/Выпуск 01/);
+    assert.deepEqual(await p13.evaluate(()=>window.AnonsEditor.getSnapshot()
+      .cards.map(card=>card.issueName)),["Выпуск 01","Черновик 02","Выпуск 03"],
+      "Date sorting does not mutate the actual publication order");
+    const screenshots=join(dirname(fileURLToPath(import.meta.url)),"test-artifacts");
+    await mkdir(screenshots,{recursive:true});
+    await p13.locator(".series-quality").screenshot({
+      path:join(screenshots,"stage13-ready-checklist-"+width+".png"),
+      animations:"disabled"
+    });
+    await p13.locator("#series-quality-prepare").click();
+    assert.equal(await p13.locator("#export-kit-scope").inputValue(),"ready");
+    assert.equal(await p13.locator("#export-kit-count").textContent(),"2 изображения");
+    assert.match(await p13.locator("#export-kit-scope-summary").textContent(),/2 из 3/);
+    if(width<=760)assert.equal(await p13.locator(".workspace")
+      .getAttribute("data-mobile-view"),"preview");
+    await p13.locator("#export-kit-square").check();
+    assert.equal(await p13.locator("#export-kit-count").textContent(),"4 изображения");
+    await p13.locator("#export-profile-name").fill("Готовые выпуски");
+    await p13.locator("#export-profile-save").click();
+    const localProfile=await p13.evaluate(()=>JSON.parse(
+      localStorage.getItem("anons-studio:export-profiles:v1")));
+    assert.equal(localProfile.length,1);
+    assert.equal(localProfile[0].scope,"ready");
+    assert.deepEqual(localProfile[0].formats,["portrait","square"]);
+    await p13.locator("#export-kit-scope").selectOption("all");
+    assert.equal(await p13.locator("#export-kit-count").textContent(),"6 изображений");
+    await p13.locator("#export-profile-select").selectOption(String(localProfile[0].id));
+    await p13.locator("#export-profile-load").click();
+    assert.equal(await p13.locator("#export-kit-scope").inputValue(),"ready");
+    assert.equal(await p13.locator("#export-kit-count").textContent(),"4 изображения");
+    await p13.locator(".export-kit-panel").screenshot({
+      path:join(screenshots,"stage13-ready-export-"+width+".png"),
+      animations:"disabled"
+    });
+    if(width===1440){
+      const before=await p13.evaluate(()=>window.AnonsEditor.getSnapshot());
+      const [download]=await Promise.all([
+        p13.waitForEvent("download"),
+        p13.locator("#export-kit-download").click()
+      ]);
+      assert.match(download.suggestedFilename(),/export-kit-4-png\.zip$/);
+      const zip=await readFile(await download.path());
+      const entries=new Map();
+      let cursor=0;
+      while(cursor+30<=zip.length&&zip.readUInt32LE(cursor)===0x04034b50){
+        const size=zip.readUInt32LE(cursor+18),len=zip.readUInt16LE(cursor+26);
+        const extra=zip.readUInt16LE(cursor+28);
+        const name=zip.subarray(cursor+30,cursor+30+len).toString("utf8");
+        const start=cursor+30+len+extra;
+        assert.ok(start+size<=zip.length,"ZIP entry remains within archive");
+        entries.set(name,zip.subarray(start,start+size));cursor=start+size;
+      }
+      assert.equal(entries.size,5,"Four PNGs and README.txt");
+      for(const index of ["01","03"]){
+        for(const [ratio,height] of [["portrait",1350],["square",1080]]){
+          const key="anons-card-"+index+"-"+ratio+"-1080x"+height+".png";
+          const png=entries.get(key);
+          assert.ok(png?.length>10000,"Marked issue exported: "+key);
+          assert.equal(png.subarray(1,4).toString(),"PNG");
+          assert.equal(png.readUInt32BE(16),1080);
+          assert.equal(png.readUInt32BE(20),height);
+        }
+      }
+      assert.equal([...entries.keys()].some(name=>name.startsWith("anons-card-02")),false,
+        "Unmarked draft is excluded entirely");
+      const readme=entries.get("README.txt").toString("utf8");
+      assert.match(readme,/Отбор: только отмеченные готовыми/);
+      assert.match(readme,/Free.*водяной знак/);
+      assert.match(readme,/Карточка 1: Выпуск 01/);
+      assert.match(readme,/Карточка 3: Выпуск 03/);
+      assert.equal(readme.includes("Черновик 02"),false);
+      assert.deepEqual(await p13.evaluate(()=>window.AnonsEditor.getSnapshot()),before,
+        "Ready-only ZIP never alters editor cards, ratio, or active issue");
+    }
+    assert.deepEqual(errors,[],"No Stage13 browser JS errors");
+    await c13.close();
+  }
+
 } finally {
   if(browser) await browser.close();
   await new Promise(r=>server.close(r));

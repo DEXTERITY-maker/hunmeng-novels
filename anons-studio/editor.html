@@ -108,8 +108,18 @@
                 <div class="series-quality-filters" role="group" aria-label="Фильтр проверки выпусков">
                   <button type="button" data-series-quality-filter="all" aria-pressed="true">Все</button>
                   <button type="button" data-series-quality-filter="issues" aria-pressed="false">Нужно проверить</button>
+                  <button type="button" data-series-quality-filter="ready" aria-pressed="false">Готовые</button>
+                </div>
+                <div class="series-quality-toolbar">
+                  <label for="series-quality-sort">Показать в порядке</label>
+                  <select id="series-quality-sort">
+                    <option value="order" selected>Порядок карточек в ZIP</option>
+                    <option value="date">По плановой дате</option>
+                  </select>
                 </div>
                 <div id="series-quality-list" class="series-quality-list" role="list" aria-label="Результаты проверки выпусков"></div>
+                <button type="button" id="series-quality-prepare" class="series-quality-prepare" disabled>Подготовить ZIP готовых выпусков</button>
+                <p class="series-quality-hint">В комплект попадут только карточки с отметкой «Готов к публикации». Проверка содержимого остаётся рекомендацией; даты не запускают автоматическую публикацию.</p>
                 <p id="series-quality-summary" class="series-quality-summary" role="status" aria-live="polite">Проверяем публикации…</p>
               </section>
 
@@ -607,8 +617,9 @@
                 </div>
                 <div class="export-kit-scope">
                   <label for="export-kit-scope">Какие карточки включить?</label>
-                  <select id="export-kit-scope"><option value="current">Только текущую карточку</option><option value="all">Все карточки проекта</option></select>
+                  <select id="export-kit-scope"><option value="current">Только текущую карточку</option><option value="all">Все карточки проекта</option><option value="ready">Только отмеченные готовыми</option></select>
                 </div>
+                <p id="export-kit-scope-summary" class="export-kit-scope-summary" role="status" aria-live="polite">Выбрана текущая карточка.</p>
                 <div class="export-kit-check">
                   <div class="export-kit-check-head"><strong>Проверка перед экспортом</strong><span id="export-kit-count" role="status" aria-live="polite">1 изображение</span></div>
                   <ul id="export-kit-report" aria-live="polite"></ul>

@@ -8,7 +8,10 @@
   const bar=document.getElementById("series-quality-bar");
   const progress=document.querySelector(".series-quality-progress");
   const buttons=[...document.querySelectorAll("[data-series-quality-filter]")];
-  if(!list||!summary||!score||!bar||!progress||buttons.length!==2)return;
+  const sorting=document.getElementById("series-quality-sort");
+  const prepare=document.getElementById("series-quality-prepare");
+  if(!list||!summary||!score||!bar||!progress||buttons.length!==3
+    ||!sorting||!prepare)return;
   let filter="all";
   function audit(card){
     const problems=[];
@@ -37,12 +40,21 @@
     const cards=Array.isArray(snapshot?.cards)?snapshot.cards:[];
     const reports=cards.map((card,index)=>({card,index,problems:audit(card)}));
     const clean=reports.filter(report=>!report.problems.length).length;
+    const ready=reports.filter(report=>report.card.issueReady===true).length;
+    prepare.disabled=ready===0;
+    prepare.textContent="Подготовить ZIP готовых выпусков ("+ready+")";
     const percent=cards.length?Math.round(clean/cards.length*100):0;
     score.textContent=clean+" / "+cards.length;
     bar.style.width=percent+"%";
     progress.setAttribute("aria-valuenow",String(percent));
     list.replaceChildren();
-    const visible=filter==="issues"?reports.filter(r=>r.problems.length):reports;
+    const filtered=filter==="issues"?reports.filter(r=>r.problems.length):
+      filter==="ready"?reports.filter(r=>r.card.issueReady===true):reports;
+    // Visual sorting never changes the underlying array or ZIP card indices.
+    const visible=sorting.value==="date"?[...filtered].sort((a,b)=>{
+      const ad=a.card.issueDate||"9999-99-99",bd=b.card.issueDate||"9999-99-99";
+      return ad.localeCompare(bd)||a.index-b.index;
+    }):filtered;
     for(const report of visible){
       const row=document.createElement("div");
       row.className="series-quality-item"+(report.problems.length?"":" is-ready");
@@ -84,7 +96,9 @@
     if(!visible.length){
       const empty=document.createElement("p");
       empty.className="series-quality-empty";
-      empty.textContent="Замечаний нет — все выпуски готовы.";
+      empty.textContent=filter==="ready"
+        ?"Нет выпусков с отметкой «Готов к публикации»."
+        :"Замечаний нет — все выпуски готовы.";
       list.append(empty);
     }
     summary.textContent=clean===cards.length&&cards.length
@@ -95,6 +109,18 @@
     filter=button.dataset.seriesQualityFilter;
     for(const item of buttons)item.setAttribute("aria-pressed",String(item===button));
     render();
+  });
+  sorting.addEventListener("change",render);
+  prepare.addEventListener("click",()=>{
+    if(prepare.disabled)return;
+    const scope=document.getElementById("export-kit-scope");
+    if(!scope)return;
+    scope.value="ready";
+    scope.dispatchEvent(new Event("change",{bubbles:true}));
+    const view=document.querySelector('[data-workspace-view="preview"]');
+    if(view&&window.matchMedia("(max-width: 760px)").matches)view.click();
+    document.querySelector(".export-kit-panel")?.scrollIntoView({block:"nearest"});
+    document.getElementById("export-kit-download")?.focus({preventScroll:true});
   });
   window.addEventListener("anons:editor-change",render);
   window.addEventListener("DOMContentLoaded",render,{once:true});

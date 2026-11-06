@@ -1371,9 +1371,11 @@
   let exportKitBusy=false;
   function exportKitSettings(){
     const formats=exportKitFormats.filter(key=>$("export-kit-"+key).checked);
-    const scope=$("export-kit-scope").value==="all"?"all":"current";
-    const indices=scope==="all"
-      ?state.cards.map((_,i)=>i):[state.activeCard];
+    const selectedScope=$("export-kit-scope").value;
+    const scope=["all","ready"].includes(selectedScope)?selectedScope:"current";
+    const indices=scope==="all"?state.cards.map((_,i)=>i):
+      scope==="ready"?state.cards.flatMap((card,index)=>card.issueReady===true?[index]:[]):
+        [state.activeCard];
     return {formats,indices,count:formats.length*indices.length,scope};
   }
   function exportKitQuality(card,format){
@@ -1398,6 +1400,15 @@
   function refreshExportKit(){
     const {formats,indices,count}=exportKitSettings();
     const button=$("export-kit-download"),status=$("export-kit-count");
+    const scope=exportKitSettings().scope,scopeHint=$("export-kit-scope-summary");
+    const skipped=state.cards.length-indices.length;
+    scopeHint.textContent=scope==="ready"
+      ?indices.length+" из "+state.cards.length+" карточек отмечены готовыми"+
+        (skipped?". Остальные "+skipped+" не войдут в ZIP.":".")+
+        " Проверка содержания выполняется отдельно."
+      :scope==="all"
+        ?"В комплект войдут все "+state.cards.length+" карточек проекта в их текущем порядке."
+        :"В комплект войдёт только открытая карточка №"+(state.activeCard+1)+".";
     status.textContent=count+" "+(count===1?"изображение":count>=2&&count<=4?"изображения":"изображений");
     const list=$("export-kit-report");
     list.replaceChildren();
@@ -1405,6 +1416,8 @@
     const report=[];
     if(!formats.length){
       report.push({text:"Выбери хотя бы один формат.",warning:true});
+    }else if(!indices.length){
+      report.push({text:"Нет карточек с отметкой «Готов к публикации». Отметь хотя бы один выпуск в плане серии.",warning:true});
     }else{
       for(const format of formats){
         const cards=indices.map(index=>({
@@ -1463,6 +1476,8 @@
         "Проект: "+source.project,
         "Серия: "+(source.seriesName||"Без названия"),
         "Карточек: "+settings.indices.length,
+        "Отбор: "+(settings.scope==="ready"?"только отмеченные готовыми"
+          :settings.scope==="all"?"все карточки":"текущая карточка"),
         "Форматов: "+settings.formats.map(key=>
           exportKitLabels[key]+" ("+sizes[key].w+"×"+sizes[key].h+")").join(", "),
         "Всего изображений: "+output.length,

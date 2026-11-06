@@ -103,6 +103,8 @@ jobs:
             anons-studio/test-artifacts/stage9-export-kit-*.png
             anons-studio/test-artifacts/stage10-export-profiles-*.png
             anons-studio/test-artifacts/stage11-series-planner-*.png
+            anons-studio/test-artifacts/stage13-ready-checklist-*.png
+            anons-studio/test-artifacts/stage13-ready-export-*.png
           if-no-files-found: warn
           retention-days: 14
       - name: Publish standalone preview (never existing production)
