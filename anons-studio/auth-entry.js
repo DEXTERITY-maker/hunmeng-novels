@@ -5,7 +5,7 @@ import { initManualOrders } from "./manual-orders-entry.js";
 import { initStudioWorkspace } from "./studio-workspace-entry.js";
 
 // Public publishable key only. Never bundle a service_role or Supabase secret.
-const client=createClient("https://kvgnjsntumofwqhywiea.supabase.co","sb_publishable_8nleVqBbbyDEbgyMWPkS6A_oEHkisoN",{
+const client=createClient("https://ejpgajehssfqynnzupfx.supabase.co","sb_publishable_6qhqTRKaAaRRdXB2PryP_w_DkQR0dti",{
   auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}
 });
 const byId=id=>document.getElementById(id);

@@ -1,7 +1,7 @@
 import { createClient } from 'npm:@supabase/supabase-js@2.118.0';
 
 // YooKassa prepaid 30-day plans. No charges without explicit merchant secrets.
-const url = Deno.env.get('SUPABASE_URL') || 'https://kvgnjsntumofwqhywiea.supabase.co';
+const url = Deno.env.get('SUPABASE_URL') || 'https://ejpgajehssfqynnzupfx.supabase.co';
 const origin='https://anons-studio-preview.pages.dev';
 const api='https://api.yookassa.ru/v3/payments';
 const prices={basic:29900,pro:49900,studio:99900};

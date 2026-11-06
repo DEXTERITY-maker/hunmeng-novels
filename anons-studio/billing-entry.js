@@ -1,5 +1,5 @@
 export function initBilling(client) {
-  const base='https://kvgnjsntumofwqhywiea.supabase.co/functions/v1';
+  const base='https://ejpgajehssfqynnzupfx.supabase.co/functions/v1';
   const endpoint=base+'/anons-billing',byId=id=>document.getElementById(id);
   const buy=byId('buy-basic'),state=byId('billing-availability'),history=byId('billing-history');
   const status=byId('billing-member-status'),check=byId('billing-check');
@@ -13,7 +13,7 @@ export function initBilling(client) {
     const response=await fetch(endpoint+'?action='+encodeURIComponent(action),{
       method,headers:{'Content-Type':'application/json',
         ...(logged?{'Authorization':'Bearer '+logged.access_token}:{}),
-        'apikey':'sb_publishable_8nleVqBbbyDEbgyMWPkS6A_oEHkisoN'},
+        'apikey':'sb_publishable_6qhqTRKaAaRRdXB2PryP_w_DkQR0dti'},
       body:body===undefined?undefined:JSON.stringify(body),cache:'no-store'
     });
     let data;try{data=await response.json();}catch{throw Error('BILLING_ERROR');}
@@ -113,7 +113,7 @@ export function initBilling(client) {
     const response=await fetch(base+'/anons-premium-export',{
       method:'POST',headers:{'Content-Type':'application/json',
         'Authorization':'Bearer '+logged.access_token,
-        'apikey':'sb_publishable_8nleVqBbbyDEbgyMWPkS6A_oEHkisoN'},
+        'apikey':'sb_publishable_6qhqTRKaAaRRdXB2PryP_w_DkQR0dti'},
       body:JSON.stringify({snapshot,cardIndex:index}),cache:'no-store'
     });
     if(!response.ok){

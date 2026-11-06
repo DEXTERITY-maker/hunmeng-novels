@@ -7,7 +7,7 @@ const Graphics=(globalThis as any).AnonsGraphics;
 const Scene=(globalThis as any).AnonsScene;
 // Server-rendered PNGs are the only paid downloads; browser state cannot grant access.
 const ORIGIN='https://anons-studio-preview.pages.dev';
-const DBURL=Deno.env.get('SUPABASE_URL')||'https://kvgnjsntumofwqhywiea.supabase.co';
+const DBURL=Deno.env.get('SUPABASE_URL')||'https://ejpgajehssfqynnzupfx.supabase.co';
 const HEADERS={'Access-Control-Allow-Origin':ORIGIN,'Access-Control-Allow-Methods':'POST,OPTIONS','Access-Control-Allow-Headers':'authorization,apikey,content-type','Cache-Control':'private, no-store','Vary':'Origin'};
 const respond=(value:unknown,status=200)=>Response.json(value,{status,headers:HEADERS});
 async function boundedJson(req:Request,limit:number){

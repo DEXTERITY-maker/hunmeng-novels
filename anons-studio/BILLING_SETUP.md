@@ -7,7 +7,7 @@
 1. Оформить магазин в ЮKassa и уточнить фискализацию (54-ФЗ) с учётом статуса продавца и налоговой системы.
 2. В Supabase Edge Functions → Secrets задать: `YOOKASSA_SHOP_ID`, `YOOKASSA_SECRET_KEY`, `YOOKASSA_VAT_CODE` (ставка НДС по вашей ситуации). При необходимости: `YOOKASSA_TAX_SYSTEM_CODE`. Не угадывайте код НДС — его должен подтвердить бухгалтер.
 3. В ЮKassa → Интеграция → HTTP-уведомления настроить HTTPS URL:
-   `https://kvgnjsntumofwqhywiea.supabase.co/functions/v1/anons-billing?action=webhook`
+   `https://ejpgajehssfqynnzupfx.supabase.co/functions/v1/anons-billing?action=webhook`
    и события `payment.succeeded`, `payment.canceled`, `refund.succeeded`.
 4. Проверить подтверждение почты и Redirect URLs для `https://anons-studio-preview.pages.dev/`.
 5. Подготовить **изолированное тестовое окружение** с отдельной базой и тестовым магазином. Текущая реализация специально отклоняет `test=true` и не позволяет полноценно проверить тестовую оплату в общем проекте. Не подменяйте реальные данные ради тестов.
@@ -41,7 +41,7 @@
 
 Для неё используются отдельные секреты `ANONS_YOOKASSA_TEST_VERIFIED_SHOP_ID` и `ANONS_YOOKASSA_TEST_SECRET_KEY_V2`. Ранее созданные значения `ANONS_YOOKASSA_TEST_SHOP_ID` и `ANONS_YOOKASSA_TEST_SECRET_KEY` функция не читает: они оставлены нетронутыми после неудачной настройки. Тестовый ключ хранится непосредственно в защищённых настройках Supabase, не в чате, GitHub или файлах проекта. Не используйте имена переменных рабочего магазина для тестовых ключей.
 
-После настройки тестового магазина его HTTP-уведомления могут направляться на `https://kvgnjsntumofwqhywiea.supabase.co/functions/v1/anons-yookassa-test-webhook` для событий `payment.succeeded`, `payment.canceled` и `refund.succeeded`. Тестовое уведомление не является подтверждением готовности реальных платежей.
+После настройки тестового магазина его HTTP-уведомления могут направляться на `https://ejpgajehssfqynnzupfx.supabase.co/functions/v1/anons-yookassa-test-webhook` для событий `payment.succeeded`, `payment.canceled` и `refund.succeeded`. Тестовое уведомление не является подтверждением готовности реальных платежей.
 
 ## Архитектура и безопасность
 
