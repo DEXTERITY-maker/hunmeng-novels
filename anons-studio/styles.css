@@ -2265,3 +2265,6 @@ body{background:#f2f3fe;color:#12172f}
   .series-board-move{gap:3px}
   .series-board-move button{width:28px;min-width:28px}
 }
+.manual-order-contact{display:inline-flex;align-items:center;min-height:44px;color:inherit;font-weight:700;text-decoration:underline}
+.manual-purchase-steps a{color:inherit;text-decoration:underline;overflow-wrap:anywhere}
+.footer .site-footer-link{overflow-wrap:anywhere}

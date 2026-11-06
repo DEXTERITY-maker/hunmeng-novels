@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://anons-studio-preview.pages.dev/sitemap.xml

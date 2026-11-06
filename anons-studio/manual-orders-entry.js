@@ -39,6 +39,15 @@ export function initManualOrders(client) {
     rejected:"Оплата не подтверждена",
     canceled:"Отменён"
   };
+  const CONTACT_EMAIL="Kirillfapsy@gmail.com";
+  function orderMailto(order){
+    const plan=plans[order.plan]?.name||"Тариф";
+    const subject="Заявка "+number(order.order_no)+" · Anons Studio";
+    const body="Здравствуйте! Я оформил заявку "+number(order.order_no)+" на тариф «"+plan+"» ("+
+      renderMoney(order.amount_kopecks)+" за 30 дней). Мой номер пользователя: "+(customerNo??"уточню в ответе")+
+      ". Пришлите, пожалуйста, реквизиты для перевода.";
+    return "mailto:"+CONTACT_EMAIL+"?subject="+encodeURIComponent(subject)+"&body="+encodeURIComponent(body);
+  }
   const renderMoney=kopecks=>(kopecks/100).toLocaleString("ru-RU")+" ₽";
   const number=orderNo=>"AS-"+String(orderNo);
   let userId=null,epoch=0,loading=false,orders=[],customerNo=null,isAdmin=false,activeSubscription=false;
@@ -109,6 +118,9 @@ export function initManualOrders(client) {
       const when=addText("small","Создан "+new Date(order.created_at).toLocaleDateString("ru-RU"));
       card.append(heading,detail,when);
       if(order.status==="awaiting_instructions"){
+        const contact=addText("a","Написать владельцу за реквизитами","manual-order-contact");
+        contact.href=orderMailto(order);
+        card.append(contact);
         const controls=document.createElement("div");
         controls.className="manual-order-item-actions";
         const field=document.createElement("input");
@@ -185,7 +197,7 @@ export function initManualOrders(client) {
       if(!live(id,serial))return;
       if(error)throw error;
       await getOrders(id,serial);
-      if(live(id,serial))say(message,"Заявка "+number(data)+" создана. Согласуйте реквизиты с владельцем. Не переводите деньги по неподтверждённым реквизитам.");
+      if(live(id,serial))say(message,"Заявка "+number(data)+" создана. Напишите владельцу на "+CONTACT_EMAIL+": готовое письмо открывается кнопкой в заявке. Не переводите деньги по неподтверждённым реквизитам.");
     }catch(error){
       if(live(id,serial))say(message,unavailableText(error),true);
     }finally{if(live(id,serial))setBusy(false);}

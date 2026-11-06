@@ -205,7 +205,7 @@ function renderPoster(snapshot:any,card:any,width:number,height:number,available
   if(plan.enabled.photo && typeof snapshot.imageData==='string' && snapshot.imageData.length<600000
     && /^data:image\/(png|jpeg|webp);base64,[a-z0-9+/=]+$/i.test(snapshot.imageData)){
     const r=plan.photo,off=offset('photo');
-    const layerX=r.x+off.x*width/100, layerY=r.y+off.y*height/100;
+    const layerX=r.x+off.x, layerY=r.y+off.y;
     const zoomWidth=r.width*r.zoom,zoomHeight=r.height*r.zoom;
     const filter='brightness('+r.brightness+'%) contrast('+r.contrast+
       '%) saturate('+r.saturation+'%)';

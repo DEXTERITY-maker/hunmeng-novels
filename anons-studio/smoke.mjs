@@ -95,7 +95,7 @@ try {
       "Announcement initially focuses its accessible close control");
     assert.equal(await page.locator(".whats-new-list:not(.whats-new-list-archive) li").count(),1,
       "Only the latest two changes are expanded by default");
-    assert.equal(await page.locator(".whats-new-list-archive li").count(),31);
+    assert.equal(await page.locator(".whats-new-list-archive li").count(),32);
     assert.equal(await page.locator(".whats-new-history").evaluate(el=>el.open),false);
     await page.locator(".whats-new-history summary").click();
     assert.equal(await page.locator(".whats-new-history").evaluate(el=>el.open),true);
@@ -107,7 +107,7 @@ try {
       assert.ok((await page.locator('.whats-new-list a[href="./'+destination+'"]').count())>=1,
         "Announcement links directly to "+destination);
     }
-    assert.equal(await releaseDialog.getAttribute("data-release"),"2026-11-05-six-tier-plans",
+    assert.equal(await releaseDialog.getAttribute("data-release"),"2026-11-06-order-contact-export",
       "Latest announcement version must be recognized");
 
     await page.locator("#whats-new-dismiss").click();

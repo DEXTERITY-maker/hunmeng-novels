@@ -186,3 +186,12 @@ test("confirmed active plan suppresses duplicate manual order button without alt
   h.instance.setUser(null);
   assert.equal(h.els["manual-order-create"].disabled,true);
 });
+
+test("an open order offers a ready email with its number and no payment data",async()=>{
+  const {readFile}=await import("node:fs/promises");
+  const source=await readFile(new URL("./manual-orders-entry.js",import.meta.url),"utf8");
+  assert.match(source,/CONTACT_EMAIL="Kirillfapsy@gmail\.com"/);
+  assert.match(source,/encodeURIComponent\(subject\)/);
+  assert.match(source,/manual-order-contact/);
+  assert.doesNotMatch(source.slice(source.indexOf("function orderMailto"),source.indexOf("const renderMoney")),/CVV|номер карты/);
+});

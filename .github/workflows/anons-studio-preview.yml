@@ -15,6 +15,7 @@ on:
       - feat/anons-studio-workspace-20261105
       - feat/anons-pricing-current-plan-20261105
       - feat/anons-agency-ultimate-tiers-20261105
+      - fix/anons-contact-seo-20261106
     paths:
       - 'anons-studio/**'
       - '.github/workflows/anons-studio-preview.yml'
@@ -104,7 +105,7 @@ jobs:
           if-no-files-found: warn
           retention-days: 14
       - name: Publish standalone preview (never existing production)
-        if: github.ref == 'refs/heads/feat/anons-studio-mvp-20261103' || github.ref == 'refs/heads/feat/anons-template-catalog-20261104' || github.ref == 'refs/heads/feat/anons-quick-start-20261104' || github.ref == 'refs/heads/feat/anons-personal-styles-20261104' || github.ref == 'refs/heads/feat/anons-cloud-styles-20261104' || github.ref == 'refs/heads/feat/anons-brand-kit-20261104' || github.ref == 'refs/heads/feat/anons-manual-orders-20261104' || github.ref == 'refs/heads/feat/anons-business-templates-flexible-orders-20261104' || github.ref == 'refs/heads/feat/anons-pro-series-templates-20261104' || github.ref == 'refs/heads/feat/anons-studio-workspace-20261105' || github.ref == 'refs/heads/feat/anons-pricing-current-plan-20261105' || github.ref == 'refs/heads/feat/anons-agency-ultimate-tiers-20261105'
+        if: github.ref == 'refs/heads/fix/anons-contact-seo-20261106' || github.ref == 'refs/heads/feat/anons-studio-mvp-20261103' || github.ref == 'refs/heads/feat/anons-template-catalog-20261104' || github.ref == 'refs/heads/feat/anons-quick-start-20261104' || github.ref == 'refs/heads/feat/anons-personal-styles-20261104' || github.ref == 'refs/heads/feat/anons-cloud-styles-20261104' || github.ref == 'refs/heads/feat/anons-brand-kit-20261104' || github.ref == 'refs/heads/feat/anons-manual-orders-20261104' || github.ref == 'refs/heads/feat/anons-business-templates-flexible-orders-20261104' || github.ref == 'refs/heads/feat/anons-pro-series-templates-20261104' || github.ref == 'refs/heads/feat/anons-studio-workspace-20261105' || github.ref == 'refs/heads/feat/anons-pricing-current-plan-20261105' || github.ref == 'refs/heads/feat/anons-agency-ultimate-tiers-20261105'
         uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}

@@ -6,6 +6,14 @@
   <meta name="theme-color" content="#111424">
   <meta name="description" content="Шесть тарифов Anons Studio: Free, Бизнес, Про, Студия, Агентство, Максимум. Ручная оплата без автоматических списаний.">
   <title>Тарифы — Anons Studio</title>
+  <link rel="canonical" href="https://anons-studio-preview.pages.dev/pricing">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Anons Studio">
+  <meta property="og:locale" content="ru_RU">
+  <meta property="og:title" content="Тарифы — Anons Studio">
+  <meta property="og:description" content="Шесть тарифов Anons Studio: Free, Бизнес, Про, Студия, Агентство, Максимум. Ручная оплата без автоматических списаний.">
+  <meta property="og:url" content="https://anons-studio-preview.pages.dev/pricing">
+  <meta name="twitter:card" content="summary">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=Noto+Serif:wght@700;800&display=swap" rel="stylesheet">
@@ -74,7 +82,7 @@
             <p>Фирменное оформление проектов нескольких клиентов с единой палитрой.</p>
             <ul><li>Всё из «Студия»</li><li><strong>18 шаблонов</strong>, включая Agency Brand, Social, Showcase</li>
             <li><strong>До 16 облачных проектов</strong> в одной операции брендирования</li><li>Автоматическое сохранение предыдущих версий проектов</li>
-            <li>Чистый серверный PNG-экспорт</li></ul><p class="plan-usecase"><strong>На практике:</strong> единый бренд → до 16 проектов за одну операцию.</p>
+            <li>PNG без водяного знака</li></ul><p class="plan-usecase"><strong>На практике:</strong> единый бренд → до 16 проектов за одну операцию.</p>
             <a class="plan-action manual-plan-link" href="./pricing.html?plan=agency#manual-order-root">Заказать вручную</a><p class="plan-current-state" hidden></p>
           </article>
           <article class="plan plan-ultimate" data-plan="ultimate">
@@ -83,7 +91,7 @@
             <p>Полная библиотека дизайнов и оформление масштабного портфолио.</p>
             <ul><li>Всё из «Агентство»</li><li><strong>21 шаблон</strong>, включая Signature, Cinema, Vision</li>
             <li><strong>До 30 облачных проектов</strong> в одной операции брендирования</li><li>Атомарная проверка версий и история восстановления</li>
-            <li>Чистый серверный PNG-экспорт</li></ul><p class="plan-usecase"><strong>На практике:</strong> масштабное портфолио → до 30 проектов за одну операцию.</p>
+            <li>PNG без водяного знака</li></ul><p class="plan-usecase"><strong>На практике:</strong> масштабное портфолио → до 30 проектов за одну операцию.</p>
             <a class="plan-action manual-plan-link" href="./pricing.html?plan=ultimate#manual-order-root">Заказать вручную</a><p class="plan-current-state" hidden></p>
           </article>
         </div>
@@ -115,7 +123,7 @@
           </div>
           <div class="manual-plan-select"><label for="manual-order-plan">Тариф для ручного заказа</label><select id="manual-order-plan"><option value="basic">Бизнес — 299 ₽ / 30 дней</option><option value="pro">Про — 499 ₽ / 30 дней</option><option value="studio">Студия — 999 ₽ / 30 дней</option><option value="agency">Агентство — 1 499 ₽ / 30 дней</option><option value="ultimate">Максимум — 2 499 ₽ / 30 дней</option></select><p id="manual-order-plan-summary" role="status">Бизнес · 299 ₽ за 30 дней. Без автоматических списаний.</p></div>
           <div class="manual-customer-badge"><span>Ваш постоянный номер</span><strong id="manual-order-customer">После входа появится постоянный номер</strong></div>
-          <p class="manual-purchase-steps">1. Войдите по подтверждённой почте. 2. Оформите заявку. 3. Получите реквизиты от владельца и переведите точную стоимость выбранного тарифа. 4. Сообщите о переводе по номеру заказа. 5. Владелец проверит поступление и вручную активирует подписку.</p>
+          <p class="manual-purchase-steps">1. Войдите по подтверждённой почте. 2. Оформите заявку. 3. Напишите на <a href="mailto:Kirillfapsy@gmail.com">Kirillfapsy@gmail.com</a>, указав номер заказа, и получите реквизиты от владельца и переведите точную стоимость выбранного тарифа. 4. Сообщите о переводе по номеру заказа. 5. Владелец проверит поступление и вручную активирует подписку.</p>
           <div class="manual-purchase-actions">
             <button type="button" id="manual-order-create" disabled>Заказать «Бизнес»</button>
             <button type="button" id="manual-order-refresh">Обновить статус</button>
@@ -123,14 +131,14 @@
           </div>
           <p id="manual-order-status" role="status" aria-live="polite">Для оформления заказа требуется подтверждённый аккаунт.</p>
           <div id="manual-order-list" class="manual-orders-list" aria-label="Мои ручные заказы"></div>
-          <p class="manual-purchase-caution">Не переводите деньги, пока владелец лично не подтвердил реквизиты. Не отправляйте номер карты, CVV, пароли и коды из СМС в сообщениях к заказу. Заявка и отметка «Я перевёл» не являются подтверждением оплаты и не дают платный доступ.</p>
+          <p class="manual-purchase-caution">Не переводите деньги, пока владелец лично не подтвердил реквизиты. Реквизиты присылаются только с адреса Kirillfapsy@gmail.com. Не отправляйте номер карты, CVV, пароли и коды из СМС в сообщениях к заказу. Заявка и отметка «Я перевёл» не являются подтверждением оплаты и не дают платный доступ.</p>
         </section>
         <div class="billing-availability" role="status" aria-live="polite" id="billing-availability">Проверяем возможность оплаты…</div>
         <p class="pricing-disclaimer">Все пять платных тарифов можно заказать вручную на 30 дней, без автоматических списаний. «Про» уже включает три собственных шаблона и инструменты пакетных публикаций, «Студия», «Агентство» и «Максимум» наследуют возможности предыдущих планов. Массовое применение стиля: 8, 16 или 30 облачных проектов соответственно. Совместное редактирование несколькими пользователями пока не реализовано. Автооплата по-прежнему выключена.</p>
       </section>
 <section class="inner-next-step wrap"><div><h2>Начни с бесплатного тарифа.</h2><p>Создай первый графический анонс без покупки подписки.</p></div><a class="btn btn-primary" href="./editor.html">Открыть редактор <svg class="ui-icon" aria-hidden="true" focusable="false"><use href="./assets/ui-icons.svg#arrow-up-right"></use></svg></a></section>
     </main>
-    <footer class="footer wrap"><a href="./index.html" aria-label="Anons Studio — главная"><img class="footer-logo" src="./assets/anons-logo-approved.webp" width="220" height="68" alt="Anons Studio" loading="lazy" decoding="async"></a><span>Создано для тех, кому есть что рассказать.</span><a class="site-footer-link" href="./account.html">Личное пространство</a><span>Бета v0.6 · 2026</span></footer>
+    <footer class="footer wrap"><a href="./index.html" aria-label="Anons Studio — главная"><img class="footer-logo" src="./assets/anons-logo-approved.webp" width="220" height="68" alt="Anons Studio" loading="lazy" decoding="async"></a><span>Создано для тех, кому есть что рассказать.</span><a class="site-footer-link" href="./account.html">Личное пространство</a><a class="site-footer-link" href="mailto:Kirillfapsy@gmail.com">Kirillfapsy@gmail.com</a><span>Бета v0.6 · 2026</span></footer>
     <div id="toast" role="status" aria-live="polite" class="toast" hidden></div>
   </div>
 </body>

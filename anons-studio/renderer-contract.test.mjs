@@ -336,3 +336,10 @@ test("photo crop and color grading are bounded, backward compatible, and shared 
   assert.match(handler,/r\.brightness/);
   assert.match(handler,/r\.overlay\.alpha/);
 });
+
+test("paid photo layer applies its pixel offset exactly once",async()=>{
+  const {readFile}=await import("node:fs/promises");
+  const source=await readFile(new URL("./functions/anons-premium-export/index.ts",import.meta.url),"utf8");
+  assert.match(source,/const layerX=r\.x\+off\.x, layerY=r\.y\+off\.y;/);
+  assert.doesNotMatch(source,/off\.x\*width\/100/);
+});

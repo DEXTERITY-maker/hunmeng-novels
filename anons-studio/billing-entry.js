@@ -65,7 +65,7 @@ export function initBilling(client) {
       const data=await call('config',{requiresUser:false});
       enabled=data.enabled===true;
       if(enabled){
-        buy.disabled=!accountId;buy.textContent=accountId?'Оплатить Basic':'Войти для покупки';
+        buy.disabled=!accountId;buy.textContent=accountId?'Оплатить «Бизнес»':'Войти для покупки';
         msg('Оплата доступна. Доступ на 30 дней без автоматических списаний.');
       }else{
         msg('Автоматическая оплата отключена. Для оформления подписки доступна ручная заявка выше.');
@@ -97,7 +97,7 @@ export function initBilling(client) {
         ORDER_CREATE_FAILED:'не удалось создать заказ',BILLING_UNAVAILABLE:'сервис временно недоступен'};
       if(Object.hasOwn(issues,e.message)){
         msg('Оплата не началась: '+issues[e.message]);
-        buy.disabled=false;buy.textContent='Оплатить Basic';return;
+        buy.disabled=false;buy.textContent='Оплатить «Бизнес»';return;
       }
       // The provider may have created a payment even when its response was lost.
       uncertainAccounts.add(accountId);buy.disabled=true;buy.textContent='Проверьте статус оплаты';
@@ -131,7 +131,7 @@ export function initBilling(client) {
     if(history)history.replaceChildren();
     if(buy){
       buy.disabled=!id||!enabled||uncertainAccounts.has(id);
-      if(enabled)buy.textContent=uncertainAccounts.has(id)?'Проверьте статус оплаты':id?'Оплатить Basic':'Войти для покупки';
+      if(enabled)buy.textContent=uncertainAccounts.has(id)?'Проверьте статус оплаты':id?'Оплатить «Бизнес»':'Войти для покупки';
     }
     if(id)refresh();
   }
