@@ -1,6 +1,7 @@
 ---
 import { site } from '../config/site';
 import Brand from '../components/Brand.astro';
+import Icon from '../components/Icon.astro';
 import HeaderActions from '../components/HeaderActions.astro';
 import { settingsBootstrap } from '../lib/storage';
 import '../styles/foundation.css';
@@ -9,6 +10,7 @@ import '../styles/pages.css';
 import '../styles/presentation.css';
 import '../styles/interface-motion.css';
 import '../styles/external-novels.css';
+import '../styles/android-app.css';
 import '@fontsource-variable/lora/wght.css';
 import '@fontsource-variable/manrope/wght.css';
 import '@fontsource-variable/noto-serif/wght.css';
@@ -148,6 +150,10 @@ const tokens = `:root{--bg:${c.background};--surface:${c.surface};--ink:${c.text
           <div class="site-footer-identity">
             <Brand />
             <p>A calmer corner of the internet for immersive worlds and the next great chapter.</p>
+            <a class="android-app-link android-app-link-footer" href="https://github.com/DEXTERITY-maker/hunmeng-novel-app/releases/latest/download/HunmengNovel.apk" target="_blank" rel="noopener noreferrer">
+              <Icon name="phone" size={17} />
+              <span>Get the Android app</span>
+            </a>
           </div>
           {bodyClass === 'hm-editorial-site' ? (
             <>

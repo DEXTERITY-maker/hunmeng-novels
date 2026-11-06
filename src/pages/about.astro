@@ -1,5 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import Icon from '../components/Icon.astro';
 import '../styles/v3-editorial.css';
 import '../styles/v3-information-editorial.css';
 const editorial = import.meta.env.HUNMENG_V2_PUBLIC === '1';
@@ -26,5 +27,17 @@ const editorial = import.meta.env.HUNMENG_V2_PUBLIC === '1';
     </p>
     <p>The library is just getting started. New novels and chapters will appear here as they are prepared, and published translations will include author and source information.</p>
     <p>You can read without an account. Your settings, library, and reading position are saved in your browser. Learn more in the <a href="/rules/">terms and privacy</a>.</p>
+    <section class="android-app-promo" aria-labelledby="android-app-title">
+      <img src="/icon-512.png" alt="Hunmeng Novel app emblem" width="80" height="80" loading="lazy" />
+      <div class="android-app-promo-copy">
+        <h2 id="android-app-title">Hunmeng Novel for Android</h2>
+        <p>Read in a full-screen app, stay signed in and receive notifications when new chapters arrive. Free for Android 7 and newer.</p>
+        <a class="android-app-link" href="https://github.com/DEXTERITY-maker/hunmeng-novel-app/releases/latest/download/HunmengNovel.apk" target="_blank" rel="noopener noreferrer">
+          <Icon name="phone" size={18} />
+          <span>Get the Android app</span>
+        </a>
+        <a class="android-app-versions" href="https://github.com/DEXTERITY-maker/hunmeng-novel-app/releases" target="_blank" rel="noopener noreferrer">All versions</a>
+      </div>
+    </section>
   </main>
 </Layout>

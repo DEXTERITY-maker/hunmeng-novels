@@ -84,7 +84,9 @@ test('новости: официальное сообщение о заклад�
   expect(new URL(page.url()).pathname).toBe('/news/');
   await expect(page.locator('#news-feed [data-news-card]:visible')).toHaveCount(2);
   await expect(page.locator('#news-pagination')).toBeHidden();
-  await expect(page.locator('a[href*="github.com"]')).toHaveCount(0);
+  // The official app download lives in the global footer; news cards themselves
+  // must still keep navigation local and not link readers to external repositories.
+  await expect(page.locator('#news-feed a[href*="github.com"]')).toHaveCount(0);
   await expect(page.locator('#news-feed')).toContainText('Paragraph bookmarks in the reading room');
   await expect(page.locator('#news-feed')).not.toContainText('Site update:');
 });
