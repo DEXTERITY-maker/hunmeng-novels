@@ -87,9 +87,9 @@ try {
     // available from the footer without disturbing ordinary page visits.
     const releaseDialog=page.locator("#whats-new-dialog");
     await page.waitForFunction(()=>document.getElementById("whats-new-dialog")?.open);
-    assert.match(await page.locator("#whats-new-title").textContent(),/Шесть тарифов и 21 шаблон/);
-    assert.equal(await page.locator(".whats-new-list li").count(),32);
-    assert.equal(await page.locator(".whats-new-item-icon .ui-icon").count(),32,
+    assert.match(await page.locator("#whats-new-title").textContent(),/Связь по заявкам и точный платный экспорт/);
+    assert.equal(await page.locator(".whats-new-list li").count(),33);
+    assert.equal(await page.locator(".whats-new-item-icon .ui-icon").count(),33,
       "Announcement has coherent SVG icons instead of character placeholders");
     assert.equal(await page.locator("#whats-new-close").evaluate(el=>el===document.activeElement),true,
       "Announcement initially focuses its accessible close control");
