@@ -1868,6 +1868,12 @@ try {
     }
     if(width<=760)await p8.locator("#editor-show-preview").click();
     await p8.locator("#direct-safe-margin").selectOption("15");
+    // Let the editor's queued requestAnimationFrame render and font loading
+    // finish before asserting that the DOM-only guide leaves PNG unchanged.
+    await p8.evaluate(async()=>{
+      await document.fonts.ready;
+      await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+    });
     const posterBefore=await p8.locator("#poster").evaluate(c=>c.toDataURL("image/png"));
     await p8.locator("#direct-safe-show").check();
     assert.equal(await p8.locator(".direct-safe-frame").isVisible(),true);
@@ -2265,12 +2271,14 @@ try {
     assert.equal(await p12.locator("#series-quality-list .series-quality-item.is-ready").count(),1);
     await p12.locator("#add-card").click();
     assert.equal(await p12.locator("#series-quality-score").textContent(),"1 / 2");
+    await p12.locator("#undo").click();
+    assert.equal(await p12.locator("#series-quality-score").textContent(),"1 / 1");
+    await p12.locator("#redo").click();
+    assert.equal(await p12.locator("#series-quality-score").textContent(),"1 / 2");
     await p12.locator("#series-quality-list .series-quality-item").first()
       .locator("button").click();
     assert.equal(await p12.locator("#issue-name").inputValue(),"Выпуск 01");
     if(width<=760)assert.equal(await p12.locator(".workspace").getAttribute("data-mobile-view"),"edit");
-    await p12.locator("#undo").click();
-    assert.equal(await p12.locator("#series-quality-score").textContent(),"1 / 1");
     assert.deepEqual(errors,[]);
     await c12.close();
   }
