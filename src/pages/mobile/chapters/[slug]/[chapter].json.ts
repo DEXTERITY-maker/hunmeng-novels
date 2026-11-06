@@ -1,5 +1,5 @@
 import type { APIRoute, GetStaticPaths } from 'astro';
-import { getLibrary } from '../../../lib/content';
+import { getLibrary } from '../../../../lib/content';
 
 /**
  * Public text feed for the native Android reader.
